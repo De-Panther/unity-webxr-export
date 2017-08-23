@@ -1,0 +1,28 @@
+﻿<!doctype html>
+<html lang="en-us">
+
+<head>
+  <!-- Inspired by: https://github.com/gtk2k/Unity-WebVR-Assets -->
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>%UNITY_WEB_NAME%</title>
+  <meta name="description" content="%UNITY_WEB_NAME%">
+  <link rel="shortcut icon" href="favicon.ico">
+  <link rel="stylesheet" type="text/css" href="webvr.css" />
+  <script src="Build/UnityLoader.js"></script>
+  <script>
+    var gameInstance = UnityLoader.instantiate("gameContainer", "Build/%UNITY_WEB_NAME%.json");
+  </script>
+</head>
+
+<body>
+  <div id="loader">
+    <p>Loading...</p>
+  </div>
+  <div id="gameContainer"></div>
+  <script src="webvr-polyfill.js"></script>
+  <script src="webvr.js"></script>
+</body>
+
+</html>

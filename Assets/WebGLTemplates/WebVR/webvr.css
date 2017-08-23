@@ -1,0 +1,44 @@
+@keyframes colors {
+  0%  {background-color: #00a;}
+  20%  {background-color: #0a0;}
+  40%  {background-color: #a00;}
+  60%  {background-color: #aa0;}
+  80%  {background-color: #0aa;}
+  100% {background-color: #00a;}
+}
+
+html, body {
+  overflow:hidden;
+}    
+
+html, body, #canvas, #loader {
+  margin: 0;
+  padding: 0; 
+  width:100%;
+  height:100%;
+  top: 0%;
+  left: 0%;
+}
+
+#loader {
+  background-image:url('vr.png');
+  background-repeat:repeat;
+  animation: colors 5s infinite;
+  position:absolute;
+  z-index:99;
+}
+
+#loader p {
+  margin:20% auto;
+  color:#fff;
+  text-shadow:2px 2px 2px #000;
+  text-align:center;
+  font-family:"Courier New", Courier, monospace;
+  font-size:5em;
+}
+
+#canvas {
+  display: block;
+  position: absolute;
+  z-index:0;
+}
