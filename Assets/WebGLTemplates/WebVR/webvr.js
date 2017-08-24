@@ -19,6 +19,19 @@
   	var curPos = curFramePose.position;
   	var curOrient = curFramePose.orientation;
 
+    var leftProjectionMatrix = frameData.leftProjectionMatrix;
+    var rightProjectionMatrix = frameData.rightProjectionMatrix;
+    var leftViewMatrix = frameData.leftViewMatrix;
+    var rightViewMatrix = frameData.rightViewMatrix;
+    // prepare and feed into Unity's
+    // Camera.worldToCameraMatrix
+    // Camera.projectionMatrix
+
+    gameInstance.SendMessage('WebVRCameraSet', 'HMDLeftProjection', leftProjectionMatrix.join());
+    gameInstance.SendMessage('WebVRCameraSet', 'HMDLeftView', leftViewMatrix.join());
+    gameInstance.SendMessage('WebVRCameraSet', 'HMDRightProjection', rightProjectionMatrix.join());
+    gameInstance.SendMessage('WebVRCameraSet', 'HMDRightView', rightViewMatrix.join());
+
   	//send HMD position and rotation to Unity
   	if(curOrient != null)
   	{
