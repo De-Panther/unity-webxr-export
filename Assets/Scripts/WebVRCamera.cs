@@ -28,89 +28,43 @@ public class WebVRCamera : MonoBehaviour
     public GameObject leftHandObj;
     public GameObject rightHandObj;
 
-	// view and projection matrix, sent via SendMessage from webvr.js
-	public void HMDLeftProjection(string numbersStr) {
+	private Matrix4x4 numbersStringToMatrix(string numbersStr) {
 		float[] array = numbersStr.Split(',').Select(float.Parse).ToArray();
 
-		clp [0, 0] = array[0];
-		clp [0, 1] = array[4];
-		clp [0, 2] = array[8];
-		clp [0, 3] = array[12];
-		clp [1, 0] = array[1];
-		clp [1, 1] = array[5];
-		clp [1, 2] = array[9];
-		clp [1, 3] = array[13];
-		clp [2, 0] = array[2];
-		clp [2, 1] = array[6];
-		clp [2, 2] = array[10];
-		clp [2, 3] = array[14];
-		clp [3, 0] = array[3];
-		clp [3, 1] = array[7];
-		clp [3, 2] = array[11];
-		clp [3, 3] = array[15];
+		var mat = new Matrix4x4 ();
+		mat.m00 = array[0];
+		mat.m01 = array[1];
+		mat.m02 = array[2];
+		mat.m03 = array[3];
+		mat.m10 = array[4];
+		mat.m11 = array[5];
+		mat.m12 = array[6];
+		mat.m13 = array[7];
+		mat.m20 = array[8];
+		mat.m21 = array[9];
+		mat.m22 = array[10];
+		mat.m23 = array[11];
+		mat.m30 = array[12];
+		mat.m31 = array[13];
+		mat.m32 = array[14];
+		mat.m33 = array[15];
+		return mat;
+	}
+	// view and projection matrix, sent via SendMessage from webvr.js
+	public void HMDLeftProjection(string numbersStr) {
+		clp = numbersStringToMatrix(numbersStr);
 	}
 
 	public void HMDRightProjection(string numbersStr) {
-		float[] array = numbersStr.Split(',').Select(float.Parse).ToArray();
-
-		crp [0, 0] = array[0];
-		crp [0, 1] = array[4];
-		crp [0, 2] = array[8];
-		crp [0, 3] = array[12];
-		crp [1, 0] = array[1];
-		crp [1, 1] = array[5];
-		crp [1, 2] = array[9];
-		crp [1, 3] = array[13];
-		crp [2, 0] = array[2];
-		crp [2, 1] = array[6];
-		crp [2, 2] = array[10];
-		crp [2, 3] = array[14];
-		crp [3, 0] = array[3];
-		crp [3, 1] = array[7];
-		crp [3, 2] = array[11];
-		crp [3, 3] = array[15];
+		crp = numbersStringToMatrix(numbersStr);
 	}
 
 	public void HMDLeftView(string numbersStr) {
-		float[] array = numbersStr.Split(',').Select(float.Parse).ToArray();
-
-		clv [0, 0] = array[0];
-		clv [0, 1] = array[4];
-		clv [0, 2] = array[8];
-		clv [0, 3] = array[12];
-		clv [1, 0] = array[1];
-		clv [1, 1] = array[5];
-		clv [1, 2] = array[9];
-		clv [1, 3] = array[13];
-		clv [2, 0] = array[2];
-		clv [2, 1] = array[6];
-		clv [2, 2] = array[10];
-		clv [2, 3] = array[14];
-		clv [3, 0] = array[3];
-		clv [3, 1] = array[7];
-		clv [3, 2] = array[11];
-		clv [3, 3] = array[15];
+		clv = numbersStringToMatrix(numbersStr);
 	}
 
 	public void HMDRightView(string numbersStr) {
-		float[] array = numbersStr.Split(',').Select(float.Parse).ToArray();
-
-		crv [0, 0] = array[0];
-		crv [0, 1] = array[4];
-		crv [0, 2] = array[8];
-		crv [0, 3] = array[12];
-		crv [1, 0] = array[1];
-		crv [1, 1] = array[5];
-		crv [1, 2] = array[9];
-		crv [1, 3] = array[13];
-		crv [2, 0] = array[2];
-		crv [2, 1] = array[6];
-		crv [2, 2] = array[10];
-		crv [2, 3] = array[14];
-		crv [3, 0] = array[3];
-		crv [3, 1] = array[7];
-		crv [3, 2] = array[11];
-		crv [3, 3] = array[15];
+		crv = numbersStringToMatrix(numbersStr);
 	}
 
     //orientation of left hand, sent via SendMessage from webvr.js
@@ -153,7 +107,6 @@ public class WebVRCamera : MonoBehaviour
 		switch (mode)
 		{
 		case "normal":
-			Debug.Log (cameraMain.GetComponent<Camera> ().projectionMatrix);
 			cameraMain.GetComponent<Camera>().enabled = true;
 			cameraL.GetComponent<Camera>().enabled = false;
 			cameraR.GetComponent<Camera>().enabled = false;
@@ -174,8 +127,6 @@ public class WebVRCamera : MonoBehaviour
 
 		changeMode("normal");
 
-		cameraMain.projectionMatrix = cameraMain.projectionMatrix * Matrix4x4.Scale(new Vector3 (1, 1, 1));
-
        	FinishLoading();
     }
 
@@ -188,8 +139,6 @@ public class WebVRCamera : MonoBehaviour
 
         if (active == true)
         {
-			
-
             leftHandObj.transform.rotation = lhq;
             leftHandObj.transform.position = lhp;
 

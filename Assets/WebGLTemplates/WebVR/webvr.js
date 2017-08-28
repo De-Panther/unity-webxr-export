@@ -10,42 +10,50 @@
   var inVR = false;
   var vrSceneFrame, normalSceneFrame;
 
-  function vrAnimate() {
+  function transformMatrixToUnity(array, flipZ) {
+    if (flipZ) {
+      // flip z to work with Unity coordinates.
+      array[8] *= -1;
+      array[9] *= -1;
+      array[10] *= -1;
+      array[11] *= -1;
+    }
 
+    // transpose to Unity column major order.
+    var unityArray = new Float32Array(16);
+    unityArray[0] = array[0];
+    unityArray[1] = array[4];
+    unityArray[2] = array[8];
+    unityArray[3] = array[12];
+    unityArray[4] = array[1];
+    unityArray[5] = array[5];
+    unityArray[6] = array[9];
+    unityArray[7] = array[13];
+    unityArray[8] = array[2];
+    unityArray[9] = array[6];
+    unityArray[10] = array[10];
+    unityArray[11] = array[14];
+    unityArray[12] = array[3];
+    unityArray[13] = array[7];
+    unityArray[14] = array[11];
+    unityArray[15] = array[15];
+
+    return unityArray;
+  }
+
+  function vrAnimate() {
     //request the next frame of the animation
     vrSceneFrame = display.requestAnimationFrame(vrAnimate);
-
-    // if(display.isPresenting)
-    //    console.log("thinks it's showing something in the HMD");
-    //   else
-    //    console.log("not showing anything in the HMD");
-
-    // You can get the position, orientation, etc. of the display from the current frame's pose
-    // curFramePose is a VRPose object
     frameData = new VRFrameData();
     display.getFrameData(frameData);
     var curFramePose = frameData.pose;
     var curPos = curFramePose.position;
     var curOrient = curFramePose.orientation;
 
-    var leftProjectionMatrix = frameData.leftProjectionMatrix;
-    var rightProjectionMatrix = frameData.rightProjectionMatrix;
-    var leftViewMatrix = frameData.leftViewMatrix;
-    var rightViewMatrix = frameData.rightViewMatrix;
-
-    leftViewMatrix[8] *= -1;
-    leftViewMatrix[9] *= -1;
-    leftViewMatrix[10] *= -1;
-    leftViewMatrix[11] *= -1;
-
-    rightViewMatrix[8] *= -1;
-    rightViewMatrix[9] *= -1;
-    rightViewMatrix[10] *= -1;
-    rightViewMatrix[11] *= -1;
-
-    // prepare and feed into Unity's
-    // Camera.worldToCameraMatrix
-    // Camera.projectionMatrix
+    var leftProjectionMatrix = transformMatrixToUnity(frameData.leftProjectionMatrix, false);
+    var rightProjectionMatrix = transformMatrixToUnity(frameData.rightProjectionMatrix, false);
+    var leftViewMatrix = transformMatrixToUnity(frameData.leftViewMatrix, true);
+    var rightViewMatrix = transformMatrixToUnity(frameData.rightViewMatrix, true);
 
     gameInstance.SendMessage('WebVRCameraSet', 'HMDLeftProjection', leftProjectionMatrix.join());
     gameInstance.SendMessage('WebVRCameraSet', 'HMDLeftView', leftViewMatrix.join());
