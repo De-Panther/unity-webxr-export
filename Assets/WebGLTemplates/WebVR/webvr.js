@@ -52,21 +52,6 @@
     gameInstance.SendMessage('WebVRCameraSet', 'HMDRightProjection', rightProjectionMatrix.join());
     gameInstance.SendMessage('WebVRCameraSet', 'HMDRightView', rightViewMatrix.join());
 
-    //send HMD position and rotation to Unity
-    // if(curOrient != null)
-    // {
-   //    gameInstance.SendMessage('WebVRCameraSet', 'HMDTiltX', -curOrient[0]);
-   //    gameInstance.SendMessage('WebVRCameraSet', 'HMDTiltY', -curOrient[1]);
-   //    gameInstance.SendMessage('WebVRCameraSet', 'HMDTiltZ', curOrient[2]);
-   //    gameInstance.SendMessage('WebVRCameraSet', 'HMDTiltW', curOrient[3]);
-    // }
-    // if(curPos != null)
-    // {
-    //  gameInstance.SendMessage('WebVRCameraSet', 'HMDPosX', curPos[0]);
-    //  gameInstance.SendMessage('WebVRCameraSet', 'HMDPosY', curPos[1]);
-    //  gameInstance.SendMessage('WebVRCameraSet', 'HMDPosZ', -curPos[2]);
-    // }
-
     if(leftHand != null)
       if(leftHand.pose.hasPosition)//send left hand position to Unity
       {

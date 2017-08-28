@@ -113,17 +113,6 @@ public class WebVRCamera : MonoBehaviour
 		crv [3, 3] = array[15];
 	}
 
-    //orientation of HMD, sent via SendMessage from webvr.js
-    public void HMDTiltW(float w) { cq.w = w; }
-    public void HMDTiltX(float x) { cq.x = x; }
-    public void HMDTiltY(float y) { cq.y = y; }
-    public void HMDTiltZ(float z) { cq.z = z; }
-
-    //position of HMD, sent via SendMessage from webvr.js
-    public void HMDPosX(float x) { cp.x = x; }
-    public void HMDPosY(float y) { cp.y = y; }
-    public void HMDPosZ(float z) { cp.z = z; }
-
     //orientation of left hand, sent via SendMessage from webvr.js
     public void LHTiltW(float w) { lhq.w = w; }
     public void LHTiltX(float x) { lhq.x = x; }
@@ -199,8 +188,7 @@ public class WebVRCamera : MonoBehaviour
 
         if (active == true)
         {
-//			transform.rotation = cq;
-//			transform.localPosition = cp;
+			
 
             leftHandObj.transform.rotation = lhq;
             leftHandObj.transform.position = lhp;
