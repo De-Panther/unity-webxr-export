@@ -21,6 +21,7 @@ public class WebVRCamera : MonoBehaviour
 	Matrix4x4 crp = new Matrix4x4();
 	Matrix4x4 crv = new Matrix4x4();
 
+
     bool active = false;
     private Vector3 rotation;
 
@@ -48,26 +49,7 @@ public class WebVRCamera : MonoBehaviour
 		clp [3, 2] = array[11];
 		clp [3, 3] = array[15];
 	}
-	public void HMDLeftView(string numbersStr) {
-		float[] array = numbersStr.Split(',').Select(float.Parse).ToArray();
 
-		clv [0, 0] = array[0];
-		clv [0, 1] = array[4];
-		clv [0, 2] = array[8];
-		clv [0, 3] = array[12];
-		clv [1, 0] = array[1];
-		clv [1, 1] = array[5];
-		clv [1, 2] = array[9];
-		clv [1, 3] = array[13];
-		clv [2, 0] = array[2];
-		clv [2, 1] = array[6];
-		clv [2, 2] = array[10];
-		clv [2, 3] = array[14];
-		clv [3, 0] = array[3];
-		clv [3, 1] = array[7];
-		clv [3, 2] = array[11];
-		clv [3, 3] = array[15];
-	}
 	public void HMDRightProjection(string numbersStr) {
 		float[] array = numbersStr.Split(',').Select(float.Parse).ToArray();
 
@@ -88,6 +70,28 @@ public class WebVRCamera : MonoBehaviour
 		crp [3, 2] = array[11];
 		crp [3, 3] = array[15];
 	}
+
+	public void HMDLeftView(string numbersStr) {
+		float[] array = numbersStr.Split(',').Select(float.Parse).ToArray();
+
+		clv [0, 0] = array[0];
+		clv [0, 1] = array[4];
+		clv [0, 2] = array[8];
+		clv [0, 3] = array[12];
+		clv [1, 0] = array[1];
+		clv [1, 1] = array[5];
+		clv [1, 2] = array[9];
+		clv [1, 3] = array[13];
+		clv [2, 0] = array[2];
+		clv [2, 1] = array[6];
+		clv [2, 2] = array[10];
+		clv [2, 3] = array[14];
+		clv [3, 0] = array[3];
+		clv [3, 1] = array[7];
+		clv [3, 2] = array[11];
+		clv [3, 3] = array[15];
+	}
+
 	public void HMDRightView(string numbersStr) {
 		float[] array = numbersStr.Split(',').Select(float.Parse).ToArray();
 
@@ -148,12 +152,19 @@ public class WebVRCamera : MonoBehaviour
         active = true;
     }
 
+	void toggleMode() {
+		active = active == true ? false : true;
+		string mode = active == true ? "vr" : "normal";
+		changeMode (mode);
+	}
+
 	void changeMode(string mode)
 	{
 		Debug.Log("Switching to " + mode);
 		switch (mode)
 		{
 		case "normal":
+			Debug.Log (cameraMain.GetComponent<Camera> ().projectionMatrix);
 			cameraMain.GetComponent<Camera>().enabled = true;
 			cameraL.GetComponent<Camera>().enabled = false;
 			cameraR.GetComponent<Camera>().enabled = false;
@@ -172,18 +183,24 @@ public class WebVRCamera : MonoBehaviour
 		cameraL = GameObject.Find("CameraL").GetComponent<Camera>();
 		cameraR = GameObject.Find("CameraR").GetComponent<Camera>();
 
-		changeMode("vr");
+		changeMode("normal");
+
+		cameraMain.projectionMatrix = cameraMain.projectionMatrix * Matrix4x4.Scale(new Vector3 (1, 1, 1));
 
        	FinishLoading();
     }
 
     void Update()
     {
+		if (Input.GetKeyDown("space")) {
+			toggleMode ();
+		}
+
 
         if (active == true)
         {
-			transform.rotation = cq;
-			transform.localPosition = cp;
+//			transform.rotation = cq;
+//			transform.localPosition = cp;
 
             leftHandObj.transform.rotation = lhq;
             leftHandObj.transform.position = lhp;
@@ -191,11 +208,11 @@ public class WebVRCamera : MonoBehaviour
             rightHandObj.transform.rotation = rhq;
             rightHandObj.transform.position = rhp;
 
-			cameraL.projectionMatrix = clp;
 			cameraL.worldToCameraMatrix = clv;
+			cameraL.projectionMatrix = clp;
 
-			cameraR.projectionMatrix = crp;
 			cameraR.worldToCameraMatrix = crv;
+			cameraR.projectionMatrix = crp;
         }
     }
 }
