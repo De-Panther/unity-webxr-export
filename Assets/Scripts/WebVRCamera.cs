@@ -16,11 +16,10 @@ public class WebVRCamera : MonoBehaviour
     Vector3 cp;
     Vector3 lhp;
     Vector3 rhp;
-	Matrix4x4 clp = new Matrix4x4();
-	Matrix4x4 clv = new Matrix4x4();
-	Matrix4x4 crp = new Matrix4x4();
-	Matrix4x4 crv = new Matrix4x4();
-
+	Matrix4x4 clp = Matrix4x4.identity;
+	Matrix4x4 clv = Matrix4x4.identity;
+	Matrix4x4 crp = Matrix4x4.identity;
+	Matrix4x4 crv = Matrix4x4.identity;
 
     bool active = false;
     private Vector3 rotation;
@@ -104,6 +103,7 @@ public class WebVRCamera : MonoBehaviour
 	void changeMode(string mode)
 	{
 		Debug.Log("Switching to " + mode);
+
 		switch (mode)
 		{
 		case "normal":
@@ -139,17 +139,19 @@ public class WebVRCamera : MonoBehaviour
 
         if (active == true)
         {
-            leftHandObj.transform.rotation = lhq;
+			leftHandObj.transform.rotation = lhq;
             leftHandObj.transform.position = lhp;
 
             rightHandObj.transform.rotation = rhq;
             rightHandObj.transform.position = rhp;
 
-			cameraL.worldToCameraMatrix = clv;
-			cameraL.projectionMatrix = clp;
+			if (!clv.isIdentity || !clp.isIdentity || !crv.isIdentity || !crp.isIdentity) {
+				cameraL.worldToCameraMatrix = clv;
+				cameraL.projectionMatrix = clp;
+				cameraR.worldToCameraMatrix = crv;
+				cameraR.projectionMatrix = crp;
+			}
 
-			cameraR.worldToCameraMatrix = crv;
-			cameraR.projectionMatrix = crp;
         }
     }
 }
