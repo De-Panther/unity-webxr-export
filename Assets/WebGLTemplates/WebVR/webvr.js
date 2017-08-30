@@ -1,15 +1,88 @@
 (function () {
   'use strict';
 
-  var display = null,
-    canvas = null,
-    frameData = null,
-    leftHand = null,
-    rightHand = null,
-    loader = null;
+  var display = null;
+  var canvas = null;
+  var frameData = null;
+  var leftHand = null;
+  var rightHand = null;
+  var loader = null;
   var inVR = false;
   var vrSceneFrame, normalSceneFrame;
+  var entervrButton = document.querySelector('#entervr');
 
+
+  function initVR(displays) {
+    if (displays.length > 0) {
+      display = displays[0];
+
+      console.log('vrDisplay', display);
+
+      window.addEventListener('resize', handleResize, true);
+      handleResize();
+
+      if (display.capabilities.canPresent) {
+        entervrButton.style.display = 'block';
+      }
+
+      vrAnimate();
+    }
+  }
+
+  // waits for messages back from unity.
+  function handleUnity(msg) {
+    if (msg.detail === "Ready") {
+      console.log('Unity Ready.');
+      canvas = document.getElementById('canvas');
+      loader = document.getElementById('loader');
+
+      gameInstance.SendMessage('WebVRCameraSet', 'Begin');
+
+      loader.style.display = 'none';
+      if (navigator.getVRDisplays) {
+        navigator.getVRDisplays().then(initVR);
+      } else {
+        console.log('Your browser does not support WebVR!');
+      }
+    }
+  }
+
+  // listen for any messages from Unity.
+  document.addEventListener('Unity', handleUnity);
+
+  function handleResize() {
+    if (!canvas) {
+      canvas = document.getElementsByTagName('canvas')[0];
+    }
+    // should resize to eye rects for VR.
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  entervrButton.addEventListener('click', function () {
+    inVR = inVR === false ? true : false;
+    if (inVR) {
+      display.requestPresent([{ source: canvas }]).then(function() {
+        console.log('Presenting to WebVR display');
+
+        var leftEye = display.getEyeParameters('left');
+        var rightEye = display.getEyeParameters('right');
+
+        canvas.width = Math.max(leftEye.renderWidth, rightEye.renderWidth) * 2;
+        canvas.height = Math.max(leftEye.renderHeight, rightEye.renderHeight);  
+      });
+    } else {
+      display.exitPresent();
+      console.log('Stopped presenting to WebVR display');
+
+      handleResize();
+
+        // Stop the VR presentation, and start the normal presentation
+      display.cancelAnimationFrame(vrSceneFrame);
+    }
+  })
+
+  // transforms webGL matrix for use in Unity.
   function transformMatrixToUnity(array, flipZ) {
     if (flipZ) {
       // flip z to work with Unity coordinates.
@@ -95,43 +168,9 @@
     display.submitFrame();
   }
 
-  function initVR(displays) {
-    if (displays.length > 0) {
-      display = displays[0];
 
-    window.addEventListener('resize', handleResize, true);
-    handleResize();
+  
 
-    //vrAnimate();
-    }
-  }
-
-  function handleResize() {
-    if (!canvas) {
-      canvas = document.getElementsByTagName('canvas')[0];
-    }
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
-
-  function handleUnity(msg) {
-    if (msg.detail === "Ready") {
-      canvas = document.getElementById('canvas');
-      loader = document.getElementById('loader');
-
-      //initWebGL(canvas);
-
-      gameInstance.SendMessage('WebVRCameraSet', 'Begin');
-
-      loader.style.display = 'none';
-
-      navigator.getVRDisplays().then(initVR);
-    }
-  }
-
-
-  // listen for any messages from Unity.
-  document.addEventListener('Unity', handleUnity);
 
   window.addEventListener("gamepadconnected", function(e) {
   var gpArr = navigator.getGamepads();
@@ -154,46 +193,5 @@
     }
   }
   });
-
-  document.onkeydown = getKey;
-  function getKey(e)
-  {
-    console.log("the keycode is "+e.keyCode);
-    if(e.keyCode == "86")
-    {
-      console.log("pressed v, entering VR");
-      if(!inVR) {
-        inVR = true;
-        display.requestPresent([{ source: canvas }]).then(function() {
-        console.log('Presenting to WebVR display');
-
-        // Set the canvas size to the size of the vrDisplay viewport
-
-        var leftEye = display.getEyeParameters('left');
-        var rightEye = display.getEyeParameters('right');
-
-        canvas.width = Math.max(leftEye.renderWidth, rightEye.renderWidth) * 2;
-        canvas.height = Math.max(leftEye.renderHeight, rightEye.renderHeight);
-
-        // stop the normal presentation, and start the vr presentation
-        //window.cancelAnimationFrame(normalSceneFrame);
-        //drawVRScene();
-        vrAnimate();
-        //btn.textContent = 'Exit VR display';
-        });
-      }
-      else {
-        display.exitPresent();
-        console.log('Stopped presenting to WebVR display');
-        inVR = false;
-        //btn.textContent = 'Start VR display';
-
-        handleResize();
-
-        // Stop the VR presentation, and start the normal presentation
-        display.cancelAnimationFrame(vrSceneFrame);
-      }
-    }
-  }
 
 })();

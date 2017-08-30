@@ -20,8 +20,18 @@
   <div id="loader">
     <p>Loading...</p>
   </div>
+
   <div id="gameContainer"></div>
-  <script src="webvr-polyfill.js"></script>
+
+  <button id="entervr" value="Enter VR"></button>
+  <script>
+    var WebVRConfig = {
+      // Polyfill optimizations
+      DIRTY_SUBMIT_FRAME_BINDINGS: true,
+      BUFFER_SCALE: 0.75,
+    };
+  </script>
+  <script src="webvr-polyfill.min.js"></script>
   <script src="webvr.js"></script>
 </body>
 

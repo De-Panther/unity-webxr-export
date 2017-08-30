@@ -91,7 +91,6 @@ public class WebVRCamera : MonoBehaviour
     public void Begin()
     {
 		changeMode("vr");
-        active = true;
     }
 
 	void toggleMode() {
@@ -107,14 +106,16 @@ public class WebVRCamera : MonoBehaviour
 		switch (mode)
 		{
 		case "normal":
-			cameraMain.GetComponent<Camera>().enabled = true;
-			cameraL.GetComponent<Camera>().enabled = false;
-			cameraR.GetComponent<Camera>().enabled = false;
+			cameraMain.GetComponent<Camera> ().enabled = true;
+			cameraL.GetComponent<Camera> ().enabled = false;
+			cameraR.GetComponent<Camera> ().enabled = false;
+			active = false;
 			break;
 		case "vr":
 			cameraMain.GetComponent<Camera>().enabled = false;
 			cameraL.GetComponent<Camera>().enabled = true;
 			cameraR.GetComponent<Camera>().enabled = true;
+			active = true;
 			break;
 		}
 	}
@@ -132,11 +133,6 @@ public class WebVRCamera : MonoBehaviour
 
     void Update()
     {
-		if (Input.GetKeyDown("space")) {
-			toggleMode ();
-		}
-
-
         if (active == true)
         {
 			leftHandObj.transform.rotation = lhq;
