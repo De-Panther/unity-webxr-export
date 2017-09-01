@@ -45,6 +45,17 @@
         console.log('Your browser does not support WebVR!');
       }
     }
+
+    if (msg.detail === "Timer") {
+      var delta = performance.now() - testTimeStart;
+      console.log('return time (ms): ',delta);
+      testTimeStart = null;
+    }
+
+    if (msg.detail === "PostRender" && display) {
+      // WebVR: Indicate that we are ready to present the rendered frame to the VR display
+      display.submitFrame();
+    }
   }
 
   // listen for any messages from Unity.
@@ -76,9 +87,6 @@
       console.log('Stopped presenting to WebVR display');
 
       handleResize();
-
-        // Stop the VR presentation, and start the normal presentation
-      display.cancelAnimationFrame(vrSceneFrame);
     }
   })
 
@@ -163,14 +171,20 @@
         gameInstance.SendMessage('WebVRCameraSet', 'RHPosY', rightPos[1]);
         gameInstance.SendMessage('WebVRCameraSet', 'RHPosZ', -rightPos[2]);
       }
-
-    // WebVR: Indicate that we are ready to present the rendered frame to the VR display
-    display.submitFrame();
   }
 
-
-  
-
+  document.onkeydown = getKey;
+  var testTimeStart = null;
+  function getKey(e)
+  {
+    console.log("the keycode is "+e.keyCode);
+    if(e.keyCode == "86") //v
+    {
+      console.log("pressed v, roundtrip time");
+      testTimeStart = performance.now();
+      gameInstance.SendMessage('WebVRCameraSet', 'TestTime');
+    }
+  }
 
   window.addEventListener("gamepadconnected", function(e) {
   var gpArr = navigator.getGamepads();

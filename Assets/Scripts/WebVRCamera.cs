@@ -8,6 +8,12 @@ public class WebVRCamera : MonoBehaviour
     [DllImport("__Internal")]
     private static extern void FinishLoading();
 
+	[DllImport("__Internal")]
+	private static extern void TestTimeReturn();
+
+	[DllImport("__Internal")]
+	private static extern void PostRender();
+
 	Camera cameraMain, cameraL, cameraR;
 
     Quaternion cq;
@@ -49,6 +55,20 @@ public class WebVRCamera : MonoBehaviour
 		mat.m33 = array[15];
 		return mat;
 	}
+
+	// time tester
+	public void TestTime() {
+		Debug.Log ("Time tester received in Unity");
+		TestTimeReturn ();
+	}
+
+	// Send post render update so we can submitFrame to vrDisplay.
+	private IEnumerator endOfFrame()
+	{
+		yield return new WaitForEndOfFrame();
+		PostRender ();
+	}
+
 	// view and projection matrix, sent via SendMessage from webvr.js
 	public void HMDLeftProjection(string numbersStr) {
 		clp = numbersStringToMatrix(numbersStr);
@@ -119,7 +139,7 @@ public class WebVRCamera : MonoBehaviour
 			break;
 		}
 	}
-
+		
     void Start()
     {
 		cameraMain = GameObject.Find("CameraMain").GetComponent<Camera>();
@@ -131,8 +151,11 @@ public class WebVRCamera : MonoBehaviour
        	FinishLoading();
     }
 
+
+
     void Update()
     {
+			
         if (active == true)
         {
 			leftHandObj.transform.rotation = lhq;
@@ -147,7 +170,7 @@ public class WebVRCamera : MonoBehaviour
 				cameraR.worldToCameraMatrix = crv;
 				cameraR.projectionMatrix = crp;
 			}
-
         }
+		StartCoroutine(endOfFrame());
     }
 }
