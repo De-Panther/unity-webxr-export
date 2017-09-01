@@ -1,3 +1,9 @@
+var WebVRConfig = {
+  // Polyfill optimizations
+  DIRTY_SUBMIT_FRAME_BINDINGS: true,
+  BUFFER_SCALE: 0.75,
+};
+
 (function () {
   'use strict';
 
