@@ -4,11 +4,29 @@ mergeInto(LibraryManager.library, {
     document.dispatchEvent(new CustomEvent('Unity', {detail: 'Ready'}));
   },
 
-  TestTimeReturn: function () {
+  TestTimeReturn: function (texture) {
     document.dispatchEvent(new CustomEvent('Unity', {detail: 'Timer'}));
+    // console.log('binding texture');
+    // GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[texture]);
   },
 
-  PostRender: function () {
-    document.dispatchEvent(new CustomEvent('Unity', {detail: 'PostRender'}));
-  }
+  // PostRender: function () {
+  //   document.dispatchEvent(new CustomEvent('Unity', {detail: 'PostRender'}));
+  // }
 });
+
+// mergeInto(LibraryManager.library, {
+//   InitJavaScriptSharedArray: function(byteOffset, length) {
+//     JavaScriptSharedArray = new Float32Array(buffer, byteOffset, length);
+//   },
+
+//   InitJavaScriptSharedArrayButtons: function() {
+//     for(var i = 0; i < JavaScriptSharedArray.length; i++) {
+//       var button = document.createElement('button');
+//       button.index = i;
+//       button.innerHTML = i;
+//       button.onclick = function() { JavaScriptSharedArrayIncrement(this.index); }
+//         document.body.appendChild(button);
+//     }
+//   }
+// });

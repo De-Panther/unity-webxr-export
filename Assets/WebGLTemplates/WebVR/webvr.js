@@ -1,11 +1,7 @@
-var WebVRConfig = {
-  // Polyfill optimizations
-  DIRTY_SUBMIT_FRAME_BINDINGS: true,
-  BUFFER_SCALE: 0.75,
-};
-
 (function () {
   'use strict';
+
+  console.log(">>> yo hey!");
 
   var display = null;
   var canvas = null;
@@ -60,7 +56,7 @@ var WebVRConfig = {
 
     if (msg.detail === "PostRender" && display) {
       // WebVR: Indicate that we are ready to present the rendered frame to the VR display
-      display.submitFrame();
+      // display.submitFrame();
     }
   }
 
@@ -142,41 +138,48 @@ var WebVRConfig = {
     var leftViewMatrix = transformMatrixToUnity(frameData.leftViewMatrix, true);
     var rightViewMatrix = transformMatrixToUnity(frameData.rightViewMatrix, true);
 
-    gameInstance.SendMessage('WebVRCameraSet', 'HMDLeftProjection', leftProjectionMatrix.join());
-    gameInstance.SendMessage('WebVRCameraSet', 'HMDLeftView', leftViewMatrix.join());
-    gameInstance.SendMessage('WebVRCameraSet', 'HMDRightProjection', rightProjectionMatrix.join());
-    gameInstance.SendMessage('WebVRCameraSet', 'HMDRightView', rightViewMatrix.join());
+    var leftMatrix = leftProjectionMatrix.concat(leftViewMatrix);
+    var rightMatrix = rightProjectionMatrix.concat(rightViewMatrix);
+    var hmdMatrix = leftMatrix.concat(rightMatrix);
 
-    if(leftHand != null)
-      if(leftHand.pose.hasPosition)//send left hand position to Unity
-      {
-        // console.log("left hand rotation = " + leftHand.pose.orientation);
-        var leftPose = leftHand.pose;
-        var leftPos = leftPose.position;
-        var leftOrient = leftPose.orientation;
-        gameInstance.SendMessage('WebVRCameraSet', 'LHTiltX', -leftOrient[0]);
-        gameInstance.SendMessage('WebVRCameraSet', 'LHTiltY', -leftOrient[1]);
-        gameInstance.SendMessage('WebVRCameraSet', 'LHTiltZ', leftOrient[2]);
-        gameInstance.SendMessage('WebVRCameraSet', 'LHTiltW', leftOrient[3]);
-        gameInstance.SendMessage('WebVRCameraSet', 'LHPosX', leftPos[0]);
-        gameInstance.SendMessage('WebVRCameraSet', 'LHPosY', leftPos[1]);
-        gameInstance.SendMessage('WebVRCameraSet', 'LHPosZ', -leftPos[2]);
-      }
-    if(rightHand != null)
-      if(rightHand.pose.hasPosition)//send right hand position to Unity
-      {
-        //console.log("right hand position = "+rightHand.pose.position);
-        var rightPose = rightHand.pose;
-        var rightPos = rightPose.position;
-        var rightOrient = rightPose.orientation;
-        gameInstance.SendMessage('WebVRCameraSet', 'RHTiltX', -rightOrient[0]);
-        gameInstance.SendMessage('WebVRCameraSet', 'RHTiltY', -rightOrient[1]);
-        gameInstance.SendMessage('WebVRCameraSet', 'RHTiltZ', rightOrient[2]);
-        gameInstance.SendMessage('WebVRCameraSet', 'RHTiltW', rightOrient[3]);
-        gameInstance.SendMessage('WebVRCameraSet', 'RHPosX', rightPos[0]);
-        gameInstance.SendMessage('WebVRCameraSet', 'RHPosY', rightPos[1]);
-        gameInstance.SendMessage('WebVRCameraSet', 'RHPosZ', -rightPos[2]);
-      }
+    gameInstance.SendMessage('WebVRCameraSet', 'HMDViewProjection', hmdMatrix.join());
+
+    // gameInstance.SendMessage('WebVRCameraSet', 'HMDLeftProjection', leftProjectionMatrix.join());
+    // gameInstance.SendMessage('WebVRCameraSet', 'HMDLeftView', leftViewMatrix.join());
+    // gameInstance.SendMessage('WebVRCameraSet', 'HMDRightProjection', rightProjectionMatrix.join());
+    // gameInstance.SendMessage('WebVRCameraSet', 'HMDRightView', rightViewMatrix.join());
+
+    // if(leftHand != null)
+    //   if(leftHand.pose.hasPosition)//send left hand position to Unity
+    //   {
+    //     // console.log("left hand rotation = " + leftHand.pose.orientation);
+    //     var leftPose = leftHand.pose;
+    //     var leftPos = leftPose.position;
+    //     var leftOrient = leftPose.orientation;
+    //     gameInstance.SendMessage('WebVRCameraSet', 'LHTiltX', -leftOrient[0]);
+    //     gameInstance.SendMessage('WebVRCameraSet', 'LHTiltY', -leftOrient[1]);
+    //     gameInstance.SendMessage('WebVRCameraSet', 'LHTiltZ', leftOrient[2]);
+    //     gameInstance.SendMessage('WebVRCameraSet', 'LHTiltW', leftOrient[3]);
+    //     gameInstance.SendMessage('WebVRCameraSet', 'LHPosX', leftPos[0]);
+    //     gameInstance.SendMessage('WebVRCameraSet', 'LHPosY', leftPos[1]);
+    //     gameInstance.SendMessage('WebVRCameraSet', 'LHPosZ', -leftPos[2]);
+    //   }
+    // if(rightHand != null)
+    //   if(rightHand.pose.hasPosition)//send right hand position to Unity
+    //   {
+    //     //console.log("right hand position = "+rightHand.pose.position);
+    //     var rightPose = rightHand.pose;
+    //     var rightPos = rightPose.position;
+    //     var rightOrient = rightPose.orientation;
+    //     gameInstance.SendMessage('WebVRCameraSet', 'RHTiltX', -rightOrient[0]);
+    //     gameInstance.SendMessage('WebVRCameraSet', 'RHTiltY', -rightOrient[1]);
+    //     gameInstance.SendMessage('WebVRCameraSet', 'RHTiltZ', rightOrient[2]);
+    //     gameInstance.SendMessage('WebVRCameraSet', 'RHTiltW', rightOrient[3]);
+    //     gameInstance.SendMessage('WebVRCameraSet', 'RHPosX', rightPos[0]);
+    //     gameInstance.SendMessage('WebVRCameraSet', 'RHPosY', rightPos[1]);
+    //     gameInstance.SendMessage('WebVRCameraSet', 'RHPosZ', -rightPos[2]);
+    //   }
+    if (display) display.submitFrame();
   }
 
   document.onkeydown = getKey;
@@ -184,12 +187,12 @@ var WebVRConfig = {
   function getKey(e)
   {
     console.log("the keycode is "+e.keyCode);
-    if(e.keyCode == "86") //v
-    {
-      console.log("pressed v, roundtrip time");
-      testTimeStart = performance.now();
-      gameInstance.SendMessage('WebVRCameraSet', 'TestTime');
-    }
+    // if(e.keyCode == "86") //v
+    // {
+    //   console.log("pressed v, roundtrip time");
+    //   testTimeStart = performance.now();
+    //   gameInstance.SendMessage('WebVRCameraSet', 'TestTime');
+    // }
   }
 
   window.addEventListener("gamepadconnected", function(e) {
