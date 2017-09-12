@@ -42,7 +42,7 @@ html, body, #canvas, #loader {
 }
 
 #entervr {
-  display: none;
+  /*display: none;*/
   position: absolute;
   right: 10px;
   bottom: 10px;

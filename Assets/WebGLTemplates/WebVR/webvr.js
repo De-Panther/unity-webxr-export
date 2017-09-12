@@ -13,6 +13,26 @@
   var vrSceneFrame, normalSceneFrame;
   var entervrButton = document.querySelector('#entervr');
 
+  var raf = window.requestAnimationFrame;
+
+  // shim raf so that we can
+  window.requestAnimationFrame = function(cb) {
+    if (inVR && display) {
+      if (!display.capabilities.canPresent) {
+        return window.setTimeout(cb, 1000 / 10);
+      } else {
+        return daf(cb);
+      }
+    } else {
+      return raf(cb);
+    }
+  }
+
+  document.onkeydown = function(e) {
+    if (e.keyCode === 65) { // a
+      inVR = inVR ? false : true;
+    }
+  };
 
   function initVR(displays) {
     if (displays.length > 0) {
@@ -74,7 +94,8 @@
 
   entervrButton.addEventListener('click', function () {
     inVR = inVR === false ? true : false;
-    if (inVR) {
+    console.log('Enter VR');
+    if (inVR && display.capabilities.canPresent) {
       display.requestPresent([{ source: canvas }]).then(function() {
         console.log('Presenting to WebVR display');
 
@@ -82,10 +103,12 @@
         var rightEye = display.getEyeParameters('right');
 
         canvas.width = Math.max(leftEye.renderWidth, rightEye.renderWidth) * 2;
-        canvas.height = Math.max(leftEye.renderHeight, rightEye.renderHeight);  
+        canvas.height = Math.max(leftEye.renderHeight, rightEye.renderHeight);
       });
     } else {
-      display.exitPresent();
+      if (display.isPresenting) {
+        display.exitPresent();
+      }
       console.log('Stopped presenting to WebVR display');
 
       handleResize();
@@ -103,7 +126,7 @@
     }
 
     // transpose to Unity column major order.
-    var unityArray = new Float32Array(16);
+    var unityArray = new Array(16);
     unityArray[0] = array[0];
     unityArray[1] = array[4];
     unityArray[2] = array[8];
@@ -126,7 +149,7 @@
 
   function vrAnimate() {
     //request the next frame of the animation
-    vrSceneFrame = display.requestAnimationFrame(vrAnimate);
+    vrSceneFrame = window.requestAnimationFrame(vrAnimate);
     frameData = new VRFrameData();
     display.getFrameData(frameData);
     var curFramePose = frameData.pose;
@@ -182,18 +205,18 @@
     if (display) display.submitFrame();
   }
 
-  document.onkeydown = getKey;
+  // document.onkeydown = getKey;
   var testTimeStart = null;
-  function getKey(e)
-  {
-    console.log("the keycode is "+e.keyCode);
-    // if(e.keyCode == "86") //v
-    // {
-    //   console.log("pressed v, roundtrip time");
-    //   testTimeStart = performance.now();
-    //   gameInstance.SendMessage('WebVRCameraSet', 'TestTime');
-    // }
-  }
+  // function getKey(e)
+  // {
+  //   console.log("the keycode is "+e.keyCode);
+  //   // if(e.keyCode == "86") //v
+  //   // {
+  //   //   console.log("pressed v, roundtrip time");
+  //   //   testTimeStart = performance.now();
+  //   //   gameInstance.SendMessage('WebVRCameraSet', 'TestTime');
+  //   // }
+  // }
 
   window.addEventListener("gamepadconnected", function(e) {
   var gpArr = navigator.getGamepads();
