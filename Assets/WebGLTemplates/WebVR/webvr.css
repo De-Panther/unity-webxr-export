@@ -9,7 +9,7 @@
 
 html, body {
   overflow:hidden;
-}    
+}
 
 html, body, #canvas, #loader {
   margin: 0;
@@ -21,9 +21,7 @@ html, body, #canvas, #loader {
 }
 
 #loader {
-  background-image:url('vr.png');
-  background-repeat:repeat;
-  animation: colors 5s infinite;
+  background: #364360;
   position:absolute;
   z-index:99;
 }
@@ -41,4 +39,16 @@ html, body, #canvas, #loader {
   display: block;
   position: absolute;
   z-index:0;
+}
+
+#entervr {
+  /*display: none;*/
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  width: 200px;
+  height: 200px;
+  background: transparent;
+  border: none;
+  background-image: url('vr.png');
 }
