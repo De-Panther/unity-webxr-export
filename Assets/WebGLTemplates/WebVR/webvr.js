@@ -32,6 +32,14 @@
 
       console.log('vrDisplay', display);
 
+      if (display.stageParameters) {
+        var sitStand = transformMatrixToUnity(display.stageParameters.sittingToStandingTransform, false);
+        console.log('sitstand', sitStand);
+        gameInstance.SendMessage('WebVRCameraSet', 'HMDSittingToStandingTransform', sitStand.join());
+      } else {
+        console.log('no sit stand stage parms');
+      }
+
       window.addEventListener('resize', handleResize, true);
       handleResize();
 

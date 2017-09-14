@@ -24,6 +24,7 @@ public class WebVRCamera : MonoBehaviour
 	Matrix4x4 clv = Matrix4x4.identity;
 	Matrix4x4 crp = Matrix4x4.identity;
 	Matrix4x4 crv = Matrix4x4.identity;
+	Matrix4x4 sitStand = Matrix4x4.identity;
 
 	float deltaTime = 0.0f;
 
@@ -83,6 +84,12 @@ public class WebVRCamera : MonoBehaviour
 		crv = numbersToMatrix(array.Skip(16 * 3).Take (16).ToArray ());
 	}
 
+	public void HMDSittingToStandingTransform (string sitStandStr) {
+		float[] array = sitStandStr.Split(',').Select(float.Parse).ToArray();
+		Debug.Log("received sit stand transform");
+		sitStand = numbersToMatrix (array);
+		sitStand = sitStand.inverse;
+	}
 
     public void Begin()
     {
@@ -146,6 +153,12 @@ public class WebVRCamera : MonoBehaviour
 //
 //            rightHandObj.transform.rotation = rhq;
 //            rightHandObj.transform.position = rhp;
+
+
+			if (!sitStand.isIdentity) {
+				clv *= sitStand;
+				crv *= sitStand;
+			}
 
 			if (!clv.isIdentity || !clp.isIdentity || !crv.isIdentity || !crp.isIdentity) {
 				cameraL.worldToCameraMatrix = clv;
