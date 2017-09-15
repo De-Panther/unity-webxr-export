@@ -131,7 +131,9 @@ public class WebVRCamera : MonoBehaviour
 			mat.SetTRS (position, rotation, scale);
 //			mat *= sitStand;
 
-			Vector3 p = mat.GetColumn(3);
+
+			Vector3 p = sitStand.MultiplyPoint (mat.GetColumn(3));
+
 			Quaternion r = Quaternion.LookRotation(
 				mat.GetColumn(2),
 				mat.GetColumn(1)
