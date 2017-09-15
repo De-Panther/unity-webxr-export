@@ -34,10 +34,7 @@
 
       if (display.stageParameters) {
         var sitStand = transformMatrixToUnity(display.stageParameters.sittingToStandingTransform, false);
-        console.log('sitstand', sitStand);
         gameInstance.SendMessage('WebVRCameraSet', 'HMDSittingToStandingTransform', sitStand.join());
-      } else {
-        console.log('no sit stand stage parms');
       }
 
       window.addEventListener('resize', handleResize, true);
@@ -166,6 +163,28 @@
 
     gameInstance.SendMessage('WebVRCameraSet', 'HMDViewProjection', hmdMatrix.join());
 
+    var gamepads = navigator.getGamepads();
+    var vrGamepads = [];
+    for (var i = 0; i < gamepads.length; ++i) {
+      var gamepad = gamepads[i];
+      if (gamepad) {
+        if (gamepad.pose || gamepad.displayId) {
+          vrGamepads.push({
+            index: gamepad.index,
+            hand: gamepad.hand,
+            orientation: gamepad.pose.orientation.join(','),
+            position: gamepad.pose.position.join(',')
+          });
+        }
+      }
+    }
+
+    var controllerJson = JSON.stringify({
+      controllers: vrGamepads
+    });
+
+    gameInstance.SendMessage('WebVRCameraSet', 'VRGamepads', controllerJson);
+
     // if (display) display.submitFrame();
   }
 
@@ -182,26 +201,26 @@
     }
   }
 
-  window.addEventListener("gamepadconnected", function(e) {
-  var gpArr = navigator.getGamepads();
-  for(var i = 0; i < gpArr.length; i++)
-  {
-    //if we find a VR gamepad
-    if(gpArr[i].id == "OpenVR Gamepad")
-    {
-      //determine which hand it is (gamepad API gets them backwards)
-      if(gpArr[i].hand == "left")
-      {
-        rightHand = gpArr[i];
-        //console.log("got right hand, position = "+rightHand.pose.position);
-      }
-      else if(gpArr[i].hand == "right")
-      {
-        leftHand = gpArr[i];
-        //console.log("got left hand, position = "+leftHand.pose.position);
-      }
-    }
-  }
-  });
+  // window.addEventListener("gamepadconnected", function(e) {
+  // var gpArr = navigator.getGamepads();
+  // for(var i = 0; i < gpArr.length; i++)
+  //   {
+  //     //if we find a VR gamepad
+  //     if(gpArr[i].id == "OpenVR Gamepad")
+  //     {
+  //       //determine which hand it is (gamepad API gets them backwards)
+  //       if(gpArr[i].hand == "left")
+  //       {
+  //         rightHand = gpArr[i];
+  //         //console.log("got right hand, position = "+rightHand.pose.position);
+  //       }
+  //       else if(gpArr[i].hand == "right")
+  //       {
+  //         leftHand = gpArr[i];
+  //         //console.log("got left hand, position = "+leftHand.pose.position);
+  //       }
+  //     }
+  //   }
+  // });
 
 })();
