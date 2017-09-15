@@ -124,13 +124,25 @@ public class WebVRCamera : MonoBehaviour
 		foreach (Controller control in list.controllers) {
 			float[] pos = control.position.Split(',').Select(float.Parse).ToArray();
 			float[] rot = control.orientation.Split(',').Select(float.Parse).ToArray();
+			Vector3 position = new Vector3 (pos [0], pos [1], pos [2]);
+			Quaternion rotation = new Quaternion (rot [0], rot [1], rot [2], rot[3]);
+			Vector3 scale = new Vector3 (1, 1, 1);
+			Matrix4x4 mat = Matrix4x4.identity;
+			mat.SetTRS (position, rotation, scale);
+//			mat *= sitStand;
+
+			Vector3 p = mat.GetColumn(3);
+			Quaternion r = Quaternion.LookRotation(
+				mat.GetColumn(2),
+				mat.GetColumn(1)
+			);
 			if (control.hand == "left") {
-				lhp = new Vector3 (pos [0], pos [1], pos [3]);
-				lhr = new Quaternion (rot [0], rot [1], rot [3], rot[4]);
+				lhp = p;
+				lhr = r;
 			}
 			if (control.hand == "right") {
-				rhp = new Vector3 (pos [0], pos [1], pos [3]);
-				rhr = new Quaternion (rot [0], rot [1], rot [3], rot[4]);
+				rhp = p;
+				rhr = r;
 			}
 		}			
 	}
@@ -197,11 +209,10 @@ public class WebVRCamera : MonoBehaviour
 
         if (active == true)
         {
-			Vector3 trans = sitStand.GetColumn (3);
 			leftHandObj.transform.rotation = lhr;
-			leftHandObj.transform.position = lhp + trans;
+			leftHandObj.transform.position = lhp;
             rightHandObj.transform.rotation = rhr;
-			rightHandObj.transform.position = rhp + trans;
+			rightHandObj.transform.position = rhp;
 
 			if (!sitStand.isIdentity) {
 				clv *= sitStand.inverse;
