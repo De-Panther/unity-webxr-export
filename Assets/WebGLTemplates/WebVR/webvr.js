@@ -169,18 +169,20 @@
       var gamepad = gamepads[i];
       if (gamepad) {
         if (gamepad.pose || gamepad.displayId) {
-          var position = gamepad.pose.position;
-          position[2] *= -1;
-          var orientation = gamepad.pose.orientation;
-          orientation[0] *= -1;
-          orientation[1] *= -1;
+          if (gamepad.pose.position && gamepad.pose.orientation) {
+            var position = gamepad.pose.position;
+            position[2] *= -1;
+            var orientation = gamepad.pose.orientation;
+            orientation[0] *= -1;
+            orientation[1] *= -1;
 
-          vrGamepads.push({
-            index: gamepad.index,
-            hand: gamepad.hand,
-            orientation: orientation.join(','),
-            position: position.join(',')
-          });
+            vrGamepads.push({
+              index: gamepad.index,
+              hand: gamepad.hand,
+              orientation: orientation.join(','),
+              position: position.join(',')
+            });
+          }
         }
       }
     }
