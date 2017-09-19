@@ -126,25 +126,16 @@ public class WebVRCamera : MonoBehaviour
 			float[] rot = control.orientation.Split(',').Select(float.Parse).ToArray();
 			Vector3 position = new Vector3 (pos [0], pos [1], pos [2]);
 			Quaternion rotation = new Quaternion (rot [0], rot [1], rot [2], rot[3]);
-			Vector3 scale = new Vector3 (1, 1, 1);
-			Matrix4x4 mat = Matrix4x4.identity;
-			mat.SetTRS (position, rotation, scale);
-//			mat *= sitStand;
 
+			position = sitStand.MultiplyPoint (position);
 
-			Vector3 p = sitStand.MultiplyPoint (mat.GetColumn(3));
-
-			Quaternion r = Quaternion.LookRotation(
-				mat.GetColumn(2),
-				mat.GetColumn(1)
-			);
 			if (control.hand == "left") {
-				lhp = p;
-				lhr = r;
+				lhp = position;
+				lhr = rotation;
 			}
 			if (control.hand == "right") {
-				rhp = p;
-				rhr = r;
+				rhp = position;
+				rhr = rotation;
 			}
 		}			
 	}
@@ -228,7 +219,11 @@ public class WebVRCamera : MonoBehaviour
 				cameraR.projectionMatrix = crp;
 			}
         }
+
+		#if !UNITY_EDITOR && UNITY_WEBGL
 		StartCoroutine(endOfFrame());
+		#endif
+
     }
 
 
