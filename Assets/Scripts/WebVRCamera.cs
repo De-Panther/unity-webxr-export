@@ -30,7 +30,6 @@ public class WebVRCamera : MonoBehaviour
 	Matrix4x4 crp = Matrix4x4.identity;
 	Matrix4x4 crv = Matrix4x4.identity;
 	Matrix4x4 sitStand = Matrix4x4.identity;
-
 	float deltaTime = 0.0f;
 
 
@@ -39,6 +38,7 @@ public class WebVRCamera : MonoBehaviour
 
     public GameObject leftHandObj;
     public GameObject rightHandObj;
+	public bool handControllers = false;
 
 	[System.Serializable]
 	public class Gamepads
@@ -121,6 +121,8 @@ public class WebVRCamera : MonoBehaviour
 	public void VRGamepads (string jsonString) {
 		Gamepads list = Gamepads.CreateFromJSON(jsonString);
 
+		handControllers = list.controllers.Length > 0 ? true : false;
+
 		foreach (Controller control in list.controllers) {
 			float[] pos = control.position.Split(',').Select(float.Parse).ToArray();
 			float[] rot = control.orientation.Split(',').Select(float.Parse).ToArray();
@@ -149,6 +151,11 @@ public class WebVRCamera : MonoBehaviour
     {
 		changeMode("vr");
     }
+
+	public void End()
+	{
+		changeMode("normal");
+	}
 
 	void toggleMode() {
 		active = active == true ? false : true;
@@ -185,7 +192,10 @@ public class WebVRCamera : MonoBehaviour
 
 		changeMode("normal");
 
-       	FinishLoading();
+		// set default height for experience.
+		sitStand = Matrix4x4.Translate (new Vector3 (0f, 1.2f, 0f));
+
+		FinishLoading();
     }
 
 
@@ -207,11 +217,11 @@ public class WebVRCamera : MonoBehaviour
             rightHandObj.transform.rotation = rhr;
 			rightHandObj.transform.position = rhp;
 
-			if (!sitStand.isIdentity) {
-				clv *= sitStand.inverse;
-				crv *= sitStand.inverse;
-			}
+			// apply sit stand transform
+			clv *= sitStand.inverse;
+			crv *= sitStand.inverse;
 
+			// apply camera projection and view matrices from webVR api.
 			if (!clv.isIdentity || !clp.isIdentity || !crv.isIdentity || !crp.isIdentity) {
 				cameraL.worldToCameraMatrix = clv;
 				cameraL.projectionMatrix = clp;

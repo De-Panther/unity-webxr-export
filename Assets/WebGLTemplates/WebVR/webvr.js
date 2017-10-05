@@ -40,9 +40,9 @@
       window.addEventListener('resize', handleResize, true);
       handleResize();
 
-      if (display.capabilities.canPresent) {
-        entervrButton.style.display = 'block';
-      }
+      // if (display.capabilities.canPresent) {
+      //   entervrButton.style.display = 'block';
+      // }
 
       vrAnimate();
     }
@@ -53,9 +53,6 @@
     if (msg.detail === "Ready") {
       canvas = document.getElementById('canvas');
       loader = document.getElementById('loader');
-
-      // starts stereo rendering in Unity.
-      gameInstance.SendMessage('WebVRCameraSet', 'Begin');
 
       loader.style.display = 'none';
       if (navigator.getVRDisplays) {
@@ -91,24 +88,35 @@
 
   entervrButton.addEventListener('click', function () {
     inVR = inVR === false ? true : false;
-    console.log('Enter VR');
-    if (inVR && display.capabilities.canPresent) {
-      display.requestPresent([{ source: canvas }]).then(function() {
-        console.log('Presenting to WebVR display');
+    if (inVR) {
 
-        var leftEye = display.getEyeParameters('left');
-        var rightEye = display.getEyeParameters('right');
+      if (display.capabilities.canPresent) {
+        display.requestPresent([{ source: canvas }]).then(function() {
+          console.log('Presenting to WebVR display');
 
-        canvas.width = Math.max(leftEye.renderWidth, rightEye.renderWidth) * 2;
-        canvas.height = Math.max(leftEye.renderHeight, rightEye.renderHeight);
-      });
+          var leftEye = display.getEyeParameters('left');
+          var rightEye = display.getEyeParameters('right');
+
+          canvas.width = Math.max(leftEye.renderWidth, rightEye.renderWidth) * 2;
+          canvas.height = Math.max(leftEye.renderHeight, rightEye.renderHeight);
+        });
+      }
+
+      // starts stereo rendering in Unity.
+      gameInstance.SendMessage('WebVRCameraSet', 'Begin');
+
+      console.log('Entering VR');
     } else {
       if (display.isPresenting) {
         display.exitPresent();
       }
-      console.log('Stopped presenting to WebVR display');
+
+      // starts stereo rendering in Unity.
+      gameInstance.SendMessage('WebVRCameraSet', 'End');
 
       handleResize();
+
+      console.log('Exit VR');
     }
   })
 
