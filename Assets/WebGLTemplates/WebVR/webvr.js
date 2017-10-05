@@ -181,8 +181,8 @@
             var position = gamepad.pose.position;
             position[2] *= -1;
             var orientation = gamepad.pose.orientation;
-            orientation[0] *= -1;
             orientation[1] *= -1;
+            orientation[2] *= -1;
 
             vrGamepads.push({
               index: gamepad.index,
