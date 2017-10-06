@@ -200,7 +200,10 @@ public class WebVRCamera : MonoBehaviour
 		// default sitStand translation.
 		sitStand = Matrix4x4.Translate (new Vector3 (0f, 1.2f, 0f));
 
+		#if !UNITY_EDITOR && UNITY_WEBGL
 		FinishLoading();
+		#endif
+
     }
 
 
