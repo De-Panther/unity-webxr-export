@@ -118,19 +118,6 @@ public class WebVRCamera : MonoBehaviour
 		crv = numbersToMatrix(array.Skip(16 * 3).Take (16).ToArray ());
 	}
 
-	public static Quaternion QuaternionFromMatrix(Matrix4x4 m) {
-		// Adapted from: http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/index.htm
-		Quaternion q = new Quaternion();
-		q.w = Mathf.Sqrt( Mathf.Max( 0, 1 + m[0,0] + m[1,1] + m[2,2] ) ) / 2; 
-		q.x = Mathf.Sqrt( Mathf.Max( 0, 1 + m[0,0] - m[1,1] - m[2,2] ) ) / 2; 
-		q.y = Mathf.Sqrt( Mathf.Max( 0, 1 - m[0,0] + m[1,1] - m[2,2] ) ) / 2; 
-		q.z = Mathf.Sqrt( Mathf.Max( 0, 1 - m[0,0] - m[1,1] + m[2,2] ) ) / 2; 
-		q.x *= Mathf.Sign( q.x * ( m[2,1] - m[1,2] ) );
-		q.y *= Mathf.Sign( q.y * ( m[0,2] - m[2,0] ) );
-		q.z *= Mathf.Sign( q.z * ( m[1,0] - m[0,1] ) );
-		return q;
-	}
-
 	public void VRGamepads (string jsonString) {
 		Gamepads list = Gamepads.CreateFromJSON(jsonString);
 
@@ -142,14 +129,12 @@ public class WebVRCamera : MonoBehaviour
 			Vector3 position = new Vector3 (pos [0], pos [1], pos [2]);
 			Quaternion rotation = new Quaternion (rot [0], rot [1], rot [2], rot[3]);
 
-			Matrix4x4 mat = Matrix4x4.identity;
-			mat.SetTRS (position, rotation, Vector3.one);
-
-
-			Vector3 p = sitStand.MultiplyPoint(mat.GetColumn(3));
-
-			Quaternion r = QuaternionFromMatrix (mat);
-			r *= QuaternionFromMatrix (sitStand);
+			Quaternion sitStandRotation = Quaternion.LookRotation (
+				                              sitStand.GetColumn (2),
+				                              sitStand.GetColumn (1)
+			                              );
+			Vector3 p = sitStand.MultiplyPoint(position);
+			Quaternion r = rotation * sitStandRotation;
 
 			if (control.hand == "left") {
 				lhp = p;
@@ -212,14 +197,8 @@ public class WebVRCamera : MonoBehaviour
 
 		changeMode("normal");
 
-		// set default height for experience.
-		// sitStand = Matrix4x4.Translate (new Vector3 (0f, 1.2f, 0f));
-
-
-		Vector3 position = new Vector3 (0f, 1.2f, 0f);
-		Quaternion rotation = Quaternion.Euler (0, 0, 0);
-
-		sitStand.SetTRS (position, rotation, Vector3.one);
+		// default sitStand translation.
+		sitStand = Matrix4x4.Translate (new Vector3 (0f, 1.2f, 0f));
 
 		FinishLoading();
     }
