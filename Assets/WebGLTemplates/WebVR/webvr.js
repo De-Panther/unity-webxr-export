@@ -200,7 +200,6 @@
   var testTimeStart = null;
   function getKey(e)
   {
-    console.log("the keycode is "+e.keyCode);
     if(e.keyCode == "86") //v
     {
       console.log("pressed v, roundtrip time");
@@ -208,27 +207,5 @@
       gameInstance.SendMessage('WebVRCameraSet', 'TestTime');
     }
   }
-
-  // window.addEventListener("gamepadconnected", function(e) {
-  // var gpArr = navigator.getGamepads();
-  // for(var i = 0; i < gpArr.length; i++)
-  //   {
-  //     //if we find a VR gamepad
-  //     if(gpArr[i].id == "OpenVR Gamepad")
-  //     {
-  //       //determine which hand it is (gamepad API gets them backwards)
-  //       if(gpArr[i].hand == "left")
-  //       {
-  //         rightHand = gpArr[i];
-  //         //console.log("got right hand, position = "+rightHand.pose.position);
-  //       }
-  //       else if(gpArr[i].hand == "right")
-  //       {
-  //         leftHand = gpArr[i];
-  //         //console.log("got left hand, position = "+leftHand.pose.position);
-  //       }
-  //     }
-  //   }
-  // });
 
 })();
