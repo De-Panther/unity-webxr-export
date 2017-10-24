@@ -15,12 +15,8 @@
 
   // shim raf so that we can
   window.requestAnimationFrame = function(cb) {
-    if (inVR && display) {
-      if (!display.capabilities.canPresent) {
-        return window.setTimeout(cb, 1000 / 10);
-      } else {
-        return display.requestAnimationFrame(cb);
-      }
+    if (inVR && display && display.capabilities.canPresent) {
+      return display.requestAnimationFrame(cb);
     } else {
       return raf(cb);
     }
@@ -39,10 +35,6 @@
 
       window.addEventListener('resize', handleResize, true);
       handleResize();
-
-      // if (display.capabilities.canPresent) {
-      //   entervrButton.style.display = 'block';
-      // }
 
       vrAnimate();
     }
