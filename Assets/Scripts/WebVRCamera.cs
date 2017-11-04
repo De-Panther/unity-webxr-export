@@ -203,7 +203,6 @@ public class WebVRCamera : MonoBehaviour
 		#if !UNITY_EDITOR && UNITY_WEBGL
 		FinishLoading();
 		#endif
-
     }
 
 
@@ -241,7 +240,6 @@ public class WebVRCamera : MonoBehaviour
 		#if !UNITY_EDITOR && UNITY_WEBGL
 		StartCoroutine(endOfFrame());
 		#endif
-
     }
 
 

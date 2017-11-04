@@ -2,7 +2,6 @@
 <html lang="en-us">
 
 <head>
-  <!-- Inspired by: https://github.com/gtk2k/Unity-WebVR-Assets -->
   <meta charset="utf-8">
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,6 +12,7 @@
   <script src="Build/UnityLoader.js"></script>
   <script>
     var gameInstance = UnityLoader.instantiate("gameContainer", "%UNITY_WEBGL_BUILD_URL%", {
+      // Preserve drawing buffer is needed for WebVR content to be mirrored out into canvas.
       Module:{"webglContextAttributes": { "preserveDrawingBuffer" : true }}
     });
   </script>
@@ -23,7 +23,9 @@
     <p>Loading...</p>
   </div>
 
-  <div id="gameContainer"></div>
+  <div id="game">
+    <div id="gameContainer"></div>
+  </div>
 
   <button id="entervr" value="Enter VR"></button>
 

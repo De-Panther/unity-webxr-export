@@ -10,6 +10,7 @@
   var inVR = false;
   var vrSceneFrame, normalSceneFrame;
   var entervrButton = document.querySelector('#entervr');
+  var container = document.querySelector('#game');
 
   var raf = window.requestAnimationFrame;
 
@@ -26,8 +27,6 @@
     if (displays.length > 0) {
       display = displays[0];
 
-      console.log('vrDisplay', display);
-
       if (display.stageParameters) {
         var sitStand = transformMatrixToUnity(display.stageParameters.sittingToStandingTransform, false);
         gameInstance.SendMessage('WebVRCameraSet', 'HMDSittingToStandingTransform', sitStand.join());
@@ -35,7 +34,6 @@
 
       window.addEventListener('resize', handleResize, true);
       handleResize();
-
       vrAnimate();
     }
   }
@@ -43,7 +41,7 @@
   // waits for messages back from unity.
   function handleUnity(msg) {
     if (msg.detail === "Ready") {
-      canvas = document.getElementById('canvas');
+      canvas = document.getElementById('#canvas');
       loader = document.getElementById('loader');
 
       loader.style.display = 'none';
@@ -70,45 +68,51 @@
   document.addEventListener('Unity', handleUnity);
 
   function handleResize() {
-    if (!canvas) {
-      canvas = document.getElementsByTagName('canvas')[0];
+    if (!canvas) return;
+
+    if (inVR) {
+      // scale game container so we get a proper sized mirror of VR content to desktop.
+      var renderWidth = canvas.width;
+      var renderHeight = canvas.height;
+      var scaleX = window.innerWidth / renderWidth;
+      var scaleY = window.innerHeight / renderHeight;
+      container.setAttribute('style', `transform: scale(${scaleX}, ${scaleY}); transform-origin: top left;`);
+    } else {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      container.style.transform = '';
     }
-    // should resize to eye rects for VR.
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
   }
 
   entervrButton.addEventListener('click', function () {
-    inVR = inVR === false ? true : false;
-    if (inVR) {
-
+    if (!inVR) {
+      inVR = true;
       if (display.capabilities.canPresent) {
         display.requestPresent([{ source: canvas }]).then(function() {
-          console.log('Presenting to WebVR display');
-
           var leftEye = display.getEyeParameters('left');
           var rightEye = display.getEyeParameters('right');
 
+          var renderWidth = Math.max(leftEye.renderWidth, rightEye.renderWidth) * 2;
+          var renderHeight = Math.max(leftEye.renderHeight, rightEye.renderHeight);
+
           canvas.width = Math.max(leftEye.renderWidth, rightEye.renderWidth) * 2;
           canvas.height = Math.max(leftEye.renderHeight, rightEye.renderHeight);
+
+          handleResize();
         });
       }
 
       // starts stereo rendering in Unity.
       gameInstance.SendMessage('WebVRCameraSet', 'Begin');
-
-      console.log('Entering VR');
     } else {
+      inVR = false;
       if (display.isPresenting) {
         display.exitPresent();
       }
-
       // starts stereo rendering in Unity.
       gameInstance.SendMessage('WebVRCameraSet', 'End');
 
       handleResize();
-
-      console.log('Exit VR');
     }
   })
 
