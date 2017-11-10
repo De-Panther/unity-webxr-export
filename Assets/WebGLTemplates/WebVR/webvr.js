@@ -204,7 +204,11 @@
   var testTimeStart = null;
   function getKey(e)
   {
-    if(e.keyCode == "86") //v
+    if (e.keyCode === 80) { // p
+      // toggle in-unity update frame counter
+      gameInstance.SendMessage('WebVRCameraSet', 'TogglePerf');
+    }
+    if(e.keyCode === 86) //v
     {
       console.log("pressed v, roundtrip time");
       testTimeStart = performance.now();
