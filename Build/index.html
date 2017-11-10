@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unity-WebVR-Export</title>
+  <meta name="description" content="Unity-WebVR-Export">
+  <link rel="shortcut icon" href="favicon.ico">
+  <link rel="stylesheet" type="text/css" href="webvr.css" />
+  <script src="Build/UnityLoader.js"></script>
+  <script>
+    var gameInstance = UnityLoader.instantiate("gameContainer", "Build/Build.json", {
+      // Preserve drawing buffer is needed for WebVR content to be mirrored out into canvas.
+      Module:{"webglContextAttributes": { "preserveDrawingBuffer" : true }}
+    });
+  </script>
+</head>
+
+<body>
+  <div id="loader">
+    <p>Loading...</p>
+  </div>
+
+  <div id="game">
+    <div id="gameContainer"></div>
+  </div>
+
+  <button id="entervr" value="Enter VR"></button>
+
+  <script src="webvr.js"></script>
+</body>
+
+</html>
