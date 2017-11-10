@@ -25,7 +25,7 @@
 
   function initVR(displays) {
     if (displays.length > 0) {
-      display = displays[0];
+      display = displays[displays.length - 1];
 
       if (display.stageParameters) {
         var sitStand = transformMatrixToUnity(display.stageParameters.sittingToStandingTransform, false);
