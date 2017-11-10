@@ -1,24 +1,32 @@
-# Unity WebVR Exports
+# Unity WebVR Assets
 
-WebVR template and assets for creating WebVR-enabled Unity projects.
+### WebVR assets for creating WebVR-enabled Unity projects.
 
+![Preview](https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/img/preview.gif)
+
+**Supports**
 * Room-scale environments with 6dof controller support.
 * Work with both Oculus Rift using Touch, and HTC VIVE.
+* For now, desktop WebVR only.
 
 ## How to use
 
-1. Clone down this repository and open project in Unity.
+### Open and Build project
 
-```bash
+1. Clone or Download the contents of this repository.
 
-git clone git@github.com:caseyyee/unity-webvr-export.git
-```
+2. Open the project from `File > Open Project` in Unity.
 
-2. Use the WebVR template to build your project by going to `File > Build Settings` and 
-selecting the _WebGL_ platform.
+3. Go to `File > Build Settings`, select the _WebGL_ platform.
 
-3. Select the `WebVR template`.
+<img src="https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/img/build-settings.png" width="550">
 
-4. Build your project.   Once the build is completed, start a web server from the build directory and open in a WebVR enabled browser.
+4. Select _Player Settings_ and from _Settings for WebGL_ select the `WebVR` template.
 
+<img src="https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/img/webgl-template.png" width="250">
 
+5. Press _Build_ and select a location for your build.
+
+6. Once the build is completed, browse to the build open `index.html` from a WebVR enabled browser.
+
+You may need to serve the files from a local web server if your browser does not support running content from `file://` url's.
