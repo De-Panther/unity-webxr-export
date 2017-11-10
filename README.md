@@ -4,10 +4,9 @@
 
 ![Preview](https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/img/preview.gif)
 
-**Supports**
-* Room-scale environments with 6dof controller support.
-* Work with both Oculus Rift using Touch, and HTC VIVE.
-* For now, desktop WebVR only.
+### [Try it out!](https://caseyyee.github.io/unity-webvr-export/)
+
+Works with HTC VIVE and Oculus Rift using a WebVR enabled browser.
 
 ## How to use
 
