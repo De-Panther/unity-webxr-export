@@ -51,3 +51,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f20d6ce5d18d84ecdaead6f47e537db4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  toClone: 
+  delayToRespawn: 0
+  delayToDestroy: 0
