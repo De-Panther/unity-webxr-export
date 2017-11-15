@@ -22,10 +22,10 @@ public class WebVRCamera : MonoBehaviour
     Vector3 cp;
 
 	// left and right hand position and rotation
-	Vector3 lhp;
-	Vector3 rhp;
-	Quaternion lhr;
-	Quaternion rhr;
+//	Vector3 lhp;
+//	Vector3 rhp;
+//	Quaternion lhr;
+//	Quaternion rhr;
 
 	// camera view and projection matrices
 	Matrix4x4 clp = Matrix4x4.identity;
@@ -50,16 +50,32 @@ public class WebVRCamera : MonoBehaviour
 	bool showPerf = false;
 
 	[System.Serializable]
-	public class Gamepads
+	public class VRData
 	{
+		public float[] id;
+		public float[] leftProjectionMatrix;
+		public float[] rightProjectionMatrix;
+		public float[] leftViewMatrix;
+		public float[] rightViewMatrix;
+		public float[] sitStand;
 		public Controller[] controllers;
-
-		public static Gamepads CreateFromJSON(string jsonString)
+		public static VRData CreateFromJSON(string jsonString)
 		{
-			return JsonUtility.FromJson<Gamepads>(jsonString);
+			return JsonUtility.FromJson<VRData> (jsonString);
 		}
 	}
 
+//	[System.Serializable]
+//	public class Gamepads
+//	{
+//		public Controller[] controllers;
+//
+//		public static Gamepads CreateFromJSON(string jsonString)
+//		{
+//			return JsonUtility.FromJson<Gamepads>(jsonString);
+//		}
+//	}
+//
 	[System.Serializable]
 	public class Controller
 	{
@@ -87,17 +103,17 @@ public class WebVRCamera : MonoBehaviour
 	}
 
 	// receive view and projection matrices from WebVR browser
-	public void HMDViewProjection (string viewProjectionNumbersStr) {
-		float[] array = viewProjectionNumbersStr.Split(',').Select(float.Parse).ToArray();
-		// left projection matrix
-		clp = numbersToMatrix(array.Skip(16 * 0).Take (16).ToArray ());
-		// left view matrix
-		clv = numbersToMatrix(array.Skip(16 * 1).Take (16).ToArray ());
-		// right projection matrix
-		crp = numbersToMatrix(array.Skip(16 * 2).Take (16).ToArray ());
-		// right view matrix
-		crv = numbersToMatrix(array.Skip(16 * 3).Take (16).ToArray ());
-	}
+//	public void HMDViewProjection (string viewProjectionNumbersStr) {
+//		float[] array = viewProjectionNumbersStr.Split(',').Select(float.Parse).ToArray();
+//		// left projection matrix
+//		clp = numbersToMatrix(array.Skip(16 * 0).Take (16).ToArray ());
+//		// left view matrix
+//		clv = numbersToMatrix(array.Skip(16 * 1).Take (16).ToArray ());
+//		// right projection matrix
+//		crp = numbersToMatrix(array.Skip(16 * 2).Take (16).ToArray ());
+//		// right view matrix
+//		crv = numbersToMatrix(array.Skip(16 * 3).Take (16).ToArray ());
+//	}
 
 	// received sit and stand room transform from WebVR browser
 	public void HMDSittingToStandingTransform (string sitStandStr) {
@@ -106,33 +122,47 @@ public class WebVRCamera : MonoBehaviour
 	}
 
 	// receive gamepad data from WebVR browser
-	public void VRGamepads (string jsonString) {
-		Gamepads list = Gamepads.CreateFromJSON(jsonString);
+//	public void VRGamepads (string jsonString) {
+//		Gamepads list = Gamepads.CreateFromJSON(jsonString);
+//
+//		handControllers = list.controllers.Length > 0 ? true : false;
+//
+//		foreach (Controller control in list.controllers) {
+//			float[] pos = control.position.Split(',').Select(float.Parse).ToArray();
+//			float[] rot = control.orientation.Split(',').Select(float.Parse).ToArray();
+//			Vector3 position = new Vector3 (pos [0], pos [1], pos [2]);
+//			Quaternion rotation = new Quaternion (rot [0], rot [1], rot [2], rot[3]);
+//
+//			Quaternion sitStandRotation = Quaternion.LookRotation (
+//				sitStand.GetColumn (2),
+//				sitStand.GetColumn (1)
+//			);
+//			Vector3 p = sitStand.MultiplyPoint(position);
+//			Quaternion r = rotation * sitStandRotation;
+//
+//			if (control.hand == "left") {
+//				lhp = p;
+//				lhr = r;
+//			}
+//			if (control.hand == "right") {
+//				rhp = p;
+//				rhr = r;
+//			}
+//		}			
+//	}
 
-		handControllers = list.controllers.Length > 0 ? true : false;
+	// receive WebVR data from browser.
+	public void WebVRData (string jsonString) {
+		VRData data = VRData.CreateFromJSON (jsonString);
 
-		foreach (Controller control in list.controllers) {
-			float[] pos = control.position.Split(',').Select(float.Parse).ToArray();
-			float[] rot = control.orientation.Split(',').Select(float.Parse).ToArray();
-			Vector3 position = new Vector3 (pos [0], pos [1], pos [2]);
-			Quaternion rotation = new Quaternion (rot [0], rot [1], rot [2], rot[3]);
-
-			Quaternion sitStandRotation = Quaternion.LookRotation (
-				sitStand.GetColumn (2),
-				sitStand.GetColumn (1)
-			);
-			Vector3 p = sitStand.MultiplyPoint(position);
-			Quaternion r = rotation * sitStandRotation;
-
-			if (control.hand == "left") {
-				lhp = p;
-				lhr = r;
-			}
-			if (control.hand == "right") {
-				rhp = p;
-				rhr = r;
-			}
-		}			
+		// left projection matrix
+		clp = numbersToMatrix(data.leftProjectionMatrix);
+		// left view matrix
+		clv = numbersToMatrix(data.leftViewMatrix);
+		// right projection matrix
+		crp = numbersToMatrix(data.rightProjectionMatrix);
+		// right view matrix
+		crv = numbersToMatrix(data.rightViewMatrix);
 	}
 
 	// received time tester from WebVR browser
@@ -202,17 +232,17 @@ public class WebVRCamera : MonoBehaviour
 		}
 
 		if (active == true) {
-			leftHandObj.transform.rotation = lhr;
-			leftHandObj.transform.position = lhp;
-			rightHandObj.transform.rotation = rhr;
-			rightHandObj.transform.position = rhp;
-
-			// apply camera projection and view matrices from webVR api.
+//			leftHandObj.transform.rotation = lhr;
+//			leftHandObj.transform.position = lhp;
+//			rightHandObj.transform.rotation = rhr;
+//			rightHandObj.transform.position = rhp;
+//
+//			// apply camera projection and view matrices from webVR api.
 			if (!clv.isIdentity || !clp.isIdentity || !crv.isIdentity || !crp.isIdentity) {
-				// apply sit stand transform
-				clv *= sitStand.inverse;
-				crv *= sitStand.inverse;
-
+//				// apply sit stand transform
+//				clv *= sitStand.inverse;
+//				crv *= sitStand.inverse;
+//
 				cameraL.worldToCameraMatrix = clv;
 				cameraL.projectionMatrix = clp;
 				cameraR.worldToCameraMatrix = crv;

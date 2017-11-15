@@ -8,7 +8,7 @@
   var rightProjectionMatrix = null;
   var leftViewMatrix = null;
   var rightViewMatrix = null;
-  var sitstand = null;
+  var sitStand = null;
   var loader = null;
   var inVR = false;
   var isPresenting = false;
@@ -105,24 +105,15 @@
   function vrAnimate() {
     vrSceneFrame = window.requestAnimationFrame(vrAnimate);
 
-    if (!isPresenting) return;
-
     // headset framedata
     frameData = new VRFrameData();
     display.getFrameData(frameData);
 
-    if (framedata) {
+    if (frameData) {
       leftProjectionMatrix = transformMatrixToUnity(frameData.leftProjectionMatrix, false);
       rightProjectionMatrix = transformMatrixToUnity(frameData.rightProjectionMatrix, false);
       leftViewMatrix = transformMatrixToUnity(frameData.leftViewMatrix, true);
       rightViewMatrix = transformMatrixToUnity(frameData.rightViewMatrix, true);
-    }
-
-    var cameraMatrices = {
-      leftProjectionMatrix: leftProjectionMatrix,
-      rightProjectionMatrix: rightProjectionMatrix,
-      leftViewMatrix: leftViewMatrix,
-      rightViewMatrix: rightViewMatrix,
     }
 
     // sitstand transform
@@ -156,11 +147,16 @@
       }
     }
 
-    gameInstance.SendMessage('WebVRCameraSet', 'WebVRData', {
-      cameraMatrices : cameraMatrices,
+    var vrData = {
+      leftProjectionMatrix: leftProjectionMatrix,
+      rightProjectionMatrix: rightProjectionMatrix,
+      leftViewMatrix: leftViewMatrix,
+      rightViewMatrix: rightViewMatrix,
       sitStand : sitStand,
-      gamepads: vrGamepads
-    });
+      controllers: vrGamepads
+    };
+
+    gameInstance.SendMessage('WebVRCameraSet', 'WebVRData', JSON.stringify(vrData));
 
     // var leftMatrix = leftProjectionMatrix.concat(leftViewMatrix);
     // var rightMatrix = rightProjectionMatrix.concat(rightViewMatrix);
