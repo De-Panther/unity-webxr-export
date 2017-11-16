@@ -178,6 +178,8 @@ public class WebVRCamera : MonoBehaviour
 		cameraL = GameObject.Find("CameraL").GetComponent<Camera>();
 		cameraR = GameObject.Find("CameraR").GetComponent<Camera>();
 
+		cameraMain.worldToCameraMatrix *= sitStand.inverse;
+
 		changeMode("normal");
 
 		#if !UNITY_EDITOR && UNITY_WEBGL
