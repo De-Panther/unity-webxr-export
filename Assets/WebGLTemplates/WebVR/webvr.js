@@ -4,11 +4,11 @@
   var display = null;
   var canvas = null;
   var frameData = null;
-  var leftProjectionMatrix = null;
-  var rightProjectionMatrix = null;
-  var leftViewMatrix = null;
-  var rightViewMatrix = null;
-  var sitStand = null;
+  var leftProjectionMatrix = [];
+  var rightProjectionMatrix = [];
+  var leftViewMatrix = [];
+  var rightViewMatrix = [];
+  var sitStand = [];
   var loader = null;
   var inVR = false;
   var isPresenting = false;
@@ -62,11 +62,11 @@
       var renderHeight = canvas.height;
       var scaleX = window.innerWidth / renderWidth;
       var scaleY = window.innerHeight / renderHeight;
-      // container.setAttribute('style', `transform: scale(${scaleX}, ${scaleY}); transform-origin: top left;`);
+      container.setAttribute('style', `transform: scale(${scaleX}, ${scaleY}); transform-origin: top left;`);
     } else {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-      // container.style.transform = '';
+      container.style.transform = '';
     }
   }
 
@@ -139,8 +139,8 @@
             vrGamepads.push({
               index: gamepad.index,
               hand: gamepad.hand,
-              orientation: orientation,
-              position: position
+              orientation: Array.from(orientation),
+              position: Array.from(position)
             });
           }
         }

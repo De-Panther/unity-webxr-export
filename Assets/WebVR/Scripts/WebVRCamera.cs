@@ -22,10 +22,10 @@ public class WebVRCamera : MonoBehaviour
     Vector3 cp;
 
 	// left and right hand position and rotation
-//	Vector3 lhp;
-//	Vector3 rhp;
-//	Quaternion lhr;
-//	Quaternion rhr;
+	Vector3 lhp;
+	Vector3 rhp;
+	Quaternion lhr;
+	Quaternion rhr;
 
 	// camera view and projection matrices
 	Matrix4x4 clp = Matrix4x4.identity;
@@ -41,13 +41,25 @@ public class WebVRCamera : MonoBehaviour
 	public GameObject leftHandObj;
     public GameObject rightHandObj;
 
-	public bool handControllers = false;
 
 	// delta time for latency checker.
 	float deltaTime = 0.0f;
 
 	// show framerate UI
 	bool showPerf = false;
+
+	[System.Serializable]
+	public class Controller
+	{
+		public int index;
+		public string hand;
+		public float[] orientation;
+		public float[] position;
+		//		public static Controller CreateFromJSON(string jsonString)
+		//		{
+		//			return JsonUtility.FromJson<Controller>(jsonString);
+		//		}
+	}
 
 	[System.Serializable]
 	public class VRData
@@ -76,19 +88,7 @@ public class WebVRCamera : MonoBehaviour
 //		}
 //	}
 //
-	[System.Serializable]
-	public class Controller
-	{
-		public int index;
-		public string hand;
-		public string orientation;
-		public string position;
 
-		public static Controller CreateFromJSON(string jsonString)
-		{
-			return JsonUtility.FromJson<Controller>(jsonString);
-		}
-	}
 
 	// received enter VR from WebVR browser
 	public void Begin()
@@ -116,10 +116,10 @@ public class WebVRCamera : MonoBehaviour
 //	}
 
 	// received sit and stand room transform from WebVR browser
-	public void HMDSittingToStandingTransform (string sitStandStr) {
-		float[] array = sitStandStr.Split(',').Select(float.Parse).ToArray();
-		sitStand = numbersToMatrix (array);
-	}
+//	public void HMDSittingToStandingTransform (string sitStandStr) {
+//		float[] array = sitStandStr.Split(',').Select(float.Parse).ToArray();
+//		sitStand = numbersToMatrix (array);
+//	}
 
 	// receive gamepad data from WebVR browser
 //	public void VRGamepads (string jsonString) {
@@ -156,13 +156,42 @@ public class WebVRCamera : MonoBehaviour
 		VRData data = VRData.CreateFromJSON (jsonString);
 
 		// left projection matrix
-		clp = numbersToMatrix(data.leftProjectionMatrix);
+		clp = numbersToMatrix (data.leftProjectionMatrix);
 		// left view matrix
-		clv = numbersToMatrix(data.leftViewMatrix);
+		clv = numbersToMatrix (data.leftViewMatrix);
 		// right projection matrix
-		crp = numbersToMatrix(data.rightProjectionMatrix);
+		crp = numbersToMatrix (data.rightProjectionMatrix);
 		// right view matrix
-		crv = numbersToMatrix(data.rightViewMatrix);
+		crv = numbersToMatrix (data.rightViewMatrix);
+
+		// sit stand matrix
+		if (data.sitStand.Length > 0) {
+			sitStand = numbersToMatrix (data.sitStand);
+		}
+
+		// controllers
+		if (data.controllers.Length > 0) {
+			foreach (Controller control in data.controllers) {
+				Vector3 position = new Vector3 (control.position [0], control.position [1], control.position [2]);
+				Quaternion rotation = new Quaternion (control.orientation [0], control.orientation [1], control.orientation [2], control.orientation [3]);
+
+				Quaternion sitStandRotation = Quaternion.LookRotation (
+					sitStand.GetColumn (2),
+					sitStand.GetColumn (1)
+				);
+				Vector3 p = sitStand.MultiplyPoint(position);
+				Quaternion r = rotation * sitStandRotation;
+
+				if (control.hand == "left") {
+					lhp = p;
+					lhr = r;
+				}
+				if (control.hand == "right") {
+					rhp = p;
+					rhr = r;
+				}
+			}
+		}
 	}
 
 	// received time tester from WebVR browser
@@ -232,17 +261,17 @@ public class WebVRCamera : MonoBehaviour
 		}
 
 		if (active == true) {
-//			leftHandObj.transform.rotation = lhr;
-//			leftHandObj.transform.position = lhp;
-//			rightHandObj.transform.rotation = rhr;
-//			rightHandObj.transform.position = rhp;
-//
-//			// apply camera projection and view matrices from webVR api.
+			leftHandObj.transform.rotation = lhr;
+			leftHandObj.transform.position = lhp;
+			rightHandObj.transform.rotation = rhr;
+			rightHandObj.transform.position = rhp;
+
+			// apply camera projection and view matrices.
 			if (!clv.isIdentity || !clp.isIdentity || !crv.isIdentity || !crp.isIdentity) {
-//				// apply sit stand transform
-//				clv *= sitStand.inverse;
-//				crv *= sitStand.inverse;
-//
+				// apply sit stand transform
+				clv *= sitStand.inverse;
+				crv *= sitStand.inverse;
+
 				cameraL.worldToCameraMatrix = clv;
 				cameraL.projectionMatrix = clp;
 				cameraR.worldToCameraMatrix = crv;
