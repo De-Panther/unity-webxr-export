@@ -4,10 +4,14 @@
   var display = null;
   var canvas = null;
   var frameData = null;
-  var leftHand = null;
-  var rightHand = null;
+  var leftProjectionMatrix = [];
+  var rightProjectionMatrix = [];
+  var leftViewMatrix = [];
+  var rightViewMatrix = [];
+  var sitStand = [];
   var loader = null;
   var inVR = false;
+  var isPresenting = false;
   var testTimeStart = null;
   var vrSceneFrame, normalSceneFrame;
   var entervrButton = document.querySelector('#entervr');
@@ -17,11 +21,6 @@
   function initVR(displays) {
     if (displays.length > 0) {
       display = displays[displays.length - 1];
-
-      if (display.stageParameters) {
-        var sitStand = transformMatrixToUnity(display.stageParameters.sittingToStandingTransform, false);
-        gameInstance.SendMessage('WebVRCameraSet', 'HMDSittingToStandingTransform', sitStand.join());
-      }
 
       handleResize();
       vrAnimate();
@@ -48,7 +47,7 @@
       testTimeStart = null;
     }
 
-    if (msg.detail === "PostRender" && display) {
+    if (msg.detail === "PostRender" && isPresenting) {
       // WebVR: Indicate that we are ready to present the rendered frame to the VR display
       display.submitFrame();
     }
@@ -105,23 +104,24 @@
 
   function vrAnimate() {
     vrSceneFrame = window.requestAnimationFrame(vrAnimate);
+
+    // headset framedata
     frameData = new VRFrameData();
     display.getFrameData(frameData);
-    var curFramePose = frameData.pose;
-    var curPos = curFramePose.position;
-    var curOrient = curFramePose.orientation;
 
-    var leftProjectionMatrix = transformMatrixToUnity(frameData.leftProjectionMatrix, false);
-    var rightProjectionMatrix = transformMatrixToUnity(frameData.rightProjectionMatrix, false);
-    var leftViewMatrix = transformMatrixToUnity(frameData.leftViewMatrix, true);
-    var rightViewMatrix = transformMatrixToUnity(frameData.rightViewMatrix, true);
+    if (frameData) {
+      leftProjectionMatrix = transformMatrixToUnity(frameData.leftProjectionMatrix, false);
+      rightProjectionMatrix = transformMatrixToUnity(frameData.rightProjectionMatrix, false);
+      leftViewMatrix = transformMatrixToUnity(frameData.leftViewMatrix, true);
+      rightViewMatrix = transformMatrixToUnity(frameData.rightViewMatrix, true);
+    }
 
-    var leftMatrix = leftProjectionMatrix.concat(leftViewMatrix);
-    var rightMatrix = rightProjectionMatrix.concat(rightViewMatrix);
-    var hmdMatrix = leftMatrix.concat(rightMatrix);
+    // sitstand transform
+    if (display.stageParameters) {
+      sitStand = transformMatrixToUnity(display.stageParameters.sittingToStandingTransform, false);
+    }
 
-    gameInstance.SendMessage('WebVRCameraSet', 'HMDViewProjection', hmdMatrix.join());
-
+    // gamepads
     var gamepads = navigator.getGamepads();
     var vrGamepads = [];
     for (var i = 0; i < gamepads.length; ++i) {
@@ -129,6 +129,7 @@
       if (gamepad) {
         if (gamepad.pose || gamepad.displayId) {
           if (gamepad.pose.position && gamepad.pose.orientation) {
+            // flips gamepad axis to work with Unity.
             var position = gamepad.pose.position;
             position[2] *= -1;
             var orientation = gamepad.pose.orientation;
@@ -138,19 +139,24 @@
             vrGamepads.push({
               index: gamepad.index,
               hand: gamepad.hand,
-              orientation: orientation.join(','),
-              position: position.join(',')
+              orientation: Array.from(orientation),
+              position: Array.from(position)
             });
           }
         }
       }
     }
 
-    var controllerJson = JSON.stringify({
+    var vrData = {
+      leftProjectionMatrix: leftProjectionMatrix,
+      rightProjectionMatrix: rightProjectionMatrix,
+      leftViewMatrix: leftViewMatrix,
+      rightViewMatrix: rightViewMatrix,
+      sitStand : sitStand,
       controllers: vrGamepads
-    });
+    };
 
-    gameInstance.SendMessage('WebVRCameraSet', 'VRGamepads', controllerJson);
+    gameInstance.SendMessage('WebVRCameraSet', 'WebVRData', JSON.stringify(vrData));
   }
 
   // shim raf so that we can drive framerate using VR display.
@@ -182,6 +188,8 @@
           canvas.height = Math.max(leftEye.renderHeight, rightEye.renderHeight);
 
           handleResize();
+
+          isPresenting = true;
         });
       }
 
@@ -191,6 +199,8 @@
       inVR = false;
       if (display.isPresenting) {
         display.exitPresent();
+
+        isPresenting = false;
       }
       // starts stereo rendering in Unity.
       gameInstance.SendMessage('WebVRCameraSet', 'End');
