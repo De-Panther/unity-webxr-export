@@ -157,19 +157,6 @@
     };
 
     gameInstance.SendMessage('WebVRCameraSet', 'WebVRData', JSON.stringify(vrData));
-
-    // var leftMatrix = leftProjectionMatrix.concat(leftViewMatrix);
-    // var rightMatrix = rightProjectionMatrix.concat(rightViewMatrix);
-    // var hmdMatrix = leftMatrix.concat(rightMatrix);
-
-    // gameInstance.SendMessage('WebVRCameraSet', 'HMDViewProjection', hmdMatrix.join());
-
-
-    // var controllerJson = JSON.stringify({
-    //   controllers: vrGamepads
-    // });
-
-    // gameInstance.SendMessage('WebVRCameraSet', 'VRGamepads', controllerJson);
   }
 
   // shim raf so that we can drive framerate using VR display.

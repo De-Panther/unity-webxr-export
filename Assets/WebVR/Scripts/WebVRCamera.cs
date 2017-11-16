@@ -55,10 +55,6 @@ public class WebVRCamera : MonoBehaviour
 		public string hand;
 		public float[] orientation;
 		public float[] position;
-		//		public static Controller CreateFromJSON(string jsonString)
-		//		{
-		//			return JsonUtility.FromJson<Controller>(jsonString);
-		//		}
 	}
 
 	[System.Serializable]
@@ -77,19 +73,6 @@ public class WebVRCamera : MonoBehaviour
 		}
 	}
 
-//	[System.Serializable]
-//	public class Gamepads
-//	{
-//		public Controller[] controllers;
-//
-//		public static Gamepads CreateFromJSON(string jsonString)
-//		{
-//			return JsonUtility.FromJson<Gamepads>(jsonString);
-//		}
-//	}
-//
-
-
 	// received enter VR from WebVR browser
 	public void Begin()
 	{
@@ -101,55 +84,6 @@ public class WebVRCamera : MonoBehaviour
 	{
 		changeMode("normal");
 	}
-
-	// receive view and projection matrices from WebVR browser
-//	public void HMDViewProjection (string viewProjectionNumbersStr) {
-//		float[] array = viewProjectionNumbersStr.Split(',').Select(float.Parse).ToArray();
-//		// left projection matrix
-//		clp = numbersToMatrix(array.Skip(16 * 0).Take (16).ToArray ());
-//		// left view matrix
-//		clv = numbersToMatrix(array.Skip(16 * 1).Take (16).ToArray ());
-//		// right projection matrix
-//		crp = numbersToMatrix(array.Skip(16 * 2).Take (16).ToArray ());
-//		// right view matrix
-//		crv = numbersToMatrix(array.Skip(16 * 3).Take (16).ToArray ());
-//	}
-
-	// received sit and stand room transform from WebVR browser
-//	public void HMDSittingToStandingTransform (string sitStandStr) {
-//		float[] array = sitStandStr.Split(',').Select(float.Parse).ToArray();
-//		sitStand = numbersToMatrix (array);
-//	}
-
-	// receive gamepad data from WebVR browser
-//	public void VRGamepads (string jsonString) {
-//		Gamepads list = Gamepads.CreateFromJSON(jsonString);
-//
-//		handControllers = list.controllers.Length > 0 ? true : false;
-//
-//		foreach (Controller control in list.controllers) {
-//			float[] pos = control.position.Split(',').Select(float.Parse).ToArray();
-//			float[] rot = control.orientation.Split(',').Select(float.Parse).ToArray();
-//			Vector3 position = new Vector3 (pos [0], pos [1], pos [2]);
-//			Quaternion rotation = new Quaternion (rot [0], rot [1], rot [2], rot[3]);
-//
-//			Quaternion sitStandRotation = Quaternion.LookRotation (
-//				sitStand.GetColumn (2),
-//				sitStand.GetColumn (1)
-//			);
-//			Vector3 p = sitStand.MultiplyPoint(position);
-//			Quaternion r = rotation * sitStandRotation;
-//
-//			if (control.hand == "left") {
-//				lhp = p;
-//				lhr = r;
-//			}
-//			if (control.hand == "right") {
-//				rhp = p;
-//				rhr = r;
-//			}
-//		}			
-//	}
 
 	// receive WebVR data from browser.
 	public void WebVRData (string jsonString) {
