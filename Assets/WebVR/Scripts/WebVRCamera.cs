@@ -197,10 +197,14 @@ public class WebVRCamera : MonoBehaviour
 		}
 
 		if (active == true) {
-			leftHandObj.transform.rotation = lhr;
-			leftHandObj.transform.position = lhp;
-			rightHandObj.transform.rotation = rhr;
-			rightHandObj.transform.position = rhp;
+			if (leftHandObj) {
+				leftHandObj.transform.rotation = lhr;
+				leftHandObj.transform.position = lhp;
+			}
+			if (rightHandObj) {
+				rightHandObj.transform.rotation = rhr;
+				rightHandObj.transform.position = rhp;
+			}
 
 			// apply camera projection and view matrices.
 			if (!clv.isIdentity || !clp.isIdentity || !crv.isIdentity || !crp.isIdentity) {
