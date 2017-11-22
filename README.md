@@ -29,3 +29,16 @@ Works with HTC VIVE and Oculus Rift using a WebVR enabled browser.
 6. Once the build is completed, browse to the build open `index.html` from a WebVR enabled browser.
 
 You may need to serve the files from a local web server if your browser does not support running content from `file://` url's.
+
+
+## License
+
+All code and content within this source-code repository is, unless otherwise specified, licensed under the [**Creative Commons Zero v1.0 Universal** license (CC0 1.0 Universal; Public Domain Dedication)](LICENSE.md).
+
+You can copy, modify, distribute and perform this work, even for commercial purposes, all without asking permission.
+
+For more information, refer to these following links:
+
+* a copy of the [license](LICENSE.md) in [this source-code repository](https://github.com/caseyyee/unity-webvr-export)
+* the [human-readable summary](https://creativecommons.org/publicdomain/zero/1.0/) of the [full text of the legal code](https://creativecommons.org/publicdomain/zero/1.0/legalcode)
+* the [full text of the legal code](https://creativecommons.org/publicdomain/zero/1.0/legalcode)
