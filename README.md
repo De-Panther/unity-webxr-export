@@ -1,34 +1,36 @@
 # Unity WebVR Assets
 
-### WebVR assets for creating WebVR-enabled Unity projects.
+WebVR assets for creating [WebVR](https://webvr.rocks/)-enabled [Unity3D](https://unity3d.com/) projects.
 
-![Preview](https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/img/preview.gif)
+![Preview of Unity WebVR-exported project in the browser](https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/img/preview.gif)
 
-### [Try it out!](https://caseyyee.github.io/unity-webvr-export/)
+**[Try it out!](https://caseyyee.github.io/unity-webvr-export/)**
 
-Works with HTC VIVE and Oculus Rift using a WebVR enabled browser.
+Works with [HTC VIVE](https://webvr.rocks/htc_vive) and [Oculus Rift](https://webvr.rocks/oculus_rift) using a [WebVR-enabled browser](https://webvr.rocks/#browsers).
+
 
 ## How to use
 
-### Open and Build project
+### With an existing Unity project
 
-1. Clone or Download the contents of this repository.
+1. [**Download this ZIP file**](https://github.com/caseyyee/unity-webvr-export/archive/master.zip) containing the contents of this repository. Or you can clone the Git repository locally to your machine:
+    ```sh
+    git clone https://github.com/caseyyee/unity-webvr-export.git && cd unity-webvr-export
+    ```
+2. Launch **Unity**.
+3. Open your existing Unity project: `File > Open Project`.
+3. Open `File > Build Settings`, and select the `WebGL` platform.
 
-2. Open the project from `File > Open Project` in Unity.
+    <img src="https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/img/build-settings.png" width="550">
 
-3. Go to `File > Build Settings`, select the _WebGL_ platform.
+4. From `Player Settings` (`Edit > Project Settings > Player`), select the **`WebGL settings`** tab (HTML5 icon), toggle the **`Resolution and Presentation`** view, and select **`WebVR`** for the `WebGL Template`.
 
-<img src="https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/img/build-settings.png" width="550">
+    <img src="https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/img/webgl-template.png" width="250">
 
-4. Select _Player Settings_ and from _Settings for WebGL_ select the `WebVR` template.
-
-<img src="https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/img/webgl-template.png" width="250">
-
-5. Press _Build_ and select a location for your build.
-
-6. Once the build is completed, browse to the build open `index.html` from a WebVR enabled browser.
-
-You may need to serve the files from a local web server if your browser does not support running content from `file://` url's.
+5. Select **`File > Build & Run`**.
+    > Or select `File > Build Settings …`, and choose a location for your build.
+6. Once the build has completed, your web browser will automatically open the project. Make sure you are running the game in a [*WebVR-capable browser*](https://webvr.rocks/#browsers).
+    > Alternatively, if you ran `Build`, instead of `Build & Run`, you can run a [local static-file web server](https://aframe.io/docs/0.7.0/introduction/installation.html#use-a-local-server) and load the `index.html` document from your WebVR-capable browser.
 
 
 ## License
