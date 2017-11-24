@@ -17,14 +17,17 @@ ExportedObj/
 *.booproj
 *.svd
 
-
-# Unity3D generated meta files
+# Unity3D-generated meta files
 *.pidb.meta
 
-# Unity3D Generated File On Crash Reports
+# Unity3D-generated file from crash reports
 sysinfo.txt
 
-# Builds
+# Unity3D-generated file for Ads Settings
+/ProjectSettings/UnityAdsSettings.asset
+
+# Android builds
 *.apk
 
+# Visual Studio Code settings
 .vscode/*
