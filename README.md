@@ -9,9 +9,9 @@ WebVR assets for creating [WebVR](https://webvr.rocks/)-enabled [Unity3D](https:
 Works with [HTC VIVE](https://webvr.rocks/htc_vive) and [Oculus Rift](https://webvr.rocks/oculus_rift) using a [WebVR-enabled browser](https://webvr.rocks/#browsers).
 
 
-## How to use
+## Setup instructions
 
-### With an existing Unity project
+With an existing Unity project:
 
 1. [**Download this ZIP file**](https://github.com/caseyyee/unity-webvr-export/archive/master.zip) containing the contents of this repository. Or you can clone the Git repository locally to your machine:
     ```sh
