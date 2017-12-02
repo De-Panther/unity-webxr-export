@@ -1,39 +1,22 @@
 (function () {
   'use strict';
 
+  var windowRaf = window.requestAnimationFrame;
   var vrDisplay = null;
   var canvas = null;
   var frameData = null;
   var inVR = false;
   var isPresenting = false;
   var testTimeStart = null;
-  var leftProjectionMatrix = [];
-  var rightProjectionMatrix = [];
-  var leftViewMatrix = [];
-  var rightViewMatrix = [];
+  var leftProjectionMatrix = mat4.create();
+  var rightProjectionMatrix = mat4.create();
+  var leftViewMatrix = mat4.create();
+  var rightViewMatrix = mat4.create();
+  var sitStand = mat4.create();
   var entervrButton = document.querySelector('#entervr');
   var container = document.querySelector('#game');
   var loading = document.getElementById('loader');
-  var windowRaf = window.requestAnimationFrame;
-
-  function getSitStand() {
-    var ss = mat4.create();
-
-    // if (vrDisplay.stageParameters) {
-    //   mat4.copy(ss, vrDisplay.stageParameters.sittingToStandingTransform);
-    // } else {
-      mat4.identity(ss);
-      // mat4.fromYRotation(ss, Math.PI/2);
-      mat4.translate(ss, ss, [0, 1.5, 0]);
-    // }
-
-    // mat4.transpose(ss, ss);
-    // ss[2] *= -1;
-    // ss[6] *= -1;
-    // ss[10] *= -1;
-    // ss[14] *= -1;
-    return Array.from(ss);
-  }
+  var defaultHeight = 1.5;
 
   function getVRDisplays() {
     if (navigator.getVRDisplays) {
@@ -110,34 +93,37 @@
     vrDisplay.getFrameData(frameData);
 
     if (frameData) {
-      var lpm = mat4.create();
-      mat4.copy(lpm, frameData.leftProjectionMatrix);
-      mat4.transpose(lpm, lpm);
-      leftProjectionMatrix = Array.from(lpm);
+      // convert view and projection matrices for use in Unity.
+      mat4.copy(leftProjectionMatrix, frameData.leftProjectionMatrix);
+      mat4.transpose(leftProjectionMatrix, leftProjectionMatrix);
 
-      var rpm = mat4.create();
-      mat4.copy(rpm, frameData.rightProjectionMatrix);
-      mat4.transpose(rpm, rpm);
-      rightProjectionMatrix = Array.from(rpm);
+      mat4.copy(rightProjectionMatrix, frameData.rightProjectionMatrix);
+      mat4.transpose(rightProjectionMatrix, rightProjectionMatrix);
 
-      var lvm = mat4.create();
-      mat4.copy(lvm, frameData.leftViewMatrix);
-      mat4.transpose(lvm, lvm);
-      lvm[2] *= -1;
-      lvm[6] *= -1;
-      lvm[10] *= -1;
-      lvm[14] *= -1;
-      leftViewMatrix = Array.from(lvm);
+      mat4.copy(leftViewMatrix, frameData.leftViewMatrix);
+      mat4.transpose(leftViewMatrix, leftViewMatrix);
+      leftViewMatrix[2] *= -1;
+      leftViewMatrix[6] *= -1;
+      leftViewMatrix[10] *= -1;
+      leftViewMatrix[14] *= -1;
 
-      var rvm = mat4.create();
-      mat4.copy(rvm, frameData.rightViewMatrix);
-      mat4.transpose(rvm,rvm);
-      rvm[2] *= -1;
-      rvm[6] *= -1;
-      rvm[10] *= -1;
-      rvm[14] *= -1;
-      rightViewMatrix = Array.from(rvm);
+      mat4.copy(rightViewMatrix, frameData.rightViewMatrix);
+      mat4.transpose(rightViewMatrix, rightViewMatrix);
+      rightViewMatrix[2] *= -1;
+      rightViewMatrix[6] *= -1;
+      rightViewMatrix[10] *= -1;
+      rightViewMatrix[14] *= -1;
     }
+
+    // Sit Stand transform
+    if (vrDisplay.stageParameters) {
+      mat4.copy(sitStand, vrDisplay.stageParameters.sittingToStandingTransform);
+    } else {
+      mat4.identity(sitStand);
+      mat4.translate(sitStand, sitStand, [0, defaultHeight, 0]);
+    }
+    mat4.transpose(sitStand, sitStand);
+    sitStand = Array.from(sitStand);
 
     // gamepads
     var gamepads = navigator.getGamepads();
@@ -166,11 +152,11 @@
     }
 
     var vrData = {
-      leftProjectionMatrix: leftProjectionMatrix,
-      rightProjectionMatrix: rightProjectionMatrix,
-      leftViewMatrix: leftViewMatrix,
-      rightViewMatrix: rightViewMatrix,
-      sitStand : getSitStand(),
+      leftProjectionMatrix: Array.from(leftProjectionMatrix),
+      rightProjectionMatrix: Array.from(rightProjectionMatrix),
+      leftViewMatrix: Array.from(leftViewMatrix),
+      rightViewMatrix: Array.from(rightViewMatrix),
+      sitStand : Array.from(sitStand),
       controllers: vrGamepads
     };
 
@@ -204,45 +190,6 @@
       testTimeStart = performance.now();
       gameInstance.SendMessage('WebVRCameraSet', 'TestTime');
     }
-  }
-
-  // transforms webGL matrix for use in Unity.
-  function transformMatrixToUnity(array, flipZ) {
-    // if (flipZ) {
-    //   mat4.scale(array, array, [1, 1, -1])
-    //   // mat4.invert(array, array);
-    // }
-    mat4.transpose(array, array);
-
-
-    // if (flipZ) {
-    //   // flip z to work with Unity coordinates.
-    //   array[8] *= -1;
-    //   array[9] *= -1;
-    //   array[10] *= -1;
-    //   array[11] *= -1;
-    // }
-
-    // // transpose to Unity column major order.
-    // var unityArray = new Array(16);
-    // unityArray[0] = array[0];
-    // unityArray[1] = array[4];
-    // unityArray[2] = array[8];
-    // unityArray[3] = array[12];
-    // unityArray[4] = array[1];
-    // unityArray[5] = array[5];
-    // unityArray[6] = array[9];
-    // unityArray[7] = array[13];
-    // unityArray[8] = array[2];
-    // unityArray[9] = array[6];
-    // unityArray[10] = array[10];
-    // unityArray[11] = array[14];
-    // unityArray[12] = array[3];
-    // unityArray[13] = array[7];
-    // unityArray[14] = array[11];
-    // unityArray[15] = array[15];
-
-    return Array.from(array);
   }
 
   function onRequestAnimationFrame(cb) {
