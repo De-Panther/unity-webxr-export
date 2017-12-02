@@ -11,20 +11,29 @@
   var rightProjectionMatrix = [];
   var leftViewMatrix = [];
   var rightViewMatrix = [];
-
-  var ss = mat4.create();
-  mat4.identity(ss);
-  // mat4.fromYRotation(ss, Math.PI/2);
-  mat4.translate(ss, ss, [0, 1.5, 0]);
-  // mat4.transpose(ss, ss);
-
-  //var sitStand = transformMatrixToUnity(ss, false);;
-  var sitStand = ss;
-
   var entervrButton = document.querySelector('#entervr');
   var container = document.querySelector('#game');
   var loading = document.getElementById('loader');
   var windowRaf = window.requestAnimationFrame;
+
+  function getSitStand() {
+    var ss = mat4.create();
+
+    // if (vrDisplay.stageParameters) {
+    //   mat4.copy(ss, vrDisplay.stageParameters.sittingToStandingTransform);
+    // } else {
+      mat4.identity(ss);
+      // mat4.fromYRotation(ss, Math.PI/2);
+      mat4.translate(ss, ss, [0, 1.5, 0]);
+    // }
+
+    // mat4.transpose(ss, ss);
+    // ss[2] *= -1;
+    // ss[6] *= -1;
+    // ss[10] *= -1;
+    // ss[14] *= -1;
+    return Array.from(ss);
+  }
 
   function getVRDisplays() {
     if (navigator.getVRDisplays) {
@@ -130,11 +139,6 @@
       rightViewMatrix = Array.from(rvm);
     }
 
-    // sitstand transform
-    if (vrDisplay.stageParameters) {
-      // sitStand = transformMatrixToUnity(vrDisplay.stageParameters.sittingToStandingTransform, false);
-    }
-
     // gamepads
     var gamepads = navigator.getGamepads();
     var vrGamepads = [];
@@ -166,7 +170,7 @@
       rightProjectionMatrix: rightProjectionMatrix,
       leftViewMatrix: leftViewMatrix,
       rightViewMatrix: rightViewMatrix,
-      sitStand : [],
+      sitStand : getSitStand(),
       controllers: vrGamepads
     };
 

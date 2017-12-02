@@ -91,25 +91,16 @@ public class WebVRCamera : MonoBehaviour
 		VRData data = VRData.CreateFromJSON (jsonString);
 
 		// left projection matrix
-		if (data.leftProjectionMatrix.Length > 0) {
-			clp = numbersToMatrix (data.leftProjectionMatrix);
-		}
-
+		clp = numbersToMatrix (data.leftProjectionMatrix);
+	
 		// left view matrix
-		if (data.leftViewMatrix.Length > 0) {
-			clv = numbersToMatrix (data.leftViewMatrix);
-		}
-
+		clv = numbersToMatrix (data.leftViewMatrix);
 
 		// right projection matrix
-		if (data.rightProjectionMatrix.Length > 0) {
-			crp = numbersToMatrix (data.rightProjectionMatrix);
-		}
+		crp = numbersToMatrix (data.rightProjectionMatrix);
 
 		// right view matrix
-		if (data.rightViewMatrix.Length > 0) {
-			crv = numbersToMatrix (data.rightViewMatrix);
-		}
+		crv = numbersToMatrix (data.rightViewMatrix);
 
 		// sit stand matrix
 		if (data.sitStand.Length > 0) {
@@ -234,8 +225,8 @@ public class WebVRCamera : MonoBehaviour
 			// apply camera projection and view matrices.
 //			if (!clv.isIdentity || !clp.isIdentity || !crv.isIdentity || !crp.isIdentity) {
 				// apply sit stand transform
-//				clv *= sitStand.inverse;
-//				crv *= sitStand.inverse;
+				clv *= sitStand.inverse;
+				crv *= sitStand.inverse;
 
 				cameraL.worldToCameraMatrix = clv;
 				cameraL.projectionMatrix = clp;
