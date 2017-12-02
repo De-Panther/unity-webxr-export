@@ -34,7 +34,8 @@ public class WebVRCamera : MonoBehaviour
 	Matrix4x4 crv = Matrix4x4.identity;
 
 	// sit stand room transform
-	Matrix4x4 sitStand = Matrix4x4.Translate (new Vector3 (0, 1.2f, 0));
+	//Matrix4x4 sitStand = Matrix4x4.Translate (new Vector3 (0, 1.2f, 0));
+	Matrix4x4 sitStand = Matrix4x4.identity;
 
     bool active = false; // vr mode
     
@@ -90,13 +91,25 @@ public class WebVRCamera : MonoBehaviour
 		VRData data = VRData.CreateFromJSON (jsonString);
 
 		// left projection matrix
-		clp = numbersToMatrix (data.leftProjectionMatrix);
+		if (data.leftProjectionMatrix.Length > 0) {
+			clp = numbersToMatrix (data.leftProjectionMatrix);
+		}
+
 		// left view matrix
-		clv = numbersToMatrix (data.leftViewMatrix);
+		if (data.leftViewMatrix.Length > 0) {
+			clv = numbersToMatrix (data.leftViewMatrix);
+		}
+
+
 		// right projection matrix
-		crp = numbersToMatrix (data.rightProjectionMatrix);
+		if (data.rightProjectionMatrix.Length > 0) {
+			crp = numbersToMatrix (data.rightProjectionMatrix);
+		}
+
 		// right view matrix
-		crv = numbersToMatrix (data.rightViewMatrix);
+		if (data.rightViewMatrix.Length > 0) {
+			crv = numbersToMatrix (data.rightViewMatrix);
+		}
 
 		// sit stand matrix
 		if (data.sitStand.Length > 0) {
@@ -178,7 +191,13 @@ public class WebVRCamera : MonoBehaviour
 		cameraL = GameObject.Find("CameraL").GetComponent<Camera>();
 		cameraR = GameObject.Find("CameraR").GetComponent<Camera>();
 
-		cameraMain.worldToCameraMatrix *= sitStand.inverse;
+		clp = cameraL.projectionMatrix;
+		crp = cameraR.projectionMatrix;
+
+		clv = cameraL.worldToCameraMatrix;
+		crv = cameraR.worldToCameraMatrix;
+
+//		cameraMain.worldToCameraMatrix *= sitStand.inverse;
 
 		changeMode("normal");
 
@@ -198,25 +217,31 @@ public class WebVRCamera : MonoBehaviour
 
 		if (active == true) {
 			if (leftHandObj) {
+//				leftHandObj.GetComponent<Renderer>().enabled = true;
 				leftHandObj.transform.rotation = lhr;
 				leftHandObj.transform.position = lhp;
+			} else {
+//				leftHandObj.GetComponent<Renderer>().enabled = false;
 			}
 			if (rightHandObj) {
+//				rightHandObj.GetComponent<Renderer>().enabled = true;
 				rightHandObj.transform.rotation = rhr;
 				rightHandObj.transform.position = rhp;
+			} else {
+//				rightHandObj.GetComponent<Renderer>().enabled = false;
 			}
 
 			// apply camera projection and view matrices.
-			if (!clv.isIdentity || !clp.isIdentity || !crv.isIdentity || !crp.isIdentity) {
+//			if (!clv.isIdentity || !clp.isIdentity || !crv.isIdentity || !crp.isIdentity) {
 				// apply sit stand transform
-				clv *= sitStand.inverse;
-				crv *= sitStand.inverse;
+//				clv *= sitStand.inverse;
+//				crv *= sitStand.inverse;
 
 				cameraL.worldToCameraMatrix = clv;
 				cameraL.projectionMatrix = clp;
 				cameraR.worldToCameraMatrix = crv;
 				cameraR.projectionMatrix = crp;
-			}
+//			}
 		}
 
 		#if !UNITY_EDITOR && UNITY_WEBGL

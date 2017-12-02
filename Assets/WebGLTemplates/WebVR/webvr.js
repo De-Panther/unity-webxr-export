@@ -11,7 +11,16 @@
   var rightProjectionMatrix = [];
   var leftViewMatrix = [];
   var rightViewMatrix = [];
-  var sitStand = [];
+
+  var ss = mat4.create();
+  mat4.identity(ss);
+  // mat4.fromYRotation(ss, Math.PI/2);
+  mat4.translate(ss, ss, [0, 1.5, 0]);
+  // mat4.transpose(ss, ss);
+
+  //var sitStand = transformMatrixToUnity(ss, false);;
+  var sitStand = ss;
+
   var entervrButton = document.querySelector('#entervr');
   var container = document.querySelector('#game');
   var loading = document.getElementById('loader');
@@ -20,9 +29,11 @@
   function getVRDisplays() {
     if (navigator.getVRDisplays) {
       navigator.getVRDisplays().then(function(displays) {
-        vrDisplay = displays[displays.length - 1];
-        onResize();
-        onAnimate();
+        if (displays.length > 0) {
+          vrDisplay = displays[displays.length - 1];
+          onResize();
+          onAnimate();
+        }
       });
     } else {
       console.log('Your browser does not support WebVR!');
@@ -90,15 +101,38 @@
     vrDisplay.getFrameData(frameData);
 
     if (frameData) {
-      leftProjectionMatrix = transformMatrixToUnity(frameData.leftProjectionMatrix, false);
-      rightProjectionMatrix = transformMatrixToUnity(frameData.rightProjectionMatrix, false);
-      leftViewMatrix = transformMatrixToUnity(frameData.leftViewMatrix, true);
-      rightViewMatrix = transformMatrixToUnity(frameData.rightViewMatrix, true);
+      var lpm = mat4.create();
+      mat4.copy(lpm, frameData.leftProjectionMatrix);
+      mat4.transpose(lpm, lpm);
+      leftProjectionMatrix = Array.from(lpm);
+
+      var rpm = mat4.create();
+      mat4.copy(rpm, frameData.rightProjectionMatrix);
+      mat4.transpose(rpm, rpm);
+      rightProjectionMatrix = Array.from(rpm);
+
+      var lvm = mat4.create();
+      mat4.copy(lvm, frameData.leftViewMatrix);
+      mat4.transpose(lvm, lvm);
+      lvm[2] *= -1;
+      lvm[6] *= -1;
+      lvm[10] *= -1;
+      lvm[14] *= -1;
+      leftViewMatrix = Array.from(lvm);
+
+      var rvm = mat4.create();
+      mat4.copy(rvm, frameData.rightViewMatrix);
+      mat4.transpose(rvm,rvm);
+      rvm[2] *= -1;
+      rvm[6] *= -1;
+      rvm[10] *= -1;
+      rvm[14] *= -1;
+      rightViewMatrix = Array.from(rvm);
     }
 
     // sitstand transform
     if (vrDisplay.stageParameters) {
-      sitStand = transformMatrixToUnity(vrDisplay.stageParameters.sittingToStandingTransform, false);
+      // sitStand = transformMatrixToUnity(vrDisplay.stageParameters.sittingToStandingTransform, false);
     }
 
     // gamepads
@@ -132,7 +166,7 @@
       rightProjectionMatrix: rightProjectionMatrix,
       leftViewMatrix: leftViewMatrix,
       rightViewMatrix: rightViewMatrix,
-      sitStand : sitStand,
+      sitStand : [],
       controllers: vrGamepads
     };
 
@@ -170,34 +204,41 @@
 
   // transforms webGL matrix for use in Unity.
   function transformMatrixToUnity(array, flipZ) {
-    if (flipZ) {
-      // flip z to work with Unity coordinates.
-      array[8] *= -1;
-      array[9] *= -1;
-      array[10] *= -1;
-      array[11] *= -1;
-    }
+    // if (flipZ) {
+    //   mat4.scale(array, array, [1, 1, -1])
+    //   // mat4.invert(array, array);
+    // }
+    mat4.transpose(array, array);
 
-    // transpose to Unity column major order.
-    var unityArray = new Array(16);
-    unityArray[0] = array[0];
-    unityArray[1] = array[4];
-    unityArray[2] = array[8];
-    unityArray[3] = array[12];
-    unityArray[4] = array[1];
-    unityArray[5] = array[5];
-    unityArray[6] = array[9];
-    unityArray[7] = array[13];
-    unityArray[8] = array[2];
-    unityArray[9] = array[6];
-    unityArray[10] = array[10];
-    unityArray[11] = array[14];
-    unityArray[12] = array[3];
-    unityArray[13] = array[7];
-    unityArray[14] = array[11];
-    unityArray[15] = array[15];
 
-    return unityArray;
+    // if (flipZ) {
+    //   // flip z to work with Unity coordinates.
+    //   array[8] *= -1;
+    //   array[9] *= -1;
+    //   array[10] *= -1;
+    //   array[11] *= -1;
+    // }
+
+    // // transpose to Unity column major order.
+    // var unityArray = new Array(16);
+    // unityArray[0] = array[0];
+    // unityArray[1] = array[4];
+    // unityArray[2] = array[8];
+    // unityArray[3] = array[12];
+    // unityArray[4] = array[1];
+    // unityArray[5] = array[5];
+    // unityArray[6] = array[9];
+    // unityArray[7] = array[13];
+    // unityArray[8] = array[2];
+    // unityArray[9] = array[6];
+    // unityArray[10] = array[10];
+    // unityArray[11] = array[14];
+    // unityArray[12] = array[3];
+    // unityArray[13] = array[7];
+    // unityArray[14] = array[11];
+    // unityArray[15] = array[15];
+
+    return Array.from(array);
   }
 
   function onRequestAnimationFrame(cb) {
@@ -208,15 +249,15 @@
     }
   }
 
-  // shim raf so that we can drive framerate using VR display.
-  window.requestAnimationFrame = onRequestAnimationFrame;
+  function init() {
+    // shim raf so that we can drive framerate using VR display.
+    window.requestAnimationFrame = onRequestAnimationFrame;
+    // messages from Unity.
+    document.addEventListener('Unity', onUnity);
+    window.addEventListener('resize', onResize, true);
+    document.addEventListener('keydown', onKeyDown);
+    entervrButton.addEventListener('click', onEnterVR);
+  }
 
-  // listen for any messages from Unity.
-  document.addEventListener('Unity', onUnity);
-
-  window.addEventListener('resize', onResize, true);
-
-  document.addEventListener('keydown', onKeyDown);
-
-  entervrButton.addEventListener('click', onEnterVR);
+  init();
 })();
