@@ -118,7 +118,7 @@ public class WebVRCamera : MonoBehaviour
 					sitStand.GetColumn (1)
 				);
 				Vector3 p = sitStand.MultiplyPoint(position);
-				Quaternion r = rotation * sitStandRotation;
+				Quaternion r = sitStandRotation * rotation;
 
 				if (control.hand == "left") {
 					lhp = p;
