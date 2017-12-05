@@ -13,14 +13,29 @@
   <script>
     var gameInstance = UnityLoader.instantiate("gameContainer", "%UNITY_WEBGL_BUILD_URL%", {
       // Preserve drawing buffer is needed for WebVR content to be mirrored out into canvas.
-      Module:{"webglContextAttributes": { "preserveDrawingBuffer" : true }}
+      Module:{"webglContextAttributes": { "preserveDrawingBuffer" : true }},
+      onProgress: unityProgress
     });
+
+    function unityProgress(gameInstance, progress) {
+      if (!gameInstance.progress) {
+        gameInstance.progress = document.querySelector('#progress');
+        gameInstance.loading = document.querySelector('.loading');
+      }
+
+      gameInstance.progress.style.width = (100 * progress) + "%";
+
+      if (progress === 1) {
+        gameInstance.loading.innerHTML = "Starting";
+      }
+    }
   </script>
 </head>
 
 <body>
   <div id="loader">
-    <p>Loading...</p>
+    <div class="loading">Loading</div>
+    <div id="progress"></div>
   </div>
 
   <div id="game">

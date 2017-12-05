@@ -425,6 +425,18 @@ Prefab:
 GameObject:
   m_PrefabParentObject: {fileID: 100028, guid: 4b18d06f3b9604e6b92035bd9ebf2d74, type: 3}
   m_PrefabInternal: {fileID: 529920626}
+--- !u!65 &529920628
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 529920627}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.25, y: 0.25, z: 0.25}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &821609230
 GameObject:
   m_ObjectHideFlags: 0
@@ -598,6 +610,18 @@ Prefab:
 GameObject:
   m_PrefabParentObject: {fileID: 100028, guid: f5c9127e158dd4b55885b560d1fa02d3, type: 3}
   m_PrefabInternal: {fileID: 1203986530}
+--- !u!65 &1203986532
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1203986531}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.25, y: 0.25, z: 0.25}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1227031901
 GameObject:
   m_ObjectHideFlags: 0
@@ -675,7 +699,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 80
   orthographic: 0
   orthographic size: 5
   m_Depth: 0
