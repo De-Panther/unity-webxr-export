@@ -28,10 +28,11 @@ public class WebVRCamera : MonoBehaviour
 	Quaternion rhr;
 
 	// camera view and projection matrices
-	Matrix4x4 clp = Matrix4x4.identity;
-	Matrix4x4 clv = Matrix4x4.identity;
-	Matrix4x4 crp = Matrix4x4.identity;
-	Matrix4x4 crv = Matrix4x4.identity;
+	Matrix4x4 clp = Matrix4x4.identity; // left projection matrix
+	Matrix4x4 clv = Matrix4x4.identity; // left view matrix
+	Matrix4x4 crp = Matrix4x4.identity; // right projection matrix
+	Matrix4x4 crv = Matrix4x4.identity; // left view matrix
+	Matrix4x4 cmv = Matrix4x4.identity; // main 2D camera view matrix
 
 	// sit stand room transform
 	//Matrix4x4 sitStand = Matrix4x4.Translate (new Vector3 (0, 1.2f, 0));
@@ -188,8 +189,6 @@ public class WebVRCamera : MonoBehaviour
 		clv = cameraL.worldToCameraMatrix;
 		crv = cameraR.worldToCameraMatrix;
 
-//		cameraMain.worldToCameraMatrix *= sitStand.inverse;
-
 		changeMode("normal");
 
 		#if !UNITY_EDITOR && UNITY_WEBGL
@@ -206,22 +205,23 @@ public class WebVRCamera : MonoBehaviour
 			toggleMode ();
 		}
 
-		if (active == true) {
-			if (leftHandObj) {
-				leftHandObj.transform.rotation = lhr;
-				leftHandObj.transform.position = lhp;
-			}
-			if (rightHandObj) {
-				rightHandObj.transform.rotation = rhr;
-				rightHandObj.transform.position = rhp;
-			}
+		if (leftHandObj) {
+			leftHandObj.transform.rotation = lhr;
+			leftHandObj.transform.position = lhp;
+		}
+		if (rightHandObj) {
+			rightHandObj.transform.rotation = rhr;
+			rightHandObj.transform.position = rhp;
+		}
 
-			clv *= sitStand.inverse;
-			crv *= sitStand.inverse;
-			cameraL.worldToCameraMatrix = clv;
+		if (active) {
+			cameraL.worldToCameraMatrix = clv * sitStand.inverse;
 			cameraL.projectionMatrix = clp;
-			cameraR.worldToCameraMatrix = crv;
+			cameraR.worldToCameraMatrix = crv * sitStand.inverse;
 			cameraR.projectionMatrix = crp;
+		} else {
+			// apply left 
+			cameraMain.worldToCameraMatrix = clv * sitStand.inverse;
 		}
 
 		#if !UNITY_EDITOR && UNITY_WEBGL
