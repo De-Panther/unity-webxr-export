@@ -1,45 +1,154 @@
 html, body {
-  overflow:hidden;
+  overflow: hidden;
+  font-size: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
 html, body, #canvas, #loader {
   margin: 0;
-  padding: 0; 
-  width:100%;
-  height:100%;
+  padding: 0;
+  width: 100%;
+  height: 100%;
   top: 0%;
   left: 0%;
 }
 
-#loader {
-  background: #364360;
-  position:absolute;
-  z-index:99;
+a:link, a:visited {
+  color: #198EFB;
 }
 
-#loader p {
-  margin:20% auto;
-  color:#fff;
-  text-shadow:2px 2px 2px #000;
-  text-align:center;
-  font-family: "Courier New", Courier, monospace;
-  font-size:5em;
+#loader {
+  background: #2C3146;
 }
+
+#loader[data-complete='true'] {
+  display: none;
+}
+
+#progress {
+  position: absolute;
+  bottom: 0px;
+  width: 0%;
+  background: #198EFB;
+  height: 80px;
+}
+
+.loading {
+  display: flex;
+  color: #fff;
+  align-items: center;
+  justify-content: center;
+  font-size: 50px;
+  font-weight: light;
+  height: 100%;
+}
+
+/* loading dots */
+.loading:after {
+  content: ' .';
+  animation: dots 2s steps(5, end) infinite;
+}
+
+@keyframes dots {
+  0%, 20% {
+    color: rgba(0,0,0,0);
+    text-shadow:
+      .25em 0 0 rgba(0,0,0,0),
+      .5em 0 0 rgba(0,0,0,0);}
+  40% {
+    color: white;
+    text-shadow:
+      .25em 0 0 rgba(0,0,0,0),
+      .5em 0 0 rgba(0,0,0,0);}
+  60% {
+    text-shadow:
+      .25em 0 0 white,
+      .5em 0 0 rgba(0,0,0,0);}
+  80%, 100% {
+    text-shadow:
+      .25em 0 0 white,
+      .5em 0 0 white;}}
 
 #canvas {
   display: block;
   position: absolute;
-  z-index:0;
+  z-index: 0;
+}
+
+#vr {
+  position: absolute;
+  display: flex;
+  right: 30px;
+  bottom: 30px;
+}
+
+#status {
+  display: none;
+  background: #fff;
+  margin-right: 15px;
+  padding: 10px;
+}
+
+#status[data-enabled='true'] {
+  display: block;
 }
 
 #entervr {
   display: none;
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
-  width: 200px;
-  height: 200px;
-  background: transparent;
+  width: 100px;
+  height: 100px;
+  background: white;
   border: none;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 80%;
   background-image: url('vr.png');
 }
+
+#entervr[data-enabled='true'] {
+  display: block;
+}
+
+#entervr:hover {
+  background-color: #198EFB;
+  cursor: pointer;
+}
+
+#instruction {
+  position: absolute;
+  top: 0px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#instruction button {
+  background: #198EFB;
+  color: #fff;
+  font-size: 25px;
+  border: none;
+  padding: 15px 20px;
+  cursor: pointer;
+}
+
+#icons {
+  display: flex;
+}
+
+.panel {
+  display: none;
+  max-width: 50%;
+  background: white;
+  padding: 10px 30px;
+}
+
+.panel[data-enabled='true'] {
+  display: block;
+}
+
+.center {
+  text-align: center;
+}
+
