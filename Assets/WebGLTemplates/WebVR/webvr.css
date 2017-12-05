@@ -1,6 +1,6 @@
 html, body {
   overflow: hidden;
-  font-size: 18px;
+  font-size: 16px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
@@ -82,11 +82,15 @@ a:link, a:visited {
   bottom: 30px;
 }
 
-#vr-status {
+#status {
   display: none;
   background: #fff;
   margin-right: 15px;
   padding: 10px;
+}
+
+#status[data-enabled='true'] {
+  display: block;
 }
 
 #entervr {
@@ -129,12 +133,8 @@ a:link, a:visited {
   cursor: pointer;
 }
 
-#vr-icons {
+#icons {
   display: flex;
-}
-
-.not-ready {
-  filter: contrast(0.2) brightness(200%);
 }
 
 .panel {

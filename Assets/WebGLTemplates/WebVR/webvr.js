@@ -1,6 +1,13 @@
 (function () {
   'use strict';
 
+  var defaultHeight = 1.5;
+  var entervrButton = document.querySelector('#entervr');
+  var container = document.querySelector('#game');
+  var loader = document.querySelector('#loader');
+  var status = document.querySelector('#status');
+  var icons = document.querySelector('#icons');
+  var controller = document.querySelector('#motion-controller');
   var windowRaf = window.requestAnimationFrame;
   var vrDisplay = null;
   var canvas = null;
@@ -13,10 +20,8 @@
   var leftViewMatrix = mat4.create();
   var rightViewMatrix = mat4.create();
   var sitStand = mat4.create();
-  var entervrButton = document.querySelector('#entervr');
-  var container = document.querySelector('#game');
-  var loader = document.querySelector('#loader');
-  var defaultHeight = 1.5;
+  var gamepads = [];
+  var vrGamepads = [];
 
   function getVRDisplays() {
     if (navigator.getVRDisplays) {
@@ -27,6 +32,8 @@
           // check to see if we are polyfilled
           if (vrDisplay.displayName.indexOf('polyfill') > 0) {
             showInstruction(document.querySelector('#novr'));
+          } else {
+            status.dataset.enabled = true;
           }
           onResize();
           onAnimate();
@@ -135,8 +142,8 @@
     sitStand = Array.from(sitStand);
 
     // gamepads
-    var gamepads = navigator.getGamepads();
-    var vrGamepads = [];
+    gamepads = navigator.getGamepads();
+    vrGamepads = [];
     for (var i = 0; i < gamepads.length; ++i) {
       var gamepad = gamepads[i];
       if (gamepad) {
@@ -170,6 +177,8 @@
     };
 
     gameInstance.SendMessage('WebVRCameraSet', 'WebVRData', JSON.stringify(vrData));
+
+    updateStatus();
   }
 
   function onResize() {
@@ -210,6 +219,23 @@
       confirmButton.removeEventListener('click', onConfirm);
     }
   };
+
+  function updateStatus() {
+    if (parseInt(status.dataset.gamepads) !== vrGamepads.length) {
+      var controllerClassName = 'controller-icon';
+      var controlIcons = icons.getElementsByClassName(controllerClassName);
+      while(controlIcons.length > 0) {
+        controlIcons[0].parentNode.removeChild(controlIcons[0]);
+      };
+
+      vrGamepads.forEach(function (gamepad, i) {
+        var controllerIcon = document.importNode(controller.content, true);
+        controllerIcon.querySelector('img').className = controllerClassName;
+        icons.appendChild(controllerIcon);
+      })
+      status.dataset.gamepads = vrGamepads.length;
+    }
+  }
 
   function onRequestAnimationFrame(cb) {
     if (inVR && vrDisplay && vrDisplay.capabilities.canPresent) {
