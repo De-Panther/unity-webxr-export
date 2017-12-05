@@ -22,12 +22,7 @@
         gameInstance.progress = document.querySelector('#progress');
         gameInstance.loading = document.querySelector('.loading');
       }
-
       gameInstance.progress.style.width = (100 * progress) + "%";
-
-      if (progress === 1) {
-        gameInstance.loading.innerHTML = "Starting";
-      }
     }
   </script>
 </head>
