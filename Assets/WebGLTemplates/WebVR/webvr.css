@@ -71,18 +71,35 @@ a:link, a:visited {
   z-index: 0;
 }
 
+#vr {
+  position: absolute;
+  display: flex;
+  right: 30px;
+  bottom: 30px;
+}
+
+#vr-status {
+  background: #fff;
+  margin-right: 15px;
+  padding: 10px;
+}
+
 #entervr {
   /*display: none;*/
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
-  width: 200px;
-  height: 130px;
+  width: 100px;
+  height: 100px;
   /*background: transparent;*/
-  background: green;
+  background: white;
   border: none;
   background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 80%;
   background-image: url('vr.png');
+}
+
+#entervr:hover {
+  background-color: #198EFB;
+  cursor: pointer;
 }
 
 .instruction {
@@ -101,6 +118,15 @@ a:link, a:visited {
   font-size: 25px;
   border: none;
   padding: 15px 20px;
+  cursor: pointer;
+}
+
+#vr-icons {
+  display: flex;
+}
+
+.not-ready {
+  filter: contrast(0.2) brightness(200%);
 }
 
 .window {

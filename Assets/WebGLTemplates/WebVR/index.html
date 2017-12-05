@@ -56,7 +56,20 @@
     </div>
   </div>
 
-  <button id="entervr" value="Enter VR"></button>
+  <div id="vr">
+    <div id="vr-status">
+      <strong>Ready!</strong>
+
+      <div id="vr-icons">
+        <img src="vr.png" height="36" class="blue">
+        <img src="motion-controllers.png" height="33" class="not-ready">
+        <img src="motion-controllers.png" height="33">
+      </div>
+
+      <small><a href="https://webvr.rocks">Not working?</a></small>
+    </div>
+    <button id="entervr" value="Enter VR"></button>
+  </div>
 
   <script src="gl-matrix-min.js"></script>
   <script src="webvr.js"></script>
