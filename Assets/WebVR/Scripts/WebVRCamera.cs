@@ -208,31 +208,20 @@ public class WebVRCamera : MonoBehaviour
 
 		if (active == true) {
 			if (leftHandObj) {
-//				leftHandObj.GetComponent<Renderer>().enabled = true;
 				leftHandObj.transform.rotation = lhr;
 				leftHandObj.transform.position = lhp;
-			} else {
-//				leftHandObj.GetComponent<Renderer>().enabled = false;
 			}
 			if (rightHandObj) {
-//				rightHandObj.GetComponent<Renderer>().enabled = true;
 				rightHandObj.transform.rotation = rhr;
 				rightHandObj.transform.position = rhp;
-			} else {
-//				rightHandObj.GetComponent<Renderer>().enabled = false;
 			}
 
-			// apply camera projection and view matrices.
-//			if (!clv.isIdentity || !clp.isIdentity || !crv.isIdentity || !crp.isIdentity) {
-				// apply sit stand transform
-				clv *= sitStand.inverse;
-				crv *= sitStand.inverse;
-
-				cameraL.worldToCameraMatrix = clv;
-				cameraL.projectionMatrix = clp;
-				cameraR.worldToCameraMatrix = crv;
-				cameraR.projectionMatrix = crp;
-//			}
+			clv *= sitStand.inverse;
+			crv *= sitStand.inverse;
+			cameraL.worldToCameraMatrix = clv;
+			cameraL.projectionMatrix = clp;
+			cameraR.worldToCameraMatrix = crv;
+			cameraR.projectionMatrix = crp;
 		}
 
 		#if !UNITY_EDITOR && UNITY_WEBGL
