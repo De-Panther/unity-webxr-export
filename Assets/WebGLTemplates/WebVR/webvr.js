@@ -15,7 +15,7 @@
   var sitStand = mat4.create();
   var entervrButton = document.querySelector('#entervr');
   var container = document.querySelector('#game');
-  var loading = document.getElementById('loader');
+  var loading = document.querySelector('#loader');
   var defaultHeight = 1.5;
 
   function getVRDisplays() {
@@ -23,6 +23,11 @@
       navigator.getVRDisplays().then(function(displays) {
         if (displays.length > 0) {
           vrDisplay = displays[displays.length - 1];
+
+          // check to see if we are polyfilled
+          if (vrDisplay.displayName.indexOf('polyfill') > 0) {
+            showInstruction(document.querySelector('#novr'));
+          }
           onResize();
           onAnimate();
         }
@@ -195,6 +200,17 @@
       gameInstance.SendMessage('WebVRCameraSet', 'TestTime');
     }
   }
+
+  function showInstruction(el) {
+    var hideClass = 'display-none'
+    var confirmButton = el.querySelector('button');
+    el.classList.remove(hideClass);
+    confirmButton.addEventListener('click', onConfirm);
+    function onConfirm() {
+      el.classList.add(hideClass);
+      confirmButton.removeEventListener('click', onConfirm);
+    }
+  };
 
   function onRequestAnimationFrame(cb) {
     if (inVR && vrDisplay && vrDisplay.capabilities.canPresent) {

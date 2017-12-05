@@ -24,7 +24,7 @@ a:link, a:visited {
 #progress {
   position: absolute;
   bottom: 0px;
-  width: 60%;
+  width: 0%;
   background: #198EFB;
   height: 80px;
 }
@@ -79,16 +79,16 @@ a:link, a:visited {
 }
 
 #vr-status {
+  display: none;
   background: #fff;
   margin-right: 15px;
   padding: 10px;
 }
 
 #entervr {
-  /*display: none;*/
+  display: none;
   width: 100px;
   height: 100px;
-  /*background: transparent;*/
   background: white;
   border: none;
   background-position: center center;
@@ -102,7 +102,7 @@ a:link, a:visited {
   cursor: pointer;
 }
 
-.instruction {
+#instruction {
   position: absolute;
   top: 0px;
   width: 100%;
@@ -112,7 +112,7 @@ a:link, a:visited {
   justify-content: center;
 }
 
-.instruction button {
+#instruction button {
   background: #198EFB;
   color: #fff;
   font-size: 25px;
@@ -129,7 +129,7 @@ a:link, a:visited {
   filter: contrast(0.2) brightness(200%);
 }
 
-.window {
+.panel {
   max-width: 50%;
   background: white;
   padding: 10px 30px;
@@ -137,4 +137,8 @@ a:link, a:visited {
 
 .center {
   text-align: center;
+}
+
+.display-none {
+  display: none;
 }

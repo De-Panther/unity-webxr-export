@@ -42,16 +42,13 @@
     <div id="gameContainer"></div>
   </div>
 
-  <div class="instruction">
-    <div class="window novr">
+   <div id="instruction">
+    <div id="novr" class="panel display-none">
       <h3>You'll need a <a href="https://webvr.rocks/">WebVR enabled browser</a><br/> and VR headset to fully enjoy this experience.</h3>
-
       <p class="center"><img src="mousedrag.png" width="70"/></p>
-
-      <p class="center">In the meantime, <em>click and drag</em> to have a look around!</p>
-
+      <p class="center">In the meantime, <strong><em>click and drag</em></strong> to have a look around!</p>
       <p class="center">
-        <button>Gotit!</button>
+        <button class="confirm">Gotit!</button>
       </p>
     </div>
   </div>
@@ -59,13 +56,11 @@
   <div id="vr">
     <div id="vr-status">
       <strong>Ready!</strong>
-
       <div id="vr-icons">
         <img src="vr.png" height="36" class="blue">
         <img src="motion-controllers.png" height="33" class="not-ready">
         <img src="motion-controllers.png" height="33">
       </div>
-
       <small><a href="https://webvr.rocks">Not working?</a></small>
     </div>
     <button id="entervr" value="Enter VR"></button>
