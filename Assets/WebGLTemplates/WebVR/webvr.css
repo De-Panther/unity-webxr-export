@@ -21,6 +21,10 @@ a:link, a:visited {
   background: #2C3146;
 }
 
+#loader[data-complete='true'] {
+  display: none;
+}
+
 #progress {
   position: absolute;
   bottom: 0px;
@@ -30,8 +34,8 @@ a:link, a:visited {
 }
 
 .loading {
-  color: #fff;
   display: flex;
+  color: #fff;
   align-items: center;
   justify-content: center;
   font-size: 50px;
@@ -97,6 +101,10 @@ a:link, a:visited {
   background-image: url('vr.png');
 }
 
+#entervr[data-enabled='true'] {
+  display: block;
+}
+
 #entervr:hover {
   background-color: #198EFB;
   cursor: pointer;
@@ -130,15 +138,17 @@ a:link, a:visited {
 }
 
 .panel {
+  display: none;
   max-width: 50%;
   background: white;
   padding: 10px 30px;
+}
+
+.panel[data-enabled='true'] {
+  display: block;
 }
 
 .center {
   text-align: center;
 }
 
-.display-none {
-  display: none;
-}

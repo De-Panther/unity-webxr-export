@@ -15,7 +15,7 @@
   var sitStand = mat4.create();
   var entervrButton = document.querySelector('#entervr');
   var container = document.querySelector('#game');
-  var loading = document.querySelector('#loader');
+  var loader = document.querySelector('#loader');
   var defaultHeight = 1.5;
 
   function getVRDisplays() {
@@ -33,7 +33,7 @@
         }
 
         if (vrDisplay.capabilities.canPresent) {
-          entervrButton.style.display = 'block';
+          entervrButton.dataset.enabled = 'true';
         }
       });
     } else {
@@ -45,7 +45,7 @@
     if (msg.detail === "Ready") {
       // Get and hide Unity's canvas instance
       canvas = document.getElementById('#canvas');
-      loading.style.display = 'none';
+      loader.dataset.complete = 'true';
       getVRDisplays();
     }
 
@@ -202,12 +202,11 @@
   }
 
   function showInstruction(el) {
-    var hideClass = 'display-none'
     var confirmButton = el.querySelector('button');
-    el.classList.remove(hideClass);
+    el.dataset.enabled = true;
     confirmButton.addEventListener('click', onConfirm);
     function onConfirm() {
-      el.classList.add(hideClass);
+      el.dataset.enabled = false;
       confirmButton.removeEventListener('click', onConfirm);
     }
   };
