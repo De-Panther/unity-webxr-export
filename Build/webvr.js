@@ -1,6 +1,13 @@
 (function () {
   'use strict';
 
+  var defaultHeight = 1.5;
+  var entervrButton = document.querySelector('#entervr');
+  var container = document.querySelector('#game');
+  var loader = document.querySelector('#loader');
+  var status = document.querySelector('#status');
+  var icons = document.querySelector('#icons');
+  var controller = document.querySelector('#motion-controller');
   var windowRaf = window.requestAnimationFrame;
   var vrDisplay = null;
   var canvas = null;
@@ -13,18 +20,27 @@
   var leftViewMatrix = mat4.create();
   var rightViewMatrix = mat4.create();
   var sitStand = mat4.create();
-  var entervrButton = document.querySelector('#entervr');
-  var container = document.querySelector('#game');
-  var loading = document.getElementById('loader');
-  var defaultHeight = 1.5;
+  var gamepads = [];
+  var vrGamepads = [];
 
   function getVRDisplays() {
     if (navigator.getVRDisplays) {
       navigator.getVRDisplays().then(function(displays) {
         if (displays.length > 0) {
           vrDisplay = displays[displays.length - 1];
+
+          // check to see if we are polyfilled
+          if (vrDisplay.displayName.indexOf('polyfill') > 0) {
+            showInstruction(document.querySelector('#novr'));
+          } else {
+            status.dataset.enabled = true;
+          }
           onResize();
           onAnimate();
+        }
+
+        if (vrDisplay.capabilities.canPresent) {
+          entervrButton.dataset.enabled = 'true';
         }
       });
     } else {
@@ -36,7 +52,7 @@
     if (msg.detail === "Ready") {
       // Get and hide Unity's canvas instance
       canvas = document.getElementById('#canvas');
-      loading.style.display = 'none';
+      loader.dataset.complete = 'true';
       getVRDisplays();
     }
 
@@ -126,8 +142,8 @@
     sitStand = Array.from(sitStand);
 
     // gamepads
-    var gamepads = navigator.getGamepads();
-    var vrGamepads = [];
+    gamepads = navigator.getGamepads();
+    vrGamepads = [];
     for (var i = 0; i < gamepads.length; ++i) {
       var gamepad = gamepads[i];
       if (gamepad) {
@@ -161,6 +177,8 @@
     };
 
     gameInstance.SendMessage('WebVRCameraSet', 'WebVRData', JSON.stringify(vrData));
+
+    updateStatus();
   }
 
   function onResize() {
@@ -189,6 +207,33 @@
       console.log("pressed v, roundtrip time");
       testTimeStart = performance.now();
       gameInstance.SendMessage('WebVRCameraSet', 'TestTime');
+    }
+  }
+
+  function showInstruction(el) {
+    var confirmButton = el.querySelector('button');
+    el.dataset.enabled = true;
+    confirmButton.addEventListener('click', onConfirm);
+    function onConfirm() {
+      el.dataset.enabled = false;
+      confirmButton.removeEventListener('click', onConfirm);
+    }
+  };
+
+  function updateStatus() {
+    if (parseInt(status.dataset.gamepads) !== vrGamepads.length) {
+      var controllerClassName = 'controller-icon';
+      var controlIcons = icons.getElementsByClassName(controllerClassName);
+      while(controlIcons.length > 0) {
+        controlIcons[0].parentNode.removeChild(controlIcons[0]);
+      };
+
+      vrGamepads.forEach(function (gamepad, i) {
+        var controllerIcon = document.importNode(controller.content, true);
+        controllerIcon.querySelector('img').className = controllerClassName;
+        icons.appendChild(controllerIcon);
+      })
+      status.dataset.gamepads = vrGamepads.length;
     }
   }
 
