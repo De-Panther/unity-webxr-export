@@ -1,12 +1,3 @@
-@keyframes colors {
-  0%  {background-color: #00a;}
-  20%  {background-color: #0a0;}
-  40%  {background-color: #a00;}
-  60%  {background-color: #aa0;}
-  80%  {background-color: #0aa;}
-  100% {background-color: #00a;}
-}
-
 html, body {
   overflow:hidden;
 }
@@ -31,7 +22,7 @@ html, body, #canvas, #loader {
   color:#fff;
   text-shadow:2px 2px 2px #000;
   text-align:center;
-  font-family:"Courier New", Courier, monospace;
+  font-family: "Courier New", Courier, monospace;
   font-size:5em;
 }
 
@@ -42,7 +33,7 @@ html, body, #canvas, #loader {
 }
 
 #entervr {
-  /*display: none;*/
+  display: none;
   position: absolute;
   right: 10px;
   bottom: 10px;

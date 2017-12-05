@@ -26,6 +26,10 @@
           onResize();
           onAnimate();
         }
+
+        if (vrDisplay.capabilities.canPresent) {
+          entervrButton.style.display = 'block';
+        }
       });
     } else {
       console.log('Your browser does not support WebVR!');
