@@ -13,7 +13,6 @@
   var canvas = null;
   var frameData = null;
   var inVR = false;
-  var isPresenting = false;
   var testTimeStart = null;
   var leftProjectionMatrix = mat4.create();
   var rightProjectionMatrix = mat4.create();
@@ -68,7 +67,7 @@
       testTimeStart = null;
     }
 
-    if (msg.detail === "PostRender" && isPresenting) {
+    if (msg.detail === "PostRender" && vrDisplay && vrDisplay.isPresenting) {
       // WebVR: Indicate that we are ready to present the rendered frame to the VR display
       vrDisplay.submitFrame();
     }
@@ -86,7 +85,6 @@
           canvas.width = Math.max(leftEye.renderWidth, rightEye.renderWidth) * 2;
           canvas.height = Math.max(leftEye.renderHeight, rightEye.renderHeight);
           onResize();
-          isPresenting = true;
         });
       }
 
@@ -96,8 +94,6 @@
       inVR = false;
       if (vrDisplay.isPresenting) {
         vrDisplay.exitPresent();
-
-        isPresenting = false;
       }
       // starts stereo rendering in Unity.
       gameInstance.SendMessage('WebVRCameraSet', 'End');
