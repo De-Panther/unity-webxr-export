@@ -7,13 +7,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>%UNITY_WEB_NAME%</title>
   <meta name="description" content="%UNITY_WEB_NAME%">
-  <link rel="shortcut icon" href="favicon.ico">
-  <link rel="stylesheet" type="text/css" href="webvr.css" />
-  <script src="Build/UnityLoader.js"></script>
+  <link rel="icon" href="favicon.ico">
+  <link rel="stylesheet" type="text/css" href="webvr.css">
+  <script src="%UNITY_WEBGL_LOADER_URL%"></script>
   <script>
     var gameInstance = UnityLoader.instantiate("gameContainer", "%UNITY_WEBGL_BUILD_URL%", {
       // Preserve drawing buffer is needed for WebVR content to be mirrored out into canvas.
-      Module:{"webglContextAttributes": { "preserveDrawingBuffer" : true }},
+      Module: {"webglContextAttributes": { "preserveDrawingBuffer" : true }},
       onProgress: unityProgress
     });
 
@@ -25,6 +25,7 @@
       gameInstance.progress.style.width = (100 * progress) + "%";
     }
   </script>
+  <link rel="manifest" href="manifest.webmanifest">
 </head>
 
 <body>
