@@ -43,7 +43,7 @@ If you are a maintainer of this project, you will want to update the [`Build/` d
 
     <img src="https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/img/webgl-template.png" width="250">
 
-2. Launch `Edit > Build Settings > Project Settings`. Then, press the **`Build and Run`** button, and select the directory named `Build` as the destination directory.
+2. Launch `Edit > Build Settings > Project Settings`. Then, press the **`Build and Run`** button, and **`Save`** to the directory named **`Build`**.
 
     <img src="https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/img/build-webgl.png" width="250">
 
