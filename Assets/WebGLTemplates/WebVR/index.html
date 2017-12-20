@@ -1,70 +1,75 @@
-﻿<!doctype html>
-<html lang="en-us">
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>%UNITY_WEB_NAME%</title>
+    <meta name="description" content="%UNITY_WEB_NAME%">
+    <link rel="icon" href="favicon.ico">
+    <link rel="stylesheet" type="text/css" href="webvr.css">
+    <script src="%UNITY_WEBGL_LOADER_URL%"></script>
+    <script>
+      /* global UnityLoader */
+      (function () {
+        window.gameInstance = UnityLoader.instantiate('gameContainer', '%UNITY_WEBGL_BUILD_URL%', {
+          Module: {
+            // `preserveDrawingBuffer` is needed for WebVR content to be mirrored to the `<canvas>`.
+            webglContextAttributes: {
+              preserveDrawingBuffer: true
+            }
+          },
+          onProgress: unityProgress
+        });
 
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>%UNITY_WEB_NAME%</title>
-  <meta name="description" content="%UNITY_WEB_NAME%">
-  <link rel="icon" href="favicon.ico">
-  <link rel="stylesheet" type="text/css" href="webvr.css">
-  <script src="%UNITY_WEBGL_LOADER_URL%"></script>
-  <script>
-    var gameInstance = UnityLoader.instantiate("gameContainer", "%UNITY_WEBGL_BUILD_URL%", {
-      // Preserve drawing buffer is needed for WebVR content to be mirrored out into canvas.
-      Module: {"webglContextAttributes": { "preserveDrawingBuffer" : true }},
-      onProgress: unityProgress
-    });
+        function unityProgress (gameInstance, progress) {
+          if (!gameInstance.progress) {
+            gameInstance.progress = document.getElementById('progress');
+            gameInstance.loading = document.getElementById('loading');
+          }
+          gameInstance.progress.style.width = (100 * progress) + '%';
+        }
+      })();
+    </script>
+    <link rel="manifest" href="manifest.webmanifest">
+  </head>
 
-    function unityProgress(gameInstance, progress) {
-      if (!gameInstance.progress) {
-        gameInstance.progress = document.querySelector('#progress');
-        gameInstance.loading = document.querySelector('.loading');
-      }
-      gameInstance.progress.style.width = (100 * progress) + "%";
-    }
-  </script>
-  <link rel="manifest" href="manifest.webmanifest">
-</head>
-
-<body>
-  <div id="loader">
-    <div class="loading">Loading</div>
-    <div id="progress"></div>
-  </div>
-
-  <div id="game">
-    <div id="gameContainer"></div>
-  </div>
-
-  <div id="instruction">
-    <div id="novr" class="panel">
-      <h3>You'll need a <a href="https://webvr.rocks/">WebVR enabled browser</a><br/> and VR headset to fully enjoy this experience.</h3>
-      <p class="center"><img src="mousedrag.png" width="70"/></p>
-      <p class="center">In the meantime, <strong><em>click and drag</em></strong> to have a look around!</p>
-      <p class="center">
-        <button class="confirm">Gotit!</button>
-      </p>
+  <body>
+    <div id="loader">
+      <div id="loading" class="loading">Loading</div>
+      <div id="progress" class="progress"></div>
     </div>
-  </div>
 
-  <div id="vr">
-    <div id="status">
-      <strong>Ready!</strong>
-      <div id="icons">
-        <img src="vr.png" height="36">
-        <template id="motion-controller">
-          <img src="motion-controllers.png" height="33">
-        </template>
+    <div id="game">
+      <div id="gameContainer"></div>
+    </div>
+
+    <div id="instruction">
+      <div id="novr" class="panel center">
+        <h3>You&rsquo;ll need a <a href="https://webvr.rocks/">WebVR-enabled browser</a> and VR headset to fully enjoy this experience.</h3>
+        <p><img src="mousedrag.png" width="70" alt="Click-and-drag your mouse"></p>
+        <p>In the meantime, <strong><em>click and drag</em></strong> to have a look around!</p>
+        <p>
+          <button class="confirm">Continue</button>
+        </p>
       </div>
-      <small><a href="https://webvr.rocks">Not working?</a></small>
     </div>
-    <button id="entervr" value="Enter VR"></button>
-  </div>
 
-  <script src="gl-matrix-min.js"></script>
-  <script src="webvr.js"></script>
-</body>
+    <div id="vr">
+      <div id="status">
+        <strong>Ready!</strong>
+        <div id="icons">
+          <img src="vr.png" height="36" alt="VR icon">
+          <template id="motion-controller">
+            <img src="motion-controllers.png" height="33" alt="Motion Controller icon">
+          </template>
+        </div>
+        <small><a href="https://webvr.rocks/">Not working?</a></small>
+      </div>
+      <button id="entervr" value="Enter VR"></button>
+    </div>
+
+    <script src="gl-matrix-min.js"></script>
+    <script src="webvr.js"></script>
+  </body>
 
 </html>
