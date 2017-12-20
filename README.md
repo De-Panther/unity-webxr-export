@@ -37,7 +37,7 @@ To export an existing Unity project to WebVR:
 
 ## Update Asset Package
 
-If you are a maintainer of the project, you will want to update the [`Build/` directory](https://github.com/caseyyee/unity-webvr-export/tree/master/Build/) (hosted [online here](https://caseyyee.github.io/unity-webvr-export/Build/)) and the [`WebVR-Assets.unitypackage` file](https://github.com/caseyyee/unity-webvr-export/blob/master/WebVR-Assets.unitypackage).
+If you are a maintainer of this project, you will want to update the [`Build/` directory](https://github.com/caseyyee/unity-webvr-export/tree/master/Build/) (hosted [online here](https://caseyyee.github.io/unity-webvr-export/Build/)) and the [`WebVR-Assets.unitypackage` file](https://github.com/caseyyee/unity-webvr-export/blob/master/WebVR-Assets.unitypackage).
 
 1. Launch `Edit > Build Settings > Project Settings`. From `Player Settings…` (`Edit > Project Settings > Player`), select the **`WebGL settings`** tab (HTML5 icon), toggle the **`Resolution and Presentation`** view, and select **`WebVR`** for the `WebGL Template`.
 
@@ -47,11 +47,11 @@ If you are a maintainer of the project, you will want to update the [`Build/` di
 
     <img src="https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/img/build-webgl.png" width="250">
 
-3. Open **`Assets > Export Package…`**, and press the **`Export…`** button.
+3. Open **`Assets > Export Package…`**, and press the **`Export…`** button. Set **`WebVR-Assets`** as the filename of the destination Unity Asset Package, and press the **`Save`** button.
 
     <img src="https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/img/export-asset-package.png" width="250">
 
-4. Set **`WebVR-Assets`** as the filename of the destination Unity Asset Package, and press the **`Save`** button.
+4. A window titled `Exporting package` will appear. Click the **`Export…`** button to proceed.
 
     <img src="https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/img/exporting-asset-package.png" width="250">
 
