@@ -11,6 +11,8 @@
   <link rel="stylesheet" type="text/css" href="webvr.css">
   <script src="%UNITY_WEBGL_LOADER_URL%"></script>
   <script>
+    UnityLoader.SystemInfo.mobile = false;  // Workaround to force `UnityLoader` to actually load on mobile.
+
     var gameInstance = UnityLoader.instantiate("gameContainer", "%UNITY_WEBGL_BUILD_URL%", {
       // Preserve drawing buffer is needed for WebVR content to be mirrored out into canvas.
       Module: {"webglContextAttributes": { "preserveDrawingBuffer" : true }},
