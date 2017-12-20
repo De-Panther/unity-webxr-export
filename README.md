@@ -43,7 +43,7 @@ If you are a maintainer of the project, you will want to update the [`Build/` di
 
     <img src="https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/img/webgl-template.png" width="250">
 
-2. Launch `Edit > Build Settings > Project Settings`. Then, press the **`Build and Run`** button, and select the `Build` directory as the destination directory.
+2. Launch `Edit > Build Settings > Project Settings`. Then, press the **`Build and Run`** button, and select the directory named `Build` as the destination directory.
 
     <img src="https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/img/build-webgl.png" width="250">
 
@@ -53,7 +53,7 @@ If you are a maintainer of the project, you will want to update the [`Build/` di
 
 4. Set **`WebVR-Assets`** as the filename of the destination Unity Asset Package, and press the **`Save`** button.
 
-    <img src="https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/img/export-asset-package.png" width="250">
+    <img src="https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/img/exporting-asset-package.png" width="250">
 
 
 ## License
