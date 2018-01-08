@@ -11,6 +11,7 @@
     <script>
       /* global UnityLoader */
       (function () {
+        UnityLoader.SystemInfo.mobile = false;  // Workaround to force `UnityLoader` to actually load on mobile.
         window.gameInstance = UnityLoader.instantiate('gameContainer', '%UNITY_WEBGL_BUILD_URL%', {
           Module: {
             // `preserveDrawingBuffer` is needed for WebVR content to be mirrored to the `<canvas>`.
@@ -32,7 +33,6 @@
     </script>
     <link rel="manifest" href="manifest.webmanifest">
   </head>
-
   <body>
     <div id="loader">
       <div id="loading" class="loading">Loading</div>
