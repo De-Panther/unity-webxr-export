@@ -29,8 +29,11 @@
         if (displays.length > 0) {
           vrDisplay = displays[displays.length - 1];
 
-          // check to see if we are polyfilled
-          if (vrDisplay.displayName.indexOf('polyfill') > 0) {
+          // Check to see if we are polyfilled.
+          var isPolyfilled = (vrDisplay.deviceId || '').indexOf('polyfill') > 0 ||
+            (vrDisplay.deviceName || '').indexOf('polyfill') > 0 ||
+            vrDisplay.hardwareUnitId;
+          if (isPolyfilled) {
             showInstruction(document.querySelector('#novr'));
           } else {
             status.dataset.enabled = true;
@@ -39,8 +42,10 @@
           onAnimate();
         }
 
-        if (vrDisplay.capabilities.canPresent) {
-          entervrButton.dataset.enabled = 'true';
+        if (vrDisplay.capabilities && vrDisplay.capabilities.canPresent) {
+          entervrButton.dataset.enabled = true;
+        } else {
+          delete entervrButton.dataset.enabled;
         }
       });
     } else {
