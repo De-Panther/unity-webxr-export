@@ -4,7 +4,6 @@
   var defaultHeight = 1.5;
   var entervrButton = document.querySelector('#entervr');
   var container = document.querySelector('#game');
-  var loader = document.querySelector('#loader');
   var status = document.querySelector('#status');
   var icons = document.querySelector('#icons');
   var controller = document.querySelector('#motion-controller');
@@ -21,41 +20,11 @@
   var gamepads = [];
   var vrGamepads = [];
 
-  function getVRDisplays() {
-    if (navigator.getVRDisplays) {
-      navigator.getVRDisplays().then(function(displays) {
-        if (displays.length > 0) {
-          vrDisplay = displays[displays.length - 1];
-
-          // Check to see if we are polyfilled.
-          var isPolyfilled = (vrDisplay.deviceId || '').indexOf('polyfill') > 0 ||
-            (vrDisplay.deviceName || '').indexOf('polyfill') > 0 ||
-            vrDisplay.hardwareUnitId;
-          if (isPolyfilled) {
-            showInstruction(document.querySelector('#novr'));
-          } else {
-            status.dataset.enabled = true;
-          }
-          onAnimate();
-        }
-
-        if (vrDisplay.capabilities && vrDisplay.capabilities.canPresent) {
-          entervrButton.dataset.enabled = true;
-        } else {
-          delete entervrButton.dataset.enabled;
-        }
-      });
-    } else {
-      console.log('Your browser does not support WebVR!');
-    }
-  }
-
   function onUnity(msg) {
     if (msg.detail === "Ready") {
       // Get and hide Unity's canvas instance
       canvas = document.getElementById('#canvas');
-      loader.dataset.complete = 'true';
-      getVRDisplays();
+      document.body.dataset.unityLoaded = 'true';
     }
 
     // measures round-trip time from Unity.
@@ -68,6 +37,7 @@
     // Wait for Unity to render frame, then submit to vrDisplay.
     if (msg.detail === "PostRender") {
       if (vrDisplay && vrDisplay.isPresenting) {
+        console.log('submitting frame');
         vrDisplay.submitFrame();
       }
     }
@@ -86,6 +56,7 @@
   function onRequestPresent() {
     vrDisplay.requestPresent([{ source: canvas }]).then(function() {
       // starts stereo rendering in Unity.
+      console.log('vr request present success!');
       gameInstance.SendMessage('WebVRCameraSet', 'Begin');
     });
   }
@@ -135,8 +106,6 @@
           mat4.translate(sitStand, sitStand, [0, defaultHeight, 0]);
         }
         mat4.transpose(sitStand, sitStand);
-        sitStand = Array.from(sitStand);
-
 
         // gamepads
         gamepads = navigator.getGamepads();
@@ -165,11 +134,11 @@
         }
 
         var vrData = {
-          leftProjectionMatrix: [],
-          rightProjectionMatrix: [],
+          leftProjectionMatrix: Array.from(leftProjectionMatrix),
+          rightProjectionMatrix: Array.from(rightProjectionMatrix),
           leftViewMatrix: Array.from(leftViewMatrix),
           rightViewMatrix: Array.from(rightViewMatrix),
-          sitStand : [],
+          sitStand : Array.from(sitStand),
           controllers: vrGamepads
         };
 
@@ -263,26 +232,40 @@
     }
   }
 
-  function init() {
+
+  if (navigator.getVRDisplays) {
     frameData = new VRFrameData();
 
-    // shim raf so that we can drive framerate using VR display.
-    window.requestAnimationFrame = onRequestAnimationFrame;
+    navigator.getVRDisplays().then(function(displays) {
+      if (displays.length > 0) {
+        vrDisplay = displays[displays.length - 1];
 
-    // messages from Unity.
-    document.addEventListener('Unity', onUnity);
+        // check to see if we are polyfilled
+        if (vrDisplay.displayName.indexOf('polyfill') > 0) {
+          showInstruction(document.querySelector('#novr'));
+        } else {
+          status.dataset.enabled = true;
+        }
+      }
 
-    window.addEventListener('resize', onResize, true);
-    onResize();
-
-    document.addEventListener('keydown', onKeyDown);
-
-    entervrButton.addEventListener('click', onToggleVR, false);
-
-    window.addEventListener('vrdisplaypresentchange', onVRPresentChange, false);
-    // window.addEventListener('vrdisplayactivate', onRequestPresent, false);
-    // window.addEventListener('vrdisplaydeactivate', onExitPresent, false);
+      if (vrDisplay.capabilities.canPresent) {
+        entervrButton.dataset.enabled = 'true';
+      }
+    });
+  } else {
+    console.log('Your browser does not support WebVR!');
   }
 
-  init();
+  // shim raf so that we can drive framerate using VR display.
+  window.requestAnimationFrame = onRequestAnimationFrame;
+
+  window.addEventListener('resize', onResize, true);
+  window.addEventListener('vrdisplaypresentchange', onVRPresentChange, false);
+  window.addEventListener('vrdisplayactivate', onRequestPresent, false);
+  window.addEventListener('vrdisplaydeactivate', onExitPresent, false);
+  document.addEventListener('Unity', onUnity);
+  document.addEventListener('keydown', onKeyDown);
+  entervrButton.addEventListener('click', onToggleVR, false);
+  onResize();
+  window.requestAnimationFrame(onAnimate);
 })();

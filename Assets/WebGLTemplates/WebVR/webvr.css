@@ -21,7 +21,7 @@ a:link, a:visited {
   background: #2C3146;
 }
 
-#loader[data-complete='true'] {
+[data-unity-loaded='true'] #loader {
   display: none;
 }
 
@@ -89,7 +89,7 @@ a:link, a:visited {
   padding: 10px;
 }
 
-#status[data-enabled='true'] {
+[data-unity-loaded='true'] #status[data-enabled='true'] {
   display: block;
 }
 
@@ -105,7 +105,7 @@ a:link, a:visited {
   background-image: url('vr.png');
 }
 
-#entervr[data-enabled='true'] {
+[data-unity-loaded='true'] #entervr[data-enabled='true'] {
   display: block;
 }
 
