@@ -25,6 +25,7 @@
       // Get and hide Unity's canvas instance
       canvas = document.getElementById('#canvas');
       document.body.dataset.unityLoaded = 'true';
+      onResize();
     }
 
     // measures round-trip time from Unity.
@@ -37,7 +38,6 @@
     // Wait for Unity to render frame, then submit to vrDisplay.
     if (msg.detail === "PostRender") {
       if (vrDisplay && vrDisplay.isPresenting) {
-        console.log('submitting frame');
         vrDisplay.submitFrame();
       }
     }
@@ -158,12 +158,10 @@
       var rightEye = vrDisplay.getEyeParameters('right');
       var renderWidth = Math.max(leftEye.renderWidth, rightEye.renderWidth) * 2;
       var renderHeight = Math.max(leftEye.renderHeight, rightEye.renderHeight);
-      canvas.width = Math.max(leftEye.renderWidth, rightEye.renderWidth) * 2;
-      canvas.height = Math.max(leftEye.renderHeight, rightEye.renderHeight);
+      canvas.width = renderWidth;
+      canvas.height = renderHeight;
 
       // scale game container so we get a proper sized mirror of VR content to desktop.
-      // var renderWidth = canvas.width;
-      // var renderHeight = canvas.height;
       var scaleX = window.innerWidth / renderWidth;
       var scaleY = window.innerHeight / renderHeight;
       container.setAttribute('style', `transform: scale(${scaleX}, ${scaleY}); transform-origin: top left;`);
@@ -224,16 +222,6 @@
     }
   }
 
-  function onVRPresentChange() {
-    onResize();
-    if (vrDisplay.isPresenting) {
-      console.log('presentchange, is presenting!');
-    } else {
-      console.log('presentchange, not presenting!');
-    }
-  }
-
-
   if (navigator.getVRDisplays) {
     frameData = new VRFrameData();
 
@@ -261,7 +249,7 @@
   window.requestAnimationFrame = onRequestAnimationFrame;
 
   window.addEventListener('resize', onResize, true);
-  window.addEventListener('vrdisplaypresentchange', onVRPresentChange, false);
+  window.addEventListener('vrdisplaypresentchange', onResize, false);
   window.addEventListener('vrdisplayactivate', onRequestPresent, false);
   window.addEventListener('vrdisplaydeactivate', onExitPresent, false);
   document.addEventListener('Unity', onUnity);
