@@ -103,6 +103,7 @@
         if (vrDisplay.stageParameters) {
           mat4.copy(sitStand, vrDisplay.stageParameters.sittingToStandingTransform);
         } else {
+          mat4.identity(sitStand);
           mat4.translate(sitStand, sitStand, [0, defaultHeight, 0]);
         }
         mat4.transpose(sitStand, sitStand);
