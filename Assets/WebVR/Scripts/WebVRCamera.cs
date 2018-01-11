@@ -32,7 +32,6 @@ public class WebVRCamera : MonoBehaviour
 	Matrix4x4 clv = Matrix4x4.identity; // left view matrix
 	Matrix4x4 crp = Matrix4x4.identity; // right projection matrix
 	Matrix4x4 crv = Matrix4x4.identity; // left view matrix
-	Matrix4x4 cmv = Matrix4x4.identity; // main 2D camera view matrix
 
 	// sit stand room transform
 	//Matrix4x4 sitStand = Matrix4x4.Translate (new Vector3 (0, 1.2f, 0));
