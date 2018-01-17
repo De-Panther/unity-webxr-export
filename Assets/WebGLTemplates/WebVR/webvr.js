@@ -113,23 +113,21 @@
         vrGamepads = [];
         for (var i = 0; i < gamepads.length; ++i) {
           var gamepad = gamepads[i];
-          if (gamepad) {
-            if (gamepad.pose || gamepad.displayId) {
-              if (gamepad.pose.position && gamepad.pose.orientation) {
-                // flips gamepad axis to work with Unity.
-                var position = gamepad.pose.position;
-                position[2] *= -1;
-                var orientation = gamepad.pose.orientation;
-                orientation[0] *= -1;
-                orientation[1] *= -1;
+          if (gamepad && (gamepad.pose || gamepad.displayId)) {
+            if (gamepad.pose.position && gamepad.pose.orientation) {
+              // flips gamepad axis to work with Unity.
+              var position = gamepad.pose.position;
+              position[2] *= -1;
+              var orientation = gamepad.pose.orientation;
+              orientation[0] *= -1;
+              orientation[1] *= -1;
 
-                vrGamepads.push({
-                  index: gamepad.index,
-                  hand: gamepad.hand,
-                  orientation: Array.from(orientation),
-                  position: Array.from(position)
-                });
-              }
+              vrGamepads.push({
+                index: gamepad.index,
+                hand: gamepad.hand,
+                orientation: Array.from(orientation),
+                position: Array.from(position)
+              });
             }
           }
         }
@@ -139,7 +137,7 @@
           rightProjectionMatrix: Array.from(rightProjectionMatrix),
           leftViewMatrix: Array.from(leftViewMatrix),
           rightViewMatrix: Array.from(rightViewMatrix),
-          sitStand : Array.from(sitStand),
+          sitStand: Array.from(sitStand),
           controllers: vrGamepads
         };
 
@@ -236,7 +234,7 @@
         if (isPolyfilled) {
           showInstruction(document.querySelector('#novr'));
         } else {
-          status.dataset.enabled = true;
+          status.dataset.enabled = 'true';
         }
       }
 
