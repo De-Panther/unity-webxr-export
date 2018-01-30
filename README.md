@@ -1,13 +1,27 @@
 # Unity WebVR Assets
 
-WebVR assets for creating [WebVR](https://webvr.rocks/)-enabled [Unity3D](https://unity3d.com/) projects.
-
 ![Preview of Unity WebVR-exported project in the browser](https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/img/preview.gif)
 
-**[Try it out!](https://caseyyee.github.io/unity-webvr-export/)**
+## **[Try it out!](https://caseyyee.github.io/unity-webvr-export/)**
 
-Works with [HTC VIVE](https://webvr.rocks/htc_vive) and [Oculus Rift](https://webvr.rocks/oculus_rift) using a [WebVR-enabled browser](https://webvr.rocks/#browsers).
+Assets for creating [WebVR](https://webvr.rocks/)-enabled [Unity3D](https://unity3d.com/) projects.
 
+## Compatibility
+
+Works with WebVR enabled browsers.
+
+| Platform | Browser | Compatible headsets | |
+| --- | --- | --- | --- |
+| Desktop | Firefox | HTC VIVE, Oculus Rift, Windows Mixed Reality headsets (using Steam VR) | [Setup instructions](https://webvr.rocks/firefox) |
+| Desktop | Microsoft Edge | Windows Mixed Reality headsets | [Setup instructions](https://webvr.rocks/microsoft_edge) |
+| Desktop | Chrome Canary | HTC VIVE, Oculus Rift, Windows Mixed Reality headsets | [Setup instructions](https://webvr.rocks/chrome) |
+
+### Polyfilled WebVR
+If the user does not have supported headset, browser or device, the content will still work through the use of the [WebVR Polyfill](https://github.com/immersive-web/webvr-polyfill).
+
+### Mobile support
+
+This asset works by utlizing Unity's WebGL platform support and therefore shares the same limitations.  Because of this, mobile support is limited and may not work.  See Unity [Unity WebGL browser compatibility](https://docs.unity3d.com/560/Documentation/Manual/webgl-browsercompatibility.html).
 
 ## Setup instructions
 
