@@ -24,10 +24,14 @@
 
         function unityProgress (gameInstance, progress) {
           if (!gameInstance.progress) {
+            gameInstance.loader = document.getElementById('loader');
             gameInstance.progress = document.getElementById('progress');
             gameInstance.loading = document.getElementById('loading');
           }
           gameInstance.progress.style.width = (100 * progress) + '%';
+          if (progress === 1) {
+            gameInstance.loader.style.display = 'none';
+          }
         }
       })();
     </script>
