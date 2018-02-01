@@ -16,11 +16,7 @@ These assets work with Unity versions `2017.2.0f3` and later.
 | --- | --- | --- | --- |
 | Desktop | Firefox | HTC VIVE, Oculus Rift, Windows Mixed Reality headsets (using Steam VR) | [Setup instructions](https://webvr.rocks/firefox) |
 | Desktop | Microsoft Edge | Windows Mixed Reality headsets | [Setup instructions](https://webvr.rocks/microsoft_edge) |
-| Desktop | Chrome Canary | HTC VIVE, Oculus Rift, Windows Mixed Reality headsets | [Setup instructions](https://webvr.rocks/chrome) |
-
-#### Publishing for Chrome users
-
-Android users using Chrome might not want to change the configuration of the browser to enable WebVR. In order to force Chrome to make WebVR available for users visiting your site, you must sign up for a [WebVR Origin Trial](https://webvr.rocks/chrome_for_android#what_is_the_webvr_origin_tria).
+| Desktop | Chrome Canary | HTC VIVE, Oculus Rift, Windows Mixed Reality headsets | Browser flags required. [Setup instructions](https://webvr.rocks/chrome) |
 
 ### Polyfilled WebVR
 If the user does not have supported headset, browser or device, the content will still work through the use of the [WebVR Polyfill](https://github.com/immersive-web/webvr-polyfill).
@@ -28,6 +24,14 @@ If the user does not have supported headset, browser or device, the content will
 ### Mobile support
 
 This asset works by utlizing Unity's WebGL platform support and therefore shares the same limitations.  Because of this, mobile support is limited and may not work.  See Unity [Unity WebGL browser compatibility](https://docs.unity3d.com/560/Documentation/Manual/webgl-browsercompatibility.html).
+
+#### Publishing for Android Chrome
+
+For WebVR content to work with the regular release version of Chrome for Android, users will need to [manually enable WebVR](https://webvr.rocks/chrome_for_android) from `chrome://flags`.
+
+Alternatively, sites can register for [WebVR Origin Trial]
+(https://webvr.rocks/chrome_for_android#what_is_the_webvr_origin_trial) which will allows the API to be available for certain site origin.
+
 
 ## Setup instructions
 
