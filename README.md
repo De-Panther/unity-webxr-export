@@ -8,7 +8,9 @@ Assets for creating [WebVR](https://webvr.rocks/)-enabled [Unity3D](https://unit
 
 ## Compatibility
 
-Works with WebVR enabled browsers.
+These assets work with Unity versions `2017.2.0f3` and later.
+
+### Browser Compatibility
 
 | Platform | Browser | Compatible headsets | |
 | --- | --- | --- | --- |
@@ -24,8 +26,6 @@ If the user does not have supported headset, browser or device, the content will
 This asset works by utlizing Unity's WebGL platform support and therefore shares the same limitations.  Because of this, mobile support is limited and may not work.  See Unity [Unity WebGL browser compatibility](https://docs.unity3d.com/560/Documentation/Manual/webgl-browsercompatibility.html).
 
 ## Setup instructions
-
-This flow has been tested with Unity versions `2017.2.0f3` and later.
 
 To export an existing Unity project to WebVR:
 
