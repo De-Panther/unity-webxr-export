@@ -4,44 +4,43 @@ In this tutorial, we go through the steps of a basic project setup using the Web
 
 1. Create a new Unity 3D project
 
-1. Ensure that WebGL platform support is installed.
+2. Ensure that WebGL platform support is installed.
 
-`Unity > Build Settings`
+  `Unity > Build Settings`
 
-![WebGL Platform](https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/Docs/images/webgl-platform.png)
+  ![WebGL Platform](https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/Docs/images/webgl-platform.png)
 
-1. Import the WebVR assets to your project.
+3. Import the WebVR assets to your project.
 
-Download unity package from github: (WebVR-Assets.unitypackage)[https://github.com/caseyyee/unity-webvr-export/raw/master/WebVR-Assets.unitypackage]
+  Download unity package from github: [WebVR-Assets.unitypackage](https://github.com/caseyyee/unity-webvr-export/raw/master/WebVR-Assets.unitypackage)
 
-Import the package into your project:
+  Import the package into your project:
 
-`Assets > Import Package > Custom Package`
+  `Assets > Import Package > Custom Package`
 
-![WebVR package](https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/Docs/images/import-package.png)
+  ![WebVR package](https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/Docs/images/import-package.png)
 
-1. Remove default Main Camera
+4. Remove default Main Camera
 
-Select `Main Camera` from project Hierchy and right-click and select delete.
+  Select `Main Camera` from project Hierchy and right-click and select delete.
 
-1. Add `WebVRCamera` prefab to your Project scene from WebVR Assets folder:
+5. Add `WebVRCamera` prefab, and optionally the hand controller models to your scene from WebVR Assets folder:
 
-![Import prefab and models](https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/Docs/images/camera-prefab-models.gif)
+  ![Import prefab and models](https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/Docs/images/camera-prefab-models.gif)
 
-1. Add controllers
+6. Add controller models to WebVRCamera component.
 
-Setup GameObjects that you would like to be used for left/hand controllers by attaching 
-them to the `WebVRCamera` component `Left Hand Obj` and `Right Hand Obj` fields.
+  Setup GameObjects that you would like to be used for left/hand controllers by attaching them to the `WebVRCamera` component `Left Hand Obj` and `Right Hand Obj` fields.
 
-![Controller setup](https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/Docs/images/attach-controllers.gif)
+  ![Controller setup](https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/Docs/images/attach-controllers.gif)
 
-1. Select the WebVR template from player settings.
+7. Select the WebVR template from player settings.
 
-`Edit > Project Settings > Player`
+  `Edit > Project Settings > Player`
 
-![WebVR template](https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/Docs/images/webgl-temlate.png)
+  ![WebVR template](https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/Docs/images/webgl-template.png)
 
-1. Build and run your project!
+8. Build and run your project!
 
-`File > Build & Run`
+  `File > Build & Run`
 
