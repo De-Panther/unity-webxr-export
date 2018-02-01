@@ -20,6 +20,8 @@
   var gamepads = [];
   var vrGamepads = [];
 
+  navigator.serviceWorker.register('./sw.js');
+
   function onUnity(msg) {
     if (msg.detail === "Ready") {
       // Get and hide Unity's canvas instance
