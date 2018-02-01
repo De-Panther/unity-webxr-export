@@ -20,7 +20,7 @@ These assets work with Unity versions `2017.2.0f3` and later.
 
 #### Publishing for Chrome users
 
-Chrome users might not want to change the configuration of the browser to enable WebVR. In order to force Chrome to make WebVR available for users visiting your site, you must sign up for a [WebVR Origin Trial](https://webvr.rocks/chrome_for_android#what_is_the_webvr_origin_tria).
+Android users using Chrome might not want to change the configuration of the browser to enable WebVR. In order to force Chrome to make WebVR available for users visiting your site, you must sign up for a [WebVR Origin Trial](https://webvr.rocks/chrome_for_android#what_is_the_webvr_origin_tria).
 
 ### Polyfilled WebVR
 If the user does not have supported headset, browser or device, the content will still work through the use of the [WebVR Polyfill](https://github.com/immersive-web/webvr-polyfill).
