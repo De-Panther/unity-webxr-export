@@ -169,16 +169,14 @@
     }
   }
 
-  function onKeyDown (e) {
-    if (e.keyCode === 80) { // p, toggles perf counter
-      gameInstance.SendMessage('WebVRCameraSet', 'TogglePerf');
-    }
-    if(e.keyCode === 86) //v, tesets round-trip time between browser and Unity game instance.
-    {
-      console.log("pressed v, roundtrip time");
-      testTimeStart = performance.now();
-      gameInstance.SendMessage('WebVRCameraSet', 'TestTime');
-    }
+  function togglePerf() {
+    gameInstance.SendMessage('WebVRCameraSet', 'TogglePerf');
+  }
+
+  function testRoundtripTime() {
+    console.log("Testing roundtrip time...");
+    testTimeStart = performance.now();
+    gameInstance.SendMessage('WebVRCameraSet', 'TestTime');
   }
 
   function showInstruction(el) {
@@ -258,7 +256,6 @@
   window.addEventListener('vrdisplayactivate', onRequestPresent, false);
   window.addEventListener('vrdisplaydeactivate', onExitPresent, false);
   document.addEventListener('Unity', onUnity);
-  document.addEventListener('keydown', onKeyDown);
   entervrButton.addEventListener('click', onToggleVR, false);
   onResize();
   window.requestAnimationFrame(onAnimate);
