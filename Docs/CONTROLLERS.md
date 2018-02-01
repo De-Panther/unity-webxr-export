@@ -32,6 +32,14 @@ Another limitation right now is that, although it is possible to track the posit
 
 If you're looking for a depiction of VIVE and Oculus controllers, take a look at the excellent [schemas provided by Unity documentation](https://docs.unity3d.com/Manual/OpenVRControllers.html).
 
+## Gear VR Controller
+
+Button | Interaction Type | WebVR Unity | Range  
+--------|-----------------|---------------|------
+Trackpad| Press | `"joystick button 0"` |
+Trackpad | Touch | `X axis` | -1.0 to 1.0
+Trackpad | Touch | `Y axis` | -1.0 to 1.0
+
 ## Oculus Touch
 
 Button | Interaction Type | WebVR Unity | Range  
@@ -58,10 +66,17 @@ System | not mapped ||
 Trigger | Squeeze | `"joystick button 1"` | 0.0 to 1.0
 Grip | Squeeze | `"joystick button 2"` |
 
-## Gear VR Controller
+## Windows MR
 
 Button | Interaction Type | WebVR Unity | Range  
 --------|-----------------|---------------|------
-Trackpad| Press | `"joystick button 0"` |
-Trackpad | Touch | `X axis` | -1.0 to 1.0
-Trackpad | Touch | `Y axis` | -1.0 to 1.0
+Menu | Press | `"joystick button 3"` |
+Thumbstick | Press | `"joystick button 0"` |
+Thumbstick | Touch | `X axis` | -1.0 to 1.0
+Thumbstick | Touch | `Y axis` | -1.0 to 1.0
+Trackpad| Press | `"joystick button 4"` |
+Trackpad | Touch | `3rd axis` | -1.0 to 1.0
+Trackpad | Touch | `4th axis` | -1.0 to 1.0
+Windows | not mapped ||
+Trigger | Squeeze | `"joystick button 1"` | 0.0 to 1.0
+Grip | Squeeze | `"joystick button 2"` |
