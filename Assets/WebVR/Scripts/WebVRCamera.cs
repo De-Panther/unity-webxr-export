@@ -199,11 +199,6 @@ public class WebVRCamera : MonoBehaviour
 	{
 		deltaTime += (Time.deltaTime - deltaTime) * 0.1f;
 
-		if (Input.GetKeyDown("space")) 
-		{
-			toggleMode ();
-		}
-
 		if (leftHandObj) {
 			leftHandObj.transform.rotation = lhr;
 			leftHandObj.transform.position = lhp + transform.position;
