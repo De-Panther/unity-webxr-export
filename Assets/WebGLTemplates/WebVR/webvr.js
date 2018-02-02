@@ -20,7 +20,20 @@
   var gamepads = [];
   var vrGamepads = [];
 
-  navigator.serviceWorker.register('./sw.js');
+  if ('isSecureContext' in window && !window.isSecureContext) {
+    console.warn('The site is insecure: service workers will not work and the site will not be recognized as a PWA');
+  }
+  else if ('serviceWorker' in navigator) {
+    if (navigator.serviceWorker.controller) {
+      console.log('Running active Service Worker (controller: %s)', navigator.serviceWorker.controller.scriptURL);
+    } else {
+      navigator.serviceWorker.register('/sw.js').then(function (registration) {
+        console.log('Successfully registered Service Worker (scope: %s)', registration.scope);
+      }, function (err) {
+        console.warn('Failed to register Service Worker:\n', err);
+      });
+    }
+  }
 
   function onUnity(msg) {
     if (msg.detail === "Ready") {
