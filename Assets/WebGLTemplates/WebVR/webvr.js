@@ -20,10 +20,9 @@
   var gamepads = [];
   var vrGamepads = [];
 
-  if ('isSecureContext' in window && !window.isSecureContext) {
-    console.warn('The site is insecure: service workers will not work and the site will not be recognized as a PWA');
-  }
-  else if ('serviceWorker' in navigator) {
+  if ('serviceWorker' in navigator && 'isSecureContext' in window && !window.isSecureContext) {
+    console.warn('The site is insecure; Service Workers will not work and the site will not be recognized as a PWA');
+  } else if ('serviceWorker' in navigator) {
     if (navigator.serviceWorker.controller) {
       console.log('Running active Service Worker (controller: %s)', navigator.serviceWorker.controller.scriptURL);
     } else {
