@@ -33,13 +33,16 @@
       });
     }
   }
+  
+  function onUnityLoaded() {
+    canvas = document.getElementById('#canvas');
+    document.body.dataset.unityLoaded = 'true';
+    onResize();
+  }
 
   function onUnity(msg) {
     if (msg.detail === "Ready") {
       // Get and hide Unity's canvas instance
-      canvas = document.getElementById('#canvas');
-      document.body.dataset.unityLoaded = 'true';
-      onResize();
       getVRDisplays();
     }
 
@@ -269,6 +272,7 @@
   window.addEventListener('vrdisplaypresentchange', onResize, false);
   window.addEventListener('vrdisplayactivate', onRequestPresent, false);
   window.addEventListener('vrdisplaydeactivate', onExitPresent, false);
+  window.addEventListener('unityLoaded', onUnityLoaded, false);
   document.addEventListener('Unity', onUnity);
   entervrButton.addEventListener('click', onToggleVR, false);
   onResize();
