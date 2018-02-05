@@ -8,7 +8,7 @@ In this tutorial, we go through the steps of a basic project setup using the Web
 
   `Unity > Build Settings`
 
-  ![WebGL Platform](https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/Docs/images/webgl-platform.png)
+  ![WebGL Platform](https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/docs/images/webgl-platform.png)
 
 3. Import the WebVR assets to your project.
 
@@ -18,7 +18,7 @@ In this tutorial, we go through the steps of a basic project setup using the Web
 
   `Assets > Import Package > Custom Package`
 
-  ![WebVR package](https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/Docs/images/import-package.png)
+  ![WebVR package](https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/docs/images/import-package.png)
 
 4. Remove default Main Camera
 
@@ -26,19 +26,19 @@ In this tutorial, we go through the steps of a basic project setup using the Web
 
 5. Add `WebVRCamera` prefab, and optionally the hand controller models to your scene from WebVR Assets folder:
 
-  ![Import prefab and models](https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/Docs/images/camera-prefab-models.gif)
+  ![Import prefab and models](https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/docs/images/camera-prefab-models.gif)
 
 6. Add controller models to WebVRCamera component.
 
   Setup GameObjects that you would like to be used for left/hand controllers by attaching them to the `WebVRCamera` component `Left Hand Obj` and `Right Hand Obj` fields.
 
-  ![Controller setup](https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/Docs/images/attach-controllers.gif)
+  ![Controller setup](https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/docs/images/attach-controllers.gif)
 
 7. Select the WebVR template from player settings.
 
   `Edit > Project Settings > Player`
 
-  ![WebVR template](https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/Docs/images/webgl-template.png)
+  ![WebVR template](https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/docs/images/webgl-template.png)
 
 8. Build and run your project!
 
