@@ -23,59 +23,21 @@ If the user does not have supported headset, browser or device, the content will
 
 ### Mobile support
 
-This asset works by utlizing Unity's WebGL platform support and therefore shares the same limitations.  Because of this, mobile support is limited and may not work.  See Unity [Unity WebGL browser compatibility](https://docs.unity3d.com/560/Documentation/Manual/webgl-browsercompatibility.html).
+This asset works by utlizing Unity's WebGL platform support and therefore shares the same limitations. Because of this, mobile support is limited and may not work.  See Unity [Unity WebGL browser compatibility](https://docs.unity3d.com/560/Documentation/Manual/webgl-browsercompatibility.html).
 
-#### Publishing for Android Chrome
+## Documentation for developers
 
-For WebVR content to work with the regular release version of Chrome for Android, users will need to [manually enable WebVR](https://webvr.rocks/chrome_for_android) from `chrome://flags`.
+* [Setting a Unity project up for WebVR](https://github.com/caseyyee/unity-webvr-export/blob/master/docs/project-setup.md)
+* [Publishing](https://github.com/caseyyee/unity-webvr-export/blob/master/docs/publishing.md)
+* [Controllers and input system](https://github.com/caseyyee/unity-webvr-export/blob/master/docs/controllers.md)
 
-Alternatively, sites can register for [WebVR Origin Trial](https://webvr.rocks/chrome_for_android#what_is_the_webvr_origin_trial) which will allows the API to be available for certain site origin.
+## Contributing
 
+Contributions from the developer community are super-important to us. You're encouraged to [open an issue](https://github.com/caseyyee/unity-webvr-export/issues/new), report a problem, contribute with code, open a feature request, share your work or ask a question.
 
-## Setup instructions
+Take a look at the contributor guides too.
 
-To export an existing Unity project to WebVR:
-
-1. [**Download this ZIP file**](https://github.com/caseyyee/unity-webvr-export/archive/master.zip) containing the contents of this repository. Or you can clone the Git repository locally to your machine:
-    ```sh
-    git clone https://github.com/caseyyee/unity-webvr-export.git && cd unity-webvr-export
-    ```
-2. Launch **Unity**. ([Download and install Unity](https://store.unity.com/download?ref=personal), or upgrade to the latest version, if you have not already.)
-3. Open your existing Unity project: `File > Open Project`.
-4. Open **`File > Build Settings`**, and from the `Platform` list, select the **`WebGL`** platform.
-
-    <img src="https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/img/build-settings.png" width="550">
-
-5. From **`Player Settings…`** (`Edit > Project Settings > Player`), select the **`WebGL settings`** tab (HTML5 icon), toggle to the **`Resolution and Presentation`** view, and select **`WebVR`** for the `WebGL Template`.
-
-    <img src="https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/img/webgl-template.png" width="250">
-
-6. Select **`File > Build & Run`**.
-    > Or select `File > Build Settings …`, and choose a location for your build.
-7. Once the build has completed, your web browser will automatically open the project. Make sure you are running the game in a [*WebVR-capable browser*](https://webvr.rocks/#browsers).
-    > Alternatively, if you ran `Build`, instead of `Build & Run`, you can run a [local static-file web server](https://aframe.io/docs/0.7.0/introduction/installation.html#use-a-local-server) and load the `index.html` document from your WebVR-capable browser.
-
-
-## Building the Unity Asset Package
-
-If you are a maintainer of this project, you will want to update the [`Build/` directory](https://github.com/caseyyee/unity-webvr-export/tree/master/Build/) (hosted [online here](https://caseyyee.github.io/unity-webvr-export/Build/)) and the [`WebVR-Assets.unitypackage` file](https://github.com/caseyyee/unity-webvr-export/blob/master/WebVR-Assets.unitypackage).
-
-1. Launch `Edit > Build Settings > Project Settings`. From `Player Settings…` (`Edit > Project Settings > Player`), select the **`WebGL settings`** tab (HTML5 icon), toggle the **`Resolution and Presentation`** view, and select **`WebVR`** for the `WebGL Template`.
-
-    <img src="https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/img/webgl-template.png" width="250">
-
-2. Launch `Edit > Build Settings > Project Settings`. Then, press the **`Build and Run`** button, and **`Save`** to the directory named **`Build`**.
-
-    <img src="https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/img/build-webgl.png" width="250">
-
-3. Open **`Assets > Export Package…`**, and press the **`Export…`** button. Set **`WebVR-Assets`** as the filename of the destination Unity Asset Package, and press the **`Save`** button.
-
-    <img src="https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/img/export-asset-package.png" width="250">
-
-4. A window titled `Exporting package` will appear. Click the **`Export…`** button to proceed.
-
-    <img src="https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/img/exporting-asset-package.png" width="250">
-
+* [Building the Unity Assets Package](https://github.com/caseyyee/unity-webvr-export/blob/master/docs/build.md)
 
 ## License
 

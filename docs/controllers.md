@@ -1,11 +1,13 @@
-# Tracked controller setup
+# Controllers and input system
+
+## Tracked controller setup
 
 Setup GameObjects that you would like to be used for left/hand controllers by attaching 
 them to the `WebVRCamera` component `Left Hand Obj` and `Right Hand Obj` fields.
 
 ![Controller setup](https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/Docs/images/attach-controllers.gif)
 
-# Controller input
+## Input API
 
 Controller inputs are handled through the [Unity WebGL input](https://docs.unity3d.com/Manual/webgl-input.html) system.
 
@@ -24,7 +26,7 @@ public class ExampleClass : MonoBehaviour {
 }
 ```
 
-# Controller mappings
+## Controller mappings
 
 When targeting the WebGL and therefore, the browser, the way the different actuators on controllers are labelled changes in comparison with the names they are assigned while working in Unity. We are trying to provide a more consistent way to deal with this issue but meanwhile, here are the mappings for the different controller models.
 
@@ -32,7 +34,7 @@ Another limitation right now is that, although it is possible to track the posit
 
 If you're looking for a depiction of VIVE and Oculus controllers, take a look at the excellent [schemas provided by Unity documentation](https://docs.unity3d.com/Manual/OpenVRControllers.html).
 
-## Gear VR Controller
+### Gear VR Controller
 
 Button | Interaction Type | WebVR Unity | Range  
 --------|-----------------|---------------|------
@@ -40,7 +42,7 @@ Trackpad| Press | `"joystick button 0"` |
 Trackpad | Touch | `X axis` | -1.0 to 1.0
 Trackpad | Touch | `Y axis` | -1.0 to 1.0
 
-## Oculus Touch
+### Oculus Touch
 
 Button | Interaction Type | WebVR Unity | Range  
 --------|-----------------|---------------|------
@@ -54,7 +56,7 @@ Start | not mapped ||
 IndexTrigger | Squeeze | `"joystick button 1"` | 0.0 to 1.0
 HandTrigger | Squeeze | `"joystick button 2"` | 0.0 to 1.0 
 
-## VIVE Controllers
+### VIVE Controllers
 
 Button | Interaction Type | WebVR Unity | Range  
 --------|-----------------|---------------|------
@@ -66,7 +68,7 @@ System | not mapped ||
 Trigger | Squeeze | `"joystick button 1"` | 0.0 to 1.0
 Grip | Squeeze | `"joystick button 2"` |
 
-## Windows MR
+### Windows MR
 
 Button | Interaction Type | WebVR Unity | Range  
 --------|-----------------|---------------|------
