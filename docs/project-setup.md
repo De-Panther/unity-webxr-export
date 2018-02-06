@@ -1,46 +1,59 @@
-# Setting up your WebVR project
+# Setting up a Unity project for WebVR
 
 In this tutorial, we go through the steps of a basic project setup using the WebVR assets.
 
-1. Create a new Unity 3D project
+## 1. Create a new Unity 3D project.
 
-2. Ensure that WebGL platform support is installed.
+Open an existing project, or click on the `New` button and fill in the details of the new game:
 
-  `Unity > Build Settings`
+![New game](https://raw.githubusercontent.com/mozilla/unity-webvr-export/master/docs/images/new-game.png)
 
-  ![WebGL Platform](https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/docs/images/webgl-platform.png)
+## 2. Ensure that WebGL platform support is installed.
 
-3. Import the WebVR assets to your project.
+Open the menus: `File > Build Settings`
 
-  Download unity package from github: [WebVR-Assets.unitypackage](https://github.com/caseyyee/unity-webvr-export/raw/master/WebVR-Assets.unitypackage)
+![WebGL Platform](https://raw.githubusercontent.com/mozilla/unity-webvr-export/master/docs/images/webgl-platform.png)
 
-  Import the package into your project:
+## 3. Import the WebVR assets to your project.
 
-  `Assets > Import Package > Custom Package`
+Download the Unity package from GitHub: [`WebVR-Assets.unitypackage`](https://github.com/mozilla/unity-webvr-export/raw/master/WebVR-Assets.unitypackage)
 
-  ![WebVR package](https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/docs/images/import-package.png)
+Import the package into your project:
 
-4. Remove default Main Camera
+```
+Assets > Import Package > Custom Package
+```
 
-  Select `Main Camera` from project Hierchy and right-click and select delete.
+![WebVR package](https://raw.githubusercontent.com/mozilla/unity-webvr-export/master/docs/images/import-package.png)
 
-5. Add `WebVRCamera` prefab, and optionally the hand controller models to your scene from WebVR Assets folder:
+## 4. Disable the classical camera and add the WebVR camera.
 
-  ![Import prefab and models](https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/docs/images/camera-prefab-models.gif)
+Select `Main Camera` from the scene's `Hierarchy`; then, disable the camera from the `Inspector`.
 
-6. Add controller models to WebVRCamera component.
+![WebVR package](https://raw.githubusercontent.com/mozilla/unity-webvr-export/master/docs/images/disable-main-camera.png)
 
-  Setup GameObjects that you would like to be used for left/hand controllers by attaching them to the `WebVRCamera` component `Left Hand Obj` and `Right Hand Obj` fields.
+Add the `WebVRCameraSet` prefab (`Assets > WebVR > Prefabs > WebVRCameraSet.prefab`), and optionally the hand-controller models to your scene from the `WebVR > Models` folder:
 
-  ![Controller setup](https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/docs/images/attach-controllers.gif)
+![Import prefab and models](https://raw.githubusercontent.com/mozilla/unity-webvr-export/master/docs/images/camera-prefab-models.gif)
 
-7. Select the WebVR template from player settings.
+## 5. Add controller models to `WebVRCamera` component.
 
-  `Edit > Project Settings > Player`
+Set up `GameObject`s that you would like to be used for left/hand controllers by attaching them to the `WebVRCameraSet` component `Left Hand Obj` and `Right Hand Obj` fields.
 
-  ![WebVR template](https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/docs/images/webgl-template.png)
+![Controller setup](https://raw.githubusercontent.com/mozilla/unity-webvr-export/master/docs/images/attach-controllers.gif)
 
-8. Build and run your project!
+## 6. Select the WebVR template from player settings.
 
-  `File > Build & Run`
+Go to `Edit > Project Settings > Player`:
 
+![WebVR template](https://raw.githubusercontent.com/mozilla/unity-webvr-export/master/docs/images/webgl-template.png)
+
+## 7. Build and run your project!
+
+Click on `File > Build & Run`, select a destination folder and Unity will compile your code and and launch the game in your **default** browser. If you want to open the game in another browser, copy and paste the URL of the game.
+
+Under the hood, when clicking `Build & Run`, Unity will place all the needed files in the selected folder and will spin up a development web server pointing there. If you want to provide your own server, choose `File > Build` instead. 
+
+## 8. Adapt your game
+
+You will probably need to adapt your game mechanics and camera behaviours to integrate with WebVR. Good luck!
