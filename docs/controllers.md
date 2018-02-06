@@ -2,8 +2,7 @@
 
 ## Setting up tracked controllers
 
-Set up `GameObject`s for left/hand controllers by attaching 
-them to the `WebVRCamera` component's `Left Hand Obj` and `Right Hand Obj` fields.
+Set up `GameObject`s for left/hand controllers by attaching them to the `WebVRCamera` component's `Left Hand Obj` and `Right Hand Obj` fields.
 
 ![Controller setup](https://raw.githubusercontent.com/mozilla/unity-webvr-export/master/Docs/images/attach-controllers.gif)
 
@@ -32,7 +31,7 @@ When targeting the WebGL and therefore, the browser, the way the different input
 
 Also notice that now, where the controllers are positioned in 3D space can be detected, but which controller initiated an interaction cannot be detected.
 
-If you're looking for a depiction of VIVE and Oculus controllers, take a look at the excellent [schemas provided by Unity documentation](https://docs.unity3d.com/Manual/OpenVRControllers.html).
+If you're looking for a depiction of the VIVE and Oculus Rift controllers, take a look at the excellent [schemas provided by Unity documentation](https://docs.unity3d.com/Manual/OpenVRControllers.html).
 
 ### Gear VR Controller
 
@@ -61,7 +60,7 @@ HandTrigger | Squeeze | `"joystick button 2"` | 0.0 to 1.0
 Button | Interaction Type | WebVR Unity | Range  
 -------|------------------|-------------|------
 Menu | Press | `"joystick button 3"` |
-Trackpad| Press | `"joystick button 0"` |
+Trackpad | Press | `"joystick button 0"` |
 Trackpad | Touch | `X axis` | -1.0 to 1.0
 Trackpad | Touch | `Y axis` | -1.0 to 1.0
 System | not mapped ||
@@ -76,7 +75,7 @@ Menu | Press | `"joystick button 3"` |
 Thumbstick | Press | `"joystick button 0"` |
 Thumbstick | Touch | `X axis` | -1.0 to 1.0
 Thumbstick | Touch | `Y axis` | -1.0 to 1.0
-Trackpad| Press | `"joystick button 4"` |
+Trackpad | Press | `"joystick button 4"` |
 Trackpad | Touch | `3rd axis` | -1.0 to 1.0
 Trackpad | Touch | `4th axis` | -1.0 to 1.0
 Windows | not mapped ||
