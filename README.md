@@ -1,6 +1,6 @@
 # Unity WebVR Assets
 
-![Preview of Unity WebVR-exported project in the browser](https://raw.githubusercontent.com/caseyyee/unity-webvr-export/master/img/preview.gif)
+![Preview of Unity WebVR-exported project in the browser](https://raw.githubusercontent.com/mozilla/unity-webvr-export/master/img/preview.gif)
 
 ## **[Try it out!](https://caseyyee.github.io/unity-webvr-export/)**
 
@@ -23,21 +23,21 @@ If the user does not have supported headset, browser or device, the content will
 
 ### Mobile support
 
-This asset works by utlizing Unity's WebGL platform support and therefore shares the same limitations. Because of this, mobile support is limited and may not work.  See Unity [Unity WebGL browser compatibility](https://docs.unity3d.com/560/Documentation/Manual/webgl-browsercompatibility.html).
+This asset works by utilizing Unity's WebGL platform support and therefore shares the same limitations. Because of this, mobile support is limited and may not work. See [Unity's WebGL browser compatibility](https://docs.unity3d.com/2018.1/Documentation/Manual/webgl-browsercompatibility.html).
 
 ## Documentation for developers
 
-* [Setting a Unity project up for WebVR](https://github.com/caseyyee/unity-webvr-export/blob/master/docs/project-setup.md)
-* [Publishing](https://github.com/caseyyee/unity-webvr-export/blob/master/docs/publishing.md)
-* [Controllers and input system](https://github.com/caseyyee/unity-webvr-export/blob/master/docs/controllers.md)
+* [Setting up a Unity project for WebVR](./docs/project-setup.md)
+* [Publishing](./docs/publishing.md)
+* [Controllers and input system](./docs/controllers.md)
 
 ## Contributing
 
-Contributions from the developer community are super-important to us. You're encouraged to [open an issue](https://github.com/caseyyee/unity-webvr-export/issues/new), report a problem, contribute with code, open a feature request, share your work or ask a question.
+Contributions from the developer community are very important to us. You're encouraged to [open an issue](https://github.com/mozilla/unity-webvr-export/issues/new), report a problem, contribute with code, open a feature request, share your work or ask a question.
 
 Take a look at the contributor guides too.
 
-* [Building the Unity Assets Package](https://github.com/caseyyee/unity-webvr-export/blob/master/docs/build.md)
+* [Building the Unity Assets Package](./docs/build.md)
 
 ## License
 
