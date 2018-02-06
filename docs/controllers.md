@@ -4,7 +4,7 @@
 
 Set up `GameObject`s for left/hand controllers by attaching them to the `WebVRCamera` component's `Left Hand Obj` and `Right Hand Obj` fields.
 
-![Controller setup](https://raw.githubusercontent.com/mozilla/unity-webvr-export/master/Docs/images/attach-controllers.gif)
+![Controller setup](https://raw.githubusercontent.com/mozilla/unity-webvr-export/master/docs/images/attach-controllers.gif)
 
 ## Input API
 
