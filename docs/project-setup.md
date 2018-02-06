@@ -4,7 +4,7 @@ In this tutorial, we go through the steps of a basic project setup using the Web
 
 ## 1. Create a new Unity 3D project.
 
-Open an existing project or click on the `New` button and fill in the details of the new game:
+Open an existing project, or click on the `New` button and fill in the details of the new game:
 
 ![New game](https://raw.githubusercontent.com/mozilla/unity-webvr-export/master/docs/images/new-game.png)
 
@@ -28,7 +28,7 @@ Assets > Import Package > Custom Package
 
 ## 4. Disable the classical camera and add the WebVR camera.
 
-Select `Main Camera` from the scene's `Hierarchy`, go to the `Inspector` and disable it.
+Select `Main Camera` from the scene's `Hierarchy`; then, disable the camera from the `Inspector`.
 
 ![WebVR package](https://raw.githubusercontent.com/mozilla/unity-webvr-export/master/docs/images/disable-main-camera.png)
 
@@ -36,7 +36,7 @@ Add the `WebVRCameraSet` prefab (`Assets > WebVR > Prefabs > WebVRCameraSet.pref
 
 ![Import prefab and models](https://raw.githubusercontent.com/mozilla/unity-webvr-export/master/docs/images/camera-prefab-models.gif)
 
-## 5. Add controller models to WebVRCamera component.
+## 5. Add controller models to `WebVRCamera` component.
 
 Set up `GameObject`s that you would like to be used for left/hand controllers by attaching them to the `WebVRCameraSet` component `Left Hand Obj` and `Right Hand Obj` fields.
 
@@ -52,7 +52,7 @@ Go to `Edit > Project Settings > Player`:
 
 Click on `File > Build & Run`, select a destination folder and Unity will compile your code and and launch the game in your **default** browser. If you want to open the game in another browser, copy and paste the URL of the game.
 
-Under the hood, when clicking `Build & Run` Unity will place all the needed files in the selected folder and will spin up a development web server pointing there. If you want to provide your own server, choose `File > Build` instead. 
+Under the hood, when clicking `Build & Run`, Unity will place all the needed files in the selected folder and will spin up a development web server pointing there. If you want to provide your own server, choose `File > Build` instead. 
 
 ## 8. Adapt your game
 
