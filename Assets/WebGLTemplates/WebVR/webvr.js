@@ -272,7 +272,7 @@
   window.addEventListener('vrdisplaypresentchange', onResize, false);
   window.addEventListener('vrdisplayactivate', onRequestPresent, false);
   window.addEventListener('vrdisplaydeactivate', onExitPresent, false);
-  window.addEventListener('unityLoaded', onUnityLoaded, false);
+  document.addEventListener('UnityLoaded', onUnityLoaded, false);
   document.addEventListener('Unity', onUnity);
   entervrButton.addEventListener('click', onToggleVR, false);
   onResize();
