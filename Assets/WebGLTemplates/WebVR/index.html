@@ -30,7 +30,7 @@
           }
           gameInstance.progress.style.width = (100 * progress) + '%';
           if (progress === 1) {
-            gameInstance.loader.style.display = 'none';
+            document.dispatchEvent(new CustomEvent('UnityLoaded'));
           }
         }
       })();
