@@ -2,7 +2,7 @@
 
 ![Preview of Unity WebVR-exported project in the browser](https://raw.githubusercontent.com/mozilla/unity-webvr-export/master/img/preview.gif)
 
-## **[Try it out!](https://caseyyee.github.io/unity-webvr-export/)**
+## **[Try it out!](https://mozilla.github.io/unity-webvr-export/)**
 
 Assets for creating [WebVR](https://webvr.rocks/)-enabled [Unity3D](https://unity3d.com/) projects.
 
