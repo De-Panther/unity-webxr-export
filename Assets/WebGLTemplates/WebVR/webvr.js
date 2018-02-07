@@ -26,14 +26,14 @@
     if (navigator.serviceWorker.controller) {
       console.log('Running active Service Worker (controller: %s)', navigator.serviceWorker.controller.scriptURL);
     } else {
-      navigator.serviceWorker.register('/sw.js').then(function (registration) {
+      navigator.serviceWorker.register('./sw.js').then(function (registration) {
         console.log('Successfully registered Service Worker (scope: %s)', registration.scope);
       }, function (err) {
         console.warn('Failed to register Service Worker:\n', err);
       });
     }
   }
-  
+
   function onUnityLoaded() {
     canvas = document.getElementById('#canvas');
     document.body.dataset.unityLoaded = 'true';
