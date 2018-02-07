@@ -25,11 +25,15 @@ If the user does not have supported headset, browser or device, the content will
 
 This asset works by utilizing Unity's WebGL platform support and therefore shares the same limitations. Because of this, mobile support is limited and may not work. See [Unity's WebGL browser compatibility](https://docs.unity3d.com/2018.1/Documentation/Manual/webgl-browsercompatibility.html).
 
-## Documentation for developers
+## Getting started
 
 * [Setting up a Unity project for WebVR](./docs/project-setup.md)
 * [Publishing](./docs/publishing.md)
 * [Controllers and input system](./docs/controllers.md)
+
+## Need help?
+
+* [Join WebVR Slack Unity Channel](webvr-slack.herokuapp.com)
 
 ## Contributing
 
