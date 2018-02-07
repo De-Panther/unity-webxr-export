@@ -25,6 +25,12 @@ If the user does not have supported headset, browser or device, the content will
 
 This asset works by utilizing Unity's WebGL platform support and therefore shares the same limitations. Because of this, mobile support is limited and may not work. See [Unity's WebGL browser compatibility](https://docs.unity3d.com/2018.1/Documentation/Manual/webgl-browsercompatibility.html).
 
+#### Chrome for Android
+
+For WebVR content to work with the regular release version of Chrome for Android, users will need to [manually enable WebVR](https://webvr.rocks/chrome_for_android#setup) from `chrome://flags`.
+
+Alternatively, sites can register for a [WebVR Origin Trial token](https://webvr.rocks/chrome_for_android#what_is_the_webvr_origin_trial) which will allows the API to be available for whitelisted origins.
+
 ## Getting started
 
 * [Setting up a Unity project for WebVR](./docs/project-setup.md)
