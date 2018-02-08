@@ -10,7 +10,9 @@ If you are a maintainer of this project, and you modified the demo scene distrib
 
     <img alt="Selecting the Build folder" src="https://raw.githubusercontent.com/mozilla/unity-webvr-export/master/img/build-webgl.png" width="250">
 
-If you are contributing to the assets, you can build and export a new version of the [`WebVR-Assets.unitypackage` file](../WebVR-Assets.unitypackage):
+If you are contributing to the assets, you can build and export a new version of the [`WebVR-Assets.unitypackage` file](../WebVR-Assets.unitypackage).
+
+Notice that the package does not include all the assets in the repository but **only those under `WebVR` and `WebGLTemplates`**:
 
 1. Open **`Assets > Export Package…`**, and press the **`Export…`** button. Set **`WebVR-Assets`** as the filename of the destination Unity Asset Package, and press the **`Save`** button.
 
