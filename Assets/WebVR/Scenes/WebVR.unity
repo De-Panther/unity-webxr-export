@@ -399,10 +399,6 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 013217fcf4bba4f3380d9159876fa8ea, type: 3}
   m_IsPrefabParent: 0
---- !u!1 &821505835 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 100030, guid: 013217fcf4bba4f3380d9159876fa8ea, type: 3}
-  m_PrefabInternal: {fileID: 704369917}
 --- !u!1 &821609230
 GameObject:
   m_ObjectHideFlags: 0
@@ -545,8 +541,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2330d5cea21bb564e97ad081f15487d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  leftHandObj: {fileID: 821505835}
-  rightHandObj: {fileID: 1269233424}
+  leftHandObj: {fileID: 0}
+  rightHandObj: {fileID: 0}
 --- !u!4 &1085144697
 Transform:
   m_ObjectHideFlags: 0
@@ -659,10 +655,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!1 &1269233424 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 100030, guid: c99aacc3accab4fdaadab5e3ea13b9c7, type: 3}
-  m_PrefabInternal: {fileID: 866117885}
 --- !u!1001 &1273320809
 Prefab:
   m_ObjectHideFlags: 0
