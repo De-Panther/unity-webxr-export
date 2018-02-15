@@ -4,7 +4,7 @@ Assets for creating [WebVR](https://webvr.rocks/)-enabled [Unity3D](https://unit
 
 ![Preview of Unity WebVR-exported project in the browser](https://raw.githubusercontent.com/mozilla/unity-webvr-export/master/img/preview.gif)
 
-## **[Try the demo out now!](https://mozilla.github.io/unity-webvr-export/)**
+## **[Check out the demo now!](https://mozilla.github.io/unity-webvr-export/)**
 
 **[Free to download](https://assetstore.unity.com/packages/templates/systems/webvr-assets-109152)** and available now on the [Unity Asset Store](https://assetstore.unity.com/packages/templates/systems/webvr-assets-109152).
 
