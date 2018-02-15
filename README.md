@@ -8,15 +8,15 @@ Assets for creating [WebVR](https://webvr.rocks/)-enabled [Unity3D](https://unit
 
 **[Free to download](https://assetstore.unity.com/packages/templates/systems/webvr-assets-109152)** and available now on the [Unity Asset Store](https://assetstore.unity.com/packages/templates/systems/webvr-assets-109152).
 
-<a hef="https://assetstore.unity.com/packages/templates/systems/webvr-assets-109152" alt="Download the WebVR Assets package for free on the Unity Asset Store">
-<img src="https://raw.githubusercontent.com/mozilla/unity-webvr-export/master/img/asset-store.png" width="400"/>
+<a href="https://assetstore.unity.com/packages/templates/systems/webvr-assets-109152" title="Download the WebVR Assets package for free on the Unity Asset Store">
+<img src="https://raw.githubusercontent.com/mozilla/unity-webvr-export/master/img/asset-store.png" width="640" alt="Download the WebVR Assets package for free on the Unity Asset Store">
 </a>
 
 <hr>
 
-## Compatibility
+## Unity Compatibility
 
-These assets work with Unity versions `2017.2.0f3` and later.
+These assets work with Unity versions `2017.3.0` and above.
 
 ### Browser Compatibility
 
