@@ -42,6 +42,9 @@ This asset works by utilizing Unity's WebGL platform support and therefore share
 * [Troubleshooting and FAQ](./docs/troubleshooting-faq.md)
 * [Controllers and input system](./docs/controllers.md)
 
+## Customize the template
+
+* [Adding Google Analytics to your game](./docs/customization/adding-ga.md)
 
 ## Need help?
 
