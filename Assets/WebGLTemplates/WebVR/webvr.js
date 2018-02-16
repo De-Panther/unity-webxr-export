@@ -121,7 +121,7 @@
       // `vrDisplay.submitFrame(…)`. So for the first frame that this is called, we will
       // abort early and request a new frame from the VR display instead.
       if (vrDisplay.isPresenting && !submitNextFrame) {
-        submitNextFrame = false;
+        submitNextFrame = true;
         return vrDisplay.requestAnimationFrame(onAnimate);
       }
 
@@ -275,7 +275,8 @@
 
   function getVRDisplay () {
     if (!navigator.getVRDisplays) {
-      throw new Error('Your browser does not support WebVR');
+      console.warn('Your browser does not support WebVR');
+      return;
     }
     frameData = new VRFrameData();
 
