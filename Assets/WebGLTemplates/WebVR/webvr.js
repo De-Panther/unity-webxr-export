@@ -93,7 +93,8 @@
 
   function onExitPresent () {
     if (!vrDisplay && !vrDisplay.isPresenting) {
-      throw new Error('No VR display to exit VR mode');
+      console.warn('No VR display to exit VR mode');
+      return;
     }
     function done () {
       // End stereo rendering in Unity.
