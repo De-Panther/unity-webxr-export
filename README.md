@@ -36,6 +36,7 @@ Alternatively, sites can register for a [WebVR Origin Trial token](https://webvr
 
 * [Setting up a Unity project for WebVR](./docs/project-setup.md)
 * [Publishing](./docs/publishing.md)
+* [Troubleshooting and FAQ](./docs/faq.md)
 * [Controllers and input system](./docs/controllers.md)
 
 ## Need help?
