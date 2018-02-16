@@ -13,6 +13,6 @@ mergeInto(LibraryManager.library, {
   },
 
   ConfigureToggleVRKeyName: function (keyName) {
-    document.dispatchEvent(new CustomEvent('Unity', {detail: 'ConfigureToggleVRKeyName:'+Pointer_stringify(keyName)}));
+    document.dispatchEvent(new CustomEvent('Unity', {detail: 'ConfigureToggleVRKeyName:' + Pointer_stringify(keyName)}));
   }
 });

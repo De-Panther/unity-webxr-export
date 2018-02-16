@@ -48,7 +48,7 @@ public class WebVRCamera : MonoBehaviour
 	[Tooltip("GameObject to be controlled by the right hand controller.")]
 	public GameObject rightHandObject;
 
- 	[Tooltip("Name of the key used to alternate between VR and normal mode. Leave in blank to disable.")]
+ 	[Tooltip("Name of the key used to alternate between VR and normal mode. Leave blank to disable.")]
 	public string toggleVRKeyName;
 
 	// delta time for latency checker.
