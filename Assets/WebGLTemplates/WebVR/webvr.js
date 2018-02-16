@@ -20,6 +20,7 @@
   var sitStand = mat4.create();
   var gamepads = [];
   var vrGamepads = [];
+  var toggleVRKeyName = '';
 
   if ('serviceWorker' in navigator && 'isSecureContext' in window && !window.isSecureContext) {
     console.warn('The site is insecure; Service Workers will not work and the site will not be recognized as a PWA');
@@ -62,6 +63,11 @@
       if (submitNextFrame) {
         vrDisplay.requestAnimationFrame(onAnimate);
       }
+    }
+
+    // Handle quick VR/normal toggling.
+    if (msg.detail.indexOf('ConfigureToggleVRKeyName') === 0) {
+      toggleVRKeyName = msg.detail.split(':')[1];
     }
   }
 
@@ -317,6 +323,12 @@
     });
   }
 
+  function onKeyUp(evt) {
+    if (toggleVRKeyName && toggleVRKeyName === evt.key) {
+      onToggleVR();
+    }
+  }
+
   // Monkeypatch `rAF` so that we can render at the VR display's framerate.
   window.requestAnimationFrame = onRequestAnimationFrame;
 
@@ -324,6 +336,7 @@
   window.addEventListener('vrdisplaypresentchange', onResize, false);
   window.addEventListener('vrdisplayactivate', onRequestPresent, false);
   window.addEventListener('vrdisplaydeactivate', onExitPresent, false);
+  window.addEventListener('keyup', onKeyUp, false);
   document.addEventListener('UnityLoaded', onUnityLoaded, false);
   document.addEventListener('Unity', onUnity);
   entervrButton.addEventListener('click', onToggleVR, false);
