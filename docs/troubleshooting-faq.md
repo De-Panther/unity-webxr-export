@@ -26,7 +26,7 @@ The components are definitely a work in progress and are in a experimental stage
 
 You can increase the memory that is available to your application from the player setting in Unity from `Edit > Project Settings > Player setting > WebGL Player Settings`
 
-<img alt="Unity WebGL player memory settings" src="https://raw.githubusercontent.com/mozilla/unity-webvr-export/master/img/webgl-memory.png" width="250">
+<img alt="Unity WebGL player memory settings" src="https://raw.githubusercontent.com/mozilla/unity-webvr-export/master/docs/images/webgl-memory.png" width="250">
 
 ## Do I always have to re-build before I can test my experience?
 
