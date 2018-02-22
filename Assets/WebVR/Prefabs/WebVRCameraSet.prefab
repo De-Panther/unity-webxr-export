@@ -284,8 +284,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2330d5cea21bb564e97ad081f15487d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  leftHandObj: {fileID: 0}
-  rightHandObj: {fileID: 0}
+  leftHandObject: {fileID: 0}
+  rightHandObject: {fileID: 0}
+  toggleVRKeyName: v
 --- !u!124 &124144808855090856
 Behaviour:
   m_ObjectHideFlags: 1

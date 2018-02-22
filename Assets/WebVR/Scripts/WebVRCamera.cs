@@ -14,6 +14,9 @@ public class WebVRCamera : MonoBehaviour
 	[DllImport("__Internal")]
 	private static extern void PostRender();
 
+	[DllImport("__Internal")]
+	private static extern void ConfigureToggleVRKeyName(string keyName);
+
 	Camera cameraMain, cameraL, cameraR;
 
     Quaternion cq;
@@ -39,9 +42,14 @@ public class WebVRCamera : MonoBehaviour
 
     bool active = false; // vr mode
     
-	public GameObject leftHandObj;
-    public GameObject rightHandObj;
+	[Tooltip("GameObject to be controlled by the left hand controller.")]
+	public GameObject leftHandObject;
+    
+	[Tooltip("GameObject to be controlled by the right hand controller.")]
+	public GameObject rightHandObject;
 
+ 	[Tooltip("Name of the key used to alternate between VR and normal mode. Leave blank to disable.")]
+	public string toggleVRKeyName;
 
 	// delta time for latency checker.
 	float deltaTime = 0.0f;
@@ -143,9 +151,12 @@ public class WebVRCamera : MonoBehaviour
 	}
 
 	private void toggleMode() {
-		active = active == true ? false : true;
-		string mode = active == true ? "vr" : "normal";
+		active = !active;
+		string mode = active ? "vr" : "normal";
+
+		#if UNITY_EDITOR || !UNITY_WEBGL
 		changeMode (mode);
+		#endif
 	}
 
 	private void changeMode(string mode)
@@ -192,20 +203,30 @@ public class WebVRCamera : MonoBehaviour
 
 		#if !UNITY_EDITOR && UNITY_WEBGL
 		FinishLoading();
+		ConfigureToggleVRKeyName(toggleVRKeyName);
 		#endif
 	}
 
 	void Update()
 	{
+		#if UNITY_EDITOR || !UNITY_WEBGL
+		bool quickToggleEnabled = toggleVRKeyName != null && toggleVRKeyName != "";
+		if (quickToggleEnabled) {
+			if (Input.GetKeyUp(toggleVRKeyName)) {
+				toggleMode();
+			}
+		}
+		#endif
+
 		deltaTime += (Time.deltaTime - deltaTime) * 0.1f;
 
-		if (leftHandObj) {
-			leftHandObj.transform.rotation = lhr;
-			leftHandObj.transform.position = lhp + transform.position;
+		if (leftHandObject) {
+			leftHandObject.transform.rotation = lhr;
+			leftHandObject.transform.position = lhp + transform.position;
 		}
-		if (rightHandObj) {
-			rightHandObj.transform.rotation = rhr;
-			rightHandObj.transform.position = rhp + transform.position;
+		if (rightHandObject) {
+			rightHandObject.transform.rotation = rhr;
+			rightHandObject.transform.position = rhp + transform.position;
 		}
 
 		if (active) {
