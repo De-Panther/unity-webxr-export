@@ -119,7 +119,6 @@
   function onAnimate () {
     if (!vrDisplay || !vrDisplay.isPresenting) {
       windowRaf(onAnimate);
-      return;
     }
 
     if (vrDisplay) {
@@ -132,74 +131,77 @@
         return vrDisplay.requestAnimationFrame(onAnimate);
       }
 
-      vrDisplay.getFrameData(frameData);
+      // Check for polyfill so that we can utilize its mouse-look controls.
+      if (vrDisplay.isPresenting || isPolyfilled(vrDisplay)) {
+        vrDisplay.getFrameData(frameData);
 
-      // convert view and projection matrices for use in Unity.
-      mat4.copy(leftProjectionMatrix, frameData.leftProjectionMatrix);
-      mat4.transpose(leftProjectionMatrix, leftProjectionMatrix);
+        // convert view and projection matrices for use in Unity.
+        mat4.copy(leftProjectionMatrix, frameData.leftProjectionMatrix);
+        mat4.transpose(leftProjectionMatrix, leftProjectionMatrix);
 
-      mat4.copy(rightProjectionMatrix, frameData.rightProjectionMatrix);
-      mat4.transpose(rightProjectionMatrix, rightProjectionMatrix);
+        mat4.copy(rightProjectionMatrix, frameData.rightProjectionMatrix);
+        mat4.transpose(rightProjectionMatrix, rightProjectionMatrix);
 
-      mat4.copy(leftViewMatrix, frameData.leftViewMatrix);
-      mat4.transpose(leftViewMatrix, leftViewMatrix);
-      leftViewMatrix[2] *= -1;
-      leftViewMatrix[6] *= -1;
-      leftViewMatrix[10] *= -1;
-      leftViewMatrix[14] *= -1;
+        mat4.copy(leftViewMatrix, frameData.leftViewMatrix);
+        mat4.transpose(leftViewMatrix, leftViewMatrix);
+        leftViewMatrix[2] *= -1;
+        leftViewMatrix[6] *= -1;
+        leftViewMatrix[10] *= -1;
+        leftViewMatrix[14] *= -1;
 
-      mat4.copy(rightViewMatrix, frameData.rightViewMatrix);
-      mat4.transpose(rightViewMatrix, rightViewMatrix);
-      rightViewMatrix[2] *= -1;
-      rightViewMatrix[6] *= -1;
-      rightViewMatrix[10] *= -1;
-      rightViewMatrix[14] *= -1;
+        mat4.copy(rightViewMatrix, frameData.rightViewMatrix);
+        mat4.transpose(rightViewMatrix, rightViewMatrix);
+        rightViewMatrix[2] *= -1;
+        rightViewMatrix[6] *= -1;
+        rightViewMatrix[10] *= -1;
+        rightViewMatrix[14] *= -1;
 
-      // Sit Stand transform
-      if (vrDisplay.stageParameters) {
-        mat4.copy(sitStand, vrDisplay.stageParameters.sittingToStandingTransform);
-      } else {
-        mat4.identity(sitStand);
-        mat4.translate(sitStand, sitStand, [0, defaultHeight, 0]);
-      }
-      mat4.transpose(sitStand, sitStand);
+        // Sit Stand transform
+        if (vrDisplay.stageParameters) {
+          mat4.copy(sitStand, vrDisplay.stageParameters.sittingToStandingTransform);
+        } else {
+          mat4.identity(sitStand);
+          mat4.translate(sitStand, sitStand, [0, defaultHeight, 0]);
+        }
+        mat4.transpose(sitStand, sitStand);
 
-      // gamepads
-      gamepads = navigator.getGamepads();
-      vrGamepads = [];
-      for (var i = 0; i < gamepads.length; ++i) {
-        var gamepad = gamepads[i];
-        if (gamepad && (gamepad.pose || gamepad.displayId)) {
-          if (gamepad.pose.position && gamepad.pose.orientation) {
-            // flips gamepad axis to work with Unity.
-            var position = gamepad.pose.position;
-            position[2] *= -1;
-            var orientation = gamepad.pose.orientation;
-            orientation[0] *= -1;
-            orientation[1] *= -1;
+        // gamepads
+        gamepads = navigator.getGamepads();
+        vrGamepads = [];
+        for (var i = 0; i < gamepads.length; ++i) {
+          var gamepad = gamepads[i];
+          if (gamepad && (gamepad.pose || gamepad.displayId)) {
+            if (gamepad.pose.position && gamepad.pose.orientation) {
+              // flips gamepad axis to work with Unity.
+              var position = gamepad.pose.position;
+              position[2] *= -1;
+              var orientation = gamepad.pose.orientation;
+              orientation[0] *= -1;
+              orientation[1] *= -1;
 
-            vrGamepads.push({
-              index: gamepad.index,
-              hand: gamepad.hand,
-              orientation: Array.from(orientation),
-              position: Array.from(position)
-            });
+              vrGamepads.push({
+                index: gamepad.index,
+                hand: gamepad.hand,
+                orientation: Array.from(orientation),
+                position: Array.from(position)
+              });
+            }
           }
         }
+
+        var vrData = {
+          leftProjectionMatrix: Array.from(leftProjectionMatrix),
+          rightProjectionMatrix: Array.from(rightProjectionMatrix),
+          leftViewMatrix: Array.from(leftViewMatrix),
+          rightViewMatrix: Array.from(rightViewMatrix),
+          sitStand: Array.from(sitStand),
+          controllers: vrGamepads
+        };
+
+        gameInstance.SendMessage('WebVRCameraSet', 'WebVRData', JSON.stringify(vrData));
       }
 
-      var vrData = {
-        leftProjectionMatrix: Array.from(leftProjectionMatrix),
-        rightProjectionMatrix: Array.from(rightProjectionMatrix),
-        leftViewMatrix: Array.from(leftViewMatrix),
-        rightViewMatrix: Array.from(rightViewMatrix),
-        sitStand: Array.from(sitStand),
-        controllers: vrGamepads
-      };
-
-      gameInstance.SendMessage('WebVRCameraSet', 'WebVRData', JSON.stringify(vrData));
-
-      if (!vrDisplay.isPresenting) {
+      if (!vrDisplay.isPresenting || isPolyfilled(vrDisplay)) {
         submitNextFrame = false;
       }
       if (submitNextFrame) {
@@ -298,29 +300,29 @@
         return null;
       }
 
-      // Check to see if we are polyfilled.
-      var isPolyfilled = (vrDisplay.deviceId || '').indexOf('polyfill') > 0 ||
-        (vrDisplay.displayName || '').indexOf('polyfill') > 0 ||
-        (vrDisplay.deviceName || '').indexOf('polyfill') > 0 ||
-        vrDisplay.hardwareUnitId;
-
-      if (isPolyfilled) {
+      if (isPolyfilled(vrDisplay)) {
         showInstruction(document.querySelector('#novr'));
       } else {
         status.dataset.enabled = 'true';
       }
 
-      if (!vrDisplay.capabilities || !vrDisplay.capabilities.canPresent) {
-        throw new Error('VR display is not capable of presenting');
+      if (vrDisplay.capabilities && vrDisplay.capabilities.canPresent) {
+        // Enable button to toggle entering/exiting VR.
+        entervrButton.dataset.enabled = 'true';
       }
-
-      // Enable button to toggle entering/exiting VR.
-      entervrButton.dataset.enabled = 'true';
 
       return vrDisplay;
     }).catch(function (err) {
       console.error('Error occurred getting VR display:', err);
     });
+  }
+
+  // Check to see if we are using polyfill.
+  function isPolyfilled(display) {
+    return (display.deviceId || '').indexOf('polyfill') > 0 ||
+        (display.displayName || '').indexOf('polyfill') > 0 ||
+        (display.deviceName || '').indexOf('polyfill') > 0 ||
+        display.hardwareUnitId;
   }
 
   function onKeyUp(evt) {
