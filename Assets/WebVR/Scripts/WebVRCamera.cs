@@ -230,10 +230,11 @@ public class WebVRCamera : MonoBehaviour
 		}
 
 		if (active) {
-			cameraL.worldToCameraMatrix = clv * sitStand.inverse * transform.worldToLocalMatrix;
+			SetTransformFromViewMatrix (cameraL.transform, clv * sitStand.inverse * transform.worldToLocalMatrix);
 			cameraL.projectionMatrix = clp;
-			cameraR.worldToCameraMatrix = crv * sitStand.inverse * transform.worldToLocalMatrix;
+			SetTransformFromViewMatrix (cameraR.transform, crv * sitStand.inverse * transform.worldToLocalMatrix);
 			cameraR.projectionMatrix = crp;
+			SetHeadTransform ();
 		} else {
 			// apply left 
 			cameraMain.worldToCameraMatrix = clv * sitStand.inverse * transform.worldToLocalMatrix;
@@ -244,6 +245,35 @@ public class WebVRCamera : MonoBehaviour
 		#endif
 	}
 
+	// According to https://answers.unity.com/questions/402280/how-to-decompose-a-trs-matrix.html
+	private void SetTransformFromViewMatrix(Transform transform, Matrix4x4 webVRViewMatrix) {
+		Matrix4x4 trs = TransformViewMatrixToTRS(webVRViewMatrix);
+		transform.localPosition = trs.GetColumn(3);
+		transform.localRotation = Quaternion.LookRotation(trs.GetColumn(2), trs.GetColumn(1));
+		transform.localScale = new Vector3(
+			trs.GetColumn(0).magnitude,
+			trs.GetColumn(1).magnitude,
+			trs.GetColumn(2).magnitude
+        );
+    }
+
+	// According to https://forum.unity.com/threads/reproducing-cameras-worldtocameramatrix.365645/#post-2367177
+	private Matrix4x4 TransformViewMatrixToTRS(Matrix4x4 openGLViewMatrix) {
+		openGLViewMatrix.m20 *= -1;
+		openGLViewMatrix.m21 *= -1;
+		openGLViewMatrix.m22 *= -1;
+		openGLViewMatrix.m23 *= -1;  
+		return openGLViewMatrix.inverse;
+	}
+
+	private void SetHeadTransform() {
+		Transform leftTransform = cameraL.transform;
+		Transform rightTransform = cameraR.transform;
+		cameraMain.transform.localPosition = 
+			(rightTransform.localPosition - leftTransform.localPosition) / 2f + leftTransform.localPosition;
+		cameraMain.transform.localRotation = leftTransform.localRotation;
+		cameraMain.transform.localScale = leftTransform.localScale;
+	}
 	void OnGUI()
 	{
 		if (!showPerf)
