@@ -220,15 +220,6 @@ public class WebVRCamera : MonoBehaviour
 
 		deltaTime += (Time.deltaTime - deltaTime) * 0.1f;
 
-		if (leftHandObject) {
-			leftHandObject.transform.rotation = lhr;
-			leftHandObject.transform.position = lhp + transform.position;
-		}
-		if (rightHandObject) {
-			rightHandObject.transform.rotation = rhr;
-			rightHandObject.transform.position = rhp + transform.position;
-		}
-
 		if (active) {
 			cameraL.worldToCameraMatrix = clv * sitStand.inverse * transform.worldToLocalMatrix;
 			cameraL.projectionMatrix = clp;
@@ -238,8 +229,28 @@ public class WebVRCamera : MonoBehaviour
 			// apply left 
 			cameraMain.worldToCameraMatrix = clv * sitStand.inverse * transform.worldToLocalMatrix;
 		}
+		
+		#if UNITY_EDITOR
+		if (leftHandObject) {
+			leftHandObject.transform.localRotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.LeftHand);
+			leftHandObject.transform.position = transform.position + UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.LeftHand);
+		}
+		if (rightHandObject) {
+			rightHandObject.transform.localRotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.RightHand);
+			rightHandObject.transform.position = transform.position + UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.RightHand);
+		}
+		#endif
 
 		#if !UNITY_EDITOR && UNITY_WEBGL
+		if (leftHandObject) {
+			leftHandObject.transform.rotation = lhr;
+			leftHandObject.transform.position = lhp + transform.position;
+		}
+		if (rightHandObject) {
+			rightHandObject.transform.rotation = rhr;
+			rightHandObject.transform.position = rhp + transform.position;
+		}
+
 		StartCoroutine(endOfFrame());
 		#endif
 	}
