@@ -1,6 +1,8 @@
 html, body {
-  overflow: hidden;
   font-size: 16px;
+  overflow: hidden;
+  /* NOTE: Don't use `-apple-system` at the head of a shorthand font declaration.
+     See https://booking.design/implementing-system-fonts-on-booking-com-a-lesson-learned-bdc984df627f for more info. */
   font-family: BlinkMacSystemFont, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
