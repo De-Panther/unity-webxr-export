@@ -2,7 +2,33 @@
 
 ## What is WebVR?
 
-The WebVR assets use the WebVR browser API's, a standard-based implementation that removes the need for any platform specific SDK’s and also provides ability to be responsive to different VR configurations.
+The WebVR Assets package uses the WebVR browser APIs, a standards-based implementation that removes the need for any platform-specific SDKs and handles responsiveness for a variety of VR configurations.
+
+**[See WebVR specification.](https://immersive-web.github.io/webvr/spec/1.1/)**
+
+## What browsers and headsets are supported?
+
+**[See browser and headset compatibility.](https://github.com/mozilla/unity-webvr-export#unity-compatibility)**
+
+## Why Unity?
+
+Unity is a game development platform that has been a very popular choice amongst VR and indie game developers.  There is a huge community out there to support creators, in particular a massive collection of assets in the [Asset Store](https://assetstore.unity.com/), which reduces the time and skills needed to build content.  Unity has a relatively easy-to-use environment and cross-platform integration (including WebGL!) which makes targetting multiple platforms using a single project codebase easy.
+
+## What version of Unity can I experiment with?
+
+[Unity's Personal Edition](https://store.unity.com/products/unity-personal) is completely free to use for beginners, students and hobyists.  It's a great place to start and only has a few limitations. The Unity splash screen is required to be shown, and you cannot use realtime developer analytics nor Unity Cloud Build services.
+
+## What are some other ways to create WebVR content?
+
+If you're a web developer, there are several popular JavaScript tools and frameworks you can use to create your VR experience for the Web:
+
+* [A-Frame](https://aframe.io/)
+* [three.js](https://threejs.org/)
+* [ReactVR](https://facebook.github.io/react-vr/)
+* [Babylon.js](https://www.babylonjs.com/)
+* [PlayCanvas](https://playcanvas.com/)
+* [JanusVR](http://janusvr.com/)
+* [Amazon Sumerian](https://aws.amazon.com/sumerian/)
 
 ## How does it work?
 
@@ -14,9 +40,9 @@ The web makes it easy to deliver content to users. Just navigate or link to a ex
 
 ## Will it work on mobile?
 
-The package targets desktop VR browsers.   Mobile device support is limited and not recommended. Please see [compatibility section](../README.md) for more information.
+The WebVR Assets package targets desktop VR browsers. Mobile VR browser support is limited and not recommended at this time due to the performance and memory limitations of the Unity WebGL player on mobile browsers. Although we have had some luck running on Android devices, Safari on IOS fails to load.  We are investigate ways to make the exporter more useable on mobile.
 
-We have gotten it to run on Android devices, but performance is an issue and were still investigating ways to make it more useable.
+Please see [compatibility section](../README.md) for more information.
 
 ## Can I use these components in production?
 
