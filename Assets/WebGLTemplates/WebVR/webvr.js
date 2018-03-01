@@ -44,11 +44,6 @@
   }
 
   function onUnity (msg) {
-    if (msg.detail === 'Ready') {
-      getVRDisplay();
-      return;
-    }
-
     // Measure Round-Trip Time from Unity.
     if (msg.detail === 'Timer') {
       var delta = window.performance.now() - testTimeStart;
