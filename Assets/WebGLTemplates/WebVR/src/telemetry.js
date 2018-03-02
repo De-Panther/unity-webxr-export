@@ -1,31 +1,82 @@
 /* global localStorage, location, Raven */
-(function () {
-// This checks for "production"-looking origins (e.g., `https://example.com`).
-if (window.isSecureContext === false ||
-    (location.hostname === 'localhost' ||
-     location.hostname === '127.0.0.1' ||
-     location.hostname === '0.0.0.0' ||
-     location.hostname.indexOf('ngrok.io') > -1 ||
-     location.hostname.indexOf('localtunnel.me') > -1)) {
+(function (window) {
+'use strict';
+
+if (!('UnityLoader' in window)) {
+  console.warn('`UnityLoader` object not found.');
   return;
 }
 
-injectScript('https://cdn.ravenjs.com/3.22.3/console/raven.min.js', function (err) {
-  if (err) {
-    console.warn('Could not load Raven.js script:', err);
-    return;
-  }
-  if (!('Raven' in window)) {
-    console.warn('Could not find `window.Raven` global');
-    return;
-  }
-  ravenLoaded();
-});
+var navigator = window.navigator;
+var telemetry = getModule('UnityLoader.WebVR.telemetry');
 
-function ravenLoaded () {
-  console.log('Raven.js script loaded');
-  Raven.config('https://e359be9fb9324addb0dc97b664cf5ee6@sentry.io/294878')
-       .install();
+telemetry.ga = {
+  create: function (trackingId, cookieDomain, name, fieldsObject) {
+    window.ga('create', trackingId, cookieDomain, name, fieldsObject);
+    return function (command) {
+      if (navigator.doNotTrack === '1') { return; }
+      var args = Array.prototype.slice.call(arguments);
+      if (name && command !== 'provide') {
+        command = name + '.' + command;
+        args[0] = command;
+      }
+      window.ga.apply(undefined, args);
+    };
+  }
+};
+
+telemetry.start = function (config) {
+  if (navigator.doNotTrack === '1') {
+    return;
+  }
+  if (config.researchErrorLogging) {
+    startErrorLogging();
+  }
+  if (config.researchAnalytics) {
+    startAnalytics();
+  }
+};
+
+setupAnalytics();
+
+function setupAnalytics() {
+  window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+  if (navigator.doNotTrack === '1') {
+    return;
+  }
+  injectScript('https://www.google-analytics.com/analytics.js', function (err) {
+    if (err) {
+      console.warn('Could not load Analytics.js script:', err);
+      return;
+    }
+  });  
+}
+
+function startErrorLogging() {
+  injectScript('https://cdn.ravenjs.com/3.22.3/console/raven.min.js', function (err) {
+    if (err) {
+      console.warn('Could not load Raven.js script:', err);
+      return;
+    }
+    if (!('Raven' in window)) {
+      console.warn('Could not find `window.Raven` global');
+      return;
+    }
+    configureRaven();
+  });
+
+  function configureRaven () {
+    console.log('Raven.js script loaded');
+    Raven.config('https://e359be9fb9324addb0dc97b664cf5ee6@sentry.io/294878')
+         .install();
+  }
+};
+
+function startAnalytics() {
+  var CURRENT_VERSION = '1.0.1';
+  var ga = telemetry.ga.create('UA-77033033-6', 'auto', 'mozillaResearch');
+  ga('set', 'dimension1', CURRENT_VERSION);
+  ga('send', 'pageview');
 }
 
 function injectScript (src, callback) {
@@ -45,4 +96,17 @@ function injectScript (src, callback) {
   document.head.appendChild(script);
   return script;
 }
-})();
+
+function getModule (modulePath) {
+  var fragments = modulePath.split('.');
+  var currentModule = window;
+  for (var i = 0, l = fragments.length; i < l; i++) {
+    var submoduleName = fragments[i];
+    if (!(submoduleName in currentModule)) {
+      currentModule[submoduleName] = {};
+    } 
+    currentModule = currentModule[submoduleName];
+  }
+  return currentModule;
+}
+})(window);

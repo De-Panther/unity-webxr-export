@@ -11,8 +11,14 @@
     <meta name="description" content="%UNITY_CUSTOM_DESCRIPTION%">
     <link rel="icon" href="favicon.ico">
     <link rel="stylesheet" type="text/css" href="styles/webvr.css">
-    <script src="src/telemetry.js"></script>
     <script src="%UNITY_WEBGL_LOADER_URL%"></script>
+    <script src="src/telemetry.js"></script>
+    <script>
+      UnityLoader.WebVR.telemetry.start({
+        researchAnalytics: true,
+        researchErrorLogging: true        
+      });
+    </script>
     <script>
       /* global UnityLoader */
       (function () {
