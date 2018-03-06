@@ -15,14 +15,18 @@
     <script>
       MozillaResearch.telemetry.start({
         analytics: true,
-        errorLogging: true
+        errorLogging: true,
+        performance: true
       });
+      MozillaResearch.telemetry.performance.mark('LoaderParsingStart');
     </script>
     <script src="%UNITY_WEBGL_LOADER_URL%"></script>
     <script>
-      /* global UnityLoader */
+      /* global UnityLoader, MozillaResearch */
+      MozillaResearch.telemetry.performance.measure('LoaderParsing', 'LoaderParsingStart');
       (function () {
         UnityLoader.SystemInfo.mobile = false;  // Workaround to force `UnityLoader` to actually load on mobile.
+        MozillaResearch.telemetry.performance.mark('LoadingStart');
         window.gameInstance = UnityLoader.instantiate('gameContainer', '%UNITY_WEBGL_BUILD_URL%', {
           Module: {
             // `preserveDrawingBuffer` is needed for WebVR content to be mirrored to the `<canvas>`.
