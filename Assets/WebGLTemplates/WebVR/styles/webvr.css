@@ -104,7 +104,7 @@ a:link, a:visited {
 }
 
 #entervr {
-  background: #fff url(vr.png) center no-repeat;
+  background: #fff url(../vr.png) center no-repeat;
   background-size: 80%;
   cursor: pointer;
   display: none;
