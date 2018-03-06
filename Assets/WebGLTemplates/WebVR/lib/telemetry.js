@@ -7,7 +7,7 @@ if (!('MozillaResearch' in window)) {
 }
 
 if (!('telemetry' in window.MozillaResearch)) {
-  window.MozillaResearch.telemetry = {} ;
+  window.MozillaResearch.telemetry = {};
 }
 
 var navigator = window.navigator;
@@ -29,13 +29,14 @@ telemetry.ga = {
 };
 
 telemetry.start = function (config) {
+  config = config || {};
   if (navigator.doNotTrack === '1') {
     return;
   }
-  if (config.researchErrorLogging) {
+  if (config.errorLogging) {
     startErrorLogging();
   }
-  if (config.researchAnalytics) {
+  if (config.analytics) {
     startAnalytics();
   }
 };
@@ -43,7 +44,11 @@ telemetry.start = function (config) {
 setupAnalytics();
 
 function setupAnalytics() {
-  window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+  window.ga = window.ga || function () {
+    (window.ga.q = (window.ga.q || [])).push(arguments)
+  };
+  window.ga.l = +(new Date());
+
   if (navigator.doNotTrack === '1') {
     return;
   }
