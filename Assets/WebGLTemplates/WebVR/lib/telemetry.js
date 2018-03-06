@@ -2,13 +2,16 @@
 (function (window) {
 'use strict';
 
-if (!('UnityLoader' in window)) {
-  console.warn('`UnityLoader` object not found.');
-  return;
+if (!('MozillaResearch' in window)) {
+  window.MozillaResearch = {};
+}
+
+if (!('telemetry' in window.MozillaResearch)) {
+  window.MozillaResearch.telemetry = {} ;
 }
 
 var navigator = window.navigator;
-var telemetry = getModule('UnityLoader.WebVR.telemetry');
+var telemetry = window.MozillaResearch.telemetry;
 
 telemetry.ga = {
   create: function (trackingId, cookieDomain, name, fieldsObject) {
@@ -97,16 +100,4 @@ function injectScript (src, callback) {
   return script;
 }
 
-function getModule (modulePath) {
-  var fragments = modulePath.split('.');
-  var currentModule = window;
-  for (var i = 0, l = fragments.length; i < l; i++) {
-    var submoduleName = fragments[i];
-    if (!(submoduleName in currentModule)) {
-      currentModule[submoduleName] = {};
-    } 
-    currentModule = currentModule[submoduleName];
-  }
-  return currentModule;
-}
 })(window);
