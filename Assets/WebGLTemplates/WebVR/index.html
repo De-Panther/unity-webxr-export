@@ -10,14 +10,7 @@
     <title>%UNITY_CUSTOM_NAME% | %UNITY_WEB_NAME%</title>
     <meta name="description" content="%UNITY_CUSTOM_DESCRIPTION%">
     <link rel="icon" href="favicon.ico">
-    <link rel="stylesheet" type="text/css" href="styles/webvr.css">
-    <script src="lib/telemetry.js"></script>
-    <script>
-      MozillaResearch.telemetry.start({
-        analytics: true,
-        errorLogging: true        
-      });
-    </script>
+    <link rel="stylesheet" type="text/css" href="webvr.css">
     <script src="%UNITY_WEBGL_LOADER_URL%"></script>
     <script>
       /* global UnityLoader */
@@ -83,8 +76,8 @@
       <button id="entervr" value="Enter VR"></button>
     </div>
 
-    <script src="vendor/gl-matrix-min.js"></script>
-    <script src="vendor/webvr-polyfill.min.js"></script>
+    <script src="gl-matrix-min.js"></script>
+    <script src="webvr-polyfill.min.js"></script>
     <script src="webvr.js"></script>
   </body>
 
