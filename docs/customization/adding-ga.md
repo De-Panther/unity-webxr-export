@@ -2,9 +2,9 @@
 
 Google Analytics is a popular web analytics service that tracks and reports website traffic. It offers insight about your user behaviour and allows you to make informed decisions regarding the evolution of your site.
 
-You will need to modify the [VR template](../../Assets/WebGLTemplates/WebVR/index.html) that comes with the package, so be sure you've already added [the package from the store](https://u3d.as/1476) to your Unity project.
+The [VR template](../../Assets/WebGLTemplates/WebVR/index.html) that comes with the [Unity package](https://u3d.as/1476) already includes Analytics as a part of the telemetry library used for [collecting usage data](../data-collection.md) but you'll need to set up a Google Analytics account and get a [tracking Id](https://support.google.com/analytics/answer/7372977) first, before using it.
 
-## Set up
+## Quick set up
 
 Start by visiting [Google Analytics](https://analytics.google.com/analytics/web) and sign up for a new account:
 
@@ -22,9 +22,44 @@ This will redirect you to the configuration page where you find the HTML code yo
 
 ![The configuration page includes the instructions for setting up your site](./images/setup-done.png)
 
-Now, in your project, with your favourite code editor, open the file at `Assets/WebGLTemplates/WebVR/index.html` and paste the code provided by Google Analytics inside, preferably at the top of, the `<head>` tag:
+**Don't use the snippet above**. Instead, with your favourite code editor, open the file at `Assets/WebGLTemplates/WebVR/index.html` and paste the following code after including the `telemetry.js` library, preferably at the bottom of the `<head>` tag:
 
-![The code provided by GA should be added right after the head tag](./images/add-to-index.png)
+```html
+<script>
+  var ga = MozillaResearch.telemetry.ga.create('UA-XXXXXXX-Y');
+  ga('send', 'pageview');
+</script>
+```
+
+![The code provided by GA should be added after including the telemetry library](./images/add-to-index.png)
+
+### Template integration of Google Analytics
+
+If you have used Google Analytics before, the previous code should remind you of the familiar Analytics snippet:
+
+```js
+ga('create', 'UA-XXXXXX-Y', 'auto');
+ga('send', 'pageview');
+```
+
+When using Analytics inside the template, use the `create` method of `MozillaReasearch.telemetry.ga` instead of the `create` command. It will return a tracking function which can be used in the same way you would use it in the guide [Sending Data to Google Analytics.](https://developers.google.com/analytics/devguides/collection/analyticsjs/creating-trackers) 
+
+```js
+var ga = MozillaResearch.telemetry.ga.create('UA-XXXXXX-Y', 'auto');
+ga('send', 'pageview');
+```
+
+If you want to customize the way you create the tracker, read [Creating Trackers](https://developers.google.com/analytics/devguides/collection/analyticsjs/creating-trackers) and remember that:
+
+```js
+ga('create', arg1, arg2, ...);
+``` 
+
+Is equivalent to:
+
+```js
+var ga = MozillaResearch.telemetry.ga.create(arg1, arg2, ...);
+```
 
 ## Using Google Analytics
 

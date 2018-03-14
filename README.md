@@ -74,6 +74,13 @@ Reach out to us with any questions you may have or help you may need, and partic
 
 * [Join the WebVR Slack](https://webvr.rocks/slack) (join the [#unity channel](https://webvr.slack.com/messages/unity))
 
+## Developer Privacy Notice for Data Collection
+
+To help improve the WebVR API and the WebVR Export assets, Mozilla automatically receives technical, interaction, and error data of end users, using [Sentry](https://sentry.io) and [Google Analytics](https://analytics.google.com/analytics/web/). For example, this includes number of times VR device is mounted and worn; number of times VR mode is enabled and time spent; time for webpages to load and time open; and a unique browser identifier.
+
+Developers can turn off this data collection by [modifying the configuration snippet that comes with the VR template](./docs/customization/disabling-telemetry.md).  
+
+End users can turn off this data collection by enabling [`Do-Not-Track`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/DNT) in their browsers.
 
 ## Credits
 
