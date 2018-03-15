@@ -1,10 +1,11 @@
 # Developer Privacy Notice for Data Collection
 
-To help improve the WebVR API and the [Unity WebVR assets](https://assetstore.unity.com/packages/templates/systems/webvr-assets-109152), Mozilla automatically receives general-usage statistics and error exceptions of end users, using [Sentry](https://sentry.io) and [Google Analytics](https://analytics.google.com/analytics/web/).
+_Last updated: March 2018_
 
-Developers can turn off this data collection by [modifying the configuration snippet that comes with the VR template](./docs/customization/disabling-telemetry.md).
+To help improve the [WebVR API](https://immersive-web.github.io/webvr/spec/1.1/) and the [Unity WebVR Assets](https://assetstore.unity.com/packages/templates/systems/webvr-assets-109152) package, each time a web page built using the [WebVR Assets](https://assetstore.unity.com/packages/templates/systems/webvr-assets-109152) is loaded, Mozilla automatically receives general-usage statistics and uncaught JavaScript errors encountered by end-users, using [Google Analytics](https://analytics.google.com/analytics/web/) and [Sentry](https://sentry.io), respectively. [The *complete list of collected data*](./TELEMETRY.MD#list-of-collected-data) includes metrics for counting the number of unique web-page sessions; time for web pages to load and time open; JavaScript error exceptions occurred on the page; the number of times a VR device is mounted and worn; number of times VR mode is enabled and time spent; and a random identifier.
 
-End users can turn off this data collection by enabling [`Do-Not-Track`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/DNT) in their browsers.
+You as a developer can turn off this data collection by [modifying the configuration snippet that comes with the VR template](https://github.com/mozilla/unity-webvr-export/blob/master/docs/customization/disabling-telemetry.md). It is your obligation to inform your end-users of this data collection and to inform them that it can be turned off by [enabling “Do-Not-Track”](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/DNT) in their browsers.
+
 
 ## List of Collected Data
 
