@@ -2,7 +2,7 @@
 
 Google Analytics is a popular web analytics service that tracks and reports website traffic. It offers insight about your user behaviour and allows you to make informed decisions regarding the evolution of your site.
 
-The [VR template](../../Assets/WebGLTemplates/WebVR/index.html) that comes with the [Unity package](https://u3d.as/1476) already includes Analytics as a part of the telemetry library used for [collecting usage data](../data-collection.md) but you'll need to set up a Google Analytics account and get a [tracking Id](https://support.google.com/analytics/answer/7372977) first, before using it.
+The [VR template](../../Assets/WebGLTemplates/WebVR/index.html) that comes with the [Unity package](https://u3d.as/1476) already includes Analytics as a part of the telemetry library used for [collecting usage data](../data-collection.md) but you'll need to set up a Google Analytics account and get a [Tracking ID](https://support.google.com/analytics/answer/7372977) first, before using it.
 
 ## Quick set up
 
@@ -42,7 +42,7 @@ ga('create', 'UA-XXXXXX-Y', 'auto');
 ga('send', 'pageview');
 ```
 
-When using Analytics inside the template, use the `create` method of `MozillaReasearch.telemetry.ga` instead of the `create` command. It will return a tracking function which can be used in the same way you would use it in the guide [Sending Data to Google Analytics.](https://developers.google.com/analytics/devguides/collection/analyticsjs/creating-trackers) 
+When using Analytics inside the template, use the `create` method of `MozillaReasearch.telemetry.ga` instead of the `create` command. It will return a tracking function which can be used in the same way you would use it in the guide [Sending Data to Google Analytics](https://developers.google.com/analytics/devguides/collection/analyticsjs/creating-trackers).
 
 ```js
 var ga = MozillaResearch.telemetry.ga.create('UA-XXXXXX-Y', 'auto');

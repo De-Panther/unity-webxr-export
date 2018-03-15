@@ -1,6 +1,6 @@
-# Disabling telemetry
+# Disabling Telemetry
 
-The code enabling telemetry data collection is in the VR template that comes with the package. Ensure you've already added [the package from the store](https://u3d.as/1476) to your Unity project and look for the following snippet inside the [`index.html` file](../../Assets/WebGLTemplates/WebVR/index.html) of the template:
+The code that enables Mozilla-Research Telemetry collection is in the VR template that comes with the package. Ensure you've already added [the package from the store](https://u3d.as/1476) to your Unity project and look for the following snippet inside the [`index.html` file](../../Assets/WebGLTemplates/WebVR/index.html) of the template:
 
 ```js
 MozillaResearch.telemetry.start({
@@ -10,9 +10,9 @@ MozillaResearch.telemetry.start({
 });
 ```
 
-By default, collecting number of visits, error logs and some performance measurements is enabled by setting the proper options (`analytics`, `errorLogging` and `performance` respectively) to `true`.
+By default, each, number of visits, error logs and some performance measurements are enabled by setting the proper option (`analytics`, `errorLogging` and `performance` respectively) to `true`.
 
-To prevent the template from sending such information, set the corresponding options to `false`:
+To prevent the template from sending such information, set the appropiate options to `false`:
 
 ```js
 MozillaResearch.telemetry.start({
@@ -22,7 +22,7 @@ MozillaResearch.telemetry.start({
 });
 ```
 
-Or remove/comment the line completely:
+Or by commenting out these lines, or removing the code completely from the `index.html` file:
 
 ```js
 /*MozillaResearch.telemetry.start({

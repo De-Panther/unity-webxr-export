@@ -76,9 +76,9 @@ Reach out to us with any questions you may have or help you may need, and partic
 
 ## Developer Privacy Notice for Data Collection
 
-To help improve the WebVR API and the WebVR Export assets, Mozilla automatically receives technical, interaction, and error data of end users, using [Sentry](https://sentry.io) and [Google Analytics](https://analytics.google.com/analytics/web/). For example, this includes number of times VR device is mounted and worn; number of times VR mode is enabled and time spent; time for webpages to load and time open; and a unique browser identifier.
+To help improve the WebVR API and the [Unity WebVR assets](https://assetstore.unity.com/packages/templates/systems/webvr-assets-109152), Mozilla automatically receives [general-usage statistics](./TELEMETRY.md#list-of-collected-data) and error exceptions of end users, using [Sentry](https://sentry.io) and [Google Analytics](https://analytics.google.com/analytics/web/).
 
-Developers can turn off this data collection by [modifying the configuration snippet that comes with the VR template](./docs/customization/disabling-telemetry.md).  
+Developers can turn off this data collection by [modifying the configuration snippet that comes with the VR template](./docs/customization/disabling-telemetry.md).
 
 End users can turn off this data collection by enabling [`Do-Not-Track`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/DNT) in their browsers.
 
@@ -87,7 +87,6 @@ End users can turn off this data collection by enabling [`Do-Not-Track`](https:/
 This project was heavily influenced by early explorations in using Unity to build for WebVR by [@gtk2k](https://github.com/gtk2k).
 
 Also, thanks to [@arturitu](https://github.com/arturitu) for creating the [3D-hand models](https://github.com/aframevr/assets/tree/gh-pages/controllers/hands) used for controllers in these examples.
-
 
 ## License
 
