@@ -22,7 +22,9 @@ This will redirect you to the configuration page where you find the HTML code yo
 
 ![The configuration page includes the instructions for setting up your site](./images/setup-done.png)
 
-Add the snippet just after the `<head>` tag and you'll be ready to go.
+Copy and paste this code as the first item into the `<head>` tag.
+
+Read [sending data to Google Analytics](https://developers.google.com/analytics/devguides/collection/gtagjs/sending-data?hl=es) to learn how to use the `gtag` API.
 
 ## Using Google Analytics
 
