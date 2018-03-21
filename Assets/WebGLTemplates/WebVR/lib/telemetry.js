@@ -46,7 +46,7 @@ telemetry.performance = {
   measure: NO_OP
 };
 
-telemetry.start = function (config) {
+telemetry.start = onlyOnce(function (config) {
   config = config || {};
   if (config.errorLogging) {
     setupErrorLogging();
@@ -57,7 +57,7 @@ telemetry.start = function (config) {
       setupPerformanceAPI(researchAnalytics);
     }
   }
-};
+});
 
 setupAnalytics();
 
@@ -140,7 +140,7 @@ function setupPerformanceAPI(tracker) {
  * [2] https://developers.google.com/analytics/devguides/collection/gtagjs/sending-data#groups-and-properties
  *
  * @param {string} trackingId see `'config'` command signature [1]
- * @param {onject} options see `'config'` command signature [1]
+ * @param {object} options see `'config'` command signature [1]
  * @returns {function} A tracker function to replace invocation of `gtag` that
  * honours Do-Not-Track and automatically adds the `send_to` key to the
  * commands [2].
@@ -189,6 +189,16 @@ function doNotTrack() {
   return navigator.doNotTrack === '1' ||
          navigator.msDoNotTrack === '1' ||
          window.doNotTrack === '1';
+}
+
+function onlyOnce(fn) {
+  var called = false;
+  return function () {
+    if (called) { return; }
+    var returnValue = fn.apply(this, arguments);
+    called = true;
+    return returnValue;
+  };
 }
 
 })(window);
