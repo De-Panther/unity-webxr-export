@@ -24,7 +24,7 @@ This will redirect you to the configuration page where you find the HTML code yo
 
 Copy and paste this code as the first item into the `<head>` tag.
 
-Read [sending data to Google Analytics](https://developers.google.com/analytics/devguides/collection/gtagjs/sending-data?hl=es) to learn how to use the `gtag` API.
+Read [Google Analytics' "Sending Data" documentation](https://developers.google.com/analytics/devguides/collection/gtagjs/sending-data?hl=es) to learn how to use the `gtag` API.
 
 ## Using Google Analytics
 

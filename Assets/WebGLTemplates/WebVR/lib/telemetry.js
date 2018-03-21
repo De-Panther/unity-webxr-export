@@ -20,6 +20,7 @@
  */
 
 var CURRENT_VERSION = '1.0.2';
+var MOZILLA_RESEARCH_TRACKER = 'UA-77033033-6';
 
 if (!('MozillaResearch' in window)) {
   window.MozillaResearch = {};
@@ -34,11 +35,6 @@ var telemetry = window.MozillaResearch.telemetry;
 
 var NO_OP = function () {};
 
-// Always returns what is in `window[GA_ALIAS]`. According to:
-// https://developers.google.com/analytics/devguides/collection/analyticsjs/how-analyticsjs-works
-// The `analytics.js` script will redefine the `window[GA_ALIAS]` function after
-// loading. Accessing the function indirectly ensures we always get the most
-// recent implementation of it.
 Object.defineProperty(telemetry, '_gtag', {
   get: function () {
     return window.gtag || NO_OP;
@@ -72,7 +68,7 @@ function setupAnalytics() {
   window.gtag = window.gtag || function () { dataLayer.push(arguments); };
   window.gtag('js', new Date());
 
-  injectScript('https://www.googletagmanager.com/gtag/js?id=UA-77033033-6', function (err) {
+  injectScript('https://www.googletagmanager.com/gtag/js?id=' + MOZILLA_RESEARCH_TRACKER, function (err) {
     if (err) {
       console.warn('Could not load Analytics.js script:', err);
       return;
@@ -97,12 +93,12 @@ function setupErrorLogging() {
 
   function startRaven () {
     Raven.config('https://e359be9fb9324addb0dc97b664cf5ee6@sentry.io/294878')
-          .install();
+         .install();
   }
 };
 
 function startAnalytics() {
-  var tracker = newTracker('UA-77033033-6', {
+  var tracker = configureBoundTracker(MOZILLA_RESEARCH_TRACKER, {
     'groups': 'MozillaResearch',
     'custom_map': {
       'dimension1': 'version'
@@ -134,11 +130,22 @@ function setupPerformanceAPI(tracker) {
   };
 }
 
-// Provides a convenient shortcut for named trackers by automatically adding the
-// name of the tracker to the command. The function accepts the same parameters
-// that follow `create` command. See:
-// https://developers.google.com/analytics/devguides/collection/analyticsjs/creating-trackers
-function newTracker(trackingId, options) {
+/**
+ * The function configures Google Analytics sending a `config` command [1] but
+ * also returns a function to use instead of `gtag` that respects `Do-Not-Track`
+ * and it's bound to the `groups` property of the `options` parameter to avoid
+ * adding the `send_to` key [2] to each command.
+ *
+ * [1] https://developers.google.com/analytics/devguides/collection/gtagjs/pages
+ * [2] https://developers.google.com/analytics/devguides/collection/gtagjs/sending-data#groups-and-properties
+ *
+ * @param {string} trackingId see `'config'` command signature [1]
+ * @param {onject} options see `'config'` command signature [1]
+ * @returns {function} A tracker function to replace invocation of `gtag` that
+ * honours Do-Not-Track and automatically adds the `send_to` key to the
+ * commands [2].
+ */
+function configureBoundTracker(trackingId, options) {
   if (doNotTrack()) { return NO_OP; }
 
   options = options || {};
@@ -180,8 +187,8 @@ function injectScript(src, callback) {
 // https://developer.mozilla.org/en-US/docs/Web/API/Navigator/doNotTrack#Browser_compatibility
 function doNotTrack() {
   return navigator.doNotTrack === '1' ||
-          navigator.msDoNotTrack === '1' ||
-          window.doNotTrack === '1';
+         navigator.msDoNotTrack === '1' ||
+         window.doNotTrack === '1';
 }
 
 })(window);
