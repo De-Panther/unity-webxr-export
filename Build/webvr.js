@@ -37,6 +37,7 @@
   }
 
   function onUnityLoaded () {
+    MozillaResearch.telemetry.performance.measure('LoadingTime', 'LoadingStart');
     canvas = document.getElementById('#canvas');
     document.body.dataset.unityLoaded = 'true';
     onResize();

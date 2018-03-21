@@ -10,12 +10,23 @@
     <title> | Unity-WebVR-Export</title>
     <meta name="description" content="">
     <link rel="icon" href="favicon.ico">
-    <link rel="stylesheet" type="text/css" href="webvr.css">
+    <link rel="stylesheet" type="text/css" href="styles/webvr.css">
+    <script src="lib/telemetry.js"></script>
+    <script>
+      MozillaResearch.telemetry.start({
+        analytics: true,
+        errorLogging: true,
+        performance: true
+      });
+      MozillaResearch.telemetry.performance.mark('LoaderParsingStart');
+    </script>
     <script src="Build/UnityLoader.js"></script>
     <script>
-      /* global UnityLoader */
+      /* global UnityLoader, MozillaResearch */
+      MozillaResearch.telemetry.performance.measure('LoaderParsing', 'LoaderParsingStart');
       (function () {
         UnityLoader.SystemInfo.mobile = false;  // Workaround to force `UnityLoader` to actually load on mobile.
+        MozillaResearch.telemetry.performance.mark('LoadingStart');
         window.gameInstance = UnityLoader.instantiate('gameContainer', 'Build/Build.json', {
           Module: {
             // `preserveDrawingBuffer` is needed for WebVR content to be mirrored to the `<canvas>`.
