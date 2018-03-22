@@ -19,7 +19,7 @@
  * this does not conflict with requirement #2.
  */
 
-var CURRENT_VERSION = '1.0.2';
+var CURRENT_VERSION = '1.1.0';
 var MOZILLA_RESEARCH_TRACKER = 'UA-77033033-6';
 
 if (!('MozillaResearch' in window)) {
