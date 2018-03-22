@@ -55,6 +55,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4620614974547310}
+  - component: {fileID: 114339222179136204}
   - component: {fileID: 114951743782495552}
   - component: {fileID: 81381995457807688}
   m_Layer: 0
@@ -75,7 +76,6 @@ GameObject:
   - component: {fileID: 20329244052411564}
   - component: {fileID: 124144808855090856}
   - component: {fileID: 92017933162973034}
-  - component: {fileID: 114089120386618070}
   m_Layer: 0
   m_Name: CameraMain
   m_TagString: Untagged
@@ -274,29 +274,17 @@ Behaviour:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1147971983220084}
   m_Enabled: 1
---- !u!114 &114089120386618070
+--- !u!114 &114339222179136204
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1614126958852788}
+  m_GameObject: {fileID: 1514700693580046}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 683f145ef879be447ba25c1080ac1984, type: 3}
+  m_Script: {fileID: 11500000, guid: ff1886996f9b04360b75e76507e5c7fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotationEnabled: 1
-  translationEnabled: 1
-  noVROffset: {x: 0, y: 1.2, z: 0}
-  rotationSpeed: 90
-  translationSpeed: 7
-  rotationDeadDistance: 0.001
-  moveForwardKeys: 7700000011010000
-  moveBackwardKeys: 7300000012010000
-  strideRightKeys: 6400000013010000
-  strideLeftKeys: 6100000014010000
-  moveUpwardKeys: 72000000
-  moveDownwardKeys: 66000000
 --- !u!114 &114951743782495552
 MonoBehaviour:
   m_ObjectHideFlags: 1
