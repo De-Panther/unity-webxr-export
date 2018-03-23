@@ -21,6 +21,7 @@
   var gamepads = [];
   var vrGamepads = [];
   var toggleVRKeyName = '';
+  var vrPolyfill = new WebVRPolyfill();
 
   if ('serviceWorker' in navigator && 'isSecureContext' in window && !window.isSecureContext) {
     console.warn('The site is insecure; Service Workers will not work and the site will not be recognized as a PWA');
@@ -315,10 +316,7 @@
 
   // Check to see if we are using polyfill.
   function isPolyfilled(display) {
-    return (display.deviceId || '').indexOf('polyfill') > 0 ||
-        (display.displayName || '').indexOf('polyfill') > 0 ||
-        (display.deviceName || '').indexOf('polyfill') > 0 ||
-        display.hardwareUnitId;
+    return display.isPolyfilled;
   }
 
   function onKeyUp(evt) {
