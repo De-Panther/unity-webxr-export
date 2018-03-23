@@ -1,9 +1,49 @@
 using UnityEngine;
 using System.Collections;
+using System;
+using System.Runtime.InteropServices;
+
+public enum VrState { ENABLED, NORMAL }
+
+public delegate void OnVrStateChangeHandler();
 
 public class WebVRManager : MonoBehaviour {
     public static WebVRManager instance;
+	public VrState vrState;
+	public event OnVrStateChangeHandler OnVrStateChange;
 
+	[Tooltip("Name of the key used to alternate between VR and normal mode. Leave blank to disable.")]
+	public string toggleVRKeyName;
+
+	void Awake() {
+		if (instance == null) {
+        	instance = this;
+			DontDestroyOnLoad(gameObject);
+		}
+    }
+	
+	void Start() {
+		SetVrState(VrState.NORMAL);
+
+		#if !UNITY_EDITOR && UNITY_WEBGL
+		ConfigureToggleVRKeyName(toggleVRKeyName);
+		#endif
+	}
+
+	void Update() {
+		#if UNITY_EDITOR || !UNITY_WEBGL
+		bool quickToggleEnabled = toggleVRKeyName != null && toggleVRKeyName != "";
+		if (quickToggleEnabled) {
+			if (Input.GetKeyUp(toggleVRKeyName)) {
+				toggleVrState();
+			}
+		}
+		#endif
+	}
+
+	[DllImport("__Internal")]
+	private static extern void ConfigureToggleVRKeyName(string keyName);
+	
 	[System.Serializable]
 	private class Controller
 	{
@@ -45,11 +85,7 @@ public class WebVRManager : MonoBehaviour {
 		}
 	}
 	
-    void Awake() {
-        instance = this;
-    }
-
-	public Hmd hmd = new Hmd();
+    public Hmd hmd = new Hmd();
 
 	// left and right hand position and rotation
 	Vector3 lhp;
@@ -108,6 +144,33 @@ public class WebVRManager : MonoBehaviour {
 		// 	}
 		// }
     }
+
+	public void toggleVrState() {
+		#if UNITY_EDITOR || !UNITY_WEBGL
+		if (this.vrState == VrState.ENABLED) {
+			SetVrState(VrState.NORMAL);
+		} else {
+			SetVrState(VrState.ENABLED);
+		}
+		#endif	
+	}
+
+	public void SetVrState(VrState state) {
+		this.vrState = state;
+		OnVrStateChange();
+	}
+
+	// received enter VR from WebVR browser
+	public void EnterVR()
+	{
+		SetVrState(VrState.ENABLED);
+	}
+
+	// receive exit VR from WebVR browser
+	public void ExitVR()
+	{
+		SetVrState(VrState.NORMAL);
+	}
 
 	// Utility functions
 	private Matrix4x4 numbersToMatrix(float[] array) {
