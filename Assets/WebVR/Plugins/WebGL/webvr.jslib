@@ -14,5 +14,9 @@ mergeInto(LibraryManager.library, {
 
   ConfigureToggleVRKeyName: function (keyName) {
     document.dispatchEvent(new CustomEvent('Unity', {detail: 'ConfigureToggleVRKeyName:' + Pointer_stringify(keyName)}));
+  },
+
+  ShowPanel: function (panelId) {
+    document.dispatchEvent(new CustomEvent('Unity', {detail: {type:'ShowPanel', panelId: Pointer_stringify(panelId)}}));
   }
 });

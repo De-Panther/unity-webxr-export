@@ -57,6 +57,7 @@ GameObject:
   - component: {fileID: 4620614974547310}
   - component: {fileID: 114951743782495552}
   - component: {fileID: 81381995457807688}
+  - component: {fileID: 114848038275145070}
   m_Layer: 0
   m_Name: WebVRCameraSet
   m_TagString: Untagged
@@ -273,6 +274,21 @@ Behaviour:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1147971983220084}
   m_Enabled: 1
+--- !u!114 &114848038275145070
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1514700693580046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 683f145ef879be447ba25c1080ac1984, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  translationSpeed: 7
+  rotationSpeed: 90
+  rotationEnabled: 1
+  translationEnabled: 1
 --- !u!114 &114951743782495552
 MonoBehaviour:
   m_ObjectHideFlags: 1

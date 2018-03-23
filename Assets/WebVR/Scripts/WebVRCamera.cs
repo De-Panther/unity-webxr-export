@@ -5,8 +5,8 @@ using System.Runtime.InteropServices;
 
 public class WebVRCamera : MonoBehaviour
 {
-    [DllImport("__Internal")]
-    private static extern void FinishLoading();
+	[DllImport("__Internal")]
+	private static extern void FinishLoading();
 
 	[DllImport("__Internal")]
 	private static extern void TestTimeReturn();
@@ -18,11 +18,10 @@ public class WebVRCamera : MonoBehaviour
 	private static extern void ConfigureToggleVRKeyName(string keyName);
 
 	Camera cameraMain, cameraL, cameraR;
-
-    Quaternion cq;
-    Quaternion lhq;
-    Quaternion rhq;
-    Vector3 cp;
+	Quaternion cq;
+	Quaternion lhq;
+	Quaternion rhq;
+	Vector3 cp;
 
 	// left and right hand position and rotation
 	Vector3 lhp;
@@ -40,11 +39,11 @@ public class WebVRCamera : MonoBehaviour
 	//Matrix4x4 sitStand = Matrix4x4.Translate (new Vector3 (0, 1.2f, 0));
 	Matrix4x4 sitStand = Matrix4x4.identity;
 
-    bool active = false; // vr mode
-    
+	bool active = false; // vr mode
+
 	[Tooltip("GameObject to be controlled by the left hand controller.")]
 	public GameObject leftHandObject;
-    
+
 	[Tooltip("GameObject to be controlled by the right hand controller.")]
 	public GameObject rightHandObject;
 
@@ -83,13 +82,13 @@ public class WebVRCamera : MonoBehaviour
 	}
 
 	// received enter VR from WebVR browser
-	public void Begin()
+	public void OnStartVR()
 	{
 		changeMode("vr");
 	}
 
 	// receive exit VR from WebVR browser
-	public void End()
+	public void OnEndVR()
 	{
 		changeMode("normal");
 	}
@@ -100,7 +99,7 @@ public class WebVRCamera : MonoBehaviour
 
 		// left projection matrix
 		clp = numbersToMatrix (data.leftProjectionMatrix);
-	
+
 		// left view matrix
 		clv = numbersToMatrix (data.leftViewMatrix);
 
@@ -227,10 +226,10 @@ public class WebVRCamera : MonoBehaviour
 			cameraR.projectionMatrix = crp;
 			SetHeadTransform ();
 		} else {
-			// apply left 
+			// apply left
 			cameraMain.worldToCameraMatrix = clv * sitStand.inverse * transform.worldToLocalMatrix;
 		}
-		
+
 		#if UNITY_EDITOR
 		if (leftHandObject) {
 			leftHandObject.transform.localRotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.LeftHand);
@@ -273,14 +272,14 @@ public class WebVRCamera : MonoBehaviour
 		openGLViewMatrix.m20 *= -1;
 		openGLViewMatrix.m21 *= -1;
 		openGLViewMatrix.m22 *= -1;
-		openGLViewMatrix.m23 *= -1;  
+		openGLViewMatrix.m23 *= -1;
 		return openGLViewMatrix.inverse;
 	}
 
 	private void SetHeadTransform() {
 		Transform leftTransform = cameraL.transform;
 		Transform rightTransform = cameraR.transform;
-		cameraMain.transform.localPosition = 
+		cameraMain.transform.localPosition =
 			(rightTransform.localPosition - leftTransform.localPosition) / 2f + leftTransform.localPosition;
 		cameraMain.transform.localRotation = leftTransform.localRotation;
 		cameraMain.transform.localScale = leftTransform.localScale;
@@ -289,7 +288,7 @@ public class WebVRCamera : MonoBehaviour
 	{
 		if (!showPerf)
 			return;
-		
+
 		int w = Screen.width, h = Screen.height;
 
 		GUIStyle style = new GUIStyle();
@@ -303,7 +302,7 @@ public class WebVRCamera : MonoBehaviour
 		string text = string.Format("{0:0.0} ms ({1:0.} fps)", msec, fps);
 		GUI.Label(rect, text, style);
 	}
-		
+
 	// Utility functions
 	private Matrix4x4 numbersToMatrix(float[] array) {
 		var mat = new Matrix4x4 ();
