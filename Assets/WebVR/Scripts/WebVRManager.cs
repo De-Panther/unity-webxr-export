@@ -7,9 +7,10 @@ using System.Runtime.InteropServices;
 
 public enum VrState { ENABLED, NORMAL }
 
-public class WebVRManager : MonoBehaviour {
+public class WebVRManager : MonoBehaviour 
+{
 	public VrState vrState;
-    public static WebVRManager instance;
+	public static WebVRManager instance;
 	public delegate void VrStateChange();
 	public static event VrStateChange OnVrStateChange;
 	public WebVRControllerManager controllerManager;
@@ -33,8 +34,10 @@ public class WebVRManager : MonoBehaviour {
 	}
 
 	public static WebVRManager Instance {
-		get {
-			if (instance == null) {
+		get
+		{
+			if (instance == null)
+			{
 				GameObject go = new GameObject("WebVRManager");
 				go.AddComponent<WebVRManager>();
 			}
@@ -43,20 +46,22 @@ public class WebVRManager : MonoBehaviour {
 	}
 
 	// Handles WebVR data from browser
-	public void WebVRData (string jsonString) {
+	public void WebVRData (string jsonString)
+	{
 		wvrData = WVRData.CreateFromJSON (jsonString);
 
-        headset.LeftProjectionMatrix = numbersToMatrix (wvrData.leftProjectionMatrix);
+		headset.LeftProjectionMatrix = numbersToMatrix (wvrData.leftProjectionMatrix);
 		headset.LeftViewMatrix = numbersToMatrix(wvrData.leftViewMatrix);
 		headset.RightProjectionMatrix = numbersToMatrix (wvrData.rightProjectionMatrix);
 		headset.RightViewMatrix = numbersToMatrix (wvrData.rightViewMatrix);
 
-		if (wvrData.sitStand.Length > 0) {
+		if (wvrData.sitStand.Length > 0)
 			stageParameters.SitStand = numbersToMatrix (wvrData.sitStand);
-		}
 
-		if (wvrData.controllers.Length > 0) {
-			foreach (WVRController controller in wvrData.controllers) {
+		if (wvrData.controllers.Length > 0)
+		{
+			foreach (WVRController controller in wvrData.controllers)
+			{
 				Vector3 position = new Vector3 (controller.position [0], controller.position [1], controller.position [2]);
 				Quaternion rotation = new Quaternion (controller.orientation [0], controller.orientation [1], controller.orientation [2], controller.orientation [3]);
 				
@@ -68,23 +73,23 @@ public class WebVRManager : MonoBehaviour {
 				// }
 			}
 		}
-    }
+	}
 
-	public void toggleVrState() {
+	public void toggleVrState()
+	{
 		#if UNITY_EDITOR || !UNITY_WEBGL
-		if (this.vrState == VrState.ENABLED) {
+		if (this.vrState == VrState.ENABLED)
 			setVrState(VrState.NORMAL);
-		} else {
+		else
 			setVrState(VrState.ENABLED);
-		}
 		#endif	
 	}
 
-	public void setVrState(VrState state) {
+	public void setVrState(VrState state)
+	{
 		this.vrState = state;
-		if (OnVrStateChange != null) {
+		if (OnVrStateChange != null)
 			OnVrStateChange();
-		}
 	}
 
 	// received enter VR from WebVR browser
@@ -100,13 +105,15 @@ public class WebVRManager : MonoBehaviour {
 	}
 
 	// Latency test from browser
-	public void TestTime() {
+	public void TestTime()
+	{
 		Debug.Log ("Time tester received in Unity");
 		TestTimeReturn ();
 	}
 
 	// Toggles performance HUD
-	public void TogglePerf() {
+	public void TogglePerf()
+	{
 		showPerf = showPerf == false ? true : false;
 	}
 
@@ -152,28 +159,28 @@ public class WebVRManager : MonoBehaviour {
 		}
 	}
 	
-	void Awake() {
+	void Awake()
+	{
 		instance = this;
 		controllerManager = WebVRControllerManager.Instance;
 		setVrState(VrState.NORMAL);
-    }
+	}
 	
-	void Start() {
+	void Start()
+	{
 		#if !UNITY_EDITOR && UNITY_WEBGL
 		ConfigureToggleVRKeyName(toggleVRKeyName);
 		#endif
 	}
 
-	void Update() {
+	void Update()
+	{
 		deltaTime += (Time.deltaTime - deltaTime) * 0.1f;
 
 		#if UNITY_EDITOR || !UNITY_WEBGL
 		bool quickToggleEnabled = toggleVRKeyName != null && toggleVRKeyName != "";
-		if (quickToggleEnabled) {
-			if (Input.GetKeyUp(toggleVRKeyName)) {
-				toggleVrState();
-			}
-		}
+		if (quickToggleEnabled && Input.GetKeyUp(toggleVRKeyName))
+			toggleVrState();
 		#endif
 	}
 
@@ -197,7 +204,8 @@ public class WebVRManager : MonoBehaviour {
 	// }
 
 	// Utility functions
-	private Matrix4x4 numbersToMatrix(float[] array) {
+	private Matrix4x4 numbersToMatrix(float[] array)
+	{
 		var mat = new Matrix4x4 ();
 		mat.m00 = array[0];
 		mat.m01 = array[1];

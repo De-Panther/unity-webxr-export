@@ -12,7 +12,8 @@ public class Controller
 	public Quaternion rotation;
 	public GameObject gameObject;
 	
-	public Controller(int index, string hand, Vector3 position, Quaternion rotation) {
+	public Controller(int index, string hand, Vector3 position, Quaternion rotation)
+	{
 		this.index = index;
 		this.hand = hand;
 		this.position = position;
@@ -21,14 +22,18 @@ public class Controller
 	}
 }
 
-public class WebVRControllerManager : MonoBehaviour {
+public class WebVRControllerManager : MonoBehaviour
+{
 	public static WebVRControllerManager instance;
 
 	public List<Controller> controllers = new List<Controller>();
 
-    public static WebVRControllerManager Instance {
-		get {
-			if (instance == null) {
+	public static WebVRControllerManager Instance
+	{
+		get
+		{
+			if (instance == null)
+			{
 				GameObject go = new GameObject("WebVRControllerManager");
 				go.AddComponent<WebVRControllerManager>();
 			}
@@ -37,38 +42,41 @@ public class WebVRControllerManager : MonoBehaviour {
 	}
 
 	// registers GameObject to controller returning controller.
-	public Controller registerController(GameObject gameObject) {
+	public Controller registerController(GameObject gameObject)
+	{
 		Controller controller = controllers.Where(x => x.gameObject == gameObject).SingleOrDefault();
-		if (controller == null) {
+		if (controller == null)
+		{
 			Controller unbound = controllers.Where(x => x.gameObject == null).SingleOrDefault();
-			if (unbound != null) {
+			if (unbound != null)
+			{
 				Debug.Log("Bounding to controller! " + unbound.index);
 				unbound.gameObject = gameObject;
 				return unbound;
-			} else {
-				return null;
 			}
-		} else {
-			return controller;
+			else
+				return null;
 		}
+		else
+			return controller;
 	}
 
 	// add or update controller values.
-	public void AddOrUpdate(int index, string hand, Vector3 position, Quaternion rotation) {
+	public void AddOrUpdate(int index, string hand, Vector3 position, Quaternion rotation)
+	{
 		Controller controller = controllers.Where(x => x.index == index).SingleOrDefault();
 		
-		if (controller == null) {
+		if (controller == null)
 			controllers.Add(new Controller(index, hand, position, rotation));
-		} else {
+		else
+		{
 			controller.position = position;
 			controller.rotation = rotation;
 		}
-    }
+	}
 
-    void Awake() {
-        instance = this;
-    }
-	
-	void Start() {
+	void Awake()
+	{
+		instance = this;
 	}
 }

@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 public class WebVRCamera : MonoBehaviour
 {
 	WebVRManager webVRManager;
-	
+
 	Camera cameraMain, cameraL, cameraR;
 
 	bool vrActive = false;
@@ -29,7 +29,6 @@ public class WebVRCamera : MonoBehaviour
 	void Start()
 	{
 		WebVRManager.OnVrStateChange += handleVrStateChange;
-		
 		cameraMain = GameObject.Find("CameraMain").GetComponent<Camera>();
 		cameraL = GameObject.Find("CameraL").GetComponent<Camera>();
 		cameraR = GameObject.Find("CameraR").GetComponent<Camera>();
@@ -38,11 +37,12 @@ public class WebVRCamera : MonoBehaviour
 	void Update()
 	{
 		Matrix4x4 sitStand = webVRManager.stageParameters.SitStand;
-		
-		if (vrActive) {
+
+		if (vrActive)
+		{
 			cameraMain.enabled = false;
 			cameraL.enabled = true;
-			cameraR.enabled = true;	
+			cameraR.enabled = true;
 
 			Matrix4x4 clp = webVRManager.headset.LeftProjectionMatrix;
 			Matrix4x4 clv = webVRManager.headset.LeftViewMatrix;
@@ -54,11 +54,13 @@ public class WebVRCamera : MonoBehaviour
 			SetTransformFromViewMatrix (cameraR.transform, crv * sitStand.inverse);
 			cameraR.projectionMatrix = crp;
 			SetHeadTransform ();
-		} else {
+		}
+		else
+		{
 			// polyfill handles mouse look, so we apply left view to cameraMain so we can look around.
 			// will discontinue with https://github.com/mozilla/unity-webvr-export/issues/125 and implement
 			// behavior within a component in Unity.
-			
+
 			cameraMain.enabled = true;
 			cameraL.enabled = false;
 			cameraR.enabled = false;
@@ -66,19 +68,20 @@ public class WebVRCamera : MonoBehaviour
 			Matrix4x4 clv = webVRManager.headset.LeftViewMatrix;
 			cameraMain.worldToCameraMatrix = clv * sitStand.inverse * transform.worldToLocalMatrix;
 		}
-		
+
 		#if !UNITY_EDITOR && UNITY_WEBGL
 		StartCoroutine(endOfFrame());
 		#endif
 	}
-	
+
 	private void handleVrStateChange()
 	{
 		vrActive = webVRManager.vrState == VrState.ENABLED;
 	}
 
 	// According to https://answers.unity.com/questions/402280/how-to-decompose-a-trs-matrix.html
-	private void SetTransformFromViewMatrix(Transform transform, Matrix4x4 webVRViewMatrix) {
+	private void SetTransformFromViewMatrix(Transform transform, Matrix4x4 webVRViewMatrix)
+	{
 		Matrix4x4 trs = TransformViewMatrixToTRS(webVRViewMatrix);
 		transform.localPosition = trs.GetColumn(3);
 		transform.localRotation = Quaternion.LookRotation(trs.GetColumn(2), trs.GetColumn(1));
@@ -90,7 +93,8 @@ public class WebVRCamera : MonoBehaviour
     }
 
 	// According to https://forum.unity.com/threads/reproducing-cameras-worldtocameramatrix.365645/#post-2367177
-	private Matrix4x4 TransformViewMatrixToTRS(Matrix4x4 openGLViewMatrix) {
+	private Matrix4x4 TransformViewMatrixToTRS(Matrix4x4 openGLViewMatrix)
+	{
 		openGLViewMatrix.m20 *= -1;
 		openGLViewMatrix.m21 *= -1;
 		openGLViewMatrix.m22 *= -1;
@@ -98,7 +102,8 @@ public class WebVRCamera : MonoBehaviour
 		return openGLViewMatrix.inverse;
 	}
 
-	private void SetHeadTransform() {
+	private void SetHeadTransform()
+	{
 		Transform leftTransform = cameraL.transform;
 		Transform rightTransform = cameraR.transform;
 		cameraMain.transform.localPosition =

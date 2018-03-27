@@ -15,7 +15,8 @@ public class WebVRController : MonoBehaviour
 
 	private bool vrActive = false;
 
-	void Awake() {
+	void Awake()
+	{
 		webVRManager = WebVRManager.Instance;
 		controllerManager = WebVRControllerManager.Instance;
 	}
@@ -33,10 +34,12 @@ public class WebVRController : MonoBehaviour
 	void Update()
 	{
 
-		if (vrActive) {
+		if (vrActive)
+		{
 			Controller controller = controllerManager.registerController(gameObject);
 
-			if (controller != null) {
+			if (controller != null)
+			{
 				Matrix4x4 sitStand = webVRManager.stageParameters.SitStand;
 				Quaternion sitStandRotation = Quaternion.LookRotation (
 					sitStand.GetColumn (2),
