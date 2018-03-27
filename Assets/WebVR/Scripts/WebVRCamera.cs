@@ -7,37 +7,12 @@ public class WebVRCamera : MonoBehaviour
 {
 	WebVRManager webVRManager;
 	
-	[DllImport("__Internal")]
-	private static extern void TestTimeReturn();
+	Camera cameraMain, cameraL, cameraR;
+
+	bool vrActive = false;
 
 	[DllImport("__Internal")]
 	private static extern void PostRender();
-
-	Camera cameraMain, cameraL, cameraR;
-
-	// [Tooltip("GameObject to be controlled by the left hand controller.")]
-	// public GameObject leftHandObject;
-    
-	// [Tooltip("GameObject to be controlled by the right hand controller.")]
-	// public GameObject rightHandObject;
-
-	// delta time for latency checker.
-	float deltaTime = 0.0f;
-
-	// show framerate UI
-	bool showPerf = false;
-	
-	bool vrActive = false;
-
-	// received time tester from WebVR browser
-	public void TestTime() {
-		Debug.Log ("Time tester received in Unity");
-		TestTimeReturn ();
-	}
-
-	public void TogglePerf() {
-		showPerf = showPerf == false ? true : false;
-	}
 
 	private IEnumerator endOfFrame()
 	{
@@ -58,23 +33,10 @@ public class WebVRCamera : MonoBehaviour
 		cameraMain = GameObject.Find("CameraMain").GetComponent<Camera>();
 		cameraL = GameObject.Find("CameraL").GetComponent<Camera>();
 		cameraR = GameObject.Find("CameraR").GetComponent<Camera>();
-
-		// clp = cameraL.projectionMatrix;
-		// crp = cameraR.projectionMatrix;
-
-		// clv = cameraL.worldToCameraMatrix;
-		// crv = cameraR.worldToCameraMatrix;
-	}
-
-	private void handleVrStateChange()
-	{
-		vrActive = webVRManager.vrState == webVRManager.VrState.ENABLED;
 	}
 
 	void Update()
 	{
-		deltaTime += (Time.deltaTime - deltaTime) * 0.1f;
-
 		Matrix4x4 sitStand = webVRManager.stageParameters.SitStand;
 		
 		if (vrActive) {
@@ -105,29 +67,14 @@ public class WebVRCamera : MonoBehaviour
 			cameraMain.worldToCameraMatrix = clv * sitStand.inverse * transform.worldToLocalMatrix;
 		}
 		
-		// #if UNITY_EDITOR
-		// if (leftHandObject) {
-		// 	leftHandObject.transform.localRotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.LeftHand);
-		// 	leftHandObject.transform.position = transform.position + UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.LeftHand);
-		// }
-		// if (rightHandObject) {
-		// 	rightHandObject.transform.localRotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.RightHand);
-		// 	rightHandObject.transform.position = transform.position + UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.RightHand);
-		// }
-		// #endif
-
 		#if !UNITY_EDITOR && UNITY_WEBGL
-		// if (leftHandObject) {
-		// 	leftHandObject.transform.rotation = lhr;
-		// 	leftHandObject.transform.position = lhp + transform.position;
-		// }
-		// if (rightHandObject) {
-		// 	rightHandObject.transform.rotation = rhr;
-		// 	rightHandObject.transform.position = rhp + transform.position;
-		// }
-
 		StartCoroutine(endOfFrame());
 		#endif
+	}
+	
+	private void handleVrStateChange()
+	{
+		vrActive = webVRManager.vrState == VrState.ENABLED;
 	}
 
 	// According to https://answers.unity.com/questions/402280/how-to-decompose-a-trs-matrix.html
@@ -158,23 +105,5 @@ public class WebVRCamera : MonoBehaviour
 			(rightTransform.localPosition - leftTransform.localPosition) / 2f + leftTransform.localPosition;
 		cameraMain.transform.localRotation = leftTransform.localRotation;
 		cameraMain.transform.localScale = leftTransform.localScale;
-	}
-	void OnGUI()
-	{
-		if (!showPerf)
-			return;
-
-		int w = Screen.width, h = Screen.height;
-
-		GUIStyle style = new GUIStyle();
-
-		Rect rect = new Rect(w / 4, h / 2, w, h * 2 / 100);
-		style.alignment = TextAnchor.UpperLeft;
-		style.fontSize = h * 2 / 100;
-		style.normal.textColor = new Color (0.0f, 1.0f, 1.0f, 1.0f);
-		float msec = deltaTime * 1000.0f;
-		float fps = 1.0f / deltaTime;
-		string text = string.Format("{0:0.0} ms ({1:0.} fps)", msec, fps);
-		GUI.Label(rect, text, style);
 	}
 }

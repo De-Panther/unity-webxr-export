@@ -5,97 +5,19 @@ using System;
 using System.Linq;
 using System.Runtime.InteropServices;
 
+public enum VrState { ENABLED, NORMAL }
 
 public class WebVRManager : MonoBehaviour {
-	// link WebGL plugin for interacting with browser scripts.
-	[DllImport("__Internal")]
-	private static extern void ConfigureToggleVRKeyName(string keyName);
-	
-	public enum VrState { ENABLED, NORMAL }
-
+	public VrState vrState;
     public static WebVRManager instance;
 	public delegate void VrStateChange();
 	public static event VrStateChange OnVrStateChange;
-
+	public WebVRControllerManager controllerManager;
 	public Headset headset = new Headset();
 	public StageParameters stageParameters = new StageParameters();
-	public List<Controller> controllers = new List<Controller>();
-
-	private VRData data;
 
 	[Tooltip("Name of the key used to alternate between VR and normal mode. Leave blank to disable.")]
 	public string toggleVRKeyName;
-
-	public static WebVRManager Instance {
-		get {
-			if (instance == null) {
-				GameObject go = new GameObject("WebVRManager");
-				go.AddComponent<WebVRManager>();
-			}
-			return instance;
-		}
-	}
-
-	void Awake() {
-		instance = this;
-		setVrState(VrState.NORMAL);
-    }
-	
-	void Start() {
-		#if !UNITY_EDITOR && UNITY_WEBGL
-		ConfigureToggleVRKeyName(toggleVRKeyName);
-		#endif
-	}
-
-	void Update() {
-		#if UNITY_EDITOR || !UNITY_WEBGL
-		bool quickToggleEnabled = toggleVRKeyName != null && toggleVRKeyName != "";
-		if (quickToggleEnabled) {
-			if (Input.GetKeyUp(toggleVRKeyName)) {
-				toggleVrState();
-			}
-		}
-		#endif
-	}
-
-	[System.Serializable]
-	private class VRController
-	{
-		public int index = 0;
-		public string hand = null;
-		public float[] orientation = null;
-		public float[] position = null;
-	}
-
-	[System.Serializable]
-	private class VRData
-	{
-		public float[] leftProjectionMatrix = null;
-		public float[] rightProjectionMatrix = null;
-		public float[] leftViewMatrix = null;	
-		public float[] rightViewMatrix = null;
-		public float[] sitStand = null;
-		public VRController[] controllers = new VRController[0];
-		public static VRData CreateFromJSON(string jsonString)
-		{
-			return JsonUtility.FromJson<VRData> (jsonString);
-		}
-	}
-
-	public class Controller
-	{
-		public int index;
-		public string hand;
-		public Vector3 position;
-		public Quaternion rotation;
-		
-		public Controller(int index, string hand, Vector3 position, Quaternion rotation) {
-			this.index = index;
-			this.hand = hand;
-			this.position = position;
-			this.rotation = rotation;
-		}
-	}
 
 	public class StageParameters
 	{
@@ -109,76 +31,40 @@ public class WebVRManager : MonoBehaviour {
 		public Matrix4x4 RightViewMatrix = Matrix4x4.identity;
 		public Matrix4x4 RightProjectionMatrix = Matrix4x4.identity;
 	}
-	
-	// left and right hand position and rotation
-	Vector3 lhp;
-	Vector3 rhp;
-	Quaternion lhr;
-	Quaternion rhr;
 
-	// sit stand room transform
-	//Matrix4x4 sitStand = Matrix4x4.Translate (new Vector3 (0, 1.2f, 0));
-	// Matrix4x4 sitStand = Matrix4x4.identity;
+	public static WebVRManager Instance {
+		get {
+			if (instance == null) {
+				GameObject go = new GameObject("WebVRManager");
+				go.AddComponent<WebVRManager>();
+			}
+			return instance;
+		}
+	}
 
-    // WebVR data passed from browser
-    public void WebVRData (string jsonString) {
-        data = VRData.CreateFromJSON (jsonString);
+	// Handles WebVR data from browser
+	public void WebVRData (string jsonString) {
+		wvrData = WVRData.CreateFromJSON (jsonString);
 
-        // headset
-		headset.LeftProjectionMatrix = numbersToMatrix (data.leftProjectionMatrix);
-		headset.LeftViewMatrix = numbersToMatrix(data.leftViewMatrix);
-		headset.RightProjectionMatrix = numbersToMatrix (data.rightProjectionMatrix);
-		headset.RightViewMatrix = numbersToMatrix (data.rightViewMatrix);
+        headset.LeftProjectionMatrix = numbersToMatrix (wvrData.leftProjectionMatrix);
+		headset.LeftViewMatrix = numbersToMatrix(wvrData.leftViewMatrix);
+		headset.RightProjectionMatrix = numbersToMatrix (wvrData.rightProjectionMatrix);
+		headset.RightViewMatrix = numbersToMatrix (wvrData.rightViewMatrix);
 
-		// sit stand matrix
-		if (data.sitStand.Length > 0) {
-			stageParameters.SitStand = numbersToMatrix (data.sitStand);
+		if (wvrData.sitStand.Length > 0) {
+			stageParameters.SitStand = numbersToMatrix (wvrData.sitStand);
 		}
 
-		if (data.controllers.Length > 0) {
-			List<VRController> cList = data.controllers.ToList();
-
-			// remove controllers no longer active.
-			foreach (Controller c in controllers) {
-				VRController cRemove = cList.Find((x) => x.index == c.index);
-				if (cRemove == null) {
-					controllers.Remove(controllers.Find((x) => x.index == c.index));
-					Debug.Log("Removing index: " + c.index);
-					Debug.Log("- Controller Count: " + controllers.Count);
-				}
-
-			}
-
-			// add or update controller data
-			foreach (VRController control in data.controllers) {
-				Vector3 position = new Vector3 (control.position [0], control.position [1], control.position [2]);
-				Quaternion rotation = new Quaternion (control.orientation [0], control.orientation [1], control.orientation [2], control.orientation [3]);
-
-				Controller controller = controllers.Find((x) => x.index == control.index);
-
-				if (controller == null) {
-					controllers.Add(new Controller(control.index, control.hand, position, rotation));
-					Debug.Log("Adding index: " + controller.index);
-					Debug.Log("Adding hand: " + controller.hand);
-					Debug.Log("+ Controller Count: " + controllers.Count);
-				} else {
-					controller.position = position;
-					controller.rotation = rotation;
-				}
-				// Quaternion sitStandRotation = Quaternion.LookRotation (
-				// 	hmd.sitStand.GetColumn (2),
-				// 	hmd.sitStand.GetColumn (1)
-				// );
-				// Vector3 p = sitStand.MultiplyPoint(position);
-				// Quaternion r = sitStandRotation * rotation;
-
-				// if (control.hand == "left") {
-				// 	lhp = p;
-				// 	lhr = r;
-				// }
-				// if (control.hand == "right") {
-				// 	rhp = p;
-				// 	rhr = r;
+		if (wvrData.controllers.Length > 0) {
+			foreach (WVRController controller in wvrData.controllers) {
+				Vector3 position = new Vector3 (controller.position [0], controller.position [1], controller.position [2]);
+				Quaternion rotation = new Quaternion (controller.orientation [0], controller.orientation [1], controller.orientation [2], controller.orientation [3]);
+				
+				controllerManager.AddOrUpdate(controller.index, controller.hand, position, rotation);
+				
+				// track of active controllers
+				// if (!activeControllers.Contains(controller.index)) {
+				// 	activeControllers.Add(controller.index);
 				// }
 			}
 		}
@@ -212,6 +98,103 @@ public class WebVRManager : MonoBehaviour {
 	{
 		setVrState(VrState.NORMAL);
 	}
+
+	// Latency test from browser
+	public void TestTime() {
+		Debug.Log ("Time tester received in Unity");
+		TestTimeReturn ();
+	}
+
+	// Toggles performance HUD
+	public void TogglePerf() {
+		showPerf = showPerf == false ? true : false;
+	}
+
+	// link WebGL plugin for interacting with browser scripts.
+	[DllImport("__Internal")]
+	private static extern void ConfigureToggleVRKeyName(string keyName);
+
+	[DllImport("__Internal")]
+	private static extern void TestTimeReturn();
+
+	// delta time for latency checker.
+	private float deltaTime = 0.0f;
+
+	// show framerate UI
+	private bool showPerf = false;
+
+	// Handles WebVR data passed from browser
+	//private List<int> activeControllers = new List<int>();
+	private WVRData wvrData;
+	
+	// Data classes for WebVR data
+	[System.Serializable]
+	private class WVRController
+	{
+		public int index = 0;
+		public string hand = null;
+		public float[] orientation = null;
+		public float[] position = null;
+	}
+
+	[System.Serializable]
+	private class WVRData
+	{
+		public float[] leftProjectionMatrix = null;
+		public float[] rightProjectionMatrix = null;
+		public float[] leftViewMatrix = null;	
+		public float[] rightViewMatrix = null;
+		public float[] sitStand = null;
+		public WVRController[] controllers = new WVRController[0];
+		public static WVRData CreateFromJSON(string jsonString)
+		{
+			return JsonUtility.FromJson<WVRData> (jsonString);
+		}
+	}
+	
+	void Awake() {
+		instance = this;
+		controllerManager = WebVRControllerManager.Instance;
+		setVrState(VrState.NORMAL);
+    }
+	
+	void Start() {
+		#if !UNITY_EDITOR && UNITY_WEBGL
+		ConfigureToggleVRKeyName(toggleVRKeyName);
+		#endif
+	}
+
+	void Update() {
+		deltaTime += (Time.deltaTime - deltaTime) * 0.1f;
+
+		#if UNITY_EDITOR || !UNITY_WEBGL
+		bool quickToggleEnabled = toggleVRKeyName != null && toggleVRKeyName != "";
+		if (quickToggleEnabled) {
+			if (Input.GetKeyUp(toggleVRKeyName)) {
+				toggleVrState();
+			}
+		}
+		#endif
+	}
+
+	// void OnGUI()
+	// {
+	// 	if (!showPerf)
+	// 		return;
+		
+	// 	int w = Screen.width, h = Screen.height;
+
+	// 	GUIStyle style = new GUIStyle();
+
+	// 	Rect rect = new Rect(w / 4, h / 2, w, h * 2 / 100);
+	// 	style.alignment = TextAnchor.UpperLeft;
+	// 	style.fontSize = h * 2 / 100;
+	// 	style.normal.textColor = new Color (0.0f, 1.0f, 1.0f, 1.0f);
+	// 	float msec = deltaTime * 1000.0f;
+	// 	float fps = 1.0f / deltaTime;
+	// 	string text = string.Format("{0:0.0} ms ({1:0.} fps)", msec, fps);
+	// 	GUI.Label(rect, text, style);
+	// }
 
 	// Utility functions
 	private Matrix4x4 numbersToMatrix(float[] array) {
