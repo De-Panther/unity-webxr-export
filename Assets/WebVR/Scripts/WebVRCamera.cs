@@ -5,11 +5,9 @@ using System.Runtime.InteropServices;
 
 public class WebVRCamera : MonoBehaviour
 {
-	WebVRManager webVRManager;
-
-	Camera cameraMain, cameraL, cameraR;
-
-	bool vrActive = false;
+	private WebVRManager webVRManager;
+	private Camera cameraMain, cameraL, cameraR;
+	private bool vrActive = false;
 
 	[DllImport("__Internal")]
 	private static extern void PostRender();
@@ -28,7 +26,8 @@ public class WebVRCamera : MonoBehaviour
 
 	void Start()
 	{
-		WebVRManager.OnVrStateChange += handleVrStateChange;
+		WebVRManager.OnVrChange += handleVrChange;
+		WebVRManager.OnHeadsetUpdate += handleHeadsetUpdate;
 		cameraMain = GameObject.Find("CameraMain").GetComponent<Camera>();
 		cameraL = GameObject.Find("CameraL").GetComponent<Camera>();
 		cameraR = GameObject.Find("CameraR").GetComponent<Camera>();
@@ -36,37 +35,17 @@ public class WebVRCamera : MonoBehaviour
 
 	void Update()
 	{
-		Matrix4x4 sitStand = webVRManager.stageParameters.SitStand;
-
 		if (vrActive)
 		{
 			cameraMain.enabled = false;
 			cameraL.enabled = true;
 			cameraR.enabled = true;
-
-			Matrix4x4 clp = webVRManager.headset.LeftProjectionMatrix;
-			Matrix4x4 clv = webVRManager.headset.LeftViewMatrix;
-			Matrix4x4 crp = webVRManager.headset.RightProjectionMatrix;
-			Matrix4x4 crv = webVRManager.headset.RightViewMatrix;
-
-			SetTransformFromViewMatrix (cameraL.transform, clv * sitStand.inverse);
-			cameraL.projectionMatrix = clp;
-			SetTransformFromViewMatrix (cameraR.transform, crv * sitStand.inverse);
-			cameraR.projectionMatrix = crp;
-			SetHeadTransform ();
 		}
 		else
 		{
-			// polyfill handles mouse look, so we apply left view to cameraMain so we can look around.
-			// will discontinue with https://github.com/mozilla/unity-webvr-export/issues/125 and implement
-			// behavior within a component in Unity.
-
 			cameraMain.enabled = true;
 			cameraL.enabled = false;
 			cameraR.enabled = false;
-
-			Matrix4x4 clv = webVRManager.headset.LeftViewMatrix;
-			cameraMain.worldToCameraMatrix = clv * sitStand.inverse * transform.worldToLocalMatrix;
 		}
 
 		#if !UNITY_EDITOR && UNITY_WEBGL
@@ -74,9 +53,31 @@ public class WebVRCamera : MonoBehaviour
 		#endif
 	}
 
-	private void handleVrStateChange()
+	private void handleVrChange()
 	{
 		vrActive = webVRManager.vrState == VrState.ENABLED;
+	}
+
+	private void handleHeadsetUpdate (
+		Matrix4x4 leftProjectionMatrix,
+		Matrix4x4 leftViewMatrix,
+		Matrix4x4 rightProjectionMatrix,
+		Matrix4x4 rightViewMatrix,
+		Matrix4x4 sitStandMatrix)
+	{
+		if (vrActive)
+		{
+			SetTransformFromViewMatrix (cameraL.transform, leftViewMatrix * sitStandMatrix.inverse);
+			cameraL.projectionMatrix = leftProjectionMatrix;
+			SetTransformFromViewMatrix (cameraR.transform, rightViewMatrix * sitStandMatrix.inverse);
+			cameraR.projectionMatrix = rightProjectionMatrix;
+			SetHeadTransform ();
+		} else {
+			// polyfill handles mouse look, so we apply left view to cameraMain so we can look around.
+			// will discontinue with https://github.com/mozilla/unity-webvr-export/issues/125 and implement
+			// behavior within a component in Unity.
+			cameraMain.worldToCameraMatrix = leftViewMatrix * sitStandMatrix.inverse * transform.worldToLocalMatrix;
+		}
 	}
 
 	// According to https://answers.unity.com/questions/402280/how-to-decompose-a-trs-matrix.html

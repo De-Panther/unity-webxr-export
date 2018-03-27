@@ -10,14 +10,16 @@ public class Controller
 	public string hand;
 	public Vector3 position;
 	public Quaternion rotation;
+	public Matrix4x4 sitStand;
 	public GameObject gameObject;
 	
-	public Controller(int index, string hand, Vector3 position, Quaternion rotation)
+	public Controller(int index, string hand, Vector3 position, Quaternion rotation, Matrix4x4 sitStand)
 	{
 		this.index = index;
 		this.hand = hand;
 		this.position = position;
 		this.rotation = rotation;
+		this.sitStand = sitStand;
 		this.gameObject = null;
 	}
 }
@@ -61,22 +63,29 @@ public class WebVRControllerManager : MonoBehaviour
 			return controller;
 	}
 
-	// add or update controller values.
-	public void AddOrUpdate(int index, string hand, Vector3 position, Quaternion rotation)
+	void Start()
 	{
-		Controller controller = controllers.Where(x => x.index == index).SingleOrDefault();
-		
-		if (controller == null)
-			controllers.Add(new Controller(index, hand, position, rotation));
-		else
-		{
-			controller.position = position;
-			controller.rotation = rotation;
-		}
+		WebVRManager.OnControllerUpdate += handleControllerUpdate;
 	}
 
 	void Awake()
 	{
 		instance = this;
+	}
+
+	private void handleControllerUpdate(
+		int index, string hand, Vector3 position, Quaternion rotation, Matrix4x4 sitStand)
+	{
+		// add or update controller values.
+		Controller controller = controllers.Where(x => x.index == index).SingleOrDefault();
+		
+		if (controller == null)
+			controllers.Add(new Controller(index, hand, position, rotation, sitStand));
+		else
+		{
+			controller.position = position;
+			controller.rotation = rotation;
+			controller.sitStand = sitStand;
+		}	
 	}
 }

@@ -23,10 +23,10 @@ public class WebVRController : MonoBehaviour
 
 	void Start()
 	{
-		WebVRManager.OnVrStateChange += handleVrStateChange;
+		WebVRManager.OnVrChange += handleVrChange;
 	}
 
-	private void handleVrStateChange()
+	private void handleVrChange()
 	{
 		vrActive = webVRManager.vrState == VrState.ENABLED;
 	}
@@ -40,15 +40,17 @@ public class WebVRController : MonoBehaviour
 
 			if (controller != null)
 			{
-				Matrix4x4 sitStand = webVRManager.stageParameters.SitStand;
+				Matrix4x4 sitStand = controller.sitStand;
 				Quaternion sitStandRotation = Quaternion.LookRotation (
 					sitStand.GetColumn (2),
 					sitStand.GetColumn (1)
 				);
-				Vector3 p = sitStand.MultiplyPoint(controller.position);
-				Quaternion r = sitStandRotation * controller.rotation;
-
-				#if UNITY_EDITOR
+				gameObject.transform.rotation = sitStandRotation * controller.rotation;
+				gameObject.transform.position = sitStand.MultiplyPoint(controller.position);
+			}
+			else
+			{
+				// #if UNITY_EDITOR
 				// if (leftHandObject) {
 				// 	leftHandObject.transform.localRotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.LeftHand);
 				// 	leftHandObject.transform.position = transform.position + UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.LeftHand);
@@ -57,11 +59,11 @@ public class WebVRController : MonoBehaviour
 				// 	rightHandObject.transform.localRotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.RightHand);
 				// 	rightHandObject.transform.position = transform.position + UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.RightHand);
 				// }
-				#endif
-				#if !UNITY_EDITOR && UNITY_WEBGL
-				gameObject.transform.rotation = r;
-				gameObject.transform.position = p;
-				#endif
+				// #endif
+				// #if !UNITY_EDITOR && UNITY_WEBGL
+				// gameObject.transform.rotation = sitStandRotation * controller.rotation;
+				// gameObject.transform.position = sitStand.MultiplyPoint(controller.position);
+				// #endif
 			}
 		}
 	}

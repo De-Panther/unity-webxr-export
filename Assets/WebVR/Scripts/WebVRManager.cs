@@ -11,27 +11,20 @@ public class WebVRManager : MonoBehaviour
 {
 	public VrState vrState;
 	public static WebVRManager instance;
-	public delegate void VrStateChange();
-	public static event VrStateChange OnVrStateChange;
-	public WebVRControllerManager controllerManager;
-	public Headset headset = new Headset();
-	public StageParameters stageParameters = new StageParameters();
+	public delegate void VrChange();
+	public static event VrChange OnVrChange;
+	public delegate void HeadsetUpdate(
+		Matrix4x4 leftProjectionMatrix,
+		Matrix4x4 leftViewMatrix,
+		Matrix4x4 rightProjectionMatrix,
+		Matrix4x4 rightViewMatrix,
+		Matrix4x4 sitStandMatrix);
+	public static event HeadsetUpdate OnHeadsetUpdate;
+	public delegate void ControllerUpdate(int index,string hand, Vector3 position, Quaternion rotation, Matrix4x4 sitStand);
+	public static event ControllerUpdate OnControllerUpdate;
 
 	[Tooltip("Name of the key used to alternate between VR and normal mode. Leave blank to disable.")]
 	public string toggleVRKeyName;
-
-	public class StageParameters
-	{
-		public Matrix4x4 SitStand = Matrix4x4.identity;
-	}
-
-	public class Headset 
-	{
-		public Matrix4x4 LeftViewMatrix = Matrix4x4.identity;
-		public Matrix4x4 LeftProjectionMatrix = Matrix4x4.identity;
-		public Matrix4x4 RightViewMatrix = Matrix4x4.identity;
-		public Matrix4x4 RightProjectionMatrix = Matrix4x4.identity;
-	}
 
 	public static WebVRManager Instance {
 		get
@@ -50,13 +43,16 @@ public class WebVRManager : MonoBehaviour
 	{
 		wvrData = WVRData.CreateFromJSON (jsonString);
 
-		headset.LeftProjectionMatrix = numbersToMatrix (wvrData.leftProjectionMatrix);
-		headset.LeftViewMatrix = numbersToMatrix(wvrData.leftViewMatrix);
-		headset.RightProjectionMatrix = numbersToMatrix (wvrData.rightProjectionMatrix);
-		headset.RightViewMatrix = numbersToMatrix (wvrData.rightViewMatrix);
-
 		if (wvrData.sitStand.Length > 0)
-			stageParameters.SitStand = numbersToMatrix (wvrData.sitStand);
+			sitStand = numbersToMatrix (wvrData.sitStand);
+
+		if (OnHeadsetUpdate != null)
+			OnHeadsetUpdate(
+				numbersToMatrix (wvrData.leftProjectionMatrix),
+				numbersToMatrix (wvrData.leftViewMatrix),
+				numbersToMatrix (wvrData.rightProjectionMatrix),
+				numbersToMatrix (wvrData.rightViewMatrix),
+				sitStand);
 
 		if (wvrData.controllers.Length > 0)
 		{
@@ -65,7 +61,8 @@ public class WebVRManager : MonoBehaviour
 				Vector3 position = new Vector3 (controller.position [0], controller.position [1], controller.position [2]);
 				Quaternion rotation = new Quaternion (controller.orientation [0], controller.orientation [1], controller.orientation [2], controller.orientation [3]);
 				
-				controllerManager.AddOrUpdate(controller.index, controller.hand, position, rotation);
+				if (OnControllerUpdate != null)
+					OnControllerUpdate(controller.index, controller.hand, position, rotation, sitStand);
 				
 				// track of active controllers
 				// if (!activeControllers.Contains(controller.index)) {
@@ -88,8 +85,8 @@ public class WebVRManager : MonoBehaviour
 	public void setVrState(VrState state)
 	{
 		this.vrState = state;
-		if (OnVrStateChange != null)
-			OnVrStateChange();
+		if (OnVrChange != null)
+			OnVrChange();
 	}
 
 	// received enter VR from WebVR browser
@@ -133,6 +130,7 @@ public class WebVRManager : MonoBehaviour
 	// Handles WebVR data passed from browser
 	//private List<int> activeControllers = new List<int>();
 	private WVRData wvrData;
+	private Matrix4x4 sitStand = Matrix4x4.identity;
 	
 	// Data classes for WebVR data
 	[System.Serializable]
@@ -158,14 +156,13 @@ public class WebVRManager : MonoBehaviour
 			return JsonUtility.FromJson<WVRData> (jsonString);
 		}
 	}
-	
+
 	void Awake()
 	{
 		instance = this;
-		controllerManager = WebVRControllerManager.Instance;
 		setVrState(VrState.NORMAL);
 	}
-	
+
 	void Start()
 	{
 		#if !UNITY_EDITOR && UNITY_WEBGL
