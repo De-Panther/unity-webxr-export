@@ -5,6 +5,8 @@ using System.Runtime.InteropServices;
 
 public class WebVRCamera : MonoBehaviour
 {
+	WebVRManager webVRManager;
+	
 	[DllImport("__Internal")]
 	private static extern void TestTimeReturn();
 
@@ -12,8 +14,6 @@ public class WebVRCamera : MonoBehaviour
 	private static extern void PostRender();
 
 	Camera cameraMain, cameraL, cameraR;
-
-	WebVRManager webVRManager;
 
 	// [Tooltip("GameObject to be controlled by the left hand controller.")]
 	// public GameObject leftHandObject;
@@ -46,13 +46,15 @@ public class WebVRCamera : MonoBehaviour
 		PostRender ();
 	}
 
-	void Awake() {
-		webVRManager = WebVRManager.instance;
-		webVRManager.OnVrStateChange += handleVrStateChange;
+	void Awake()
+	{
+		webVRManager = WebVRManager.Instance;
 	}
 
 	void Start()
 	{
+		WebVRManager.OnVrStateChange += handleVrStateChange;
+		
 		cameraMain = GameObject.Find("CameraMain").GetComponent<Camera>();
 		cameraL = GameObject.Find("CameraL").GetComponent<Camera>();
 		cameraR = GameObject.Find("CameraR").GetComponent<Camera>();
@@ -66,24 +68,24 @@ public class WebVRCamera : MonoBehaviour
 
 	private void handleVrStateChange()
 	{
-		vrActive = webVRManager.vrState == VrState.ENABLED;
+		vrActive = webVRManager.vrState == webVRManager.VrState.ENABLED;
 	}
 
 	void Update()
 	{
 		deltaTime += (Time.deltaTime - deltaTime) * 0.1f;
 
-		Matrix4x4 sitStand = webVRManager.hmd.sitStand;
+		Matrix4x4 sitStand = webVRManager.stageParameters.SitStand;
 		
 		if (vrActive) {
 			cameraMain.enabled = false;
 			cameraL.enabled = true;
 			cameraR.enabled = true;	
 
-			Matrix4x4 clp = webVRManager.hmd.leftProjectionMatrix;
-			Matrix4x4 clv = webVRManager.hmd.leftViewMatrix;
-			Matrix4x4 crp = webVRManager.hmd.rightProjectionMatrix;
-			Matrix4x4 crv = webVRManager.hmd.rightViewMatrix;
+			Matrix4x4 clp = webVRManager.headset.LeftProjectionMatrix;
+			Matrix4x4 clv = webVRManager.headset.LeftViewMatrix;
+			Matrix4x4 crp = webVRManager.headset.RightProjectionMatrix;
+			Matrix4x4 crv = webVRManager.headset.RightViewMatrix;
 
 			SetTransformFromViewMatrix (cameraL.transform, clv * sitStand.inverse);
 			cameraL.projectionMatrix = clp;
@@ -99,7 +101,7 @@ public class WebVRCamera : MonoBehaviour
 			cameraL.enabled = false;
 			cameraR.enabled = false;
 
-			Matrix4x4 clv = webVRManager.hmd.leftViewMatrix;
+			Matrix4x4 clv = webVRManager.headset.LeftViewMatrix;
 			cameraMain.worldToCameraMatrix = clv * sitStand.inverse * transform.worldToLocalMatrix;
 		}
 		
