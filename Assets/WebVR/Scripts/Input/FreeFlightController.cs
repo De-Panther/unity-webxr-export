@@ -17,19 +17,22 @@ public class FreeFlightController : MonoBehaviour {
 	[Tooltip("Speed of translation in meters/seconds.")]
 	public float translationSpeed = 7;
 
+	[Tooltip("Minimum distance the mouse must move to start registering movement.")]
+	public float rotationDeadDistance = 0.001f;
+
 	[Tooltip("Keys to move forward.")]
 	public List<KeyCode> moveForwardKeys =
 		new List<KeyCode> { KeyCode.W, KeyCode.UpArrow };
 
-	[Tooltip("Keys to move backwards.")]
-	public List<KeyCode> moveBackwardsKeys =
+	[Tooltip("Keys to move backward.")]
+	public List<KeyCode> moveBackwardKeys =
 		new List<KeyCode> { KeyCode.S, KeyCode.DownArrow };
 
-	[Tooltip("Keys to stride-right.")]
+	[Tooltip("Keys to stride to the right.")]
 	public List<KeyCode> strideRightKeys =
 		new List<KeyCode> { KeyCode.D, KeyCode.RightArrow };
 
-	[Tooltip("Keys to stride-left.")]
+	[Tooltip("Keys to stride to the left.")]
 	public List<KeyCode> strideLeftKeys =
 		new List<KeyCode> { KeyCode.A, KeyCode.LeftArrow };
 
@@ -85,8 +88,8 @@ public class FreeFlightController : MonoBehaviour {
 	}
 
 	void DisableEverything() {
-		rotationEnabled = false;
 		translationEnabled = false;
+		rotationEnabled = false;
 	}
 
 	/// Enables rotation and translation control for desktop environments.
@@ -128,7 +131,7 @@ public class FreeFlightController : MonoBehaviour {
 	float ForwardMovement() {
 		return TranslationPerFrame(DirectionFromKeys(
 			moveForwardKeys,
-			moveBackwardsKeys
+			moveBackwardKeys
 		));
 	}
 
@@ -137,27 +140,27 @@ public class FreeFlightController : MonoBehaviour {
 	}
 
 	float DirectionFromKeys(List<KeyCode> positive, List<KeyCode> negative) {
-		if (SomeIsPressed(positive)) {
+		if (AnyKeyIsPressed(positive)) {
 			return 1;
 		}
-		if (SomeIsPressed(negative)) {
+		if (AnyKeyIsPressed(negative)) {
 			return -1;
 		}
 		return 0;
 	}
 
-	bool SomeIsPressed(List<KeyCode> keys) {
+	bool AnyKeyIsPressed(List<KeyCode> keys) {
 		return keys.FindAll(k => Input.GetKey(k)).Count > 0;
 	}
 
 	void RegisterMouseMovement() {
-		bool stoppedTracking = Input.GetMouseButtonUp(0);
-		bool isTracking = Input.GetMouseButton(0);
+		bool mouseStoppedDragging = Input.GetMouseButtonUp(0);
+		bool mouseIsDragging = Input.GetMouseButton(0);
 
-		if (stoppedTracking) {
+		if (mouseStoppedDragging) {
 			mouseMovement.Set(0, 0, 0);
 		}
-		else if (isTracking) {
+		else if (mouseIsDragging) {
 			mouseMovement = Input.mousePosition - lastMousePosition;
 		}
 
@@ -165,11 +168,13 @@ public class FreeFlightController : MonoBehaviour {
 	}
 
 	float YawMovement() {
-		return RotationPerFrame(DirectionFromMovement(mouseMovement.x));
+		return RotationPerFrame(
+			DirectionFromMovement(mouseMovement.x, rotationDeadDistance));
 	}
 
 	float PitchMovement() {
-		return RotationPerFrame(DirectionFromMovement(mouseMovement.y));
+		return RotationPerFrame(
+			DirectionFromMovement(mouseMovement.y, rotationDeadDistance));
 	}
 
 	float RotationPerFrame(float direction) {
