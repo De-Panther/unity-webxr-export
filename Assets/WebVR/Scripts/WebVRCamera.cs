@@ -84,13 +84,19 @@ public class WebVRCamera : MonoBehaviour
 	// received enter VR from WebVR browser
 	public void OnStartVR()
 	{
+		GameObject.Find("CameraMain").SendMessage("OnStartVR");
 		changeMode("vr");
 	}
 
 	// receive exit VR from WebVR browser
 	public void OnEndVR()
 	{
+		GameObject.Find("CameraMain").SendMessage("OnEndVR");
 		changeMode("normal");
+	}
+
+	public void OnVRCapabilities(string json) {
+		GameObject.Find("CameraMain").SendMessage("OnVRCapabilities", json);
 	}
 
 	// receive WebVR data from browser.
@@ -165,9 +171,9 @@ public class WebVRCamera : MonoBehaviour
 		switch (mode)
 		{
 		case "normal":
-			cameraMain.enabled = true;
 			cameraL.enabled = false;
 			cameraR.enabled = false;
+			cameraMain.enabled = true;
 			active = false;
 			break;
 		case "vr":
@@ -218,16 +224,12 @@ public class WebVRCamera : MonoBehaviour
 		#endif
 
 		deltaTime += (Time.deltaTime - deltaTime) * 0.1f;
-
 		if (active) {
 			SetTransformFromViewMatrix (cameraL.transform, clv * sitStand.inverse * transform.worldToLocalMatrix);
 			cameraL.projectionMatrix = clp;
 			SetTransformFromViewMatrix (cameraR.transform, crv * sitStand.inverse * transform.worldToLocalMatrix);
 			cameraR.projectionMatrix = crp;
 			SetHeadTransform ();
-		} else {
-			// apply left
-			cameraMain.worldToCameraMatrix = clv * sitStand.inverse * transform.worldToLocalMatrix;
 		}
 
 		#if UNITY_EDITOR

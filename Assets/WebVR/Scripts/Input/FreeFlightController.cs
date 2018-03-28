@@ -11,6 +11,9 @@ public class FreeFlightController : MonoBehaviour {
 	[Tooltip("Enable/disable translation control. For use in Unity editor only.")]
 	public bool translationEnabled = true;
 
+	[Tooltip("Offset position to apply when VR is not available.")]
+	public Vector3 noVROffset = new Vector3(0, 1.2f, 0);
+
 	[Tooltip("Speed of rotation in degrees/seconds.")]
 	public float rotationSpeed = 90;
 
@@ -74,6 +77,10 @@ public class FreeFlightController : MonoBehaviour {
 			WebUI.ShowPanel("novr");
 		}
 		#endif
+
+		if (inDesktopLike || !capabilities.hasPosition) {
+			transform.Translate(noVROffset);
+		}
 
 		EnableAccordingToPlatform();
 	}
