@@ -5,10 +5,10 @@ using UnityEngine;
 
 public class FreeFlightController : MonoBehaviour {
 
-	[Tooltip("Enable/disable rotation control.")]
+	[Tooltip("Enable/disable rotation control. For use in Unity editor only.")]
 	public bool rotationEnabled = true;
 
-	[Tooltip("Enable/disable translation control.")]
+	[Tooltip("Enable/disable translation control. For use in Unity editor only.")]
 	public bool translationEnabled = true;
 
 	[Tooltip("Speed of rotation in degrees/seconds.")]
