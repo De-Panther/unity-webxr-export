@@ -4,16 +4,18 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 
+public enum Hand { NONE, LEFT, RIGHT };
+
 public class Controller
 {
 	public int index;
-	public string hand;
+	public Enum hand;
 	public Vector3 position;
 	public Quaternion rotation;
 	public Matrix4x4 sitStand;
 	public GameObject gameObject;
 	
-	public Controller(int index, string hand, Vector3 position, Quaternion rotation, Matrix4x4 sitStand)
+	public Controller(int index, Enum hand, Vector3 position, Quaternion rotation, Matrix4x4 sitStand)
 	{
 		this.index = index;
 		this.hand = hand;
@@ -43,26 +45,6 @@ public class WebVRControllerManager : MonoBehaviour
 		}
 	}
 
-	// registers GameObject to controller returning controller.
-	public Controller registerController(GameObject gameObject)
-	{
-		Controller controller = controllers.Where(x => x.gameObject == gameObject).SingleOrDefault();
-		if (controller == null)
-		{
-			Controller unbound = controllers.Where(x => x.gameObject == null).SingleOrDefault();
-			if (unbound != null)
-			{
-				Debug.Log("Bounding to controller! " + unbound.index);
-				unbound.gameObject = gameObject;
-				return unbound;
-			}
-			else
-				return null;
-		}
-		else
-			return controller;
-	}
-
 	void Start()
 	{
 		WebVRManager.OnControllerUpdate += handleControllerUpdate;
@@ -73,14 +55,41 @@ public class WebVRControllerManager : MonoBehaviour
 		instance = this;
 	}
 
+	// registers GameObject to controller returning controller.
+	public Controller GetController(GameObject gameObject, Enum h)
+	{
+		Controller controller = controllers.Where(x => x.gameObject == gameObject).FirstOrDefault();
+
+		if (controller != null)
+			return controller;
+
+		Controller unbound;
+		if ((Hand)h == Hand.NONE)
+			unbound = controllers.Where(x => x.gameObject == null).FirstOrDefault();
+		else
+			unbound = controllers.Where(x => (Hand)x.hand == (Hand)h).FirstOrDefault();
+
+		if (unbound != null) {
+			unbound.gameObject = gameObject;
+			Debug.Log("Binding " + gameObject.name + " to " + unbound.hand);
+			return unbound;
+		}
+		return null;
+	}
+
 	private void handleControllerUpdate(
 		int index, string hand, Vector3 position, Quaternion rotation, Matrix4x4 sitStand)
 	{
 		// add or update controller values.
-		Controller controller = controllers.Where(x => x.index == index).SingleOrDefault();
+		Controller controller = controllers.Where(x => x.index == index).FirstOrDefault();
 		
 		if (controller == null)
-			controllers.Add(new Controller(index, hand, position, rotation, sitStand));
+		{
+			// convert string to enum
+			Enum h = String.IsNullOrEmpty(hand) ? Hand.NONE : (Hand) Enum.Parse(typeof(Hand), hand.ToUpper(), true);
+			Debug.Log("Adding controller, Index:" + index + " Hand: " + h);
+			controllers.Add(new Controller(index, h, position, rotation, sitStand));
+		}
 		else
 		{
 			controller.position = position;

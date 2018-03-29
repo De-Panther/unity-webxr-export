@@ -5,8 +5,6 @@ using System.Runtime.InteropServices;
 
 public class WebVRController : MonoBehaviour
 {
-	public enum Hand { NONE, LEFT, RIGHT };
-
 	[Tooltip("Map GameObject to controller hand name.")]
 	public Hand hand = Hand.NONE;
 
@@ -33,10 +31,9 @@ public class WebVRController : MonoBehaviour
 
 	void Update()
 	{
-
 		if (vrActive)
 		{
-			Controller controller = controllerManager.registerController(gameObject);
+			Controller controller = controllerManager.GetController(gameObject, hand);
 
 			if (controller != null)
 			{
@@ -48,23 +45,20 @@ public class WebVRController : MonoBehaviour
 				gameObject.transform.rotation = sitStandRotation * controller.rotation;
 				gameObject.transform.position = sitStand.MultiplyPoint(controller.position);
 			}
-			else
-			{
-				// #if UNITY_EDITOR
-				// if (leftHandObject) {
-				// 	leftHandObject.transform.localRotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.LeftHand);
-				// 	leftHandObject.transform.position = transform.position + UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.LeftHand);
-				// }
-				// if (rightHandObject) {
-				// 	rightHandObject.transform.localRotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.RightHand);
-				// 	rightHandObject.transform.position = transform.position + UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.RightHand);
-				// }
-				// #endif
-				// #if !UNITY_EDITOR && UNITY_WEBGL
-				// gameObject.transform.rotation = sitStandRotation * controller.rotation;
-				// gameObject.transform.position = sitStand.MultiplyPoint(controller.position);
-				// #endif
-			}
+			// #if UNITY_EDITOR
+			// if (leftHandObject) {
+			// 	leftHandObject.transform.localRotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.LeftHand);
+			// 	leftHandObject.transform.position = transform.position + UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.LeftHand);
+			// }
+			// if (rightHandObject) {
+			// 	rightHandObject.transform.localRotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.RightHand);
+			// 	rightHandObject.transform.position = transform.position + UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.RightHand);
+			// }
+			// #endif
+			// #if !UNITY_EDITOR && UNITY_WEBGL
+			// gameObject.transform.rotation = sitStandRotation * controller.rotation;
+			// gameObject.transform.position = sitStand.MultiplyPoint(controller.position);
+			// #endif
 		}
 	}
 }

@@ -20,7 +20,7 @@ public class WebVRManager : MonoBehaviour
 		Matrix4x4 rightViewMatrix,
 		Matrix4x4 sitStandMatrix);
 	public static event HeadsetUpdate OnHeadsetUpdate;
-	public delegate void ControllerUpdate(int index,string hand, Vector3 position, Quaternion rotation, Matrix4x4 sitStand);
+	public delegate void ControllerUpdate(int index, string hand, Vector3 position, Quaternion rotation, Matrix4x4 sitStand);
 	public static event ControllerUpdate OnControllerUpdate;
 
 	[Tooltip("Name of the key used to alternate between VR and normal mode. Leave blank to disable.")]
@@ -60,7 +60,7 @@ public class WebVRManager : MonoBehaviour
 			{
 				Vector3 position = new Vector3 (controller.position [0], controller.position [1], controller.position [2]);
 				Quaternion rotation = new Quaternion (controller.orientation [0], controller.orientation [1], controller.orientation [2], controller.orientation [3]);
-				
+
 				if (OnControllerUpdate != null)
 					OnControllerUpdate(controller.index, controller.hand, position, rotation, sitStand);
 				
@@ -79,7 +79,7 @@ public class WebVRManager : MonoBehaviour
 			setVrState(VrState.NORMAL);
 		else
 			setVrState(VrState.ENABLED);
-		#endif	
+		#endif
 	}
 
 	public void setVrState(VrState state)
