@@ -55,6 +55,26 @@ public class WebVRControllerManager : MonoBehaviour
 		instance = this;
 	}
 
+	void Update()
+	{
+		#if UNITY_EDITOR
+		// update controllers using Unity XR support when in editor.
+		handleControllerUpdate(
+			0,
+			"left",
+			UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.LeftHand),
+			UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.LeftHand),
+			Matrix4x4.identity);
+
+		handleControllerUpdate(
+			1,
+			"right",
+			UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.RightHand),
+			UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.RightHand),
+			Matrix4x4.identity);
+		#endif
+	}
+
 	// registers GameObject to controller returning controller.
 	public Controller GetController(GameObject gameObject, Enum h)
 	{
