@@ -130,6 +130,7 @@ a:link, a:visited {
   position: absolute;
   top: 0;
   width: 100%;
+  pointer-events: none;
 }
 
 #instruction button {
@@ -148,6 +149,7 @@ a:link, a:visited {
   display: none;
   max-width: 50%;
   padding: 10px 30px;
+  pointer-events: all;
 }
 
 .panel[data-enabled='true'] {

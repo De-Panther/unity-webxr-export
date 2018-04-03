@@ -788,7 +788,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400030, guid: 013217fcf4bba4f3380d9159876fa8ea, type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9500000, guid: 013217fcf4bba4f3380d9159876fa8ea, type: 3}
       propertyPath: m_Enabled
@@ -970,7 +970,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400030, guid: c99aacc3accab4fdaadab5e3ea13b9c7, type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 9500000, guid: c99aacc3accab4fdaadab5e3ea13b9c7, type: 3}
       propertyPath: m_Enabled
@@ -1601,16 +1601,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114951743782495552, guid: 78df02845d4b54181b4ca9188aba0671,
-        type: 2}
-      propertyPath: rightHandObject
-      value: 
-      objectReference: {fileID: 1269233424}
-    - target: {fileID: 114951743782495552, guid: 78df02845d4b54181b4ca9188aba0671,
-        type: 2}
-      propertyPath: leftHandObject
-      value: 
-      objectReference: {fileID: 821505835}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 78df02845d4b54181b4ca9188aba0671, type: 2}
   m_IsPrefabParent: 0
