@@ -17,6 +17,6 @@ mergeInto(LibraryManager.library, {
   },
 
   ShowPanel: function (panelId) {
-    document.dispatchEvent(new CustomEvent('Unity', {detail: {type:'ShowPanel', panelId: Pointer_stringify(panelId)}}));
+    document.dispatchEvent(new CustomEvent('Unity', {detail: {type: 'ShowPanel', panelId: Pointer_stringify(panelId)}}));
   }
 });
