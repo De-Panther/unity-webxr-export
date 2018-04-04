@@ -66,6 +66,7 @@ public class FreeFlightController : MonoBehaviour {
 	void Start()
 	{
 		WebVRManager.OnVrChange += handleVrChange;
+		WebVRManager.OnCapabilitiesUpdate += handleCapabilitiesUpdate;
 	}
 
 	private void handleVrChange()
@@ -80,19 +81,9 @@ public class FreeFlightController : MonoBehaviour {
 		}
 	}
 
-	public void OnVRCapabilities(string json) {
-		OnVRCapabilities(JsonUtility.FromJson<VRDisplayCapabilities>(json));
-	}
-
-	public void OnVRCapabilities(VRDisplayCapabilities vrCapabilities) {
+	private void handleCapabilitiesUpdate(VRDisplayCapabilities vrCapabilities)
+	{
 		capabilities = vrCapabilities;
-
-		#if !UNITY_EDITOR && UNITY_WEBGL
-		if (!capabilities.hasOrientation) {
-			WebUI.ShowPanel("novr");
-		}
-		#endif
-
 		if (inDesktopLike || !capabilities.hasPosition) {
 			transform.Translate(noVROffset);
 		}

@@ -11,6 +11,8 @@ public class WebVRManager : MonoBehaviour
 {
 	public VrState vrState;
 	public static WebVRManager instance;
+	public delegate void CapabilitiesUpdate(VRDisplayCapabilities capabilities);
+	public static event CapabilitiesUpdate OnCapabilitiesUpdate;
 	public delegate void VrChange();
 	public static event VrChange OnVrChange;
 	public delegate void HeadsetUpdate(
@@ -69,6 +71,24 @@ public class WebVRManager : MonoBehaviour
 				// 	activeControllers.Add(controller.index);
 				// }
 			}
+		}
+	}
+
+	// Handles WebVR capabilities from browser
+	public void OnVRCapabilities(string json) {
+		OnVRCapabilities(JsonUtility.FromJson<VRDisplayCapabilities>(json));
+	}
+
+	public void OnVRCapabilities(VRDisplayCapabilities capabilities) {
+		#if !UNITY_EDITOR && UNITY_WEBGL
+		if (!capabilities.hasOrientation) {
+			WebUI.ShowPanel("novr");
+		}
+		#endif
+
+		if (OnCapabilitiesUpdate != null)
+		{
+			OnCapabilitiesUpdate(capabilities);
 		}
 	}
 
