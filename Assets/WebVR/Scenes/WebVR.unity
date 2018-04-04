@@ -1601,6 +1601,16 @@ Prefab:
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114951743782495552, guid: 78df02845d4b54181b4ca9188aba0671,
+        type: 2}
+      propertyPath: leftHandObject
+      value: 
+      objectReference: {fileID: 821505835}
+    - target: {fileID: 114951743782495552, guid: 78df02845d4b54181b4ca9188aba0671,
+        type: 2}
+      propertyPath: rightHandObject
+      value: 
+      objectReference: {fileID: 1269233424}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 78df02845d4b54181b4ca9188aba0671, type: 2}
   m_IsPrefabParent: 0
