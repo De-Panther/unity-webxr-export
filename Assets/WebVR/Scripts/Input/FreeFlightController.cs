@@ -4,6 +4,7 @@ using UnityEngine.EventSystems;
 using UnityEngine;
 
 public class FreeFlightController : MonoBehaviour {
+	private WebVRManager webVRManager;
 
 	[Tooltip("Enable/disable rotation control. For use in Unity editor only.")]
 	public bool rotationEnabled = true;
@@ -57,12 +58,26 @@ public class FreeFlightController : MonoBehaviour {
 
 	Vector3 lastMousePosition;
 
-	public void OnStartVR() {
-		DisableEverything();
+	void Awake()
+	{
+		webVRManager = WebVRManager.Instance;
 	}
 
-	public void OnEndVR() {
-		EnableAccordingToPlatform();
+	void Start()
+	{
+		WebVRManager.OnVrChange += handleVrChange;
+	}
+
+	private void handleVrChange()
+	{
+		if (webVRManager.vrState == VrState.ENABLED)
+		{
+			DisableEverything();
+		}
+		else
+		{
+			EnableAccordingToPlatform();
+		}
 	}
 
 	public void OnVRCapabilities(string json) {
