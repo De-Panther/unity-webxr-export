@@ -313,6 +313,10 @@
         hasExternalDisplay = vrDisplay.capabilities.hasExternalDisplay;
       }
 
+      if (canPresent) {
+        vrHardwareStatus.dataset.enabled = true;
+      }
+
       enterVRButton.dataset.enabled = canPresent;
 
       gameInstance.SendMessage(
