@@ -225,9 +225,9 @@ public class WebVRCamera : MonoBehaviour
 
 		deltaTime += (Time.deltaTime - deltaTime) * 0.1f;
 		if (active) {
-			SetTransformFromViewMatrix (cameraL.transform, clv * sitStand.inverse * transform.worldToLocalMatrix);
+			SetTransformFromViewMatrix (cameraL.transform, clv * sitStand.inverse);
 			cameraL.projectionMatrix = clp;
-			SetTransformFromViewMatrix (cameraR.transform, crv * sitStand.inverse * transform.worldToLocalMatrix);
+			SetTransformFromViewMatrix (cameraR.transform, crv * sitStand.inverse);
 			cameraR.projectionMatrix = crp;
 			SetHeadTransform ();
 		}
