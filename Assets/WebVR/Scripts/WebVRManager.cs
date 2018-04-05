@@ -9,6 +9,10 @@ public enum VrState { ENABLED, NORMAL }
 
 public class WebVRManager : MonoBehaviour 
 {
+	[Tooltip("Name of the key used to alternate between VR and normal mode. Leave blank to disable.")]
+	public string toggleVRKeyName;
+
+	[HideInInspector]
 	public VrState vrState;
 	public static WebVRManager instance;
 	public delegate void CapabilitiesUpdate(VRDisplayCapabilities capabilities);
@@ -24,9 +28,6 @@ public class WebVRManager : MonoBehaviour
 	public static event HeadsetUpdate OnHeadsetUpdate;
 	public delegate void ControllerUpdate(int index, string hand, Vector3 position, Quaternion rotation, Matrix4x4 sitStand);
 	public static event ControllerUpdate OnControllerUpdate;
-
-	[Tooltip("Name of the key used to alternate between VR and normal mode. Leave blank to disable.")]
-	public string toggleVRKeyName;
 
 	public static WebVRManager Instance {
 		get

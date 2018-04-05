@@ -5,6 +5,10 @@ using System.Runtime.InteropServices;
 
 public class WebVRCamera : MonoBehaviour
 {
+	[Tooltip("Default height of camera if no room-scale transform is present.")]
+	public float DefaultHeight = 1.2f;
+	private Matrix4x4 sitStand;
+
 	private WebVRManager webVRManager;
 	private Camera cameraMain, cameraL, cameraR;
 	private bool vrActive = false;
@@ -28,9 +32,12 @@ public class WebVRCamera : MonoBehaviour
 	{
 		WebVRManager.OnVrChange += handleVrChange;
 		WebVRManager.OnHeadsetUpdate += handleHeadsetUpdate;
+
 		cameraMain = GameObject.Find("CameraMain").GetComponent<Camera>();
 		cameraL = GameObject.Find("CameraL").GetComponent<Camera>();
 		cameraR = GameObject.Find("CameraR").GetComponent<Camera>();
+
+		cameraMain.transform.Translate(new Vector3(0, DefaultHeight, 0));
 	}
 
 	void Update()
@@ -72,11 +79,6 @@ public class WebVRCamera : MonoBehaviour
 			SetTransformFromViewMatrix (cameraR.transform, rightViewMatrix * sitStandMatrix.inverse);
 			cameraR.projectionMatrix = rightProjectionMatrix;
 			SetHeadTransform ();
-		} else {
-			// polyfill handles mouse look, so we apply left view to cameraMain so we can look around.
-			// will discontinue with https://github.com/mozilla/unity-webvr-export/issues/125 and implement
-			// behavior within a component in Unity.
-			cameraMain.worldToCameraMatrix = leftViewMatrix * sitStandMatrix.inverse * transform.worldToLocalMatrix;
 		}
 	}
 

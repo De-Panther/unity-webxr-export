@@ -4,16 +4,11 @@ using UnityEngine.EventSystems;
 using UnityEngine;
 
 public class FreeFlightController : MonoBehaviour {
-	private WebVRManager webVRManager;
-
 	[Tooltip("Enable/disable rotation control. For use in Unity editor only.")]
 	public bool rotationEnabled = true;
 
 	[Tooltip("Enable/disable translation control. For use in Unity editor only.")]
 	public bool translationEnabled = true;
-
-	[Tooltip("Offset position to apply when VR is not available.")]
-	public Vector3 noVROffset = new Vector3(0, 1.2f, 0);
 
 	[Tooltip("Speed of rotation in degrees/seconds.")]
 	public float rotationSpeed = 90;
@@ -46,7 +41,8 @@ public class FreeFlightController : MonoBehaviour {
 	[Tooltip("Keys to move downward.")]
 	public List<KeyCode> moveDownwardKeys = new List<KeyCode> { KeyCode.F };
 
-	VRDisplayCapabilities capabilities;
+	private WebVRManager webVRManager;
+	private VRDisplayCapabilities capabilities;
 
 	bool inDesktopLike {
 		get {
@@ -84,10 +80,6 @@ public class FreeFlightController : MonoBehaviour {
 	private void handleCapabilitiesUpdate(VRDisplayCapabilities vrCapabilities)
 	{
 		capabilities = vrCapabilities;
-		if (inDesktopLike || !capabilities.hasPosition) {
-			transform.Translate(noVROffset);
-		}
-
 		EnableAccordingToPlatform();
 	}
 
