@@ -1,7 +1,7 @@
 using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System;
 using System.Linq;
 using System.Runtime.InteropServices;
 
@@ -110,14 +110,14 @@ public class WebVRManager : MonoBehaviour
 			OnVrChange();
 	}
 
-	// received enter VR from WebVR browser
-	public void EnterVR()
+	// received start VR from WebVR browser
+	public void OnStartVR()
 	{
 		setVrState(VrState.ENABLED);
 	}
 
-	// receive exit VR from WebVR browser
-	public void ExitVR()
+	// receive end VR from WebVR browser
+	public void OnEndVR()
 	{
 		setVrState(VrState.NORMAL);
 	}
@@ -202,24 +202,24 @@ public class WebVRManager : MonoBehaviour
 		#endif
 	}
 
-	// void OnGUI()
-	// {
-	// 	if (!showPerf)
-	// 		return;
+	void OnGUI()
+	{
+		if (!showPerf)
+			return;
 		
-	// 	int w = Screen.width, h = Screen.height;
+		int w = Screen.width, h = Screen.height;
 
-	// 	GUIStyle style = new GUIStyle();
+		GUIStyle style = new GUIStyle();
 
-	// 	Rect rect = new Rect(w / 4, h / 2, w, h * 2 / 100);
-	// 	style.alignment = TextAnchor.UpperLeft;
-	// 	style.fontSize = h * 2 / 100;
-	// 	style.normal.textColor = new Color (0.0f, 1.0f, 1.0f, 1.0f);
-	// 	float msec = deltaTime * 1000.0f;
-	// 	float fps = 1.0f / deltaTime;
-	// 	string text = string.Format("{0:0.0} ms ({1:0.} fps)", msec, fps);
-	// 	GUI.Label(rect, text, style);
-	// }
+		Rect rect = new Rect(w / 4, h / 2, w, h * 2 / 100);
+		style.alignment = TextAnchor.UpperLeft;
+		style.fontSize = h * 2 / 100;
+		style.normal.textColor = new Color (0.0f, 1.0f, 1.0f, 1.0f);
+		float msec = deltaTime * 1000.0f;
+		float fps = 1.0f / deltaTime;
+		string text = string.Format("{0:0.0} ms ({1:0.} fps)", msec, fps);
+		GUI.Label(rect, text, style);
+	}
 
 	// Utility functions
 	private Matrix4x4 numbersToMatrix(float[] array)

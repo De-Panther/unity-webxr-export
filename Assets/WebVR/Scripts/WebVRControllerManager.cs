@@ -1,7 +1,7 @@
 using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System;
 using System.Linq;
 
 public enum Hand { NONE, LEFT, RIGHT };
@@ -47,7 +47,7 @@ public class WebVRControllerManager : MonoBehaviour
 
 	void Start()
 	{
-		WebVRManager.OnControllerUpdate += handleControllerUpdate;
+		WebVRManager.OnControllerUpdate += onControllerUpdate;
 	}
 
 	void Awake()
@@ -59,14 +59,14 @@ public class WebVRControllerManager : MonoBehaviour
 	{
 		#if UNITY_EDITOR
 		// update controllers using Unity XR support when in editor.
-		handleControllerUpdate(
+		onControllerUpdate(
 			0,
 			"left",
 			UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.LeftHand),
 			UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.LeftHand),
 			Matrix4x4.identity);
 
-		handleControllerUpdate(
+		onControllerUpdate(
 			1,
 			"right",
 			UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.RightHand),
@@ -97,7 +97,7 @@ public class WebVRControllerManager : MonoBehaviour
 		return null;
 	}
 
-	private void handleControllerUpdate(
+	private void onControllerUpdate(
 		int index, string hand, Vector3 position, Quaternion rotation, Matrix4x4 sitStand)
 	{
 		// add or update controller values.

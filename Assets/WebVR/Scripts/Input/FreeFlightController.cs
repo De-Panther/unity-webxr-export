@@ -61,11 +61,11 @@ public class FreeFlightController : MonoBehaviour {
 
 	void Start()
 	{
-		WebVRManager.OnVrChange += handleVrChange;
-		WebVRManager.OnCapabilitiesUpdate += handleCapabilitiesUpdate;
+		WebVRManager.OnVrChange += onVrChange;
+		WebVRManager.OnCapabilitiesUpdate += onCapabilitiesUpdate;
 	}
 
-	private void handleVrChange()
+	private void onVrChange()
 	{
 		if (webVRManager.vrState == VrState.ENABLED)
 		{
@@ -77,7 +77,7 @@ public class FreeFlightController : MonoBehaviour {
 		}
 	}
 
-	private void handleCapabilitiesUpdate(VRDisplayCapabilities vrCapabilities)
+	private void onCapabilitiesUpdate(VRDisplayCapabilities vrCapabilities)
 	{
 		capabilities = vrCapabilities;
 		EnableAccordingToPlatform();

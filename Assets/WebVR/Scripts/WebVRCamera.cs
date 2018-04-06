@@ -18,7 +18,7 @@ public class WebVRCamera : MonoBehaviour
 
 	private IEnumerator endOfFrame()
 	{
-		// wait until end of frame to report back to WebVR browser to submit frame.
+		// Wait until end of frame to report back to WebVR browser to submit frame.
 		yield return new WaitForEndOfFrame();
 		PostRender ();
 	}
@@ -30,8 +30,8 @@ public class WebVRCamera : MonoBehaviour
 
 	void Start()
 	{
-		WebVRManager.OnVrChange += handleVrChange;
-		WebVRManager.OnHeadsetUpdate += handleHeadsetUpdate;
+		WebVRManager.OnVrChange += onVrChange;
+		WebVRManager.OnHeadsetUpdate += onHeadsetUpdate;
 
 		cameraMain = GameObject.Find("CameraMain").GetComponent<Camera>();
 		cameraL = GameObject.Find("CameraL").GetComponent<Camera>();
@@ -60,12 +60,12 @@ public class WebVRCamera : MonoBehaviour
 		#endif
 	}
 
-	private void handleVrChange()
+	private void onVrChange()
 	{
 		vrActive = webVRManager.vrState == VrState.ENABLED;
 	}
 
-	private void handleHeadsetUpdate (
+	private void onHeadsetUpdate (
 		Matrix4x4 leftProjectionMatrix,
 		Matrix4x4 leftViewMatrix,
 		Matrix4x4 rightProjectionMatrix,
