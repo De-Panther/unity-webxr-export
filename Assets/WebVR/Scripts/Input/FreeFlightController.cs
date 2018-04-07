@@ -4,15 +4,11 @@ using UnityEngine.EventSystems;
 using UnityEngine;
 
 public class FreeFlightController : MonoBehaviour {
-
 	[Tooltip("Enable/disable rotation control. For use in Unity editor only.")]
 	public bool rotationEnabled = true;
 
 	[Tooltip("Enable/disable translation control. For use in Unity editor only.")]
 	public bool translationEnabled = true;
-
-	[Tooltip("Offset position to apply when VR is not available.")]
-	public Vector3 noVROffset = new Vector3(0, 1.2f, 0);
 
 	[Tooltip("Speed of rotation in degrees/seconds.")]
 	public float rotationSpeed = 90;
@@ -45,7 +41,8 @@ public class FreeFlightController : MonoBehaviour {
 	[Tooltip("Keys to move downward.")]
 	public List<KeyCode> moveDownwardKeys = new List<KeyCode> { KeyCode.F };
 
-	VRDisplayCapabilities capabilities;
+	private WebVRManager webVRManager;
+	private VRDisplayCapabilities capabilities;
 
 	bool inDesktopLike {
 		get {
@@ -57,31 +54,32 @@ public class FreeFlightController : MonoBehaviour {
 
 	Vector3 lastMousePosition;
 
-	public void OnStartVR() {
-		DisableEverything();
+	void Awake()
+	{
+		webVRManager = WebVRManager.Instance;
 	}
 
-	public void OnEndVR() {
-		EnableAccordingToPlatform();
+	void Start()
+	{
+		WebVRManager.OnVrChange += onVrChange;
+		WebVRManager.OnCapabilitiesUpdate += onCapabilitiesUpdate;
 	}
 
-	public void OnVRCapabilities(string json) {
-		OnVRCapabilities(JsonUtility.FromJson<VRDisplayCapabilities>(json));
+	private void onVrChange()
+	{
+		if (webVRManager.vrState == VrState.ENABLED)
+		{
+			DisableEverything();
+		}
+		else
+		{
+			EnableAccordingToPlatform();
+		}
 	}
 
-	public void OnVRCapabilities(VRDisplayCapabilities vrCapabilities) {
+	private void onCapabilitiesUpdate(VRDisplayCapabilities vrCapabilities)
+	{
 		capabilities = vrCapabilities;
-
-		#if !UNITY_EDITOR && UNITY_WEBGL
-		if (!capabilities.hasOrientation) {
-			WebUI.ShowPanel("novr");
-		}
-		#endif
-
-		if (inDesktopLike || !capabilities.hasPosition) {
-			transform.Translate(noVROffset);
-		}
-
 		EnableAccordingToPlatform();
 	}
 

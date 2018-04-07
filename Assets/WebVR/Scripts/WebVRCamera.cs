@@ -5,260 +5,86 @@ using System.Runtime.InteropServices;
 
 public class WebVRCamera : MonoBehaviour
 {
-	[DllImport("__Internal")]
-	private static extern void FinishLoading();
+	[Tooltip("Default height of camera if no room-scale transform is present.")]
+	public float DefaultHeight = 1.2f;
+	private Matrix4x4 sitStand;
 
-	[DllImport("__Internal")]
-	private static extern void TestTimeReturn();
+	private WebVRManager webVRManager;
+	private Camera cameraMain, cameraL, cameraR;
+	private bool vrActive = false;
 
 	[DllImport("__Internal")]
 	private static extern void PostRender();
 
-	[DllImport("__Internal")]
-	private static extern void ConfigureToggleVRKeyName(string keyName);
-
-	Camera cameraMain, cameraL, cameraR;
-	Quaternion cq;
-	Quaternion lhq;
-	Quaternion rhq;
-	Vector3 cp;
-
-	// left and right hand position and rotation
-	Vector3 lhp;
-	Vector3 rhp;
-	Quaternion lhr;
-	Quaternion rhr;
-
-	// camera view and projection matrices
-	Matrix4x4 clp = Matrix4x4.identity; // left projection matrix
-	Matrix4x4 clv = Matrix4x4.identity; // left view matrix
-	Matrix4x4 crp = Matrix4x4.identity; // right projection matrix
-	Matrix4x4 crv = Matrix4x4.identity; // left view matrix
-
-	// sit stand room transform
-	//Matrix4x4 sitStand = Matrix4x4.Translate (new Vector3 (0, 1.2f, 0));
-	Matrix4x4 sitStand = Matrix4x4.identity;
-
-	bool active = false; // vr mode
-
-	[Tooltip("GameObject to be controlled by the left hand controller.")]
-	public GameObject leftHandObject;
-
-	[Tooltip("GameObject to be controlled by the right hand controller.")]
-	public GameObject rightHandObject;
-
- 	[Tooltip("Name of the key used to alternate between VR and normal mode. Leave blank to disable.")]
-	public string toggleVRKeyName;
-
-	// delta time for latency checker.
-	float deltaTime = 0.0f;
-
-	// show framerate UI
-	bool showPerf = false;
-
-	[System.Serializable]
-	public class Controller
-	{
-		public int index;
-		public string hand;
-		public float[] orientation;
-		public float[] position;
-	}
-
-	[System.Serializable]
-	public class VRData
-	{
-		public float[] id;
-		public float[] leftProjectionMatrix;
-		public float[] rightProjectionMatrix;
-		public float[] leftViewMatrix;
-		public float[] rightViewMatrix;
-		public float[] sitStand;
-		public Controller[] controllers;
-		public static VRData CreateFromJSON(string jsonString)
-		{
-			return JsonUtility.FromJson<VRData> (jsonString);
-		}
-	}
-
-	// received enter VR from WebVR browser
-	public void OnStartVR()
-	{
-		GameObject.Find("CameraMain").SendMessage("OnStartVR");
-		changeMode("vr");
-	}
-
-	// receive exit VR from WebVR browser
-	public void OnEndVR()
-	{
-		GameObject.Find("CameraMain").SendMessage("OnEndVR");
-		changeMode("normal");
-	}
-
-	public void OnVRCapabilities(string json) {
-		GameObject.Find("CameraMain").SendMessage("OnVRCapabilities", json);
-	}
-
-	// receive WebVR data from browser.
-	public void WebVRData (string jsonString) {
-		VRData data = VRData.CreateFromJSON (jsonString);
-
-		// left projection matrix
-		clp = numbersToMatrix (data.leftProjectionMatrix);
-
-		// left view matrix
-		clv = numbersToMatrix (data.leftViewMatrix);
-
-		// right projection matrix
-		crp = numbersToMatrix (data.rightProjectionMatrix);
-
-		// right view matrix
-		crv = numbersToMatrix (data.rightViewMatrix);
-
-		// sit stand matrix
-		if (data.sitStand.Length > 0) {
-			sitStand = numbersToMatrix (data.sitStand);
-		}
-
-		// controllers
-		if (data.controllers.Length > 0) {
-			foreach (Controller control in data.controllers) {
-				Vector3 position = new Vector3 (control.position [0], control.position [1], control.position [2]);
-				Quaternion rotation = new Quaternion (control.orientation [0], control.orientation [1], control.orientation [2], control.orientation [3]);
-
-				Quaternion sitStandRotation = Quaternion.LookRotation (
-					sitStand.GetColumn (2),
-					sitStand.GetColumn (1)
-				);
-				Vector3 p = sitStand.MultiplyPoint(position);
-				Quaternion r = sitStandRotation * rotation;
-
-				if (control.hand == "left") {
-					lhp = p;
-					lhr = r;
-				}
-				if (control.hand == "right") {
-					rhp = p;
-					rhr = r;
-				}
-			}
-		}
-	}
-
-	// received time tester from WebVR browser
-	public void TestTime() {
-		Debug.Log ("Time tester received in Unity");
-		TestTimeReturn ();
-	}
-
-	public void TogglePerf() {
-		showPerf = showPerf == false ? true : false;
-	}
-
-	private void toggleMode() {
-		active = !active;
-		string mode = active ? "vr" : "normal";
-
-		#if UNITY_EDITOR || !UNITY_WEBGL
-		changeMode (mode);
-		#endif
-	}
-
-	private void changeMode(string mode)
-	{
-		Debug.Log("Switching to " + mode);
-
-		switch (mode)
-		{
-		case "normal":
-			cameraL.enabled = false;
-			cameraR.enabled = false;
-			cameraMain.enabled = true;
-			active = false;
-			break;
-		case "vr":
-			cameraMain.enabled = false;
-			cameraL.enabled = true;
-			cameraR.enabled = true;
-			active = true;
-			break;
-		}
-	}
-
 	private IEnumerator endOfFrame()
 	{
-		// wait until end of frame to report back to WebVR browser to submit frame.
+		// Wait until end of frame to report back to WebVR browser to submit frame.
 		yield return new WaitForEndOfFrame();
 		PostRender ();
 	}
 
+	void Awake()
+	{
+		webVRManager = WebVRManager.Instance;
+	}
+
 	void Start()
 	{
+		WebVRManager.OnVrChange += onVrChange;
+		WebVRManager.OnHeadsetUpdate += onHeadsetUpdate;
+
 		cameraMain = GameObject.Find("CameraMain").GetComponent<Camera>();
 		cameraL = GameObject.Find("CameraL").GetComponent<Camera>();
 		cameraR = GameObject.Find("CameraR").GetComponent<Camera>();
 
-		clp = cameraL.projectionMatrix;
-		crp = cameraR.projectionMatrix;
-
-		clv = cameraL.worldToCameraMatrix;
-		crv = cameraR.worldToCameraMatrix;
-
-		changeMode("normal");
-
-		#if !UNITY_EDITOR && UNITY_WEBGL
-		FinishLoading();
-		ConfigureToggleVRKeyName(toggleVRKeyName);
-		#endif
+		cameraMain.transform.Translate(new Vector3(0, DefaultHeight, 0));
 	}
 
 	void Update()
 	{
-		#if UNITY_EDITOR || !UNITY_WEBGL
-		bool quickToggleEnabled = toggleVRKeyName != null && toggleVRKeyName != "";
-		if (quickToggleEnabled) {
-			if (Input.GetKeyUp(toggleVRKeyName)) {
-				toggleMode();
-			}
+		if (vrActive)
+		{
+			cameraMain.enabled = false;
+			cameraL.enabled = true;
+			cameraR.enabled = true;
 		}
-		#endif
-
-		deltaTime += (Time.deltaTime - deltaTime) * 0.1f;
-		if (active) {
-			SetTransformFromViewMatrix (cameraL.transform, clv * sitStand.inverse);
-			cameraL.projectionMatrix = clp;
-			SetTransformFromViewMatrix (cameraR.transform, crv * sitStand.inverse);
-			cameraR.projectionMatrix = crp;
-			SetHeadTransform ();
+		else
+		{
+			cameraMain.enabled = true;
+			cameraL.enabled = false;
+			cameraR.enabled = false;
 		}
-
-		#if UNITY_EDITOR
-		if (leftHandObject) {
-			leftHandObject.transform.localRotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.LeftHand);
-			leftHandObject.transform.position = transform.position + UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.LeftHand);
-		}
-		if (rightHandObject) {
-			rightHandObject.transform.localRotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.RightHand);
-			rightHandObject.transform.position = transform.position + UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.RightHand);
-		}
-		#endif
 
 		#if !UNITY_EDITOR && UNITY_WEBGL
-		if (leftHandObject) {
-			leftHandObject.transform.rotation = lhr;
-			leftHandObject.transform.position = lhp + transform.position;
-		}
-		if (rightHandObject) {
-			rightHandObject.transform.rotation = rhr;
-			rightHandObject.transform.position = rhp + transform.position;
-		}
-
 		StartCoroutine(endOfFrame());
 		#endif
 	}
 
+	private void onVrChange()
+	{
+		vrActive = webVRManager.vrState == VrState.ENABLED;
+	}
+
+	private void onHeadsetUpdate (
+		Matrix4x4 leftProjectionMatrix,
+		Matrix4x4 leftViewMatrix,
+		Matrix4x4 rightProjectionMatrix,
+		Matrix4x4 rightViewMatrix,
+		Matrix4x4 sitStandMatrix)
+	{
+		if (vrActive)
+		{
+			SetTransformFromViewMatrix (cameraL.transform, leftViewMatrix * sitStandMatrix.inverse);
+			cameraL.projectionMatrix = leftProjectionMatrix;
+			SetTransformFromViewMatrix (cameraR.transform, rightViewMatrix * sitStandMatrix.inverse);
+			cameraR.projectionMatrix = rightProjectionMatrix;
+			SetHeadTransform ();
+		}
+	}
+
 	// According to https://answers.unity.com/questions/402280/how-to-decompose-a-trs-matrix.html
-	private void SetTransformFromViewMatrix(Transform transform, Matrix4x4 webVRViewMatrix) {
+	private void SetTransformFromViewMatrix(Transform transform, Matrix4x4 webVRViewMatrix)
+	{
 		Matrix4x4 trs = TransformViewMatrixToTRS(webVRViewMatrix);
 		transform.localPosition = trs.GetColumn(3);
 		transform.localRotation = Quaternion.LookRotation(trs.GetColumn(2), trs.GetColumn(1));
@@ -270,7 +96,8 @@ public class WebVRCamera : MonoBehaviour
     }
 
 	// According to https://forum.unity.com/threads/reproducing-cameras-worldtocameramatrix.365645/#post-2367177
-	private Matrix4x4 TransformViewMatrixToTRS(Matrix4x4 openGLViewMatrix) {
+	private Matrix4x4 TransformViewMatrixToTRS(Matrix4x4 openGLViewMatrix)
+	{
 		openGLViewMatrix.m20 *= -1;
 		openGLViewMatrix.m21 *= -1;
 		openGLViewMatrix.m22 *= -1;
@@ -278,52 +105,13 @@ public class WebVRCamera : MonoBehaviour
 		return openGLViewMatrix.inverse;
 	}
 
-	private void SetHeadTransform() {
+	private void SetHeadTransform()
+	{
 		Transform leftTransform = cameraL.transform;
 		Transform rightTransform = cameraR.transform;
 		cameraMain.transform.localPosition =
 			(rightTransform.localPosition - leftTransform.localPosition) / 2f + leftTransform.localPosition;
 		cameraMain.transform.localRotation = leftTransform.localRotation;
 		cameraMain.transform.localScale = leftTransform.localScale;
-	}
-	void OnGUI()
-	{
-		if (!showPerf)
-			return;
-
-		int w = Screen.width, h = Screen.height;
-
-		GUIStyle style = new GUIStyle();
-
-		Rect rect = new Rect(w / 4, h / 2, w, h * 2 / 100);
-		style.alignment = TextAnchor.UpperLeft;
-		style.fontSize = h * 2 / 100;
-		style.normal.textColor = new Color (0.0f, 1.0f, 1.0f, 1.0f);
-		float msec = deltaTime * 1000.0f;
-		float fps = 1.0f / deltaTime;
-		string text = string.Format("{0:0.0} ms ({1:0.} fps)", msec, fps);
-		GUI.Label(rect, text, style);
-	}
-
-	// Utility functions
-	private Matrix4x4 numbersToMatrix(float[] array) {
-		var mat = new Matrix4x4 ();
-		mat.m00 = array[0];
-		mat.m01 = array[1];
-		mat.m02 = array[2];
-		mat.m03 = array[3];
-		mat.m10 = array[4];
-		mat.m11 = array[5];
-		mat.m12 = array[6];
-		mat.m13 = array[7];
-		mat.m20 = array[8];
-		mat.m21 = array[9];
-		mat.m22 = array[10];
-		mat.m23 = array[11];
-		mat.m30 = array[12];
-		mat.m31 = array[13];
-		mat.m32 = array[14];
-		mat.m33 = array[15];
-		return mat;
 	}
 }
