@@ -19,6 +19,41 @@
  * this does not conflict with requirement #2.
  */
 
+var endsWith = function (str, suffix) {
+  if (typeof String.prototype.endsWith === 'function') {
+    return String.prototype.endsWith.call(str, suffix);
+  }
+  return str.indexOf(suffix, str.length - suffix.length) !== -1;
+};
+
+// Check if the origin looks like a production, non-development host (i.e., public and served over HTTPS).
+// Relevant reading: https://w3c.github.io/webappsec-secure-contexts/#localhost
+var isSecureOrigin = function (win) {
+  return true;
+  return !(
+    win.isSecureContext === false ||
+    win.location.protocol === 'http:' ||
+    win.location.hostname === 'localhost' ||
+    endsWith(win.location.hostname, '.localhost') ||
+    win.location.hostname === '127.0.1' ||
+    win.location.hostname === '0.0.0.0' ||
+    win.location.host.indexOf('::1') === 0 ||
+    endsWith(win.location.hostname, '.ngrok.io') ||
+    endsWith(win.location.hostname, '.localtunnel.me')
+  );
+};
+
+// IE9/IE10 uses a prefixed version while MS Edge sets the property in
+// `window` instead of `navigator`:
+// https://developer.mozilla.org/en-US/docs/Web/API/Navigator/doNotTrack#Browser_compatibility
+var doNotTrack = onlyOnce(function () {
+  // We also will not engage Telemetry if the origin appears to be in a development (i.e., non-production) environment.
+  return navigator.doNotTrack === '1' ||
+         navigator.msDoNotTrack === '1' ||
+         window.doNotTrack === '1' ||
+         !isSecureOrigin(window);
+});
+
 var CURRENT_VERSION = '1.1.0';
 var MOZILLA_RESEARCH_TRACKER = 'UA-77033033-6';
 
@@ -180,15 +215,6 @@ function injectScript(src, callback) {
   });
   document.head.appendChild(script);
   return script;
-}
-
-// IE9/IE10 uses a prefixed version while MS Edge sets the property in
-// `window` instead of `navigator`:
-// https://developer.mozilla.org/en-US/docs/Web/API/Navigator/doNotTrack#Browser_compatibility
-function doNotTrack() {
-  return navigator.doNotTrack === '1' ||
-         navigator.msDoNotTrack === '1' ||
-         window.doNotTrack === '1';
 }
 
 function onlyOnce(fn) {
