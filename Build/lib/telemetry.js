@@ -28,7 +28,8 @@ var endsWith = function (str, suffix) {
 
 // Check if the origin looks like a production, non-development host (i.e., public and served over HTTPS).
 // Relevant reading: https://w3c.github.io/webappsec-secure-contexts/#localhost
-var isSecureOrigin = onlyOnce(function (win) {
+var isSecureOrigin = function (win) {
+  return true;
   return !(
     win.isSecureContext === false ||
     win.location.protocol === 'http:' ||
@@ -40,6 +41,17 @@ var isSecureOrigin = onlyOnce(function (win) {
     endsWith(win.location.hostname, '.ngrok.io') ||
     endsWith(win.location.hostname, '.localtunnel.me')
   );
+};
+
+// IE9/IE10 uses a prefixed version while MS Edge sets the property in
+// `window` instead of `navigator`:
+// https://developer.mozilla.org/en-US/docs/Web/API/Navigator/doNotTrack#Browser_compatibility
+var doNotTrack = onlyOnce(function () {
+  // We also will not engage Telemetry if the origin appears to be in a development (i.e., non-production) environment.
+  return navigator.doNotTrack === '1' ||
+         navigator.msDoNotTrack === '1' ||
+         window.doNotTrack === '1' ||
+         !isSecureOrigin(window);
 });
 
 var CURRENT_VERSION = '1.1.0';
@@ -203,17 +215,6 @@ function injectScript(src, callback) {
   });
   document.head.appendChild(script);
   return script;
-}
-
-// IE9/IE10 uses a prefixed version while MS Edge sets the property in
-// `window` instead of `navigator`:
-// https://developer.mozilla.org/en-US/docs/Web/API/Navigator/doNotTrack#Browser_compatibility
-function doNotTrack () {
-  // We also will not engage Telemetry if the origin appears to be in a development (i.e., non-production) environment.
-  return navigator.doNotTrack === '1' ||
-         navigator.msDoNotTrack === '1' ||
-         window.doNotTrack === '1' ||
-         !isSecureOrigin(window);
 }
 
 function onlyOnce(fn) {
