@@ -401,7 +401,7 @@ AudioListener:
     type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 145918386}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!114 &145918389
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1400,7 +1400,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 632808995}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a839fdb1e05e48da89111721b06a18a, type: 3}
+  m_Script: {fileID: 11500000, guid: 85dbaedc3f3594c0692ced296ba1e313, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   hand: 2
@@ -2712,7 +2712,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1452812147}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a839fdb1e05e48da89111721b06a18a, type: 3}
+  m_Script: {fileID: 11500000, guid: 85dbaedc3f3594c0692ced296ba1e313, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   hand: 1

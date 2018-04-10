@@ -26,7 +26,7 @@ public class WebVRManager : MonoBehaviour
 		Matrix4x4 rightViewMatrix,
 		Matrix4x4 sitStandMatrix);
 	public static event HeadsetUpdate OnHeadsetUpdate;
-	public delegate void ControllerUpdate(int index, string hand, Vector3 position, Quaternion rotation, Matrix4x4 sitStand);
+	public delegate void ControllerUpdate(int index, string hand, Vector3 position, Quaternion rotation, Matrix4x4 sitStand, WVRControllerButton[] buttons);
 	public static event ControllerUpdate OnControllerUpdate;
 
 	public static WebVRManager Instance {
@@ -59,18 +59,13 @@ public class WebVRManager : MonoBehaviour
 
 		if (wvrData.controllers.Length > 0)
 		{
-			foreach (WVRController controller in wvrData.controllers)
+			foreach (WVRControllerData controllerData in wvrData.controllers)
 			{
-				Vector3 position = new Vector3 (controller.position [0], controller.position [1], controller.position [2]);
-				Quaternion rotation = new Quaternion (controller.orientation [0], controller.orientation [1], controller.orientation [2], controller.orientation [3]);
+				Vector3 position = new Vector3 (controllerData.position [0], controllerData.position [1], controllerData.position [2]);
+				Quaternion rotation = new Quaternion (controllerData.orientation [0], controllerData.orientation [1], controllerData.orientation [2], controllerData.orientation [3]);
 
 				if (OnControllerUpdate != null)
-					OnControllerUpdate(controller.index, controller.hand, position, rotation, sitStand);
-				
-				// track of active controllers
-				// if (!activeControllers.Contains(controller.index)) {
-				// 	activeControllers.Add(controller.index);
-				// }
+					OnControllerUpdate(controllerData.index, controllerData.hand, position, rotation, sitStand, controllerData.buttons);
 			}
 		}
 	}
@@ -148,21 +143,10 @@ public class WebVRManager : MonoBehaviour
 	// show framerate UI
 	private bool showPerf = false;
 
-	// Handles WebVR data passed from browser
-	//private List<int> activeControllers = new List<int>();
 	private WVRData wvrData;
 	private Matrix4x4 sitStand = Matrix4x4.identity;
 	
 	// Data classes for WebVR data
-	[System.Serializable]
-	private class WVRController
-	{
-		public int index = 0;
-		public string hand = null;
-		public float[] orientation = null;
-		public float[] position = null;
-	}
-
 	[System.Serializable]
 	private class WVRData
 	{
@@ -171,11 +155,21 @@ public class WebVRManager : MonoBehaviour
 		public float[] leftViewMatrix = null;	
 		public float[] rightViewMatrix = null;
 		public float[] sitStand = null;
-		public WVRController[] controllers = new WVRController[0];
+		public WVRControllerData[] controllers = new WVRControllerData[0];
 		public static WVRData CreateFromJSON(string jsonString)
 		{
 			return JsonUtility.FromJson<WVRData> (jsonString);
 		}
+	}
+
+	[System.Serializable]
+	private class WVRControllerData
+	{
+		public int index = 0;
+		public string hand = null;
+		public float[] orientation = null;
+		public float[] position = null;
+		public WVRControllerButton[] buttons = new WVRControllerButton[0];
 	}
 
 	void Awake()

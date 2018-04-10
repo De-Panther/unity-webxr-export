@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections;
 using System.Runtime.InteropServices;
 
-public class WebVRController : MonoBehaviour
+public class WVRControllerInteraction : MonoBehaviour
 {
 	[Tooltip("Map GameObject to controller hand name.")]
 	public Hand hand = Hand.NONE;
@@ -17,7 +17,7 @@ public class WebVRController : MonoBehaviour
 
 	void Update()
 	{
-		Controller controller = controllerManager.GetController(gameObject, hand);
+		WVRController controller = controllerManager.GetController(gameObject, hand);
 
 		if (controller != null)
 		{
@@ -28,6 +28,30 @@ public class WebVRController : MonoBehaviour
 			);
 			gameObject.transform.rotation = sitStandRotation * controller.rotation;
 			gameObject.transform.position = sitStand.MultiplyPoint(controller.position);
+
+			if (controller.GetButton(InputAction.Trigger)) {
+				Debug.Log(hand + " trigger");
+			}
+
+			if (controller.GetButtonDown(InputAction.Trigger)) {
+				Debug.Log(hand + " trigger down");
+			}
+
+			if (controller.GetButtonUp(InputAction.Trigger)) {
+				Debug.Log(hand + " trigger up");
+			}
+
+			if (controller.GetButton(InputAction.Grip)) {
+				Debug.Log(hand + " Grip");
+			}
+
+			if (controller.GetButtonDown(InputAction.Grip)) {
+				Debug.Log(hand + " Grip down");
+			}
+
+			if (controller.GetButtonUp(InputAction.Grip)) {
+				Debug.Log(hand + " Grip up");
+			}
 		}
 	}
 }
