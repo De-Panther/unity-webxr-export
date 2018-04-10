@@ -27,6 +27,7 @@ public class WVRControllerInteraction : MonoBehaviour
 
         if (controller != null)
         {
+            // Apply controller orientation and position.
             Matrix4x4 sitStand = controller.sitStand;
             Quaternion sitStandRotation = Quaternion.LookRotation (
                 sitStand.GetColumn (2),
@@ -35,30 +36,17 @@ public class WVRControllerInteraction : MonoBehaviour
             transform.rotation = sitStandRotation * controller.rotation;
             transform.position = sitStand.MultiplyPoint(controller.position);
 
-            if (controller.GetButton(InputAction.Trigger)) {
-                // Debug.Log(hand + " trigger");
-            }
-
-            if (controller.GetButtonDown(InputAction.Trigger)) {
-                // Debug.Log(hand + " trigger down");
+            // Button interactions
+            if (controller.GetButtonDown(InputAction.Trigger) ||
+                controller.GetButtonDown(InputAction.Grip))
+            {
                 Pickup();
             }
 
-            if (controller.GetButtonUp(InputAction.Trigger)) {
-                // Debug.Log(hand + " trigger up");
+            if (controller.GetButtonUp(InputAction.Trigger) ||
+                controller.GetButtonUp(InputAction.Grip))
+            {
                 Drop();
-            }
-
-            if (controller.GetButton(InputAction.Grip)) {
-                // Debug.Log(hand + " Grip");
-            }
-
-            if (controller.GetButtonDown(InputAction.Grip)) {
-                // Debug.Log(hand + " Grip down");
-            }
-
-            if (controller.GetButtonUp(InputAction.Grip)) {
-                // Debug.Log(hand + " Grip up");
             }
         }
     }
