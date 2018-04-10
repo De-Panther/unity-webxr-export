@@ -4,24 +4,32 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-public class WVRController
+[System.Serializable]
+public class WebVRControllerButton
+{
+    public bool pressed;
+    public bool touched;
+    public float value;
+}
+
+public class WebVRController
 {
     public int index;
     public Enum hand;
     public Vector3 position;
     public Quaternion rotation;
     public Matrix4x4 sitStand;
-    public WVRControllerButton[] buttons = null;
+    public WebVRControllerButton[] buttons = null;
     public GameObject gameObject;
 
-    private Dictionary<InputAction, bool[]> buttonStates = new Dictionary<InputAction, bool[]>();
+    private Dictionary<WebVRInputAction, bool[]> buttonStates = new Dictionary<WebVRInputAction, bool[]>();
     
-    public void UpdateButtons(WVRControllerButton[] buttons)
+    public void UpdateButtons(WebVRControllerButton[] buttons)
     {
         for (int i = 0; i < buttons.Length; i++)
         {
-            WVRControllerButton button = buttons[i];
-            foreach(InputAction action in Enum.GetValues(typeof(InputAction)))
+            WebVRControllerButton button = buttons[i];
+            foreach(WebVRInputAction action in Enum.GetValues(typeof(WebVRInputAction)))
             {
                 if (i == (int)action) {
                     if (buttonStates.ContainsKey(action))
@@ -33,14 +41,14 @@ public class WVRController
         }
     }
 
-    public bool GetButton(InputAction action)
+    public bool GetButton(WebVRInputAction action)
     {
         if (!buttonStates.ContainsKey(action))
             return false;
         return buttonStates[action][0];
     }
 
-    public bool GetButtonDown(InputAction action)
+    public bool GetButtonDown(WebVRInputAction action)
     {
         if (!buttonStates.ContainsKey(action))
             return false;
@@ -57,7 +65,7 @@ public class WVRController
         return isDown;
     }
 
-    public bool GetButtonUp(InputAction action)
+    public bool GetButtonUp(WebVRInputAction action)
     {
         if (!buttonStates.ContainsKey(action))
             return false;
@@ -73,7 +81,7 @@ public class WVRController
         return isUp;
     }
 
-    public WVRController(int index, Enum hand, Vector3 position, Quaternion rotation, Matrix4x4 sitStand)
+    public WebVRController(int index, Enum hand, Vector3 position, Quaternion rotation, Matrix4x4 sitStand)
     {
         this.index = index;
         this.hand = hand;

@@ -4,9 +4,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-public enum Hand { NONE, LEFT, RIGHT };
+public enum WebVRControllerHand { NONE, LEFT, RIGHT };
 
-public enum InputAction
+public enum WebVRInputAction
 {
 	Trigger = 1,
 	Grip = 2
@@ -16,7 +16,7 @@ public class WebVRControllerManager : MonoBehaviour
 {
 	public static WebVRControllerManager instance;
 
-	public List<WVRController> controllers = new List<WVRController>();
+	public List<WebVRController> controllers = new List<WebVRController>();
 
 	public static WebVRControllerManager Instance
 	{
@@ -45,7 +45,7 @@ public class WebVRControllerManager : MonoBehaviour
 	{
 		#if UNITY_EDITOR
 		// update controllers using Unity XR support when in editor.
-		WVRControllerButton[] buttons =  new WVRControllerButton[0];
+		WebVRControllerButton[] buttons =  new WebVRControllerButton[0];
 		onControllerUpdate(
 			0,
 			"left",
@@ -63,18 +63,18 @@ public class WebVRControllerManager : MonoBehaviour
 	}
 
 	// registers GameObject to controller returning controller.
-	public WVRController GetController(GameObject gameObject, Enum h)
+	public WebVRController GetController(GameObject gameObject, Enum h)
 	{
-		WVRController controller = controllers.Where(x => x.gameObject == gameObject).FirstOrDefault();
+		WebVRController controller = controllers.Where(x => x.gameObject == gameObject).FirstOrDefault();
 
 		if (controller != null)
 			return controller;
 
-		WVRController unbound;
-		if ((Hand)h == Hand.NONE)
+		WebVRController unbound;
+		if ((WebVRControllerHand)h == WebVRControllerHand.NONE)
 			unbound = controllers.Where(x => x.gameObject == null).FirstOrDefault();
 		else
-			unbound = controllers.Where(x => (Hand)x.hand == (Hand)h).FirstOrDefault();
+			unbound = controllers.Where(x => (WebVRControllerHand)x.hand == (WebVRControllerHand)h).FirstOrDefault();
 
 		if (unbound != null) {
 			unbound.gameObject = gameObject;
@@ -85,17 +85,22 @@ public class WebVRControllerManager : MonoBehaviour
 	}
 
 	private void onControllerUpdate(
-		int index, string hand, Vector3 position, Quaternion rotation, Matrix4x4 sitStand, WVRControllerButton[] b)
+		int index, string h, Vector3 position, Quaternion rotation, Matrix4x4 sitStand, WebVRControllerButton[] b)
 	{
 		// add or update controller values.
-		WVRController controller = controllers.Where(x => x.index == index).FirstOrDefault();
+		WebVRController controller = controllers.Where(x => x.index == index).FirstOrDefault();
 
 		if (controller == null)
 		{
 			// convert string to enum
-			Enum h = String.IsNullOrEmpty(hand) ? Hand.NONE : (Hand) Enum.Parse(typeof(Hand), hand.ToUpper(), true);
-			Debug.Log("Adding controller, Index:" + index + " Hand: " + h);
-			controller = new WVRController(index, h, position, rotation, sitStand);
+			Enum hand;
+			if (String.IsNullOrEmpty(h))
+				hand = WebVRControllerHand.NONE;
+			else
+				hand = (WebVRControllerHand) Enum.Parse(typeof(WebVRControllerHand), h.ToUpper(), true);
+
+			Debug.Log("Adding controller, Index: " + index + " Hand: " + hand);
+			controller = new WebVRController(index, hand, position, rotation, sitStand);
 			controllers.Add(controller);
 		}
 		else

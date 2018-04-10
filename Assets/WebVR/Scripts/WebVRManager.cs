@@ -5,20 +5,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 
-public enum VrState { ENABLED, NORMAL }
+public enum WebVRState { ENABLED, NORMAL }
 
-public class WebVRManager : MonoBehaviour 
+public class WebVRManager : MonoBehaviour
 {
     [Tooltip("Name of the key used to alternate between VR and normal mode. Leave blank to disable.")]
     public string toggleVRKeyName;
 
     [HideInInspector]
-    public VrState vrState;
+    public WebVRState vrState;
     public static WebVRManager instance;
-    public delegate void CapabilitiesUpdate(VRDisplayCapabilities capabilities);
-    public static event CapabilitiesUpdate OnCapabilitiesUpdate;
-    public delegate void VrChange();
-    public static event VrChange OnVrChange;
+    public delegate void VRCapabilitiesUpdate(WebVRDisplayCapabilities capabilities);
+    public static event VRCapabilitiesUpdate OnVRCapabilitiesUpdate;
+    public delegate void VRChange();
+    public static event VRChange OnVRChange;
     public delegate void HeadsetUpdate(
         Matrix4x4 leftProjectionMatrix,
         Matrix4x4 leftViewMatrix,
@@ -26,7 +26,7 @@ public class WebVRManager : MonoBehaviour
         Matrix4x4 rightViewMatrix,
         Matrix4x4 sitStandMatrix);
     public static event HeadsetUpdate OnHeadsetUpdate;
-    public delegate void ControllerUpdate(int index, string hand, Vector3 position, Quaternion rotation, Matrix4x4 sitStand, WVRControllerButton[] buttons);
+    public delegate void ControllerUpdate(int index, string hand, Vector3 position, Quaternion rotation, Matrix4x4 sitStand, WebVRControllerButton[] buttons);
     public static event ControllerUpdate OnControllerUpdate;
 
     public static WebVRManager Instance {
@@ -42,24 +42,24 @@ public class WebVRManager : MonoBehaviour
     }
 
     // Handles WebVR data from browser
-    public void WebVRData (string jsonString)
+    public void OnWebVRData (string jsonString)
     {
-        wvrData = WVRData.CreateFromJSON (jsonString);
+        WebVRData webVRData = WebVRData.CreateFromJSON (jsonString);
 
-        if (wvrData.sitStand.Length > 0)
-            sitStand = numbersToMatrix (wvrData.sitStand);
+        if (webVRData.sitStand.Length > 0)
+            sitStand = numbersToMatrix (webVRData.sitStand);
 
         if (OnHeadsetUpdate != null)
             OnHeadsetUpdate(
-                numbersToMatrix (wvrData.leftProjectionMatrix),
-                numbersToMatrix (wvrData.leftViewMatrix),
-                numbersToMatrix (wvrData.rightProjectionMatrix),
-                numbersToMatrix (wvrData.rightViewMatrix),
+                numbersToMatrix (webVRData.leftProjectionMatrix),
+                numbersToMatrix (webVRData.leftViewMatrix),
+                numbersToMatrix (webVRData.rightProjectionMatrix),
+                numbersToMatrix (webVRData.rightViewMatrix),
                 sitStand);
 
-        if (wvrData.controllers.Length > 0)
+        if (webVRData.controllers.Length > 0)
         {
-            foreach (WVRControllerData controllerData in wvrData.controllers)
+            foreach (WebVRControllerData controllerData in webVRData.controllers)
             {
                 Vector3 position = new Vector3 (controllerData.position [0], controllerData.position [1], controllerData.position [2]);
                 Quaternion rotation = new Quaternion (controllerData.orientation [0], controllerData.orientation [1], controllerData.orientation [2], controllerData.orientation [3]);
@@ -72,49 +72,49 @@ public class WebVRManager : MonoBehaviour
 
     // Handles WebVR capabilities from browser
     public void OnVRCapabilities(string json) {
-        OnVRCapabilities(JsonUtility.FromJson<VRDisplayCapabilities>(json));
+        OnVRCapabilities(JsonUtility.FromJson<WebVRDisplayCapabilities>(json));
     }
 
-    public void OnVRCapabilities(VRDisplayCapabilities capabilities) {
+    public void OnVRCapabilities(WebVRDisplayCapabilities capabilities) {
         #if !UNITY_EDITOR && UNITY_WEBGL
         if (!capabilities.hasOrientation) {
-            WebUI.ShowPanel("novr");
+            WebVRUI.ShowPanel("novr");
         }
         #endif
 
-        if (OnCapabilitiesUpdate != null)
+        if (OnVRCapabilitiesUpdate != null)
         {
-            OnCapabilitiesUpdate(capabilities);
+            OnVRCapabilitiesUpdate(capabilities);
         }
     }
 
     public void toggleVrState()
     {
         #if UNITY_EDITOR || !UNITY_WEBGL
-        if (this.vrState == VrState.ENABLED)
-            setVrState(VrState.NORMAL);
+        if (this.vrState == WebVRState.ENABLED)
+            setVrState(WebVRState.NORMAL);
         else
-            setVrState(VrState.ENABLED);
+            setVrState(WebVRState.ENABLED);
         #endif
     }
 
-    public void setVrState(VrState state)
+    public void setVrState(WebVRState state)
     {
         this.vrState = state;
-        if (OnVrChange != null)
-            OnVrChange();
+        if (OnVRChange != null)
+            OnVRChange();
     }
 
     // received start VR from WebVR browser
     public void OnStartVR()
     {
-        setVrState(VrState.ENABLED);
+        setVrState(WebVRState.ENABLED);
     }
 
     // receive end VR from WebVR browser
     public void OnEndVR()
     {
-        setVrState(VrState.NORMAL);
+        setVrState(WebVRState.NORMAL);
     }
 
     // Latency test from browser
@@ -143,39 +143,39 @@ public class WebVRManager : MonoBehaviour
     // show framerate UI
     private bool showPerf = false;
 
-    private WVRData wvrData;
+    private WebVRData webVRData;
     private Matrix4x4 sitStand = Matrix4x4.identity;
-    
+
     // Data classes for WebVR data
     [System.Serializable]
-    private class WVRData
+    private class WebVRData
     {
         public float[] leftProjectionMatrix = null;
         public float[] rightProjectionMatrix = null;
-        public float[] leftViewMatrix = null;	
+        public float[] leftViewMatrix = null;
         public float[] rightViewMatrix = null;
         public float[] sitStand = null;
-        public WVRControllerData[] controllers = new WVRControllerData[0];
-        public static WVRData CreateFromJSON(string jsonString)
+        public WebVRControllerData[] controllers = new WebVRControllerData[0];
+        public static WebVRData CreateFromJSON(string jsonString)
         {
-            return JsonUtility.FromJson<WVRData> (jsonString);
+            return JsonUtility.FromJson<WebVRData> (jsonString);
         }
     }
 
     [System.Serializable]
-    private class WVRControllerData
+    private class WebVRControllerData
     {
         public int index = 0;
         public string hand = null;
         public float[] orientation = null;
         public float[] position = null;
-        public WVRControllerButton[] buttons = new WVRControllerButton[0];
+        public WebVRControllerButton[] buttons = new WebVRControllerButton[0];
     }
 
     void Awake()
     {
         instance = this;
-        setVrState(VrState.NORMAL);
+        setVrState(WebVRState.NORMAL);
     }
 
     void Start()
@@ -200,7 +200,7 @@ public class WebVRManager : MonoBehaviour
     {
         if (!showPerf)
             return;
-        
+
         int w = Screen.width, h = Screen.height;
 
         GUIStyle style = new GUIStyle();

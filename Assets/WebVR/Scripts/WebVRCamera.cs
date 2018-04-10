@@ -30,7 +30,7 @@ public class WebVRCamera : MonoBehaviour
 
 	void Start()
 	{
-		WebVRManager.OnVrChange += onVrChange;
+		WebVRManager.OnVRChange += onVRChange;
 		WebVRManager.OnHeadsetUpdate += onHeadsetUpdate;
 
 		cameraMain = GameObject.Find("CameraMain").GetComponent<Camera>();
@@ -60,9 +60,9 @@ public class WebVRCamera : MonoBehaviour
 		#endif
 	}
 
-	private void onVrChange()
+	private void onVRChange()
 	{
-		vrActive = webVRManager.vrState == VrState.ENABLED;
+		vrActive = webVRManager.vrState == WebVRState.ENABLED;
 	}
 
 	private void onHeadsetUpdate (

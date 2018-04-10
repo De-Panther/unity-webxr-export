@@ -217,7 +217,7 @@
           controllers: vrGamepads
         };
 
-        gameInstance.SendMessage('WebVRCameraSet', 'WebVRData', JSON.stringify(vrData));
+        gameInstance.SendMessage('WebVRCameraSet', 'OnWebVRData', JSON.stringify(vrData));
       }
 
       if (!vrDisplay.isPresenting || isPolyfilled(vrDisplay)) {

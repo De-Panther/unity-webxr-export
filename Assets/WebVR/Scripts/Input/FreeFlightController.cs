@@ -42,7 +42,7 @@ public class FreeFlightController : MonoBehaviour {
 	public List<KeyCode> moveDownwardKeys = new List<KeyCode> { KeyCode.F };
 
 	private WebVRManager webVRManager;
-	private VRDisplayCapabilities capabilities;
+	private WebVRDisplayCapabilities capabilities;
 
 	bool inDesktopLike {
 		get {
@@ -61,13 +61,13 @@ public class FreeFlightController : MonoBehaviour {
 
 	void Start()
 	{
-		WebVRManager.OnVrChange += onVrChange;
-		WebVRManager.OnCapabilitiesUpdate += onCapabilitiesUpdate;
+		WebVRManager.OnVRChange += onVRChange;
+		WebVRManager.OnVRCapabilitiesUpdate += onVRCapabilitiesUpdate;
 	}
 
-	private void onVrChange()
+	private void onVRChange()
 	{
-		if (webVRManager.vrState == VrState.ENABLED)
+		if (webVRManager.vrState == WebVRState.ENABLED)
 		{
 			DisableEverything();
 		}
@@ -77,7 +77,7 @@ public class FreeFlightController : MonoBehaviour {
 		}
 	}
 
-	private void onCapabilitiesUpdate(VRDisplayCapabilities vrCapabilities)
+	private void onVRCapabilitiesUpdate(WebVRDisplayCapabilities vrCapabilities)
 	{
 		capabilities = vrCapabilities;
 		EnableAccordingToPlatform();
