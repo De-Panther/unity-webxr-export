@@ -78,7 +78,6 @@ public class WebVRCamera : MonoBehaviour
 			cameraL.projectionMatrix = leftProjectionMatrix;
 			SetTransformFromViewMatrix (cameraR.transform, rightViewMatrix * sitStandMatrix.inverse);
 			cameraR.projectionMatrix = rightProjectionMatrix;
-			SetHeadTransform ();
 		}
 	}
 
@@ -103,15 +102,5 @@ public class WebVRCamera : MonoBehaviour
 		openGLViewMatrix.m22 *= -1;
 		openGLViewMatrix.m23 *= -1;
 		return openGLViewMatrix.inverse;
-	}
-
-	private void SetHeadTransform()
-	{
-		Transform leftTransform = cameraL.transform;
-		Transform rightTransform = cameraR.transform;
-		cameraMain.transform.localPosition =
-			(rightTransform.localPosition - leftTransform.localPosition) / 2f + leftTransform.localPosition;
-		cameraMain.transform.localRotation = leftTransform.localRotation;
-		cameraMain.transform.localScale = leftTransform.localScale;
 	}
 }
