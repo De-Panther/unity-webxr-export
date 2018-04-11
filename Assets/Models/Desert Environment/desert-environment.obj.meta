@@ -1,46 +1,29 @@
 fileFormatVersion: 2
-guid: 5da98086bc11e400e91acd5e30a1a50a
-timeCreated: 1523331960
+guid: 55a05d7345e094dee9a176728bb6070f
+timeCreated: 1523331959
 licenseType: Free
 ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
-    100000: //RootNode
-    100002: Plane
-    100004: Plane_001
-    100006: Plane_002
-    100008: Plane_003
-    100010: Plane_004
-    400000: //RootNode
-    400002: Plane
-    400004: Plane_001
-    400006: Plane_002
-    400008: Plane_003
-    400010: Plane_004
-    2100000: unnamed
-    2300000: Plane
-    2300002: Plane_001
-    2300004: Plane_002
-    2300006: Plane_003
-    2300008: Plane_004
-    3300000: Plane
-    3300002: Plane_001
-    3300004: Plane_002
-    3300006: Plane_003
-    3300008: Plane_004
-    4300000: Plane_004
-    4300002: Plane_003
-    4300004: Plane_002
-    4300006: Plane_001
-    4300008: Plane
-    7400000: Default Take
-    9500000: //RootNode
-  externalObjects: {}
+    100000: default
+    100002: //RootNode
+    400000: default
+    400002: //RootNode
+    2100000: None
+    2300000: default
+    3300000: default
+    4300000: default
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: None
+    second: {fileID: 2100000, guid: 231390da8c2a04e77b303bb1f165de27, type: 2}
   materials:
-    importMaterials: 1
-    materialName: 0
-    materialSearch: 1
-    materialLocation: 1
+    importMaterials: 0
+    materialName: 2
+    materialSearch: 0
+    materialLocation: 0
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
@@ -73,7 +56,7 @@ ModelImporter:
     importCameras: 1
     importLights: 1
     swapUVChannels: 0
-    generateSecondaryUV: 0
+    generateSecondaryUV: 1
     useFileUnits: 1
     optimizeMeshForGPU: 1
     keepQuads: 0
@@ -109,7 +92,7 @@ ModelImporter:
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  animationType: 2
+  animationType: 0
   humanoidOversampling: 1
   additionalBone: 0
   userData: 
