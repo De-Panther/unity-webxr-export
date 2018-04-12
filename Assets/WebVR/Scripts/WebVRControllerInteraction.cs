@@ -21,7 +21,7 @@ public class WebVRControllerInteraction : MonoBehaviour
         attachJoint = GetComponent<FixedJoint> ();
     }
 
-    void Update()
+    void FixedUpdate()
     {
         WebVRController controller = controllerManager.GetController(gameObject, hand);
 
@@ -73,7 +73,7 @@ public class WebVRControllerInteraction : MonoBehaviour
         if (!currentRigidBody)
             return;
 
-        currentRigidBody.transform.position = transform.position;
+        currentRigidBody.MovePosition(transform.position);
         attachJoint.connectedBody = currentRigidBody;
     }
 
