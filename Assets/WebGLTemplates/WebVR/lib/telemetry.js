@@ -28,8 +28,8 @@ var endsWith = function (str, suffix) {
 
 // Check if the origin looks like a production, non-development host (i.e., public and served over HTTPS).
 // Relevant reading: https://w3c.github.io/webappsec-secure-contexts/#localhost
-var isSecureOrigin = function (win) {
-  return !(
+var isInsecureOrigin = function (win) {
+  return (
     win.isSecureContext === false ||
     win.location.protocol === 'http:' ||
     win.location.hostname === 'localhost' ||
@@ -41,17 +41,6 @@ var isSecureOrigin = function (win) {
     endsWith(win.location.hostname, '.localtunnel.me')
   );
 };
-
-// IE9/IE10 uses a prefixed version while MS Edge sets the property in
-// `window` instead of `navigator`:
-// https://developer.mozilla.org/en-US/docs/Web/API/Navigator/doNotTrack#Browser_compatibility
-var doNotTrack = onlyOnce(function () {
-  // We also will not engage Telemetry if the origin appears to be in a development (i.e., non-production) environment.
-  return navigator.doNotTrack === '1' ||
-         navigator.msDoNotTrack === '1' ||
-         window.doNotTrack === '1' ||
-         !isSecureOrigin(window);
-});
 
 var CURRENT_VERSION = '1.1.0';
 var MOZILLA_RESEARCH_TRACKER = 'UA-77033033-6';
@@ -96,7 +85,7 @@ telemetry.start = onlyOnce(function (config) {
 setupAnalytics();
 
 function setupAnalytics() {
-  if (doNotTrack()) { return; }
+  if (isTelemetryDisabled()) { return; }
 
   window.dataLayer = window.dataLayer || [];
   window.gtag = window.gtag || function () { dataLayer.push(arguments); };
@@ -111,7 +100,7 @@ function setupAnalytics() {
 }
 
 function setupErrorLogging() {
-  if (doNotTrack()) { return; }
+  if (isTelemetryDisabled()) { return; }
 
   injectScript('https://cdn.ravenjs.com/3.22.3/console/raven.min.js', function (err) {
     if (err) {
@@ -145,13 +134,13 @@ function startAnalytics() {
 function setupPerformanceAPI(tracker) {
   telemetry.performance = {
     mark: function (name) {
-      if (doNotTrack()) { return; }
+      if (isTelemetryDisabled()) { return; }
 
       performance.mark(name);
     },
 
     measure: function (name, start, end) {
-      if (doNotTrack()) { return; }
+      if (isTelemetryDisabled()) { return; }
 
       performance.measure(name, start, end);
       var performanceEntry = performance.getEntriesByName(name)[0];
@@ -180,7 +169,7 @@ function setupPerformanceAPI(tracker) {
  * commands [2].
  */
 function configureBoundTracker(trackingId, options) {
-  if (doNotTrack()) { return NO_OP; }
+  if (isTelemetryDisabled()) { return NO_OP; }
 
   options = options || {};
   var groups = options.groups;
@@ -188,7 +177,7 @@ function configureBoundTracker(trackingId, options) {
   return trackingFunction;
 
   function trackingFunction(command, label, options) {
-    if (doNotTrack()) { return; }
+    if (isTelemetryDisabled()) { return; }
 
     options = options || {};
     if (groups) {
@@ -224,6 +213,20 @@ function onlyOnce(fn) {
     called = true;
     return returnValue;
   };
+}
+
+// IE9/IE10 uses a prefixed version while MS Edge sets the property in
+// `window` instead of `navigator`:
+// https://developer.mozilla.org/en-US/docs/Web/API/Navigator/doNotTrack#Browser_compatibility
+function doNotTrack () {
+  return navigator.doNotTrack === '1' ||
+         navigator.msDoNotTrack === '1' ||
+         window.doNotTrack === '1';
+}
+
+function isTelemetryDisabled () {
+  // Telemetry is disabled if DNT is enabled or if the origin appears to be for a development environment.
+  return doNotTrack() || isInsecureOrigin(window);
 }
 
 })(window);
