@@ -188,9 +188,19 @@
               orientation[0] *= -1;
               orientation[1] *= -1;
 
+              var buttons = [];
+              for (var j = 0; j < gamepad.buttons.length; j++) {
+                buttons.push({
+                  pressed: gamepad.buttons[j].pressed,
+                  touched: gamepad.buttons[j].touched,
+                  value: gamepad.buttons[j].value
+                });
+              }
+
               vrGamepads.push({
                 index: gamepad.index,
                 hand: gamepad.hand,
+                buttons: buttons,
                 orientation: Array.from(orientation),
                 position: Array.from(position)
               });
@@ -207,7 +217,7 @@
           controllers: vrGamepads
         };
 
-        gameInstance.SendMessage('WebVRCameraSet', 'WebVRData', JSON.stringify(vrData));
+        gameInstance.SendMessage('WebVRCameraSet', 'OnWebVRData', JSON.stringify(vrData));
       }
 
       if (!vrDisplay.isPresenting || isPolyfilled(vrDisplay)) {

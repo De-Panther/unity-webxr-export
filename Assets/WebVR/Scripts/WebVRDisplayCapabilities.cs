@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 [System.Serializable]
-public class VRDisplayCapabilities
+public class WebVRDisplayCapabilities
 {
 	public bool canPresent;
 	public bool hasOrientation;
