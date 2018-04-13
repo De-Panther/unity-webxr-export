@@ -26,22 +26,28 @@ var endsWith = function (str, suffix) {
   return str.indexOf(suffix, str.length - suffix.length) !== -1;
 };
 
-// Check if the origin looks like a production, non-development host (i.e., public and served over HTTPS).
+// Check if the origin looks like a non-public development host.
 // Relevant reading: https://w3c.github.io/webappsec-secure-contexts/#localhost
-var isInsecureOrigin = function (win) {
-  // Allow HTTPS and HTTP.
-  if (win.isSecureContext === true || win.location.protocol === 'http:') {
+var isDevOrigin = function (win) {
+  if (win.location.hostname === 'localhost' ||
+      endsWith(win.location.hostname, '.localhost') ||
+      win.location.hostname === '127.0.1' ||
+      win.location.hostname.indexOf('192.168.') === 0 ||
+      win.location.hostname === '0.0.0.0' ||
+      win.location.host.indexOf('::1') === 0 ||
+      endsWith(win.location.hostname, '.ngrok.io') ||
+      endsWith(win.location.hostname, '.localtunnel.me')) {
+    return true;
+  }
+  // A production URL can start with `http://` or `https://` (but not `file:///`).
+  if (win.location.protocol === 'http:') {
     return false;
   }
-  return (
-    win.location.hostname === 'localhost' ||
-    endsWith(win.location.hostname, '.localhost') ||
-    win.location.hostname === '127.0.1' ||
-    win.location.hostname === '0.0.0.0' ||
-    win.location.host.indexOf('::1') === 0 ||
-    endsWith(win.location.hostname, '.ngrok.io') ||
-    endsWith(win.location.hostname, '.localtunnel.me')
-  );
+  // Do not allow insecure-context origin (e.g., `file:///` paths).
+  if ('isSecureContext' in win && win.isSecureContext === true) {
+    return false;
+  }
+  return true;
 };
 
 var CURRENT_VERSION = '1.2.0';
@@ -228,7 +234,7 @@ function doNotTrack () {
 
 function isTelemetryDisabled () {
   // Telemetry is disabled if DNT is enabled or if the origin appears to be for a development environment.
-  return doNotTrack() || isInsecureOrigin(window);
+  return doNotTrack() || isDevOrigin(window);
 }
 
 })(window);
