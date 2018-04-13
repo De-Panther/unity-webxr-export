@@ -44,7 +44,7 @@ var isInsecureOrigin = function (win) {
   );
 };
 
-var CURRENT_VERSION = '1.1.0';
+var CURRENT_VERSION = '1.2.0';
 var MOZILLA_RESEARCH_TRACKER = 'UA-77033033-6';
 
 if (!('MozillaResearch' in window)) {
