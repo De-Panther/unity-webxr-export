@@ -2,7 +2,8 @@
 
 Assets for creating [WebVR](https://webvr.rocks/)-enabled [Unity3D](https://unity3d.com/) projects.
 
-**[Check out the demo now!](https://mozilla.github.io/unity-webvr-export/)**
+**[Check out the demo now!](https://mozilla.github.io/unity-webvr-export/)**<br>
+[Read our blog post (February 2018).](https://hacks.mozilla.org/2018/02/create-vr-on-the-web-using-unity3d/)
 
 [![Preview of Unity WebVR-exported project in the browser](https://raw.githubusercontent.com/mozilla/unity-webvr-export/master/img/preview.gif)](https://mozilla.github.io/unity-webvr-export/)
 
