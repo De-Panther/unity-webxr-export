@@ -53,7 +53,7 @@ public class WebVRControllerInteraction : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (!other.gameObject.CompareTag ("Interactable"))
+        if (other.gameObject.tag != "Interactable")
             return;
 
         contactRigidBodies.Add(other.gameObject.GetComponent<Rigidbody> ());
@@ -61,7 +61,7 @@ public class WebVRControllerInteraction : MonoBehaviour
 
     void OnTriggerExit(Collider other)
     {
-        if (!other.gameObject.CompareTag ("Interactable"))
+        if (other.gameObject.tag != "Interactable")
             return;
 
         contactRigidBodies.Remove(other.gameObject.GetComponent<Rigidbody> ());
