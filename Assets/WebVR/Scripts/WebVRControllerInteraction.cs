@@ -21,7 +21,7 @@ public class WebVRControllerInteraction : MonoBehaviour
         attachJoint = GetComponent<FixedJoint> ();
     }
 
-    void FixedUpdate()
+    void Update()
     {
         WebVRController controller = controllerManager.GetController(gameObject, hand);
 
