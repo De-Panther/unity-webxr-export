@@ -46,13 +46,13 @@ Set up `GameObject`s that you would like to be used for left/hand controllers by
 
 Go to `Edit > Project Settings > Player`:
 
-![WebVR template](https://raw.githubusercontent.com/mozilla/unity-webvr-export/master/docs/images/webgl-template.png)
+![WebVR template](https://raw.githubusercontent.com/mozilla/unity-webvr-export/master/docs/images/webvr-template.png)
 
 ## 7. Build and run your project!
 
 Click on `File > Build & Run`, select a destination folder and Unity will compile your code and and launch the game in your **default** browser. If you want to open the game in another browser, copy and paste the URL of the game.
 
-Under the hood, when clicking `Build & Run`, Unity will place all the needed files in the selected folder and will spin up a development web server pointing there. If you want to provide your own server, choose `File > Build` instead. 
+Under the hood, when clicking `Build & Run`, Unity will place all the needed files in the selected folder and will spin up a development web server pointing there. If you want to provide your own server, choose `File > Build` instead.
 
 ## 8. Adapt your game
 
