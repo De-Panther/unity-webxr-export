@@ -9,7 +9,6 @@ public class WebVRCamera : MonoBehaviour
 	public float DefaultHeight = 1.2f;
 	private Matrix4x4 sitStand;
 
-	private WebVRManager webVRManager;
 	private Camera cameraMain, cameraL, cameraR;
 	private bool vrActive = false;
 
@@ -21,11 +20,6 @@ public class WebVRCamera : MonoBehaviour
 		// Wait until end of frame to report back to WebVR browser to submit frame.
 		yield return new WaitForEndOfFrame();
 		PostRender ();
-	}
-
-	void Awake()
-	{
-		webVRManager = WebVRManager.Instance;
 	}
 
 	void Start()
@@ -60,9 +54,9 @@ public class WebVRCamera : MonoBehaviour
 		#endif
 	}
 
-	private void onVRChange()
+	private void onVRChange(WebVRState state)
 	{
-		vrActive = webVRManager.vrState == WebVRState.ENABLED;
+		vrActive = state == WebVRState.ENABLED;
 	}
 
 	private void onHeadsetUpdate (

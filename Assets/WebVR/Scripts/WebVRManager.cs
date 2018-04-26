@@ -13,11 +13,11 @@ public class WebVRManager : MonoBehaviour
     public string toggleVRKeyName;
 
     [HideInInspector]
-    public WebVRState vrState;
+    public WebVRState vrState = WebVRState.NORMAL;
     public static WebVRManager instance;
     public delegate void VRCapabilitiesUpdate(WebVRDisplayCapabilities capabilities);
     public static event VRCapabilitiesUpdate OnVRCapabilitiesUpdate;
-    public delegate void VRChange();
+    public delegate void VRChange(WebVRState state);
     public static event VRChange OnVRChange;
     public delegate void HeadsetUpdate(
         Matrix4x4 leftProjectionMatrix,
@@ -90,19 +90,17 @@ public class WebVRManager : MonoBehaviour
 
     public void toggleVrState()
     {
-        #if UNITY_EDITOR || !UNITY_WEBGL
         if (this.vrState == WebVRState.ENABLED)
             setVrState(WebVRState.NORMAL);
         else
             setVrState(WebVRState.ENABLED);
-        #endif
     }
 
     public void setVrState(WebVRState state)
     {
         this.vrState = state;
         if (OnVRChange != null)
-            OnVRChange();
+            OnVRChange(state);
     }
 
     // received start VR from WebVR browser
@@ -175,7 +173,6 @@ public class WebVRManager : MonoBehaviour
     void Awake()
     {
         instance = this;
-        setVrState(WebVRState.NORMAL);
     }
 
     void Start()
