@@ -123,7 +123,7 @@ function setupErrorLogging() {
   });
 
   function startRaven () {
-    Raven.config('https://e359be9fb9324addb0dc97b664cf5ee6@sentry.io/294878')
+    Raven.config('https://816fbc92b9e14534b3a8b6a04f075140@sentry.prod.mozaws.net/371')
          .install();
   }
 };
