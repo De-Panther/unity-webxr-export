@@ -10,7 +10,6 @@ public class FreeFlightController : MonoBehaviour {
     [Tooltip("Enable/disable translation control. For use in Unity editor only.")]
     public bool translationEnabled = true;
 
-    private WebVRManager webVRManager;
     private WebVRDisplayCapabilities capabilities;
 
     [Tooltip("Mouse sensitivity")]
@@ -36,11 +35,6 @@ public class FreeFlightController : MonoBehaviour {
         }
     }
 
-    void Awake()
-    {
-        webVRManager = WebVRManager.Instance;
-    }
-
     void Start()
     {
         WebVRManager.OnVRChange += onVRChange;
@@ -48,9 +42,9 @@ public class FreeFlightController : MonoBehaviour {
         originalRotation = transform.localRotation;
     }
 
-    private void onVRChange()
+    private void onVRChange(WebVRState state)
     {
-        if (webVRManager.vrState == WebVRState.ENABLED)
+        if (state == WebVRState.ENABLED)
         {
             DisableEverything();
         }
