@@ -38,6 +38,27 @@
           onProgress: unityProgress
         });
 
+        function onActivate (evt) {
+          return new Promise(function (resolve, reject) {
+            if (!evt.display) {
+              return reject(new Error('No `display` property found on event'));
+            }
+            if (evt.reason && evt.reason !== 'navigation') {
+              return reject(new Error("Unexpected `reason` (expected to be 'navigation')"));
+            }
+            if (!evt.display.capabilities || !evt.display.capabilities.canPresent) {
+              return reject(new Error('VR display is not capable of presenting'));
+            }
+            gameInstance.vrDisplay = evt.display;
+            return evt.display.requestPresent([{source: gameInstance.Module.canvas}]).then(function () {
+              console.log('Entered VR mode');
+            }).catch(function (err) {
+              console.error('Unable to enter VR mode:', err);
+            });
+          });
+        }
+        window.addEventListener('vrdisplayactivate', onActivate);
+
         function unityProgress (gameInstance, progress) {
           if (!gameInstance.progress) {
             gameInstance.loader = document.getElementById('loader');
