@@ -77,7 +77,7 @@ public class WebVRManager : MonoBehaviour
 
     public void OnVRCapabilities(WebVRDisplayCapabilities capabilities) {
         #if !UNITY_EDITOR && UNITY_WEBGL
-        if (!capabilities.hasOrientation) {
+        if (!capabilities.canPresent) {
             WebVRUI.ShowPanel("novr");
         }
         #endif

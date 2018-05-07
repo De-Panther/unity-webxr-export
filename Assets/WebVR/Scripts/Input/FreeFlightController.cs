@@ -69,9 +69,9 @@ public class FreeFlightController : MonoBehaviour {
             transform.Translate(x, 0, z);
         }
 
-        if (rotationEnabled && Input.GetMouseButton(0)) 
+        if (rotationEnabled && Input.GetMouseButton(0))
         {
-        
+
             rotationX += Input.GetAxis ("Mouse X") * mouseSensitivity;
             rotationY += Input.GetAxis ("Mouse Y") * mouseSensitivity;
 
@@ -96,7 +96,7 @@ public class FreeFlightController : MonoBehaviour {
     /// the device capabilities.
     void EnableAccordingToPlatform()
     {
-        rotationEnabled = inDesktopLike || !capabilities.hasOrientation;
+        rotationEnabled = inDesktopLike || !capabilities.canPresent;
         translationEnabled = inDesktopLike || !capabilities.hasPosition;
     }
 
