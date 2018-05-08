@@ -341,13 +341,11 @@
     function handleDisplay (display) {
       var canPresent = false;
       var hasPosition = false;
-      var hasOrientation = false;
       var hasExternalDisplay = false;
 
       if (display) {
         canPresent = display.capabilities.canPresent;
         hasPosition = display.capabilities.hasPosition;
-        hasOrientation = display.capabilities.hasOrientation;
         hasExternalDisplay = display.capabilities.hasExternalDisplay;
       }
 
@@ -362,7 +360,6 @@
         JSON.stringify({
           canPresent: canPresent,
           hasPosition: hasPosition,
-          hasOrientation: hasOrientation,
           hasExternalDisplay: hasExternalDisplay
         })
       );
