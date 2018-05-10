@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 82741410}
-  m_IndirectSpecularColor: {r: 0.5785961, g: 0.60704994, b: 0.54858536, a: 1}
+  m_IndirectSpecularColor: {r: 0.57859135, g: 0.60705847, b: 0.5485997, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -1121,6 +1121,24 @@ Transform:
   m_Father: {fileID: 2005427646}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: -24.645, y: 88.898, z: -17.815}
+--- !u!1 &1080696541 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 100000, guid: 55a05d7345e094dee9a176728bb6070f, type: 3}
+  m_PrefabInternal: {fileID: 1451920843}
+--- !u!64 &1080696542
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1080696541}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Convex: 0
+  m_CookingOptions: 14
+  m_SkinWidth: 0.01
+  m_Mesh: {fileID: 4300000, guid: 55a05d7345e094dee9a176728bb6070f, type: 3}
 --- !u!1 &1119766361
 GameObject:
   m_ObjectHideFlags: 0
