@@ -90,10 +90,12 @@ public class WebVRManager : MonoBehaviour
 
     public void toggleVrState()
     {
+        #if !UNITY_EDITOR && UNITY_WEBGL
         if (this.vrState == WebVRState.ENABLED)
             setVrState(WebVRState.NORMAL);
         else
             setVrState(WebVRState.ENABLED);
+        #endif
     }
 
     public void setVrState(WebVRState state)
