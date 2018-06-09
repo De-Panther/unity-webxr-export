@@ -23,15 +23,24 @@ public class WebVRCamera : MonoBehaviour
 	}
 
 	void Start()
-	{
-		WebVRManager.OnVRChange += onVRChange;
-		WebVRManager.OnHeadsetUpdate += onHeadsetUpdate;
-
+	{		
 		cameraMain = GameObject.Find("CameraMain").GetComponent<Camera>();
 		cameraL = GameObject.Find("CameraL").GetComponent<Camera>();
 		cameraR = GameObject.Find("CameraR").GetComponent<Camera>();
 
 		cameraMain.transform.Translate(new Vector3(0, DefaultHeight, 0));
+	}
+
+	void OnEnable()
+	{
+		WebVRManager.OnVRChange += onVRChange;
+		WebVRManager.OnHeadsetUpdate += onHeadsetUpdate;
+	}
+	
+	void OnDisable()
+	{
+		WebVRManager.OnVRChange -= onVRChange;
+		WebVRManager.OnHeadsetUpdate -= onHeadsetUpdate;
 	}
 
 	void Update()

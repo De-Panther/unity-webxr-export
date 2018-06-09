@@ -29,16 +29,47 @@ public class WebVRManager : MonoBehaviour
     public delegate void ControllerUpdate(int index, string hand, Vector3 position, Quaternion rotation, Matrix4x4 sitStand, WebVRControllerButton[] buttons);
     public static event ControllerUpdate OnControllerUpdate;
 
+    private static bool applicationQuitting = false;
+    
     public static WebVRManager Instance {
         get
         {
+            if (applicationQuitting)
+            {
+                Debug.LogWarning("[Singleton] Instance WebVRManager '"+
+                                 "' already destroyed on application quit." +
+                                 " Won't create again - returning null. Check your OnDestroy Code");
+                return null;
+            }
+            
             if (instance == null)
             {
-                GameObject go = new GameObject("WebVRManager");
-                go.AddComponent<WebVRManager>();
+                var managerInScene = FindObjectOfType<WebVRManager>();
+
+                var name = "WebVRManager (Singleton)";
+                
+                if (managerInScene != null)
+                {
+                    instance = managerInScene;
+                    instance.name = name;
+                }
+                else
+                {
+                    GameObject go = new GameObject(name);
+                    
+                    go.AddComponent<WebVRManager>();                    
+                }
+                
+                DontDestroyOnLoad(instance);
             }
+            
             return instance;
         }
+    }
+
+    private void OnDestroy()
+    {
+        applicationQuitting = true;
     }
 
     // Handles WebVR data from browser
