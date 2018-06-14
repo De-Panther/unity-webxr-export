@@ -37,8 +37,8 @@ public class FreeFlightController : MonoBehaviour {
 
     void Start()
     {
-        WebVRManager.OnVRChange += onVRChange;
-        WebVRManager.OnVRCapabilitiesUpdate += onVRCapabilitiesUpdate;
+        WebVRManager.Instance.OnVRChange += onVRChange;
+        WebVRManager.Instance.OnVRCapabilitiesUpdate += onVRCapabilitiesUpdate;
         originalRotation = transform.localRotation;
     }
 
