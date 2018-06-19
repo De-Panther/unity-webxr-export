@@ -14,30 +14,67 @@ public class WebVRManager : MonoBehaviour
 
     [HideInInspector]
     public WebVRState vrState = WebVRState.NORMAL;
-    public static WebVRManager instance;
+    
+    private static WebVRManager instance;
+
+    [Tooltip("Preserve the manager across scenes changes.")]
+    public bool dontDestroyOnLoad = true;
+    
     public delegate void VRCapabilitiesUpdate(WebVRDisplayCapabilities capabilities);
-    public static event VRCapabilitiesUpdate OnVRCapabilitiesUpdate;
+    public event VRCapabilitiesUpdate OnVRCapabilitiesUpdate;
+    
     public delegate void VRChange(WebVRState state);
-    public static event VRChange OnVRChange;
+    public event VRChange OnVRChange;
+    
     public delegate void HeadsetUpdate(
         Matrix4x4 leftProjectionMatrix,
         Matrix4x4 leftViewMatrix,
         Matrix4x4 rightProjectionMatrix,
         Matrix4x4 rightViewMatrix,
         Matrix4x4 sitStandMatrix);
-    public static event HeadsetUpdate OnHeadsetUpdate;
-    public delegate void ControllerUpdate(int index, string hand, Vector3 position, Quaternion rotation, Matrix4x4 sitStand, WebVRControllerButton[] buttons);
-    public static event ControllerUpdate OnControllerUpdate;
+    public event HeadsetUpdate OnHeadsetUpdate;
+   
+    public delegate void ControllerUpdate(int index, 
+        string hand, 
+        Vector3 position, 
+        Quaternion rotation, 
+        Matrix4x4 sitStand, 
+        WebVRControllerButton[] buttons);
+    public event ControllerUpdate OnControllerUpdate;
 
     public static WebVRManager Instance {
         get
         {
             if (instance == null)
             {
-                GameObject go = new GameObject("WebVRManager");
-                go.AddComponent<WebVRManager>();
+                var managerInScene = FindObjectOfType<WebVRManager>();
+
+                var name = "WebVRManager";
+                
+                if (managerInScene != null)
+                {
+                    instance = managerInScene;
+                    instance.name = name;
+                }
+                else
+                {
+                    GameObject go = new GameObject(name);
+                    
+                    go.AddComponent<WebVRManager>();                    
+                }
             }
+            
             return instance;
+        }
+    }
+
+    private void Awake()
+    {
+        instance = this;
+                
+        if (instance.dontDestroyOnLoad)
+        {
+            DontDestroyOnLoad(instance);
         }
     }
 
@@ -108,13 +145,13 @@ public class WebVRManager : MonoBehaviour
     // received start VR from WebVR browser
     public void OnStartVR()
     {
-        setVrState(WebVRState.ENABLED);
+        Instance.setVrState(WebVRState.ENABLED);        
     }
 
     // receive end VR from WebVR browser
     public void OnEndVR()
     {
-        setVrState(WebVRState.NORMAL);
+        Instance.setVrState(WebVRState.NORMAL);
     }
 
     // Latency test from browser
@@ -170,12 +207,7 @@ public class WebVRManager : MonoBehaviour
         public float[] orientation = null;
         public float[] position = null;
         public WebVRControllerButton[] buttons = new WebVRControllerButton[0];
-    }
-
-    void Awake()
-    {
-        instance = this;
-    }
+    }    
 
     void Start()
     {

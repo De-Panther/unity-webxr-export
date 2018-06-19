@@ -33,7 +33,7 @@ public class WebVRControllerManager : MonoBehaviour
 
 	void Start()
 	{
-		WebVRManager.OnControllerUpdate += onControllerUpdate;
+		WebVRManager.Instance.OnControllerUpdate += onControllerUpdate;
 	}
 
 	void Awake()

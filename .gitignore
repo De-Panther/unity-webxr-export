@@ -32,3 +32,8 @@ sysinfo.txt
 
 # Visual Studio Code settings
 .vscode/*
+
+# Jetbrains Rider Code settings
+.idea
+JetBrains.meta
+Assets/Plugins/Editor/JetBrains
