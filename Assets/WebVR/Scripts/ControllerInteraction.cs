@@ -4,50 +4,29 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-public class WebVRControllerInteraction : MonoBehaviour
+public class ControllerInteraction : MonoBehaviour
 {
-    [Tooltip("Map GameObject to controller hand name.")]
-    public WebVRControllerHand hand = WebVRControllerHand.NONE;
-
-    private WebVRControllerManager controllerManager;
-
     private FixedJoint attachJoint = null;
     private Rigidbody currentRigidBody = null;
     private List<Rigidbody> contactRigidBodies = new List<Rigidbody> ();
 
     void Awake()
     {
-        controllerManager = WebVRControllerManager.Instance;
         attachJoint = GetComponent<FixedJoint> ();
     }
 
     void Update()
     {
-        WebVRController controller = controllerManager.GetController(gameObject, hand);
+        WebVRController controller = gameObject.GetComponent<WebVRController>();
 
-        if (controller != null)
+        if (controller.GetButtonDown("Trigger"))
         {
-            // Apply controller orientation and position.
-            Matrix4x4 sitStand = controller.sitStand;
-            Quaternion sitStandRotation = Quaternion.LookRotation (
-                sitStand.GetColumn (2),
-                sitStand.GetColumn (1)
-            );
-            transform.rotation = sitStandRotation * controller.rotation;
-            transform.position = sitStand.MultiplyPoint(controller.position);
+            Pickup();
+        }
 
-            // Button interactions
-            if (controller.GetButtonDown(WebVRInputAction.Trigger) ||
-                controller.GetButtonDown(WebVRInputAction.Grip))
-            {
-                Pickup();
-            }
-
-            if (controller.GetButtonUp(WebVRInputAction.Trigger) ||
-                controller.GetButtonUp(WebVRInputAction.Grip))
-            {
-                Drop();
-            }
+        if (controller.GetButtonUp("Trigger"))
+        {
+            Drop();
         }
     }
 
