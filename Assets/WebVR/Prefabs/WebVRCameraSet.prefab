@@ -388,8 +388,8 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4545079059221816}
-  - component: {fileID: 114505210183185788}
   - component: {fileID: 81134526380146952}
+  - component: {fileID: 114038308936181916}
   m_Layer: 0
   m_Name: WebVRCameraSet
   m_TagString: Untagged
@@ -511,10 +511,11 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4427160273819458}
-  - component: {fileID: 95292425453911886}
   - component: {fileID: 54027100335586508}
   - component: {fileID: 138596338900119798}
+  - component: {fileID: 95292425453911886}
   - component: {fileID: 135139238002636258}
+  - component: {fileID: 114128207473628304}
   - component: {fileID: 114589835210473740}
   m_Layer: 0
   m_Name: handL
@@ -669,11 +670,12 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4446684710817404}
-  - component: {fileID: 95219300520550374}
   - component: {fileID: 54413995134380664}
   - component: {fileID: 138281815166716050}
+  - component: {fileID: 95219300520550374}
   - component: {fileID: 135505933631826540}
-  - component: {fileID: 114938468152300300}
+  - component: {fileID: 114546255618804366}
+  - component: {fileID: 114372649503696970}
   m_Layer: 0
   m_Name: handR
   m_TagString: Untagged
@@ -1400,7 +1402,7 @@ Rigidbody:
   m_Mass: 1
   m_Drag: 0
   m_AngularDrag: 0.05
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
@@ -1415,7 +1417,7 @@ Rigidbody:
   m_Mass: 1
   m_Drag: 0
   m_AngularDrag: 0.05
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
@@ -1455,9 +1457,9 @@ Animator:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1986733487743170}
-  m_Enabled: 0
+  m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: c99aacc3accab4fdaadab5e3ea13b9c7, type: 3}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 7a78fb7b47e7d9743ae217df5ba993db, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -1465,6 +1467,7 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!95 &95292425453911886
 Animator:
   serializedVersion: 3
@@ -1472,9 +1475,9 @@ Animator:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1799026754646168}
-  m_Enabled: 0
+  m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 013217fcf4bba4f3380d9159876fa8ea, type: 3}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: b2216e835b0bdf54ea15eddd311bf60f, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -1482,6 +1485,21 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &114038308936181916
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1611361787474004}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff1886996f9b04360b75e76507e5c7fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  toggleVRKeyName: v
+  vrState: 1
+  dontDestroyOnLoad: 0
 --- !u!114 &114104781069495054
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1497,6 +1515,39 @@ MonoBehaviour:
   translationEnabled: 1
   mouseSensitivity: 1
   straffeSpeed: 5
+--- !u!114 &114128207473628304
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1799026754646168}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fa198f02a3814330938d23cee1fe833, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hand: 1
+  inputMap: {fileID: 11400000, guid: b249a0801fba0f74198588a3ecb37bbe, type: 2}
+  index: 0
+  position: {x: 0, y: 0, z: 0}
+  rotation: {x: 0, y: 0, z: 0, w: 0}
+  sitStand:
+    e00: 0
+    e01: 0
+    e02: 0
+    e03: 0
+    e10: 0
+    e11: 0
+    e12: 0
+    e13: 0
+    e20: 0
+    e21: 0
+    e22: 0
+    e23: 0
+    e30: 0
+    e31: 0
+    e32: 0
+    e33: 0
 --- !u!114 &114243127810226890
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1509,19 +1560,50 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DefaultHeight: 1.2
---- !u!114 &114505210183185788
+--- !u!114 &114372649503696970
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1611361787474004}
+  m_GameObject: {fileID: 1986733487743170}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ff1886996f9b04360b75e76507e5c7fe, type: 3}
+  m_Script: {fileID: 11500000, guid: 2b177e4ed656f482db5c87c9876ce9da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  toggleVRKeyName: v
-  vrState: 0
+--- !u!114 &114546255618804366
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1986733487743170}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fa198f02a3814330938d23cee1fe833, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hand: 2
+  inputMap: {fileID: 11400000, guid: a760722b59f73e94287ddd9ffc44440f, type: 2}
+  index: 0
+  position: {x: 0, y: 0, z: 0}
+  rotation: {x: 0, y: 0, z: 0, w: 0}
+  sitStand:
+    e00: 0
+    e01: 0
+    e02: 0
+    e03: 0
+    e10: 0
+    e11: 0
+    e12: 0
+    e13: 0
+    e20: 0
+    e21: 0
+    e22: 0
+    e23: 0
+    e30: 0
+    e31: 0
+    e32: 0
+    e33: 0
 --- !u!114 &114589835210473740
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1533,19 +1615,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b177e4ed656f482db5c87c9876ce9da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hand: 1
---- !u!114 &114938468152300300
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1986733487743170}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2b177e4ed656f482db5c87c9876ce9da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hand: 2
 --- !u!124 &124058817231526930
 Behaviour:
   m_ObjectHideFlags: 1
@@ -1604,6 +1673,7 @@ SkinnedMeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RenderingLayerMask: 4294967295
   m_Materials:
   - {fileID: 2100000, guid: c99aacc3accab4fdaadab5e3ea13b9c7, type: 3}
   m_StaticBatchInfo:
@@ -1666,6 +1736,7 @@ SkinnedMeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RenderingLayerMask: 4294967295
   m_Materials:
   - {fileID: 2100000, guid: 013217fcf4bba4f3380d9159876fa8ea, type: 3}
   m_StaticBatchInfo:
