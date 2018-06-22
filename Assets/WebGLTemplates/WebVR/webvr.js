@@ -147,6 +147,53 @@
     });
   }
 
+  function getVrGamepads(gamepads) {
+    var vrGamepads = []
+    for (var i = 0; i < gamepads.length; ++i) {
+      var gamepad = gamepads[i];
+      if (gamepad && (gamepad.pose || gamepad.displayId)) {
+        if (gamepad.pose.position && gamepad.pose.orientation) {
+          // flips gamepad axis to work with Unity.
+          var position = gamepad.pose.position;
+          position[2] *= -1;
+          var orientation = gamepad.pose.orientation;
+          orientation[0] *= -1;
+          orientation[1] *= -1;
+
+          vrGamepads.push({
+            index: gamepad.index,
+            hand: gamepad.hand,
+            buttons: getGamepadButtons(gamepad),
+            axes: getGamepadAxes(gamepad),
+            orientation: Array.from(orientation),
+            position: Array.from(position)
+          });
+        }
+      }
+    }
+    return vrGamepads;
+  }
+
+  function getGamepadButtons(gamepad) {
+    var buttons = [];
+    for (var i = 0; i < gamepad.buttons.length; i++) {
+      buttons.push({
+        pressed: gamepad.buttons[i].pressed,
+        touched: gamepad.buttons[i].touched,
+        value: gamepad.buttons[i].value
+      });
+    }
+    return buttons;
+  }
+
+  function getGamepadAxes(gamepad) {
+    var axes = [];
+    for (var i = 0; i < gamepad.axes.length; i++) {
+      axes.push(gamepad.axes[i]);
+    }
+    return axes;
+  }
+
   function onAnimate () {
     if (!vrDisplay && gameInstance.vrDisplay) {
       frameData = new VRFrameData();
@@ -201,47 +248,13 @@
         }
         mat4.transpose(sitStand, sitStand);
 
-        // gamepads
-        gamepads = navigator.getGamepads();
-        vrGamepads = [];
-        for (var i = 0; i < gamepads.length; ++i) {
-          var gamepad = gamepads[i];
-          if (gamepad && (gamepad.pose || gamepad.displayId)) {
-            if (gamepad.pose.position && gamepad.pose.orientation) {
-              // flips gamepad axis to work with Unity.
-              var position = gamepad.pose.position;
-              position[2] *= -1;
-              var orientation = gamepad.pose.orientation;
-              orientation[0] *= -1;
-              orientation[1] *= -1;
-
-              var buttons = [];
-              for (var j = 0; j < gamepad.buttons.length; j++) {
-                buttons.push({
-                  pressed: gamepad.buttons[j].pressed,
-                  touched: gamepad.buttons[j].touched,
-                  value: gamepad.buttons[j].value
-                });
-              }
-
-              vrGamepads.push({
-                index: gamepad.index,
-                hand: gamepad.hand,
-                buttons: buttons,
-                orientation: Array.from(orientation),
-                position: Array.from(position)
-              });
-            }
-          }
-        }
-
         var vrData = {
           leftProjectionMatrix: Array.from(leftProjectionMatrix),
           rightProjectionMatrix: Array.from(rightProjectionMatrix),
           leftViewMatrix: Array.from(leftViewMatrix),
           rightViewMatrix: Array.from(rightViewMatrix),
           sitStand: Array.from(sitStand),
-          controllers: vrGamepads
+          controllers: getVrGamepads(navigator.getGamepads())
         };
 
         gameInstance.SendMessage('WebVRCameraSet', 'OnWebVRData', JSON.stringify(vrData));

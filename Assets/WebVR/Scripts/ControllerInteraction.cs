@@ -28,6 +28,10 @@ public class ControllerInteraction : MonoBehaviour
         {
             Drop();
         }
+
+        if (controller.GetAxis("Grip") > 0.5f) {
+            Debug.Log("Gripping!" + controller.hand + " " + controller.GetAxis("Grip"));
+        }
     }
 
     void OnTriggerEnter(Collider other)

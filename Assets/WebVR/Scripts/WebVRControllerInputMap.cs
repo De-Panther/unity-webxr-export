@@ -4,16 +4,24 @@ using UnityEngine;
 
 [CreateAssetMenu(menuName = "WebVRControllerInputMap")]
 public class WebVRControllerInputMap : ScriptableObject {
-	[Header("WebVR Controller Input Map")]
-	public List<WebVRControllerInput> inputs;
+    [Header("WebVR Controller Input Map")]
+    public List<WebVRControllerInput> inputs;
 }
 
 [System.Serializable]
 public class WebVRControllerInput {
-	[Tooltip("A meaningful name describing the gesture performed on the controller.")]
-	public string actionName;
-	[Tooltip("Button ID from Web Gamepad API.")]
-	public int gamepadButtonId;
-	[Tooltip("Button name defined in Unity Input Manager.")]
-	public string unityInputName;
+    [Tooltip("A meaningful name describing the gesture performed on the controller.")]
+    public string actionName;
+
+    [Header("Web Gamepad API configuration")]
+    [Tooltip("Button or axes ID from Web Gamepad API.")]
+    public int gamepadId;
+    [Tooltip("Whether gesture derives its values from a Gamepad API button.")]
+    public bool gamepadIsButton;
+
+    [Header("Unity Input Manager configuration")]
+    [Tooltip("button name defined in Unity Input Manager.")]
+    public string unityInputName;
+    [Tooltip("Whether gesture derives its values from a Unity button input.")]
+    public bool unityInputIsButton;
 }
