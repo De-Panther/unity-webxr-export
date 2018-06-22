@@ -13,8 +13,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputs:
   - actionName: Trigger
-    gamepadButtonId: 1
+    gamepadId: 1
+    gamepadIsButton: 1
     unityInputName: TriggerRight
+    unityInputIsButton: 1
   - actionName: Grip
-    gamepadButtonId: 2
-    unityInputName: TriggerRight
+    gamepadId: 2
+    gamepadIsButton: 1
+    unityInputName: GripRight
+    unityInputIsButton: 0
