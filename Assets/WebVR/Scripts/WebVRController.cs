@@ -40,6 +40,7 @@ public class WebVRController : MonoBehaviour
 
     private Dictionary<string, WebVRControllerButton> buttonStates = new Dictionary<string, WebVRControllerButton>();
 
+    // Updates button states from Web gamepad API.
     private void UpdateButtons(WebVRControllerButton[] buttons)
     {
         for (int i = 0; i < buttons.Length; i++)
@@ -48,15 +49,7 @@ public class WebVRController : MonoBehaviour
             foreach (WebVRControllerInput input in inputMap.inputs)
             {
                 if (input.gamepadId == i)
-                {
-                    if (buttonStates.ContainsKey(input.actionName))
-                    {
-                        buttonStates[input.actionName].pressed = button.pressed;
-                        buttonStates[input.actionName].value = button.value;
-                    }
-                    else
-                        buttonStates.Add(input.actionName, new WebVRControllerButton(button.pressed, button.value));
-                }
+                    SetButtonState(input.actionName, button.pressed, button.value);
             }
         }
     }
@@ -91,6 +84,15 @@ public class WebVRController : MonoBehaviour
 
     public bool GetButton(string action)
     {
+        if (UnityEngine.XR.XRDevice.isPresent)
+        {
+            foreach(WebVRControllerInput input in inputMap.inputs)
+            {
+                if (action == input.actionName && input.unityInputIsButton)
+                    return Input.GetButton(input.unityInputName);
+            }
+        }
+
         if (!buttonStates.ContainsKey(action))
             return false;
         return buttonStates[action].pressed;
@@ -101,6 +103,17 @@ public class WebVRController : MonoBehaviour
         if (!buttonStates.ContainsKey(action))
             return false;
         return buttonStates[action].prevPressedState;
+    }
+
+    private void SetButtonState(string action, bool isPressed, float value)
+    {
+        if (buttonStates.ContainsKey(action))
+        {
+            buttonStates[action].pressed = isPressed;
+            buttonStates[action].value = value;
+        }
+        else
+            buttonStates.Add(action, new WebVRControllerButton(isPressed, value));
     }
 
     private void SetPastButtonState(string action, bool isPressed)
@@ -120,10 +133,9 @@ public class WebVRController : MonoBehaviour
                 if (action == input.actionName && input.unityInputIsButton)
                     return Input.GetButtonDown(input.unityInputName);
             }
-            return false;
         }
 
-        if (GetButton(action) && GetPastButtonState(action) != GetButton(action))
+        if (GetButton(action) && !GetPastButtonState(action))
         {
             SetPastButtonState(action, true);
             return true;
@@ -141,7 +153,6 @@ public class WebVRController : MonoBehaviour
                 if (action == input.actionName && input.unityInputIsButton)
                     return Input.GetButtonUp(input.unityInputName);
             }
-            return false;
         }
 
         if (!GetButton(action) && GetPastButtonState(action))
@@ -202,6 +213,17 @@ public class WebVRController : MonoBehaviour
             {
                 transform.position = UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.RightHand);
                 transform.rotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.RightHand);
+            }
+
+            foreach(WebVRControllerInput input in inputMap.inputs)
+            {
+                if (!input.unityInputIsButton)
+                {
+                    if (Input.GetAxis(input.unityInputName) != 0)
+                        SetButtonState(input.actionName, true, Input.GetAxis(input.unityInputName));
+                    if (Input.GetAxis(input.unityInputName) < 1)
+                        SetButtonState(input.actionName, false, Input.GetAxis(input.unityInputName));
+                }
             }
         }
     }

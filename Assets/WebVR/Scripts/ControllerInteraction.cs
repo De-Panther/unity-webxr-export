@@ -10,29 +10,32 @@ public class ControllerInteraction : MonoBehaviour
     private Rigidbody currentRigidBody = null;
     private List<Rigidbody> contactRigidBodies = new List<Rigidbody> ();
 
+    private Animator anim;
+
     void Awake()
     {
         attachJoint = GetComponent<FixedJoint> ();
+    }
+
+    void Start()
+    {
+        anim = gameObject.GetComponent<Animator>();
     }
 
     void Update()
     {
         WebVRController controller = gameObject.GetComponent<WebVRController>();
 
-        if (controller.GetButtonDown("Trigger"))
-        {
+        float normalizedTime = controller.GetButton("Trigger") ? 1 : controller.GetAxis("Grip");
+
+        if (controller.GetButtonDown("Trigger") || controller.GetButtonDown("Grip"))
             Pickup();
-        }
 
-        if (controller.GetButtonUp("Trigger"))
-        {
+        if (controller.GetButtonUp("Trigger") || controller.GetButtonUp("Grip"))
             Drop();
-        }
 
-        if (controller.GetAxis("Grip") > 0.5f) {
-            Debug.Log("Gripping!" + controller.hand + " " + controller.GetAxis("Grip"));
+        anim.Play("Take", -1, normalizedTime);
         }
-    }
 
     void OnTriggerEnter(Collider other)
     {
