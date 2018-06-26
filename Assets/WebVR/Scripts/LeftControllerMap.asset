@@ -16,7 +16,7 @@ MonoBehaviour:
     gamepadId: 1
     gamepadIsButton: 1
     unityInputName: TriggerLeft
-    unityInputIsButton: 1
+    unityInputIsButton: 0
   - actionName: Grip
     gamepadId: 2
     gamepadIsButton: 1
