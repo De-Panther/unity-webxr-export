@@ -4,52 +4,38 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-public class WebVRControllerInteraction : MonoBehaviour
+public class ControllerInteraction : MonoBehaviour
 {
-    [Tooltip("Map GameObject to controller hand name.")]
-    public WebVRControllerHand hand = WebVRControllerHand.NONE;
-
-    private WebVRControllerManager controllerManager;
-
     private FixedJoint attachJoint = null;
     private Rigidbody currentRigidBody = null;
     private List<Rigidbody> contactRigidBodies = new List<Rigidbody> ();
 
+    private Animator anim;
+
     void Awake()
     {
-        controllerManager = WebVRControllerManager.Instance;
         attachJoint = GetComponent<FixedJoint> ();
+    }
+
+    void Start()
+    {
+        anim = gameObject.GetComponent<Animator>();
     }
 
     void Update()
     {
-        WebVRController controller = controllerManager.GetController(gameObject, hand);
+        WebVRController controller = gameObject.GetComponent<WebVRController>();
 
-        if (controller != null)
-        {
-            // Apply controller orientation and position.
-            Matrix4x4 sitStand = controller.sitStand;
-            Quaternion sitStandRotation = Quaternion.LookRotation (
-                sitStand.GetColumn (2),
-                sitStand.GetColumn (1)
-            );
-            transform.rotation = sitStandRotation * controller.rotation;
-            transform.position = sitStand.MultiplyPoint(controller.position);
+        float normalizedTime = controller.GetButton("Trigger") ? 1 : controller.GetAxis("Grip");
 
-            // Button interactions
-            if (controller.GetButtonDown(WebVRInputAction.Trigger) ||
-                controller.GetButtonDown(WebVRInputAction.Grip))
-            {
-                Pickup();
-            }
+        if (controller.GetButtonDown("Trigger") || controller.GetButtonDown("Grip"))
+            Pickup();
 
-            if (controller.GetButtonUp(WebVRInputAction.Trigger) ||
-                controller.GetButtonUp(WebVRInputAction.Grip))
-            {
-                Drop();
-            }
+        if (controller.GetButtonUp("Trigger") || controller.GetButtonUp("Grip"))
+            Drop();
+
+        anim.Play("Take", -1, normalizedTime);
         }
-    }
 
     void OnTriggerEnter(Collider other)
     {

@@ -39,7 +39,8 @@ public class WebVRManager : MonoBehaviour
         Vector3 position, 
         Quaternion rotation, 
         Matrix4x4 sitStand, 
-        WebVRControllerButton[] buttons);
+        WebVRControllerButton[] buttons,
+        float[] axes);
     public event ControllerUpdate OnControllerUpdate;
 
     public static WebVRManager Instance {
@@ -102,7 +103,7 @@ public class WebVRManager : MonoBehaviour
                 Quaternion rotation = new Quaternion (controllerData.orientation [0], controllerData.orientation [1], controllerData.orientation [2], controllerData.orientation [3]);
 
                 if (OnControllerUpdate != null)
-                    OnControllerUpdate(controllerData.index, controllerData.hand, position, rotation, sitStand, controllerData.buttons);
+                    OnControllerUpdate(controllerData.index, controllerData.hand, position, rotation, sitStand, controllerData.buttons, controllerData.axes);
             }
         }
     }
@@ -206,6 +207,7 @@ public class WebVRManager : MonoBehaviour
         public string hand = null;
         public float[] orientation = null;
         public float[] position = null;
+        public float[] axes = null;
         public WebVRControllerButton[] buttons = new WebVRControllerButton[0];
     }    
 
