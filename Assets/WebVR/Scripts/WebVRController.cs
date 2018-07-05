@@ -78,7 +78,6 @@ public class WebVRController : MonoBehaviour
                 }
             }
         }
-        //Debug.LogError("No Axes found for '" + action + "' in Input Map!");
         return 0;
     }
 

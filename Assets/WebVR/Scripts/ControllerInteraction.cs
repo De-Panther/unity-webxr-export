@@ -34,8 +34,9 @@ public class ControllerInteraction : MonoBehaviour
         if (controller.GetButtonUp("Trigger") || controller.GetButtonUp("Grip"))
             Drop();
 
+        // Use the controller button or axis position to manipulate the playback time for hand model.
         anim.Play("Take", -1, normalizedTime);
-        }
+    }
 
     void OnTriggerEnter(Collider other)
     {
