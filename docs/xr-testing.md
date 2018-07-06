@@ -1,4 +1,4 @@
-# Enabling Virtual Reality player mode in Unity's XR Editor
+# In-editor VR playback for rapid testing
 
 ## XR Settings
 

@@ -16,12 +16,12 @@ public class WebVRControllerInput {
     [Header("Web Gamepad API configuration")]
     [Tooltip("Button or axes ID from Web Gamepad API.")]
     public int gamepadId;
-    [Tooltip("Whether gesture derives its values from a Gamepad API button.")]
+    [Tooltip("Whether gesture derives its value from a Gamepad API `GamepadButton.pressed` property.")]
     public bool gamepadIsButton;
 
     [Header("Unity Input Manager configuration")]
-    [Tooltip("button name defined in Unity Input Manager.")]
+    [Tooltip("Input name defined in Unity Input Manager.")]
     public string unityInputName;
-    [Tooltip("Whether gesture derives its values from a Unity button input.")]
+    [Tooltip("Whether gesture derives its value from Unity using `Input.GetButton` function.")]
     public bool unityInputIsButton;
 }
