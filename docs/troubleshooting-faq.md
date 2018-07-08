@@ -40,7 +40,7 @@ The web makes it easy to deliver content to users. Just navigate or link to a ex
 
 ## Will it work on mobile?
 
-The WebVR Assets package targets desktop VR browsers. Mobile VR browser support is limited and not recommended at this time due to the performance and memory limitations of the Unity WebGL Player on mobile browsers. Although we have had some luck running on Android devices (Google Pixel works quite well), Safari on iOS fails to load.  We are investigating ways to make the exporter more usable on mobile. Stay tuned!
+The WebVR Assets package targets desktop VR browsers. Mobile VR browser support is limited and not recommended at this time due to the performance and memory limitations of the Unity WebGL Player on mobile browsers. Although we have had some luck running on Android devices (Oculus Go, Google Pixel, Samsung Galaxy devices), Safari on iOS fails to load.  We are investigating ways to make the exporter more usable on mobile. Stay tuned!
 
 Please see [compatibility details](../README.md) for more information.
 
@@ -56,6 +56,6 @@ You can increase the memory that is available to your application from the playe
 
 ## Do I always have to re-build before I can test my experience?
 
-You will not be able to directly use WebVR from within the Unity editor environment.  Because of this, you will need to re-build the project before testing within the browser.
+You can work within the Unity editor by enabling VR support in Unity before publishing to WebVR.
 
-There is the option of enabling XR support in Unity Player Settings to preview your content before building to WebVR, but the results can be quite different, and controller integration is not yet supported. We are investigating ways that this could be made easier. Stay tuned!
+* See [In-editor VR playback for rapid testing](./xr-testing.md).

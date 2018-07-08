@@ -39,9 +39,11 @@ This asset works by utilizing Unity's WebGL platform support and therefore share
 ## Getting started
 
 * [Setting up a Unity project for WebVR](./docs/project-setup.md)
+* [Controllers and input system](./docs/controllers.md)
+* [In-editor VR playback for rapid testing](./docs/xr-testing.md)
 * [Publishing](./docs/publishing.md)
 * [Troubleshooting and FAQ](./docs/troubleshooting-faq.md)
-* [Controllers and input system](./docs/controllers.md)
+
 
 ## Customize the template
 
