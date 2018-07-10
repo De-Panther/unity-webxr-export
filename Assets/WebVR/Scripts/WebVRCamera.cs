@@ -5,8 +5,6 @@ using System.Runtime.InteropServices;
 
 public class WebVRCamera : MonoBehaviour
 {
-	[Tooltip("Default height of camera if no room-scale transform is present.")]
-	public float DefaultHeight = 1.2f;
 	private Matrix4x4 sitStand;
 
 	private Camera cameraMain, cameraL, cameraR;
@@ -30,10 +28,10 @@ public class WebVRCamera : MonoBehaviour
 		cameraMain = GameObject.Find("CameraMain").GetComponent<Camera>();
 		cameraL = GameObject.Find("CameraL").GetComponent<Camera>();
 		cameraR = GameObject.Find("CameraR").GetComponent<Camera>();
-		
-		cameraMain.transform.Translate(new Vector3(0, DefaultHeight, 0));
+
+		cameraMain.transform.Translate(new Vector3(0, WebVRManager.Instance.DefaultHeight, 0));
 	}
-	
+
 	void Update()
 	{
 		if (vrActive)
@@ -50,6 +48,7 @@ public class WebVRCamera : MonoBehaviour
 		}
 
 		#if !UNITY_EDITOR && UNITY_WEBGL
+		// Calls Javascript to Submit Frame to the browser WebVR API.
 		StartCoroutine(endOfFrame());
 		#endif
 	}

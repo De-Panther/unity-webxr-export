@@ -20,6 +20,14 @@ public class WebVRManager : MonoBehaviour
     [Tooltip("Preserve the manager across scenes changes.")]
     public bool dontDestroyOnLoad = true;
     
+    [Header("Tracking")]
+
+    [Tooltip("Default height of camera if no room-scale transform is present.")]
+    public float DefaultHeight = 1.2f;
+
+    [Tooltip("Represents the size of physical space available for XR.")]
+    public UnityEngine.XR.TrackingSpaceType TrackingSpace = UnityEngine.XR.TrackingSpaceType.RoomScale;
+
     public delegate void VRCapabilitiesUpdate(WebVRDisplayCapabilities capabilities);
     public event VRCapabilitiesUpdate OnVRCapabilitiesUpdate;
     
@@ -79,6 +87,15 @@ public class WebVRManager : MonoBehaviour
         }
     }
 
+    private void setTrackingSpaceType()
+    {
+        if (UnityEngine.XR.XRDevice.isPresent)
+        {
+            UnityEngine.XR.XRDevice.SetTrackingSpaceType(WebVRManager.Instance.TrackingSpace);
+            Debug.Log("Tracking Space: " + UnityEngine.XR.XRDevice.GetTrackingSpaceType());
+        }
+    }
+
     // Handles WebVR data from browser
     public void OnWebVRData (string jsonString)
     {
@@ -87,6 +104,11 @@ public class WebVRManager : MonoBehaviour
         if (webVRData.sitStand.Length > 0)
             sitStand = numbersToMatrix (webVRData.sitStand);
 
+        // Reset RoomScale matrix if we are using Stationary tracking space.
+        if (TrackingSpace == UnityEngine.XR.TrackingSpaceType.Stationary)
+            sitStand = Matrix4x4.identity;
+
+        // Update headset tracking
         if (OnHeadsetUpdate != null)
             OnHeadsetUpdate(
                 numbersToMatrix (webVRData.leftProjectionMatrix),
@@ -95,6 +117,7 @@ public class WebVRManager : MonoBehaviour
                 numbersToMatrix (webVRData.rightViewMatrix),
                 sitStand);
 
+        // Update controllers
         if (webVRData.controllers.Length > 0)
         {
             foreach (WebVRControllerData controllerData in webVRData.controllers)
@@ -216,6 +239,8 @@ public class WebVRManager : MonoBehaviour
         #if !UNITY_EDITOR && UNITY_WEBGL
         ConfigureToggleVRKeyName(toggleVRKeyName);
         #endif
+
+        setTrackingSpaceType();
     }
 
     void Update()
