@@ -1467,7 +1467,6 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!95 &95292425453911886
 Animator:
   serializedVersion: 3
@@ -1485,7 +1484,6 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!114 &114038308936181916
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1500,6 +1498,8 @@ MonoBehaviour:
   toggleVRKeyName: v
   vrState: 1
   dontDestroyOnLoad: 0
+  DefaultHeight: 1.2
+  TrackingSpace: 1
 --- !u!114 &114104781069495054
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1559,7 +1559,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2330d5cea21bb564e97ad081f15487d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DefaultHeight: 1.2
 --- !u!114 &114372649503696970
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1673,7 +1672,6 @@ SkinnedMeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RenderingLayerMask: 4294967295
   m_Materials:
   - {fileID: 2100000, guid: c99aacc3accab4fdaadab5e3ea13b9c7, type: 3}
   m_StaticBatchInfo:
@@ -1736,7 +1734,6 @@ SkinnedMeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RenderingLayerMask: 4294967295
   m_Materials:
   - {fileID: 2100000, guid: 013217fcf4bba4f3380d9159876fa8ea, type: 3}
   m_StaticBatchInfo:
