@@ -40,7 +40,9 @@ The web makes it easy to deliver content to users. Just navigate or link to a ex
 
 ## Will it work on mobile?
 
-The WebVR Assets package targets desktop VR browsers. Mobile VR browser support is limited and not recommended at this time due to the performance and memory limitations of the Unity WebGL Player on mobile browsers. Although we have had some luck running on Android devices (Oculus Go, Google Pixel, Samsung Galaxy devices), Safari on iOS fails to load.  We are investigating ways to make the exporter more usable on mobile. Stay tuned!
+The WebVR Assets package targets desktop VR browsers. Mobile VR browser support is limited and generally not recommended at this time due to the performance and memory limitations of the Unity WebGL Player on mobile browsers.
+
+With that said, we have had luck using the Oculus Go (Oculus browser) and Google Pixel (Chrome with Daydream) devices as well as more powerful Android devices such as the Google Pixel and Samsug Galaxy using Polyfilled Cardboard support. Safari on iOS [fails to load](https://github.com/mozilla/unity-webvr-export/issues/181). We are investigating ways to make the exporter more usable on mobile. Stay tuned!
 
 Please see [compatibility details](../README.md) for more information.
 

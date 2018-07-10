@@ -51,6 +51,9 @@ To create a new `WebVRControllerInputMap`, use `Asset > Create > WebVRController
 
 # Configure Unity Input Manager
 
+To get up and running using pre-configured Input Manager settings, copy `Project Settings/InputManager.asset` from this repo into your own project.
+
+You can also choose to manually configure the Input Manager by using 
 `Edit > Project Settings > Input`
 
 Below is an example of a Unity Input Manager entries that map to `WebVRControllerInputMap` configuration as shown above.
