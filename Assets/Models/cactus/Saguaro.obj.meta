@@ -10,6 +10,7 @@ ModelImporter:
     400000: //RootNode
     400002: Saguaro_mesh
     2100000: Saguaro_mat
+    2100002: Saguaro_meshMat
     2300000: Saguaro_mesh
     3300000: Saguaro_mesh
     4300000: Saguaro_mesh
