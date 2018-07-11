@@ -1,6 +1,14 @@
 # Setting up a Unity project for WebVR
 
-In this tutorial, we go through the steps of a basic project setup using the WebVR Assets.
+**There are two ways to start a WebVR enabled project using Unity.**
+
+1. **[Download the example project](https://github.com/mozilla/unity-webvr-export/archive/master.zip).**
+
+    This is the simplest option, to do this, [download the project](https://github.com/mozilla/unity-webvr-export/archive/master.zip) and open in Unity. You can follow steps from [step #7](#7-build-your-project-to-webvr) onwards to build the project to WebVR.
+
+2. **[Start by Creating a new Unity 3D Project](#1-create-a-new-unity-3d-project).**
+
+    In this tutorial, we cover option 2, starting from new, stepping through each step from creating a new Unity project, adding the WebVR Assets, then building to WebVR.
 
 ## 1. Create a new Unity 3D project.
 
@@ -14,7 +22,13 @@ Open the menus: `File > Build Settings`
 
 ![WebGL Platform](./images/webgl-platform.png)
 
-## 3. Download the assets from the Unity Asset store.
+## 3. Enable Virtual Reality support in Unity.
+
+See [In-editor VR playback for rapid testing](./xr-testing.md) for full steps.
+
+![Enable VR Support in Unity](images/unity-xr-settings.gif)
+
+## 4. Download the assets from the Unity Asset store.
 
 **[Unity Asset Store page](https://assetstore.unity.com/packages/templates/systems/webvr-assets-109152).**
 
@@ -24,7 +38,7 @@ Alternatively, download and install the [`WebVR-Assets.unitypackage`](https://gi
 
 ![WebVR package](./images/import-package.png)
 
-## 4. Add the WebVR prefab to your scene.
+## 5. Add the WebVR prefab to your scene.
 
 Disable the standard default camera, so that it does not interfere with the cameras used in the WebVR prefab.
 
@@ -38,11 +52,17 @@ Add the `WebVRCameraSet` prefab (`Assets > WebVR > Prefabs > WebVRCameraSet.pref
 
 The prefab contains hand controllers, VR Camera setup and other components needed for your game to work with WebVR. 
 
-## 5. You're Unity project is setup. Play to see the result!
+## 6. Add Input Manager settings to your project.
+
+Copy [`InputManager.asset`](https://github.com/mozilla/unity-webvr-export/raw/master/ProjectSettings/InputManager.asset) into your Project `/ProjectSettings` folder.  This will add pre-configured Unity Input Manager input axes needed for controllers to work.
+
+See [Controllers and Input System](./controllers.md) for more details about how this works.
+
+## 7. You're Unity project is setup. Play to see the result!
 
 ![Import prefab](./images/editor-play.gif)
 
-## 6. Build your project to WebVR
+## 8. Build your project to WebVR
 
 ### Select the WebVR template from player settings.
 
