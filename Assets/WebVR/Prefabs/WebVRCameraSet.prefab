@@ -1497,7 +1497,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   toggleVRKeyName: v
   vrState: 1
-  dontDestroyOnLoad: 0
+  dontDestroyOnLoad: 1
   DefaultHeight: 1.2
   TrackingSpace: 1
 --- !u!114 &114104781069495054
