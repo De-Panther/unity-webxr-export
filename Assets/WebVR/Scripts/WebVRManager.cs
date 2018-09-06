@@ -57,9 +57,8 @@ public class WebVRManager : MonoBehaviour
             if (instance == null)
             {
                 var managerInScene = FindObjectOfType<WebVRManager>();
-
                 var name = "WebVRManager";
-                
+
                 if (managerInScene != null)
                 {
                     instance = managerInScene;
@@ -68,17 +67,16 @@ public class WebVRManager : MonoBehaviour
                 else
                 {
                     GameObject go = new GameObject(name);
-                    
-                    go.AddComponent<WebVRManager>();                    
+                    go.AddComponent<WebVRManager>();
                 }
             }
-            
             return instance;
         }
     }
 
     private void Awake()
     {
+        Debug.Log("Active Graphics Tier: " + Graphics.activeTier);
         instance = this;
                 
         if (instance.dontDestroyOnLoad)
@@ -87,7 +85,7 @@ public class WebVRManager : MonoBehaviour
         }
     }
 
-    private void setTrackingSpaceType()
+    private void SetTrackingSpaceType()
     {
         if (UnityEngine.XR.XRDevice.isPresent)
         {
@@ -101,21 +99,9 @@ public class WebVRManager : MonoBehaviour
     {
         WebVRData webVRData = WebVRData.CreateFromJSON (jsonString);
 
-        if (webVRData.sitStand.Length > 0)
-            sitStand = numbersToMatrix (webVRData.sitStand);
-
         // Reset RoomScale matrix if we are using Stationary tracking space.
         if (TrackingSpace == UnityEngine.XR.TrackingSpaceType.Stationary)
             sitStand = Matrix4x4.identity;
-
-        // Update headset tracking
-        if (OnHeadsetUpdate != null)
-            OnHeadsetUpdate(
-                numbersToMatrix (webVRData.leftProjectionMatrix),
-                numbersToMatrix (webVRData.leftViewMatrix),
-                numbersToMatrix (webVRData.rightProjectionMatrix),
-                numbersToMatrix (webVRData.rightViewMatrix),
-                sitStand);
 
         // Update controllers
         if (webVRData.controllers.Length > 0)
@@ -138,15 +124,12 @@ public class WebVRManager : MonoBehaviour
 
     public void OnVRCapabilities(WebVRDisplayCapabilities capabilities) {
         #if !UNITY_EDITOR && UNITY_WEBGL
-        if (!capabilities.canPresent) {
-            WebVRUI.ShowPanel("novr");
-        }
+        if (!capabilities.canPresent)
+            WebVRUI.displayElementId("novr");
         #endif
 
         if (OnVRCapabilitiesUpdate != null)
-        {
             OnVRCapabilitiesUpdate(capabilities);
-        }
     }
 
     public void toggleVrState()
@@ -178,13 +161,6 @@ public class WebVRManager : MonoBehaviour
         Instance.setVrState(WebVRState.NORMAL);
     }
 
-    // Latency test from browser
-    public void TestTime()
-    {
-        Debug.Log ("Time tester received in Unity");
-        TestTimeReturn ();
-    }
-
     // Toggles performance HUD
     public void TogglePerf()
     {
@@ -196,10 +172,14 @@ public class WebVRManager : MonoBehaviour
     private static extern void ConfigureToggleVRKeyName(string keyName);
 
     [DllImport("__Internal")]
-    private static extern void TestTimeReturn();
+    private static extern void InitSharedArray(float[] array, int length);
 
-    // delta time for latency checker.
-    private float deltaTime = 0.0f;
+    [DllImport("__Internal")]
+    private static extern void ListenWebVRData();
+
+    // Shared array which we will load headset data in from webvr.jslib
+    // Array stores  5 matrices, each 16 values, stored linearly.
+    float[] sharedArray = new float[5 * 16];
 
     // show framerate UI
     private bool showPerf = false;
@@ -211,10 +191,6 @@ public class WebVRManager : MonoBehaviour
     [System.Serializable]
     private class WebVRData
     {
-        public float[] leftProjectionMatrix = null;
-        public float[] rightProjectionMatrix = null;
-        public float[] leftViewMatrix = null;
-        public float[] rightViewMatrix = null;
         public float[] sitStand = null;
         public WebVRControllerData[] controllers = new WebVRControllerData[0];
         public static WebVRData CreateFromJSON(string jsonString)
@@ -238,39 +214,45 @@ public class WebVRManager : MonoBehaviour
     {
         #if !UNITY_EDITOR && UNITY_WEBGL
         ConfigureToggleVRKeyName(toggleVRKeyName);
+        InitSharedArray(sharedArray, sharedArray.Length);
+        ListenWebVRData();
         #endif
+        SetTrackingSpaceType();
+    }
 
-        setTrackingSpaceType();
+    float[] GetFromSharedArray(int index)
+    {
+        float[] newArray = new float[16];
+        for (int i = 0; i < newArray.Length; i++) {
+            newArray[i] = sharedArray[index * 16 + i];
+        }
+        return newArray;
     }
 
     void Update()
     {
-        deltaTime += (Time.deltaTime - deltaTime) * 0.1f;
-
         #if UNITY_EDITOR || !UNITY_WEBGL
         bool quickToggleEnabled = toggleVRKeyName != null && toggleVRKeyName != "";
         if (quickToggleEnabled && Input.GetKeyUp(toggleVRKeyName))
             toggleVrState();
         #endif
-    }
 
-    void OnGUI()
-    {
-        if (!showPerf)
-            return;
+        if (OnHeadsetUpdate != null) {
+            Matrix4x4 leftProjectionMatrix = numbersToMatrix(GetFromSharedArray(0));
+            Matrix4x4 rightProjectionMatrix = numbersToMatrix(GetFromSharedArray(1));
+            Matrix4x4 leftViewMatrix = numbersToMatrix(GetFromSharedArray(2));
+            Matrix4x4 rightViewMatrix = numbersToMatrix(GetFromSharedArray(3));
+            Matrix4x4 sitStandMatrix = numbersToMatrix(GetFromSharedArray(4));
 
-        int w = Screen.width, h = Screen.height;
+            sitStand = sitStandMatrix;
 
-        GUIStyle style = new GUIStyle();
-
-        Rect rect = new Rect(w / 4, h / 2, w, h * 2 / 100);
-        style.alignment = TextAnchor.UpperLeft;
-        style.fontSize = h * 2 / 100;
-        style.normal.textColor = new Color (0.0f, 1.0f, 1.0f, 1.0f);
-        float msec = deltaTime * 1000.0f;
-        float fps = 1.0f / deltaTime;
-        string text = string.Format("{0:0.0} ms ({1:0.} fps)", msec, fps);
-        GUI.Label(rect, text, style);
+            OnHeadsetUpdate(
+                leftProjectionMatrix,
+                rightProjectionMatrix,
+                leftViewMatrix,
+                rightViewMatrix,
+                sitStand);
+         }
     }
 
     // Utility functions
