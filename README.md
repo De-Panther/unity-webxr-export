@@ -15,9 +15,24 @@ Assets for creating [WebVR](https://webvr.rocks/)-enabled [Unity3D](https://unit
 
 <hr>
 
-## Unity Compatibility
+## Getting started
 
-These assets work with Unity versions `2018.2` and above.
+* [Setting up a Unity project for WebVR](./docs/project-setup.md)
+* [Controllers and input system](./docs/controllers.md)
+* [In-editor VR playback for rapid testing](./docs/xr-testing.md)
+* [Publishing](./docs/publishing.md)
+* [Adding Google Analytics to your game](./docs/customization/adding-ga.md)
+* [Troubleshooting and FAQ](./docs/troubleshooting-faq.md)
+
+## Need help?
+
+* [Join the WebVR Slack](https://webvr.rocks/slack) (join the [#unity channel](https://webvr.slack.com/messages/unity))
+
+## Compatibility
+
+### Unity editor version
+
+* `2018.2` and above.
 
 ### Browser Compatibility
 
@@ -35,23 +50,9 @@ If the user does not have supported headset, browser or device, the content will
 
 This asset works by utilizing Unity's WebGL platform support and therefore shares the same limitations. Because of this, mobile support is limited and may not work. See [Unity's WebGL browser compatibility](https://docs.unity3d.com/2018.1/Documentation/Manual/webgl-browsercompatibility.html).
 
+### Version History and Notes
 
-## Getting started
-
-* [Setting up a Unity project for WebVR](./docs/project-setup.md)
-* [Controllers and input system](./docs/controllers.md)
-* [In-editor VR playback for rapid testing](./docs/xr-testing.md)
-* [Publishing](./docs/publishing.md)
-* [Troubleshooting and FAQ](./docs/troubleshooting-faq.md)
-
-
-## Customize the template
-
-* [Adding Google Analytics to your game](./docs/customization/adding-ga.md)
-
-## Need help?
-
-* [Join the WebVR Slack](https://webvr.rocks/slack) (join the [#unity channel](https://webvr.slack.com/messages/unity))
+* [See all releases](https://github.com/mozilla/unity-webvr-export/releases)
 
 
 ## Contributing
