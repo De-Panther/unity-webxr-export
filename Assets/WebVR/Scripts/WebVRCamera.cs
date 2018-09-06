@@ -60,8 +60,8 @@ public class WebVRCamera : MonoBehaviour
 
     private void onHeadsetUpdate (
         Matrix4x4 leftProjectionMatrix,
-        Matrix4x4 leftViewMatrix,
         Matrix4x4 rightProjectionMatrix,
+        Matrix4x4 leftViewMatrix,
         Matrix4x4 rightViewMatrix,
         Matrix4x4 sitStandMatrix)
     {

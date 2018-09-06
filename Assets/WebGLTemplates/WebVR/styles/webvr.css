@@ -82,18 +82,25 @@ a:link, a:visited {
   z-index: 0;
 }
 
-#vr {
-  position: absolute;
-  display: flex;
-  right: 30px;
-  bottom: 30px;
-}
-
 #status {
   display: none;
   background: #fff;
   margin-right: 15px;
   padding: 10px;
+}
+
+#performance[data-enabled='true'] {
+  display: block;
+  position: absolute;
+  left: 30px;
+  bottom: 30px;
+  color: #fff;
+  padding: 10px;
+  background: #000;
+}
+
+#performance[data-enabled='false'] {
+  display: none;
 }
 
 [data-unity-loaded='true'] #status[data-enabled='true'] {
@@ -105,12 +112,16 @@ a:link, a:visited {
 }
 
 #entervr {
-  background: #fff url(../vr.png) center no-repeat;
-  background-size: 80%;
-  cursor: pointer;
   display: none;
+  position: absolute;
   height: 100px;
   width: 100px;
+  right: 30px;
+  bottom: 30px;
+  background: #fff url(../vr.png) center no-repeat;
+  background-size: 80%;
+  border: none;
+  cursor: pointer;
 }
 
 [data-unity-loaded='true'] #entervr[data-enabled='true'] {
@@ -137,6 +148,7 @@ a:link, a:visited {
 #instruction button {
   color: #fff;
   cursor: pointer;
+  border: none;
   font-size: 25px;
   padding: 15px 20px;
 }
