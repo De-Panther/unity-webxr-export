@@ -17,7 +17,7 @@ Assets for creating [WebVR](https://webvr.rocks/)-enabled [Unity3D](https://unit
 
 ## Unity Compatibility
 
-These assets work with Unity versions `2017.3.0` and above.
+These assets work with Unity versions `2018.2` and above.
 
 ### Browser Compatibility
 
