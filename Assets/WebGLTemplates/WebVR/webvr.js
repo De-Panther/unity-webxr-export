@@ -219,27 +219,40 @@
     );
   }
 
+  // WebGL Vector 3 to Unity compatible Vector3
+  VRManager.prototype.GLVec3ToUnity = function(v) {
+    v[2] *= -1;
+    return v;
+  }
+
+  // WebGL Quaternion to Unity compatible Quaternion
+  VRManager.prototype.GLQuaternionToUnity = function(q) {
+    q[0] *= -1;
+    q[1] *= -1;
+    return q;
+  }
+
+  VRManager.prototype.getGamepadAxes = function(gamepad) {
+    var axes = [];
+    for (var i = 0; i < gamepad.axes.length; i++) {
+      axes.push(gamepad.axes[i]);
+    }
+    return axes;
+  }
+
+  VRManager.prototype.getGamepadButtons = function(gamepad) {
+    var buttons = [];
+    for (var i = 0; i < gamepad.buttons.length; i++) {
+      buttons.push({
+        pressed: gamepad.buttons[i].pressed,
+        touched: gamepad.buttons[i].touched,
+        value: gamepad.buttons[i].value
+      });
+    }
+    return buttons;
+  }
+
   VRManager.prototype.getGamepads = function(gamepads) {
-    function getGamepadButtons(gamepad) {
-      var buttons = [];
-      for (var i = 0; i < gamepad.buttons.length; i++) {
-        buttons.push({
-          pressed: gamepad.buttons[i].pressed,
-          touched: gamepad.buttons[i].touched,
-          value: gamepad.buttons[i].value
-        });
-      }
-      return buttons;
-    }
-
-    function getGamepadAxes(gamepad) {
-      var axes = [];
-      for (var i = 0; i < gamepad.axes.length; i++) {
-        axes.push(gamepad.axes[i]);
-      }
-      return axes;
-    }
-
     var vrGamepads = []
     for (var i = 0; i < gamepads.length; ++i) {
       var gamepad = gamepads[i];
@@ -248,26 +261,26 @@
         if (gamepad.pose || gamepad.displayId) {
           var position = gamepad.pose && gamepad.pose.position;
           var orientation = gamepad.pose && gamepad.pose.orientation;
+          var linearAcceleration = gamepad.pose && gamepad.pose.linearAcceleration;
+          var linearVelocity = gamepad.pose && gamepad.pose.linearVelocity;
 
-          if (!position) {
-            position = [0, 0, 0];
-          }
-          if (!orientation) {
-            orientation = [0, 0, 0, 1];
-          }
-
-          // flips axis for use in Unity.
-          position[2] *= -1;
-          orientation[0] *= -1;
-          orientation[1] *= -1;
+          position = position ? this.GLVec3ToUnity(position) : [0, 0, 0];
+          orientation = orientation ? this.GLQuaternionToUnity(orientation) : [0, 0, 0, 1];
+          linearAcceleration = linearAcceleration ? this.GLVec3ToUnity(linearAcceleration) : [0, 0, 0];
+          linearVelocity = linearVelocity ? this.GLVec3ToUnity(linearVelocity) : [0, 0, 0];
 
           vrGamepads.push({
+            id: gamepad.id,
             index: gamepad.index,
             hand: gamepad.hand,
-            buttons: getGamepadButtons(gamepad),
-            axes: getGamepadAxes(gamepad),
+            buttons: this.getGamepadButtons(gamepad),
+            axes: this.getGamepadAxes(gamepad),
+            hasOrientation: gamepad.pose.hasOrientation,
+            hasPosition: gamepad.pose.hasPosition,
             orientation: Array.from(orientation),
-            position: Array.from(position)
+            position: Array.from(position),
+            linearAcceleration: Array.from(linearAcceleration),
+            linearVelocity: Array.from(linearVelocity)
           });
         }
       }

@@ -44,11 +44,16 @@ public class WebVRManager : MonoBehaviour
         Matrix4x4 sitStandMatrix);
     public event HeadsetUpdate OnHeadsetUpdate;
    
-    public delegate void ControllerUpdate(int index, 
-        string hand, 
-        Vector3 position, 
-        Quaternion rotation, 
-        Matrix4x4 sitStand, 
+    public delegate void ControllerUpdate(string id,
+        int index, 
+        string hand,
+        bool hasOrientation,
+        bool hasPosition,
+        Quaternion orientation,
+        Vector3 position,
+        Vector3 linearAcceleration,
+        Vector3 linearVelocity,
+        Matrix4x4 sitStand,
         WebVRControllerButton[] buttons,
         float[] axes);
     public event ControllerUpdate OnControllerUpdate;
@@ -116,10 +121,23 @@ public class WebVRManager : MonoBehaviour
             foreach (WebVRControllerData controllerData in webVRData.controllers)
             {
                 Vector3 position = new Vector3 (controllerData.position [0], controllerData.position [1], controllerData.position [2]);
-                Quaternion rotation = new Quaternion (controllerData.orientation [0], controllerData.orientation [1], controllerData.orientation [2], controllerData.orientation [3]);
+                Quaternion orientation = new Quaternion (controllerData.orientation [0], controllerData.orientation [1], controllerData.orientation [2], controllerData.orientation [3]);
+                Vector3 linearAcceleration = new Vector3 (controllerData.linearAcceleration [0], controllerData.linearAcceleration [1], controllerData.linearAcceleration [2]);
+                Vector3 linearVelocity = new Vector3 (controllerData.linearVelocity [0], controllerData.linearVelocity [1], controllerData.linearVelocity [2]);
 
                 if (OnControllerUpdate != null)
-                    OnControllerUpdate(controllerData.index, controllerData.hand, position, rotation, sitStand, controllerData.buttons, controllerData.axes);
+                    OnControllerUpdate(controllerData.id,
+                        controllerData.index,
+                        controllerData.hand,
+                        controllerData.hasOrientation,
+                        controllerData.hasPosition,
+                        orientation,
+                        position,
+                        linearAcceleration,
+                        linearVelocity,
+                        sitStand,
+                        controllerData.buttons,
+                        controllerData.axes);
             }
         }
     }
@@ -209,10 +227,15 @@ public class WebVRManager : MonoBehaviour
     [System.Serializable]
     private class WebVRControllerData
     {
+        public string id = null;
         public int index = 0;
         public string hand = null;
+        public bool hasOrientation = false;
+        public bool hasPosition = false;
         public float[] orientation = null;
         public float[] position = null;
+        public float[] linearAcceleration = null;
+        public float[] linearVelocity = null;
         public float[] axes = null;
         public WebVRControllerButton[] buttons = new WebVRControllerButton[0];
     }    

@@ -29,6 +29,8 @@ public class WebVRController : MonoBehaviour
     [Tooltip("Controller input settings.")]
     public WebVRControllerInputMap inputMap;
     [HideInInspector]
+    public bool isActive = false;
+    [HideInInspector]
     public int index;
     [HideInInspector]
     public Vector3 position;
@@ -162,8 +164,18 @@ public class WebVRController : MonoBehaviour
         return false;
     }
 
-    private void onControllerUpdate(
-        int index, string handValue, Vector3 position, Quaternion rotation, Matrix4x4 sitStand, WebVRControllerButton[] buttonValues, float[] axesValues)
+    private void onControllerUpdate(string id,
+        int index,
+        string handValue,
+        bool hasOrientation,
+        bool hasPosition,
+        Quaternion orientation,
+        Vector3 position,
+        Vector3 linearAcceleration,
+        Vector3 linearVelocity,
+        Matrix4x4 sitStand,
+        WebVRControllerButton[] buttonValues,
+        float[] axesValues)
     {
         if (handFromString(handValue) == hand)
         {
@@ -172,12 +184,12 @@ public class WebVRController : MonoBehaviour
                 sitStand.GetColumn (2),
                 sitStand.GetColumn (1)
             );
-            transform.rotation = sitStandRotation * rotation;
+            transform.rotation = sitStandRotation * orientation;
             transform.position = sitStand.MultiplyPoint(position);
 
             UpdateButtons(buttonValues);
             axes = axesValues;
-        }	
+        }
     }
 
     private WebVRControllerHand handFromString(string handValue)
