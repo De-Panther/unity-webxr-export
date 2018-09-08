@@ -219,19 +219,6 @@
     );
   }
 
-  // WebGL Vector 3 to Unity compatible Vector3
-  VRManager.prototype.GLVec3ToUnity = function(v) {
-    v[2] *= -1;
-    return v;
-  }
-
-  // WebGL Quaternion to Unity compatible Quaternion
-  VRManager.prototype.GLQuaternionToUnity = function(q) {
-    q[0] *= -1;
-    q[1] *= -1;
-    return q;
-  }
-
   VRManager.prototype.getGamepadAxes = function(gamepad) {
     var axes = [];
     for (var i = 0; i < gamepad.axes.length; i++) {
@@ -309,6 +296,39 @@
     this.perfStatus.innerHTML = this.fps;
   }
 
+  // Convert WebGL to Unity compatible Vector3
+  VRManager.prototype.GLVec3ToUnity = function(v) {
+    v[2] *= -1;
+    return v;
+  }
+
+  // Convert WebGL to Unity compatible Quaternion
+  VRManager.prototype.GLQuaternionToUnity = function(q) {
+    q[0] *= -1;
+    q[1] *= -1;
+    return q;
+  }
+
+  // Convert WebGL to Unity Projection Matrix4
+  VRManager.prototype.GLProjectionToUnity = function(m) {
+    var out = mat4.create();
+    mat4.copy(out, m)
+    mat4.transpose(out, out);
+    return out;
+  }
+
+  // Convert WebGL to Unity View Matrix4
+  VRManager.prototype.GLViewToUnity = function(m) {
+    var out = mat4.create();
+    mat4.copy(out, m);
+    mat4.transpose(out, out);
+    out[2] *= -1;
+    out[6] *= -1;
+    out[10] *= -1;
+    out[14] *= -1;
+    return out;
+  }
+
   VRManager.prototype.animate = function () {
     if (!this.vrDisplay) {
       return;
@@ -334,25 +354,10 @@
     vrData.frameData = new VRFrameData();
     this.vrDisplay.getFrameData(vrData.frameData);
 
-    // transpose and flip matrix axis for use in Unity.
-    mat4.copy(vrData.leftProjectionMatrix, vrData.frameData.leftProjectionMatrix);
-    mat4.transpose(vrData.leftProjectionMatrix, vrData.leftProjectionMatrix);
-    mat4.copy(vrData.rightProjectionMatrix, vrData.frameData.rightProjectionMatrix);
-    mat4.transpose(vrData.rightProjectionMatrix, vrData.rightProjectionMatrix);
-
-    mat4.copy(vrData.leftViewMatrix, vrData.frameData.leftViewMatrix);
-    mat4.transpose(vrData.leftViewMatrix, vrData.leftViewMatrix);
-    vrData.leftViewMatrix[2] *= -1;
-    vrData.leftViewMatrix[6] *= -1;
-    vrData.leftViewMatrix[10] *= -1;
-    vrData.leftViewMatrix[14] *= -1;
-
-    mat4.copy(vrData.rightViewMatrix, vrData.frameData.rightViewMatrix);
-    mat4.transpose(vrData.rightViewMatrix, vrData.rightViewMatrix);
-    vrData.rightViewMatrix[2] *= -1;
-    vrData.rightViewMatrix[6] *= -1;
-    vrData.rightViewMatrix[10] *= -1;
-    vrData.rightViewMatrix[14] *= -1;
+    vrData.leftProjectionMatrix = this.GLProjectionToUnity(vrData.frameData.leftProjectionMatrix);
+    vrData.rightProjectionMatrix = this.GLProjectionToUnity(vrData.frameData.rightProjectionMatrix);
+    vrData.rightViewMatrix = this.GLViewToUnity(vrData.frameData.rightViewMatrix);
+    vrData.leftViewMatrix = this.GLViewToUnity(vrData.frameData.leftViewMatrix);
 
     // Sit Stand transform
     if (this.vrDisplay.stageParameters) {
