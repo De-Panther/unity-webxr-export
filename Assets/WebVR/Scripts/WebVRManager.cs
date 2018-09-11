@@ -268,11 +268,11 @@ public class WebVRManager : MonoBehaviour
         #endif
 
         if (OnHeadsetUpdate != null) {
-            Matrix4x4 leftProjectionMatrix = numbersToMatrix(GetFromSharedArray(0));
-            Matrix4x4 rightProjectionMatrix = numbersToMatrix(GetFromSharedArray(1));
-            Matrix4x4 leftViewMatrix = numbersToMatrix(GetFromSharedArray(2));
-            Matrix4x4 rightViewMatrix = numbersToMatrix(GetFromSharedArray(3));
-            Matrix4x4 sitStandMatrix = numbersToMatrix(GetFromSharedArray(4));
+            Matrix4x4 leftProjectionMatrix = WebVRMatrixUtil.NumbersToMatrix(GetFromSharedArray(0));
+            Matrix4x4 rightProjectionMatrix = WebVRMatrixUtil.NumbersToMatrix(GetFromSharedArray(1));
+            Matrix4x4 leftViewMatrix = WebVRMatrixUtil.NumbersToMatrix(GetFromSharedArray(2));
+            Matrix4x4 rightViewMatrix = WebVRMatrixUtil.NumbersToMatrix(GetFromSharedArray(3));
+            Matrix4x4 sitStandMatrix = WebVRMatrixUtil.NumbersToMatrix(GetFromSharedArray(4));
 
             sitStand = sitStandMatrix;
 
@@ -283,28 +283,5 @@ public class WebVRManager : MonoBehaviour
                 rightViewMatrix,
                 sitStand);
          }
-    }
-
-    // Utility functions
-    private Matrix4x4 numbersToMatrix(float[] array)
-    {
-        var mat = new Matrix4x4 ();
-        mat.m00 = array[0];
-        mat.m01 = array[1];
-        mat.m02 = array[2];
-        mat.m03 = array[3];
-        mat.m10 = array[4];
-        mat.m11 = array[5];
-        mat.m12 = array[6];
-        mat.m13 = array[7];
-        mat.m20 = array[8];
-        mat.m21 = array[9];
-        mat.m22 = array[10];
-        mat.m23 = array[11];
-        mat.m30 = array[12];
-        mat.m31 = array[13];
-        mat.m32 = array[14];
-        mat.m33 = array[15];
-        return mat;
     }
 }

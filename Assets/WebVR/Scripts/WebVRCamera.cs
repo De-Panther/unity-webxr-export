@@ -67,33 +67,10 @@ public class WebVRCamera : MonoBehaviour
     {
         if (vrActive)
         {
-            SetTransformFromViewMatrix (cameraL.transform, leftViewMatrix * sitStandMatrix.inverse);
+            WebVRMatrixUtil.SetTransformFromViewMatrix (cameraL.transform, leftViewMatrix * sitStandMatrix.inverse);
             cameraL.projectionMatrix = leftProjectionMatrix;
-            SetTransformFromViewMatrix (cameraR.transform, rightViewMatrix * sitStandMatrix.inverse);
+            WebVRMatrixUtil.SetTransformFromViewMatrix (cameraR.transform, rightViewMatrix * sitStandMatrix.inverse);
             cameraR.projectionMatrix = rightProjectionMatrix;
         }
-    }
-
-    // According to https://answers.unity.com/questions/402280/how-to-decompose-a-trs-matrix.html
-    private void SetTransformFromViewMatrix(Transform transform, Matrix4x4 webVRViewMatrix)
-    {
-        Matrix4x4 trs = TransformViewMatrixToTRS(webVRViewMatrix);
-        transform.localPosition = trs.GetColumn(3);
-        transform.localRotation = Quaternion.LookRotation(trs.GetColumn(2), trs.GetColumn(1));
-        transform.localScale = new Vector3(
-            trs.GetColumn(0).magnitude,
-            trs.GetColumn(1).magnitude,
-            trs.GetColumn(2).magnitude
-        );
-    }
-
-    // According to https://forum.unity.com/threads/reproducing-cameras-worldtocameramatrix.365645/#post-2367177
-    private Matrix4x4 TransformViewMatrixToTRS(Matrix4x4 openGLViewMatrix)
-    {
-        openGLViewMatrix.m20 *= -1;
-        openGLViewMatrix.m21 *= -1;
-        openGLViewMatrix.m22 *= -1;
-        openGLViewMatrix.m23 *= -1;
-        return openGLViewMatrix.inverse;
     }
 }

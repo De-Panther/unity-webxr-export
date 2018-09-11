@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.XR;
 
 public enum WebVRControllerHand { NONE, LEFT, RIGHT };
 
@@ -28,6 +29,8 @@ public class WebVRController : MonoBehaviour
     public WebVRControllerHand hand = WebVRControllerHand.NONE;
     [Tooltip("Controller input settings.")]
     public WebVRControllerInputMap inputMap;
+    [Tooltip("Controller position if no position data is present.")]
+    public Vector3 controllerOffset = new Vector3(0, -0.3f, 0.4f);
     [HideInInspector]
     public bool isActive = false;
     [HideInInspector]
@@ -40,6 +43,8 @@ public class WebVRController : MonoBehaviour
     public Matrix4x4 sitStand;
     private float[] axes;
 
+    private XRNode handNode;
+    private Quaternion headRotation;
     private Dictionary<string, WebVRControllerButton> buttonStates = new Dictionary<string, WebVRControllerButton>();
 
     // Updates button states from Web gamepad API.
@@ -164,6 +169,16 @@ public class WebVRController : MonoBehaviour
         return false;
     }
 
+    private void onHeadsetUpdate(Matrix4x4 leftProjectionMatrix,
+        Matrix4x4 rightProjectionMatrix,
+        Matrix4x4 leftViewMatrix,
+        Matrix4x4 rightViewMatrix,
+        Matrix4x4 sitStandMatrix)
+    {
+        Matrix4x4 trs = WebVRMatrixUtil.TransformViewMatrixToTRS(leftViewMatrix);
+        this.headRotation = Quaternion.LookRotation(trs.GetColumn(2), trs.GetColumn(1));
+    }
+
     private void onControllerUpdate(string id,
         int index,
         string handValue,
@@ -179,13 +194,26 @@ public class WebVRController : MonoBehaviour
     {
         if (handFromString(handValue) == hand)
         {
+            SetVisible(true);
+
             // Apply controller orientation and position.
             Quaternion sitStandRotation = Quaternion.LookRotation (
                 sitStand.GetColumn (2),
                 sitStand.GetColumn (1)
             );
+
+            if (hasPosition)
+            {
+                position = sitStand.MultiplyPoint(position);
+            }
+            else
+            {
+                Quaternion newRotation = Quaternion.Euler(0, this.headRotation.eulerAngles.y, 0);
+                position = newRotation * sitStand.MultiplyPoint(this.controllerOffset);
+            }
+
             transform.rotation = sitStandRotation * orientation;
-            transform.position = sitStand.MultiplyPoint(position);
+            transform.position = position;
 
             UpdateButtons(buttonValues);
             axes = axesValues;
@@ -209,22 +237,30 @@ public class WebVRController : MonoBehaviour
         return handParsed;
     }
 
+    private void SetVisible(bool visible) {
+        Renderer[] rendererComponents = GetComponentsInChildren<Renderer>();
+        {
+            foreach (Renderer component in rendererComponents) {
+                component.enabled = visible;
+            }
+        }
+    }
+
     void Update()
     {
         // Use Unity XR Input when enabled. When using WebVR, updates are performed onControllerUpdate.
-        if (UnityEngine.XR.XRDevice.isPresent)
+        if (XRDevice.isPresent)
         {
-            if (hand == WebVRControllerHand.LEFT)
-            {
-                transform.position = UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.LeftHand);
-                transform.rotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.LeftHand);
-            }
+            SetVisible(true);
 
-            if (hand == WebVRControllerHand.RIGHT)
-            {
-                transform.position = UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.RightHand);
-                transform.rotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.RightHand);
-            }
+            if (this.hand == WebVRControllerHand.LEFT)
+                handNode = XRNode.LeftHand;
+
+            if (this.hand == WebVRControllerHand.RIGHT)
+               handNode = XRNode.RightHand;
+
+            transform.position = InputTracking.GetLocalPosition(handNode);
+            transform.rotation = InputTracking.GetLocalRotation(handNode);
 
             foreach(WebVRControllerInput input in inputMap.inputs)
             {
@@ -247,10 +283,14 @@ public class WebVRController : MonoBehaviour
             return;
         }
         WebVRManager.Instance.OnControllerUpdate += onControllerUpdate;
+        WebVRManager.Instance.OnHeadsetUpdate += onHeadsetUpdate;
+        SetVisible(false);
     }
 
     void OnDisabled()
     {
         WebVRManager.Instance.OnControllerUpdate -= onControllerUpdate;
+        WebVRManager.Instance.OnHeadsetUpdate -= onHeadsetUpdate;
+        SetVisible(false);
     }
 }
