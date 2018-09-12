@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.XR;
 
 public enum WebVRControllerHand { NONE, LEFT, RIGHT };
 
@@ -28,6 +29,12 @@ public class WebVRController : MonoBehaviour
     public WebVRControllerHand hand = WebVRControllerHand.NONE;
     [Tooltip("Controller input settings.")]
     public WebVRControllerInputMap inputMap;
+    [Tooltip("Simulate 3dof controller")]
+    public bool simulate3dof = false;
+    [Tooltip("Controller position if no position data is present.")]
+    public Vector3 controllerOffset = new Vector3(0, -0.3f, 0.4f);
+    [HideInInspector]
+    public bool isActive = false;
     [HideInInspector]
     public int index;
     [HideInInspector]
@@ -38,6 +45,9 @@ public class WebVRController : MonoBehaviour
     public Matrix4x4 sitStand;
     private float[] axes;
 
+    private XRNode handNode;
+    private Quaternion headRotation;
+    private Vector3 headPosition;
     private Dictionary<string, WebVRControllerButton> buttonStates = new Dictionary<string, WebVRControllerButton>();
 
     // Updates button states from Web gamepad API.
@@ -162,22 +172,60 @@ public class WebVRController : MonoBehaviour
         return false;
     }
 
-    private void onControllerUpdate(
-        int index, string handValue, Vector3 position, Quaternion rotation, Matrix4x4 sitStand, WebVRControllerButton[] buttonValues, float[] axesValues)
+    private void onHeadsetUpdate(Matrix4x4 leftProjectionMatrix,
+        Matrix4x4 rightProjectionMatrix,
+        Matrix4x4 leftViewMatrix,
+        Matrix4x4 rightViewMatrix,
+        Matrix4x4 sitStandMatrix)
+    {
+        Matrix4x4 trs = WebVRMatrixUtil.TransformViewMatrixToTRS(leftViewMatrix);
+        this.headRotation = Quaternion.LookRotation(trs.GetColumn(2), trs.GetColumn(1));
+        this.headPosition = trs.GetColumn(3);
+    }
+
+    private void onControllerUpdate(string id,
+        int index,
+        string handValue,
+        bool hasOrientation,
+        bool hasPosition,
+        Quaternion orientation,
+        Vector3 position,
+        Vector3 linearAcceleration,
+        Vector3 linearVelocity,
+        Matrix4x4 sitStand,
+        WebVRControllerButton[] buttonValues,
+        float[] axesValues)
     {
         if (handFromString(handValue) == hand)
         {
-            // Apply controller orientation and position.
-            Quaternion sitStandRotation = Quaternion.LookRotation (
-                sitStand.GetColumn (2),
-                sitStand.GetColumn (1)
-            );
-            transform.rotation = sitStandRotation * rotation;
-            transform.position = sitStand.MultiplyPoint(position);
+            SetVisible(true);
+
+            if (hasPosition)
+            {
+                position = sitStand.MultiplyPoint(position);
+                if (this.simulate3dof)
+                {
+                    // to simulate 3dof controllers, we follow headset position and rotation on Y axis.
+                    Quaternion headYRotation = Quaternion.Euler(0, this.headRotation.eulerAngles.y, 0);
+                    position = (headYRotation * this.controllerOffset) + sitStand.MultiplyPoint(this.headPosition);
+                }
+            }
+            else
+            {
+                // for 3dof only controllers, follow headset rotation on Y axis.
+                Quaternion headYRotation = Quaternion.Euler(0, this.headRotation.eulerAngles.y, 0);
+                position = headYRotation * sitStand.MultiplyPoint(this.controllerOffset);
+            }
+
+            Quaternion sitStandRotation = Quaternion.LookRotation(sitStand.GetColumn (2), sitStand.GetColumn (1));
+            Quaternion rotation = sitStandRotation * orientation;
+
+            transform.rotation = rotation;
+            transform.position = position;
 
             UpdateButtons(buttonValues);
-            axes = axesValues;
-        }	
+            this.axes = axesValues;
+        }
     }
 
     private WebVRControllerHand handFromString(string handValue)
@@ -197,21 +245,40 @@ public class WebVRController : MonoBehaviour
         return handParsed;
     }
 
+    private void SetVisible(bool visible) {
+        Renderer[] rendererComponents = GetComponentsInChildren<Renderer>();
+        {
+            foreach (Renderer component in rendererComponents) {
+                component.enabled = visible;
+            }
+        }
+    }
+
     void Update()
     {
         // Use Unity XR Input when enabled. When using WebVR, updates are performed onControllerUpdate.
-        if (UnityEngine.XR.XRDevice.isPresent)
+        if (XRDevice.isPresent)
         {
-            if (hand == WebVRControllerHand.LEFT)
-            {
-                transform.position = UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.LeftHand);
-                transform.rotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.LeftHand);
-            }
+            SetVisible(true);
 
-            if (hand == WebVRControllerHand.RIGHT)
+            if (this.hand == WebVRControllerHand.LEFT)
+                handNode = XRNode.LeftHand;
+
+            if (this.hand == WebVRControllerHand.RIGHT)
+               handNode = XRNode.RightHand;
+
+            if (this.simulate3dof)
             {
-                transform.position = UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.RightHand);
-                transform.rotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.RightHand);
+                // to simulate 3dof controllers, we follow headset position and rotation on Y axis.
+                Quaternion headRotation = InputTracking.GetLocalRotation(XRNode.Head);
+                Quaternion headYRotation = Quaternion.Euler(0, headRotation.eulerAngles.y, 0);
+                transform.position = (headYRotation * this.controllerOffset) + InputTracking.GetLocalPosition(XRNode.Head);
+                transform.rotation = InputTracking.GetLocalRotation(handNode);
+            }
+            else
+            {
+                transform.position = InputTracking.GetLocalPosition(handNode);
+                transform.rotation = InputTracking.GetLocalRotation(handNode);
             }
 
             foreach(WebVRControllerInput input in inputMap.inputs)
@@ -235,10 +302,14 @@ public class WebVRController : MonoBehaviour
             return;
         }
         WebVRManager.Instance.OnControllerUpdate += onControllerUpdate;
+        WebVRManager.Instance.OnHeadsetUpdate += onHeadsetUpdate;
+        SetVisible(false);
     }
 
     void OnDisabled()
     {
         WebVRManager.Instance.OnControllerUpdate -= onControllerUpdate;
+        WebVRManager.Instance.OnHeadsetUpdate -= onHeadsetUpdate;
+        SetVisible(false);
     }
 }

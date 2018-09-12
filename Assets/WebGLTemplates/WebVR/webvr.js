@@ -219,27 +219,27 @@
     );
   }
 
+  VRManager.prototype.getGamepadAxes = function(gamepad) {
+    var axes = [];
+    for (var i = 0; i < gamepad.axes.length; i++) {
+      axes.push(gamepad.axes[i]);
+    }
+    return axes;
+  }
+
+  VRManager.prototype.getGamepadButtons = function(gamepad) {
+    var buttons = [];
+    for (var i = 0; i < gamepad.buttons.length; i++) {
+      buttons.push({
+        pressed: gamepad.buttons[i].pressed,
+        touched: gamepad.buttons[i].touched,
+        value: gamepad.buttons[i].value
+      });
+    }
+    return buttons;
+  }
+
   VRManager.prototype.getGamepads = function(gamepads) {
-    function getGamepadButtons(gamepad) {
-      var buttons = [];
-      for (var i = 0; i < gamepad.buttons.length; i++) {
-        buttons.push({
-          pressed: gamepad.buttons[i].pressed,
-          touched: gamepad.buttons[i].touched,
-          value: gamepad.buttons[i].value
-        });
-      }
-      return buttons;
-    }
-
-    function getGamepadAxes(gamepad) {
-      var axes = [];
-      for (var i = 0; i < gamepad.axes.length; i++) {
-        axes.push(gamepad.axes[i]);
-      }
-      return axes;
-    }
-
     var vrGamepads = []
     for (var i = 0; i < gamepads.length; ++i) {
       var gamepad = gamepads[i];
@@ -248,26 +248,26 @@
         if (gamepad.pose || gamepad.displayId) {
           var position = gamepad.pose && gamepad.pose.position;
           var orientation = gamepad.pose && gamepad.pose.orientation;
+          var linearAcceleration = gamepad.pose && gamepad.pose.linearAcceleration;
+          var linearVelocity = gamepad.pose && gamepad.pose.linearVelocity;
 
-          if (!position) {
-            position = [0, 0, 0];
-          }
-          if (!orientation) {
-            orientation = [0, 0, 0, 1];
-          }
-
-          // flips axis for use in Unity.
-          position[2] *= -1;
-          orientation[0] *= -1;
-          orientation[1] *= -1;
+          position = position ? this.GLVec3ToUnity(position) : [0, 0, 0];
+          orientation = orientation ? this.GLQuaternionToUnity(orientation) : [0, 0, 0, 1];
+          linearAcceleration = linearAcceleration ? this.GLVec3ToUnity(linearAcceleration) : [0, 0, 0];
+          linearVelocity = linearVelocity ? this.GLVec3ToUnity(linearVelocity) : [0, 0, 0];
 
           vrGamepads.push({
+            id: gamepad.id,
             index: gamepad.index,
             hand: gamepad.hand,
-            buttons: getGamepadButtons(gamepad),
-            axes: getGamepadAxes(gamepad),
+            buttons: this.getGamepadButtons(gamepad),
+            axes: this.getGamepadAxes(gamepad),
+            hasOrientation: gamepad.pose.hasOrientation,
+            hasPosition: gamepad.pose.hasPosition,
             orientation: Array.from(orientation),
-            position: Array.from(position)
+            position: Array.from(position),
+            linearAcceleration: Array.from(linearAcceleration),
+            linearVelocity: Array.from(linearVelocity)
           });
         }
       }
@@ -296,6 +296,39 @@
     this.perfStatus.innerHTML = this.fps;
   }
 
+  // Convert WebGL to Unity compatible Vector3
+  VRManager.prototype.GLVec3ToUnity = function(v) {
+    v[2] *= -1;
+    return v;
+  }
+
+  // Convert WebGL to Unity compatible Quaternion
+  VRManager.prototype.GLQuaternionToUnity = function(q) {
+    q[0] *= -1;
+    q[1] *= -1;
+    return q;
+  }
+
+  // Convert WebGL to Unity Projection Matrix4
+  VRManager.prototype.GLProjectionToUnity = function(m) {
+    var out = mat4.create();
+    mat4.copy(out, m)
+    mat4.transpose(out, out);
+    return out;
+  }
+
+  // Convert WebGL to Unity View Matrix4
+  VRManager.prototype.GLViewToUnity = function(m) {
+    var out = mat4.create();
+    mat4.copy(out, m);
+    mat4.transpose(out, out);
+    out[2] *= -1;
+    out[6] *= -1;
+    out[10] *= -1;
+    out[14] *= -1;
+    return out;
+  }
+
   VRManager.prototype.animate = function () {
     if (!this.vrDisplay) {
       return;
@@ -321,25 +354,10 @@
     vrData.frameData = new VRFrameData();
     this.vrDisplay.getFrameData(vrData.frameData);
 
-    // transpose and flip matrix axis for use in Unity.
-    mat4.copy(vrData.leftProjectionMatrix, vrData.frameData.leftProjectionMatrix);
-    mat4.transpose(vrData.leftProjectionMatrix, vrData.leftProjectionMatrix);
-    mat4.copy(vrData.rightProjectionMatrix, vrData.frameData.rightProjectionMatrix);
-    mat4.transpose(vrData.rightProjectionMatrix, vrData.rightProjectionMatrix);
-
-    mat4.copy(vrData.leftViewMatrix, vrData.frameData.leftViewMatrix);
-    mat4.transpose(vrData.leftViewMatrix, vrData.leftViewMatrix);
-    vrData.leftViewMatrix[2] *= -1;
-    vrData.leftViewMatrix[6] *= -1;
-    vrData.leftViewMatrix[10] *= -1;
-    vrData.leftViewMatrix[14] *= -1;
-
-    mat4.copy(vrData.rightViewMatrix, vrData.frameData.rightViewMatrix);
-    mat4.transpose(vrData.rightViewMatrix, vrData.rightViewMatrix);
-    vrData.rightViewMatrix[2] *= -1;
-    vrData.rightViewMatrix[6] *= -1;
-    vrData.rightViewMatrix[10] *= -1;
-    vrData.rightViewMatrix[14] *= -1;
+    vrData.leftProjectionMatrix = this.GLProjectionToUnity(vrData.frameData.leftProjectionMatrix);
+    vrData.rightProjectionMatrix = this.GLProjectionToUnity(vrData.frameData.rightProjectionMatrix);
+    vrData.rightViewMatrix = this.GLViewToUnity(vrData.frameData.rightViewMatrix);
+    vrData.leftViewMatrix = this.GLViewToUnity(vrData.frameData.leftViewMatrix);
 
     // Sit Stand transform
     if (this.vrDisplay.stageParameters) {

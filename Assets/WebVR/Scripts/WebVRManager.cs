@@ -44,11 +44,16 @@ public class WebVRManager : MonoBehaviour
         Matrix4x4 sitStandMatrix);
     public event HeadsetUpdate OnHeadsetUpdate;
    
-    public delegate void ControllerUpdate(int index, 
-        string hand, 
-        Vector3 position, 
-        Quaternion rotation, 
-        Matrix4x4 sitStand, 
+    public delegate void ControllerUpdate(string id,
+        int index, 
+        string hand,
+        bool hasOrientation,
+        bool hasPosition,
+        Quaternion orientation,
+        Vector3 position,
+        Vector3 linearAcceleration,
+        Vector3 linearVelocity,
+        Matrix4x4 sitStand,
         WebVRControllerButton[] buttons,
         float[] axes);
     public event ControllerUpdate OnControllerUpdate;
@@ -116,10 +121,23 @@ public class WebVRManager : MonoBehaviour
             foreach (WebVRControllerData controllerData in webVRData.controllers)
             {
                 Vector3 position = new Vector3 (controllerData.position [0], controllerData.position [1], controllerData.position [2]);
-                Quaternion rotation = new Quaternion (controllerData.orientation [0], controllerData.orientation [1], controllerData.orientation [2], controllerData.orientation [3]);
+                Quaternion orientation = new Quaternion (controllerData.orientation [0], controllerData.orientation [1], controllerData.orientation [2], controllerData.orientation [3]);
+                Vector3 linearAcceleration = new Vector3 (controllerData.linearAcceleration [0], controllerData.linearAcceleration [1], controllerData.linearAcceleration [2]);
+                Vector3 linearVelocity = new Vector3 (controllerData.linearVelocity [0], controllerData.linearVelocity [1], controllerData.linearVelocity [2]);
 
                 if (OnControllerUpdate != null)
-                    OnControllerUpdate(controllerData.index, controllerData.hand, position, rotation, sitStand, controllerData.buttons, controllerData.axes);
+                    OnControllerUpdate(controllerData.id,
+                        controllerData.index,
+                        controllerData.hand,
+                        controllerData.hasOrientation,
+                        controllerData.hasPosition,
+                        orientation,
+                        position,
+                        linearAcceleration,
+                        linearVelocity,
+                        sitStand,
+                        controllerData.buttons,
+                        controllerData.axes);
             }
         }
     }
@@ -209,10 +227,15 @@ public class WebVRManager : MonoBehaviour
     [System.Serializable]
     private class WebVRControllerData
     {
+        public string id = null;
         public int index = 0;
         public string hand = null;
+        public bool hasOrientation = false;
+        public bool hasPosition = false;
         public float[] orientation = null;
         public float[] position = null;
+        public float[] linearAcceleration = null;
+        public float[] linearVelocity = null;
         public float[] axes = null;
         public WebVRControllerButton[] buttons = new WebVRControllerButton[0];
     }    
@@ -245,11 +268,11 @@ public class WebVRManager : MonoBehaviour
         #endif
 
         if (OnHeadsetUpdate != null) {
-            Matrix4x4 leftProjectionMatrix = numbersToMatrix(GetFromSharedArray(0));
-            Matrix4x4 rightProjectionMatrix = numbersToMatrix(GetFromSharedArray(1));
-            Matrix4x4 leftViewMatrix = numbersToMatrix(GetFromSharedArray(2));
-            Matrix4x4 rightViewMatrix = numbersToMatrix(GetFromSharedArray(3));
-            Matrix4x4 sitStandMatrix = numbersToMatrix(GetFromSharedArray(4));
+            Matrix4x4 leftProjectionMatrix = WebVRMatrixUtil.NumbersToMatrix(GetFromSharedArray(0));
+            Matrix4x4 rightProjectionMatrix = WebVRMatrixUtil.NumbersToMatrix(GetFromSharedArray(1));
+            Matrix4x4 leftViewMatrix = WebVRMatrixUtil.NumbersToMatrix(GetFromSharedArray(2));
+            Matrix4x4 rightViewMatrix = WebVRMatrixUtil.NumbersToMatrix(GetFromSharedArray(3));
+            Matrix4x4 sitStandMatrix = WebVRMatrixUtil.NumbersToMatrix(GetFromSharedArray(4));
 
             sitStand = sitStandMatrix;
 
@@ -260,28 +283,5 @@ public class WebVRManager : MonoBehaviour
                 rightViewMatrix,
                 sitStand);
          }
-    }
-
-    // Utility functions
-    private Matrix4x4 numbersToMatrix(float[] array)
-    {
-        var mat = new Matrix4x4 ();
-        mat.m00 = array[0];
-        mat.m01 = array[1];
-        mat.m02 = array[2];
-        mat.m03 = array[3];
-        mat.m10 = array[4];
-        mat.m11 = array[5];
-        mat.m12 = array[6];
-        mat.m13 = array[7];
-        mat.m20 = array[8];
-        mat.m21 = array[9];
-        mat.m22 = array[10];
-        mat.m23 = array[11];
-        mat.m30 = array[12];
-        mat.m31 = array[13];
-        mat.m32 = array[14];
-        mat.m33 = array[15];
-        return mat;
     }
 }
