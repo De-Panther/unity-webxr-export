@@ -9,6 +9,8 @@ public enum WebVRState { ENABLED, NORMAL }
 
 public class WebVRManager : MonoBehaviour
 {
+    private static string GlobalName = "WebVRCameraSet";  
+  
     [Tooltip("Name of the key used to alternate between VR and normal mode. Leave blank to disable.")]
     public string toggleVRKeyName;
 
@@ -57,7 +59,7 @@ public class WebVRManager : MonoBehaviour
             if (instance == null)
             {
                 var managerInScene = FindObjectOfType<WebVRManager>();
-                var name = "WebVRManager";
+                var name = GlobalName;
 
                 if (managerInScene != null)
                 {
@@ -78,6 +80,11 @@ public class WebVRManager : MonoBehaviour
     {
         Debug.Log("Active Graphics Tier: " + Graphics.activeTier);
         instance = this;
+        
+        if(!GlobalName.Equals(instance.name)) {
+           Debug.LogError("The webvr.js script requires the WebVRManager gameobject to be named " 
+           + GlobalName + " for proper functioning");
+        }
                 
         if (instance.dontDestroyOnLoad)
         {
