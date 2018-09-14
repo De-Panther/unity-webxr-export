@@ -31,8 +31,10 @@ public class WebVRController : MonoBehaviour
     public WebVRControllerInputMap inputMap;
     [Tooltip("Simulate 3dof controller")]
     public bool simulate3dof = false;
-    [Tooltip("Controller position if no position data is present.")]
-    public Vector3 controllerOffset = new Vector3(0, -0.3f, 0.4f);
+    [Tooltip("Vector from head to elbow")]
+    public Vector3 eyesToElbow = new Vector3(0.1f, -0.4f, 0.15f);
+    [Tooltip("Vector from elbow to hand")]
+    public Vector3 elbowHand = new Vector3(0, 0, 0.25f);
     [HideInInspector]
     public bool isActive = false;
     [HideInInspector]
@@ -200,25 +202,19 @@ public class WebVRController : MonoBehaviour
         {
             SetVisible(true);
 
-            if (hasPosition)
-            {
-                position = sitStand.MultiplyPoint(position);
-                if (this.simulate3dof)
-                {
-                    // to simulate 3dof controllers, we follow headset position and rotation on Y axis.
-                    Quaternion headYRotation = Quaternion.Euler(0, this.headRotation.eulerAngles.y, 0);
-                    position = (headYRotation * this.controllerOffset) + sitStand.MultiplyPoint(this.headPosition);
-                }
+            Quaternion sitStandRotation = Quaternion.LookRotation(sitStand.GetColumn (2), sitStand.GetColumn (1));
+            Quaternion rotation = sitStandRotation * orientation;
+
+            if (!hasPosition || this.simulate3dof) {
+                position = applyArmModel(
+                    sitStand.MultiplyPoint(this.headPosition),
+                    rotation,
+                    this.headRotation);
             }
             else
             {
-                // for 3dof only controllers, follow headset rotation on Y axis.
-                Quaternion headYRotation = Quaternion.Euler(0, this.headRotation.eulerAngles.y, 0);
-                position = headYRotation * sitStand.MultiplyPoint(this.controllerOffset);
+                position = sitStand.MultiplyPoint(position);
             }
-
-            Quaternion sitStandRotation = Quaternion.LookRotation(sitStand.GetColumn (2), sitStand.GetColumn (1));
-            Quaternion rotation = sitStandRotation * orientation;
 
             transform.rotation = rotation;
             transform.position = position;
@@ -254,6 +250,27 @@ public class WebVRController : MonoBehaviour
         }
     }
 
+    // Arm model adapted from: https://github.com/aframevr/aframe/blob/master/src/components/tracked-controls.js
+    private Vector3 applyArmModel(Vector3 controllerPosition, Quaternion controllerRotation, Quaternion headRotation)
+    {
+        // Set offset for degenerate "arm model" to elbow.
+        Vector3 deltaControllerPosition = new Vector3(
+            this.eyesToElbow.x * (this.hand == WebVRControllerHand.LEFT ? -1 : this.hand == WebVRControllerHand.RIGHT ? 1 : 0),
+            this.eyesToElbow.y,
+            this.eyesToElbow.z);
+
+        // Apply camera Y rotation (not X or Z, so you can look down at your hand).
+        Quaternion headYRotation = Quaternion.Euler(0, headRotation.eulerAngles.y, 0);
+        deltaControllerPosition = (headYRotation * deltaControllerPosition);
+        controllerPosition += deltaControllerPosition;
+
+        // Set offset for forearm sticking out from elbow.
+        deltaControllerPosition.Set(this.elbowHand.x, this.elbowHand.y, this.elbowHand.z);
+        deltaControllerPosition = Quaternion.Euler(controllerRotation.eulerAngles.x, controllerRotation.eulerAngles.y, 0) * deltaControllerPosition;
+        controllerPosition += deltaControllerPosition;
+        return controllerPosition;
+    }
+
     void Update()
     {
         // Use Unity XR Input when enabled. When using WebVR, updates are performed onControllerUpdate.
@@ -269,10 +286,11 @@ public class WebVRController : MonoBehaviour
 
             if (this.simulate3dof)
             {
-                // to simulate 3dof controllers, we follow headset position and rotation on Y axis.
-                Quaternion headRotation = InputTracking.GetLocalRotation(XRNode.Head);
-                Quaternion headYRotation = Quaternion.Euler(0, headRotation.eulerAngles.y, 0);
-                transform.position = (headYRotation * this.controllerOffset) + InputTracking.GetLocalPosition(XRNode.Head);
+                transform.position = this.applyArmModel(
+                    InputTracking.GetLocalPosition(XRNode.Head), // we use head position as origin
+                    InputTracking.GetLocalRotation(handNode),
+                    InputTracking.GetLocalRotation(XRNode.Head)
+                );
                 transform.rotation = InputTracking.GetLocalRotation(handNode);
             }
             else
