@@ -35,16 +35,7 @@ public class WebVRController : MonoBehaviour
     public Vector3 eyesToElbow = new Vector3(0.1f, -0.4f, 0.15f);
     [Tooltip("Vector from elbow to hand")]
     public Vector3 elbowHand = new Vector3(0, 0, 0.25f);
-    [HideInInspector]
-    public bool isActive = false;
-    [HideInInspector]
-    public int index;
-    [HideInInspector]
-    public Vector3 position;
-    [HideInInspector]
-    public Quaternion rotation;
-    [HideInInspector]
-    public Matrix4x4 sitStand;
+    private Matrix4x4 sitStand;
     private float[] axes;
 
     private XRNode handNode;
@@ -183,6 +174,7 @@ public class WebVRController : MonoBehaviour
         Matrix4x4 trs = WebVRMatrixUtil.TransformViewMatrixToTRS(leftViewMatrix);
         this.headRotation = WebVRMatrixUtil.GetRotationFromMatrix(trs);
         this.headPosition = WebVRMatrixUtil.GetTranslationFromMatrix(trs);
+        this.sitStand = sitStandMatrix;
     }
 
     private void onControllerUpdate(string id,
@@ -194,7 +186,6 @@ public class WebVRController : MonoBehaviour
         Vector3 position,
         Vector3 linearAcceleration,
         Vector3 linearVelocity,
-        Matrix4x4 sitStand,
         WebVRControllerButton[] buttonValues,
         float[] axesValues)
     {
@@ -202,18 +193,18 @@ public class WebVRController : MonoBehaviour
         {
             SetVisible(true);
 
-            Quaternion sitStandRotation = WebVRMatrixUtil.GetRotationFromMatrix(sitStand);
+            Quaternion sitStandRotation = WebVRMatrixUtil.GetRotationFromMatrix(this.sitStand);
             Quaternion rotation = sitStandRotation * orientation;
 
             if (!hasPosition || this.simulate3dof) {
                 position = applyArmModel(
-                    sitStand.MultiplyPoint(this.headPosition),
+                    this.sitStand.MultiplyPoint(this.headPosition),
                     rotation,
                     this.headRotation);
             }
             else
             {
-                position = sitStand.MultiplyPoint(position);
+                position = this.sitStand.MultiplyPoint(position);
             }
 
             transform.rotation = rotation;
