@@ -181,8 +181,8 @@ public class WebVRController : MonoBehaviour
         Matrix4x4 sitStandMatrix)
     {
         Matrix4x4 trs = WebVRMatrixUtil.TransformViewMatrixToTRS(leftViewMatrix);
-        this.headRotation = Quaternion.LookRotation(trs.GetColumn(2), trs.GetColumn(1));
-        this.headPosition = trs.GetColumn(3);
+        this.headRotation = WebVRMatrixUtil.GetRotationFromMatrix(trs);
+        this.headPosition = WebVRMatrixUtil.GetTranslationFromMatrix(trs);
     }
 
     private void onControllerUpdate(string id,
@@ -202,7 +202,7 @@ public class WebVRController : MonoBehaviour
         {
             SetVisible(true);
 
-            Quaternion sitStandRotation = Quaternion.LookRotation(sitStand.GetColumn (2), sitStand.GetColumn (1));
+            Quaternion sitStandRotation = WebVRMatrixUtil.GetRotationFromMatrix(sitStand);
             Quaternion rotation = sitStandRotation * orientation;
 
             if (!hasPosition || this.simulate3dof) {

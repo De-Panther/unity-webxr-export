@@ -25,6 +25,16 @@ public static class WebVRMatrixUtil
         return openGLViewMatrix.inverse;
     }
 
+    public static Vector3 GetTranslationFromMatrix(Matrix4x4 mat)
+    {
+        return mat.GetColumn(3);
+    }
+
+    public static Quaternion GetRotationFromMatrix(Matrix4x4 mat)
+    {
+        return Quaternion.LookRotation(mat.GetColumn(2), mat.GetColumn(1));
+    }
+
     // Converts float array to Matrix4x4
     public static Matrix4x4 NumbersToMatrix(float[] array)
     {
