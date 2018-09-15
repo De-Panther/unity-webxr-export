@@ -6,8 +6,6 @@ using System.Runtime.InteropServices;
 
 public class WebVRCamera : MonoBehaviour
 {
-    private Matrix4x4 sitStand;
-
     private Camera cameraMain, cameraL, cameraR;
     private bool vrActive = false;
 

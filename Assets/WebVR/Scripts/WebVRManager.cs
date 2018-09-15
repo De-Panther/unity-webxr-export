@@ -185,7 +185,6 @@ public class WebVRManager : MonoBehaviour
         Instance.setVrState(WebVRState.NORMAL);
     }
 
-
     float[] GetFromSharedArray(int index)
     {
         float[] newArray = new float[16];
@@ -213,7 +212,7 @@ public class WebVRManager : MonoBehaviour
             toggleVrState();
         #endif
 
-        if (OnHeadsetUpdate != null) {
+        if (OnHeadsetUpdate != null && this.vrState == WebVRState.ENABLED) {
             Matrix4x4 leftProjectionMatrix = WebVRMatrixUtil.NumbersToMatrix(GetFromSharedArray(0));
             Matrix4x4 rightProjectionMatrix = WebVRMatrixUtil.NumbersToMatrix(GetFromSharedArray(1));
             Matrix4x4 leftViewMatrix = WebVRMatrixUtil.NumbersToMatrix(GetFromSharedArray(2));
