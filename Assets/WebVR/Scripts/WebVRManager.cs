@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.XR;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,26 +10,20 @@ public enum WebVRState { ENABLED, NORMAL }
 
 public class WebVRManager : MonoBehaviour
 {
-    private static string GlobalName = "WebVRCameraSet";  
-  
     [Tooltip("Name of the key used to alternate between VR and normal mode. Leave blank to disable.")]
     public string toggleVRKeyName;
-
-    [HideInInspector]
-    public WebVRState vrState = WebVRState.NORMAL;
-    
-    private static WebVRManager instance;
-
     [Tooltip("Preserve the manager across scenes changes.")]
     public bool dontDestroyOnLoad = true;
-    
     [Header("Tracking")]
-
     [Tooltip("Default height of camera if no room-scale transform is present.")]
     public float DefaultHeight = 1.2f;
-
     [Tooltip("Represents the size of physical space available for XR.")]
-    public UnityEngine.XR.TrackingSpaceType TrackingSpace = UnityEngine.XR.TrackingSpaceType.RoomScale;
+    public TrackingSpaceType TrackingSpace = TrackingSpaceType.RoomScale;
+
+    private static string GlobalName = "WebVRCameraSet";
+    private static WebVRManager instance;
+    [HideInInspector]
+    public WebVRState vrState = WebVRState.NORMAL;
 
     public delegate void VRCapabilitiesUpdate(WebVRDisplayCapabilities capabilities);
     public event VRCapabilitiesUpdate OnVRCapabilitiesUpdate;
@@ -56,6 +51,20 @@ public class WebVRManager : MonoBehaviour
         WebVRControllerButton[] buttons,
         float[] axes);
     public event ControllerUpdate OnControllerUpdate;
+
+    // link WebGL plugin for interacting with browser scripts.
+    [DllImport("__Internal")]
+    private static extern void ConfigureToggleVRKeyName(string keyName);
+
+    [DllImport("__Internal")]
+    private static extern void InitSharedArray(float[] array, int length);
+
+    [DllImport("__Internal")]
+    private static extern void ListenWebVRData();
+
+    // Shared array which we will load headset data in from webvr.jslib
+    // Array stores  5 matrices, each 16 values, stored linearly.
+    float[] sharedArray = new float[5 * 16];
 
     public static WebVRManager Instance {
         get
@@ -98,10 +107,10 @@ public class WebVRManager : MonoBehaviour
 
     private void SetTrackingSpaceType()
     {
-        if (UnityEngine.XR.XRDevice.isPresent)
+        if (XRDevice.isPresent)
         {
-            UnityEngine.XR.XRDevice.SetTrackingSpaceType(WebVRManager.Instance.TrackingSpace);
-            Debug.Log("Tracking Space: " + UnityEngine.XR.XRDevice.GetTrackingSpaceType());
+            XRDevice.SetTrackingSpaceType(WebVRManager.Instance.TrackingSpace);
+            Debug.Log("Tracking Space: " + XRDevice.GetTrackingSpaceType());
         }
     }
 
@@ -109,10 +118,6 @@ public class WebVRManager : MonoBehaviour
     public void OnWebVRData (string jsonString)
     {
         WebVRData webVRData = WebVRData.CreateFromJSON (jsonString);
-
-        // Reset RoomScale matrix if we are using Stationary tracking space.
-        if (TrackingSpace == UnityEngine.XR.TrackingSpaceType.Stationary)
-            sitStand = Matrix4x4.identity;
 
         // Update controllers
         if (webVRData.controllers.Length > 0)
@@ -137,7 +142,8 @@ public class WebVRManager : MonoBehaviour
 
     // Handles WebVR capabilities from browser
     public void OnVRCapabilities(string json) {
-        OnVRCapabilities(JsonUtility.FromJson<WebVRDisplayCapabilities>(json));
+        WebVRDisplayCapabilities capabilities = JsonUtility.FromJson<WebVRDisplayCapabilities>(json);
+        OnVRCapabilities(capabilities);
     }
 
     public void OnVRCapabilities(WebVRDisplayCapabilities capabilities) {
@@ -179,59 +185,15 @@ public class WebVRManager : MonoBehaviour
         Instance.setVrState(WebVRState.NORMAL);
     }
 
-    // Toggles performance HUD
-    public void TogglePerf()
+
+    float[] GetFromSharedArray(int index)
     {
-        showPerf = showPerf == false ? true : false;
-    }
-
-    // link WebGL plugin for interacting with browser scripts.
-    [DllImport("__Internal")]
-    private static extern void ConfigureToggleVRKeyName(string keyName);
-
-    [DllImport("__Internal")]
-    private static extern void InitSharedArray(float[] array, int length);
-
-    [DllImport("__Internal")]
-    private static extern void ListenWebVRData();
-
-    // Shared array which we will load headset data in from webvr.jslib
-    // Array stores  5 matrices, each 16 values, stored linearly.
-    float[] sharedArray = new float[5 * 16];
-
-    // show framerate UI
-    private bool showPerf = false;
-
-    private WebVRData webVRData;
-    private Matrix4x4 sitStand = Matrix4x4.identity;
-
-    // Data classes for WebVR data
-    [System.Serializable]
-    private class WebVRData
-    {
-        public float[] sitStand = null;
-        public WebVRControllerData[] controllers = new WebVRControllerData[0];
-        public static WebVRData CreateFromJSON(string jsonString)
-        {
-            return JsonUtility.FromJson<WebVRData> (jsonString);
+        float[] newArray = new float[16];
+        for (int i = 0; i < newArray.Length; i++) {
+            newArray[i] = sharedArray[index * 16 + i];
         }
+        return newArray;
     }
-
-    [System.Serializable]
-    private class WebVRControllerData
-    {
-        public string id = null;
-        public int index = 0;
-        public string hand = null;
-        public bool hasOrientation = false;
-        public bool hasPosition = false;
-        public float[] orientation = null;
-        public float[] position = null;
-        public float[] linearAcceleration = null;
-        public float[] linearVelocity = null;
-        public float[] axes = null;
-        public WebVRControllerButton[] buttons = new WebVRControllerButton[0];
-    }    
 
     void Start()
     {
@@ -241,15 +203,6 @@ public class WebVRManager : MonoBehaviour
         ListenWebVRData();
         #endif
         SetTrackingSpaceType();
-    }
-
-    float[] GetFromSharedArray(int index)
-    {
-        float[] newArray = new float[16];
-        for (int i = 0; i < newArray.Length; i++) {
-            newArray[i] = sharedArray[index * 16 + i];
-        }
-        return newArray;
     }
 
     void Update()
@@ -267,14 +220,12 @@ public class WebVRManager : MonoBehaviour
             Matrix4x4 rightViewMatrix = WebVRMatrixUtil.NumbersToMatrix(GetFromSharedArray(3));
             Matrix4x4 sitStandMatrix = WebVRMatrixUtil.NumbersToMatrix(GetFromSharedArray(4));
 
-            sitStand = sitStandMatrix;
-
             OnHeadsetUpdate(
                 leftProjectionMatrix,
                 rightProjectionMatrix,
                 leftViewMatrix,
                 rightViewMatrix,
-                sitStand);
+                sitStandMatrix);
          }
     }
 }
