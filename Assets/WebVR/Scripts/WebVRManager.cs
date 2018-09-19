@@ -27,7 +27,7 @@ public class WebVRManager : MonoBehaviour
 
     public delegate void VRCapabilitiesUpdate(WebVRDisplayCapabilities capabilities);
     public event VRCapabilitiesUpdate OnVRCapabilitiesUpdate;
-    
+
     public delegate void VRChange(WebVRState state);
     public event VRChange OnVRChange;
     
@@ -65,6 +65,8 @@ public class WebVRManager : MonoBehaviour
     // Shared array which we will load headset data in from webvr.jslib
     // Array stores  5 matrices, each 16 values, stored linearly.
     float[] sharedArray = new float[5 * 16];
+
+    private WebVRDisplayCapabilities capabilities;
 
     public static WebVRManager Instance {
         get
@@ -148,6 +150,7 @@ public class WebVRManager : MonoBehaviour
 
     public void OnVRCapabilities(WebVRDisplayCapabilities capabilities) {
         #if !UNITY_EDITOR && UNITY_WEBGL
+        this.capabilities = capabilities;
         if (!capabilities.canPresent)
             WebVRUI.displayElementId("novr");
         #endif
@@ -211,13 +214,20 @@ public class WebVRManager : MonoBehaviour
         if (quickToggleEnabled && Input.GetKeyUp(toggleVRKeyName))
             toggleVrState();
         #endif
+    }
 
+    void LateUpdate()
+    {
         if (OnHeadsetUpdate != null && this.vrState == WebVRState.ENABLED) {
             Matrix4x4 leftProjectionMatrix = WebVRMatrixUtil.NumbersToMatrix(GetFromSharedArray(0));
             Matrix4x4 rightProjectionMatrix = WebVRMatrixUtil.NumbersToMatrix(GetFromSharedArray(1));
             Matrix4x4 leftViewMatrix = WebVRMatrixUtil.NumbersToMatrix(GetFromSharedArray(2));
             Matrix4x4 rightViewMatrix = WebVRMatrixUtil.NumbersToMatrix(GetFromSharedArray(3));
             Matrix4x4 sitStandMatrix = WebVRMatrixUtil.NumbersToMatrix(GetFromSharedArray(4));
+            if (!this.capabilities.hasPosition)
+            {
+                sitStandMatrix = Matrix4x4.Translate(new Vector3(0, this.DefaultHeight, 0));
+            }
 
             OnHeadsetUpdate(
                 leftProjectionMatrix,
