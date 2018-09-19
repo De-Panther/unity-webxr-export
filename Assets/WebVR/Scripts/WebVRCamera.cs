@@ -1,12 +1,11 @@
 ﻿using UnityEngine;
+using UnityEngine.XR;
 using System.Linq;
 using System.Collections;
 using System.Runtime.InteropServices;
 
 public class WebVRCamera : MonoBehaviour
 {
-    private Matrix4x4 sitStand;
-
     private Camera cameraMain, cameraL, cameraR;
     private bool vrActive = false;
 
