@@ -1510,10 +1510,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   toggleVRKeyName: v
-  vrState: 1
   dontDestroyOnLoad: 1
   DefaultHeight: 1.2
   TrackingSpace: 1
+  vrState: 1
 --- !u!114 &114104781069495054
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1543,28 +1543,8 @@ MonoBehaviour:
   hand: 1
   inputMap: {fileID: 11400000, guid: b249a0801fba0f74198588a3ecb37bbe, type: 2}
   simulate3dof: 0
-  controllerOffset: {x: -0.15, y: -0.3, z: 0.4}
-  isActive: 0
-  index: 0
-  position: {x: 0, y: 0, z: 0}
-  rotation: {x: 0, y: 0, z: 0, w: 0}
-  sitStand:
-    e00: 0
-    e01: 0
-    e02: 0
-    e03: 0
-    e10: 0
-    e11: 0
-    e12: 0
-    e13: 0
-    e20: 0
-    e21: 0
-    e22: 0
-    e23: 0
-    e30: 0
-    e31: 0
-    e32: 0
-    e33: 0
+  eyesToElbow: {x: 0.1, y: -0.4, z: 0.15}
+  elbowHand: {x: 0, y: 0, z: 0.25}
 --- !u!114 &114243127810226890
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1601,28 +1581,8 @@ MonoBehaviour:
   hand: 2
   inputMap: {fileID: 11400000, guid: a760722b59f73e94287ddd9ffc44440f, type: 2}
   simulate3dof: 0
-  controllerOffset: {x: 0.15, y: -0.3, z: 0.4}
-  isActive: 0
-  index: 0
-  position: {x: 0, y: 0, z: 0}
-  rotation: {x: 0, y: 0, z: 0, w: 0}
-  sitStand:
-    e00: 0
-    e01: 0
-    e02: 0
-    e03: 0
-    e10: 0
-    e11: 0
-    e12: 0
-    e13: 0
-    e20: 0
-    e21: 0
-    e22: 0
-    e23: 0
-    e30: 0
-    e31: 0
-    e32: 0
-    e33: 0
+  eyesToElbow: {x: 0.1, y: -0.4, z: 0.15}
+  elbowHand: {x: 0, y: 0, z: 0.25}
 --- !u!114 &114589835210473740
 MonoBehaviour:
   m_ObjectHideFlags: 1
