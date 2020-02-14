@@ -1,83 +1,38 @@
-# Unity WebVR Assets
+# Unity WebXR Export
 
-Assets for creating [WebVR](https://webvr.rocks/)-enabled [Unity3D](https://unity3d.com/) projects.
+This is a project based on Mozilla's [Unity WebVR Export](https://github.com/mozilla/unity-webvr-export).
 
-**[Check out the demo now!](https://mozilla.github.io/unity-webvr-export/)**<br>
-[Read our blog post (February 2018).](https://hacks.mozilla.org/2018/02/create-vr-on-the-web-using-unity3d/)
+WebVR and WebXR, while having lots in common, are different in the way they calling a frame, using controllers, and the fact the WebXR have the ground for support AR and not just VR.
 
-[![Preview of Unity WebVR-exported project in the browser](https://raw.githubusercontent.com/mozilla/unity-webvr-export/master/img/preview.gif)](https://mozilla.github.io/unity-webvr-export/)
+That, and the fact that I want to use more updated version of Unity Editor and tools/practices, made me to create this fork.
 
-**[Free to download](https://assetstore.unity.com/packages/templates/systems/webvr-assets-109152)** and available now on the [Unity Asset Store](https://assetstore.unity.com/packages/templates/systems/webvr-assets-109152).
-
-<a href="https://assetstore.unity.com/packages/templates/systems/webvr-assets-109152" title="Download the WebVR Assets package for free on the Unity Asset Store">
-<img src="https://raw.githubusercontent.com/mozilla/unity-webvr-export/master/img/asset-store.png" width="640" alt="Download the WebVR Assets package for free on the Unity Asset Store">
-</a>
+The current docs are still in the repository as reference, but I modified this README file, as some of the links and info is no longer relevant or won't be relevant soon.
 
 <hr>
-
-## Getting started
-
-* [Setting up a Unity project for WebVR](./docs/project-setup.md)
-* [Controllers and input system](./docs/controllers.md)
-* [In-editor VR playback for rapid testing](./docs/xr-testing.md)
-* [Publishing](./docs/publishing.md)
-* [Adding Google Analytics to your game](./docs/customization/adding-ga.md)
-* [Troubleshooting and FAQ](./docs/troubleshooting-faq.md)
-
-## Need help?
-
-* [Join the WebVR Slack](https://webvr.rocks/slack) (join the [#unity channel](https://webvr.slack.com/messages/unity))
 
 ## Compatibility
 
 ### Unity editor version
 
-* `2018.2` and above.
+* `2019.3` and above.
 
 ### Browser Compatibility
 
-| Platform | Browser | Compatible headsets | |
-| --- | --- | --- | --- |
-| Desktop | Firefox | HTC VIVE, Oculus Rift, Windows Mixed Reality headsets (using Steam VR) | [Setup instructions](https://webvr.rocks/firefox) |
-| Desktop | Microsoft Edge | Windows Mixed Reality headsets | [Setup instructions](https://webvr.rocks/microsoft_edge) |
-| Desktop | Chrome Canary | HTC VIVE, Oculus Rift, Windows Mixed Reality headsets | Browser flags required. [Setup instructions](https://webvr.rocks/chrome) |
+Tested with Firefox on Windows, and Oculus Browser on Oculus Quest
 
-### Polyfilled WebVR
+### Polyfilled WebXR
 
-If the user does not have supported headset, browser or device, the content will still work through the use of the [WebVR Polyfill](https://github.com/immersive-web/webvr-polyfill).
+If the user does not have supported headset, browser or device, the content will still work through the use of the [WebXR Polyfill](https://github.com/immersive-web/webxr-polyfill).
 
 ### Mobile support
 
-This asset works by utilizing Unity's WebGL platform support and therefore shares the same limitations. Because of this, mobile support is limited and may not work. See [Unity's WebGL browser compatibility](https://docs.unity3d.com/2018.1/Documentation/Manual/webgl-browsercompatibility.html).
+This asset works by utilizing Unity's WebGL platform support and therefore shares the same limitations. Because of this, mobile support is limited and may not work. See [Unity's WebGL browser compatibility](https://docs.unity3d.com/2019.3/Documentation/Manual/webgl-browsercompatibility.html).
 
 ### Version History and Notes
 
-* [See all releases](https://github.com/mozilla/unity-webvr-export/releases)
-
-
 ## Contributing
 
-Contributions from the developer community are very important to us. You're encouraged to [open an issue](https://github.com/mozilla/unity-webvr-export/issues/new), report a problem, contribute with code, open a feature request, share your work or ask a question.
-
-Take a look at the contributor guides too.
-
-* [Building the Unity Assets Package](./docs/build.md)
-
-
-## We want to hear from you!
-
-We’d love to hear about what you come up with using the _WebVR Assets_. **Share your work with us** and use the [#unitywebvr](https://twitter.com/search?f=tweets&q=%23unitywebvr) Twitter hashtag.
-
-The Unity WebVR Assets is an open-source project (licensed under Apache 2) [available on GitHub](https://github.com/mozilla/unity-webvr-export).
-
-* [View known issues](https://github.com/mozilla/unity-webvr-export/issues)
-* [File an issue or feature request](https://github.com/mozilla/unity-webvr-export/issues/new)
-* [Contribute code or documentation to the project](https://github.com/mozilla/unity-webvr-export#contributing)
-
-Reach out to us with any questions you may have or help you may need, and participate in the discussions on the [WebVR Slack](https://webvr.rocks/slack) in the [#unity channel](https://webvr.slack.com/messages/unity).
-
-* [Join the WebVR Slack](https://webvr.rocks/slack) (join the [#unity channel](https://webvr.slack.com/messages/unity))
-
+Contributions from the developer community are very important to us. You're encouraged to [open an issue](https://github.com/De-Panther/unity-webxr-export/issues/new), report a problem, contribute with code, open a feature request, share your work or ask a question.
 
 ## Developer Privacy Notice for Data Collection
 
@@ -90,11 +45,17 @@ You as a developer can turn off this data collection by [modifying the configura
 
 ## Credits
 
+Unity WebVR Export credits:
+
 This project was heavily influenced by early explorations in using Unity to build for WebVR by [@gtk2k](https://github.com/gtk2k), [Chris Miller (@chrmi)](https://github.com/chrmi) and [Anthony Palma](https://twitter.com/anthonyrpalma).
 
 Also, thanks to [Arturo Paracuellos (@arturitu)](https://github.com/arturitu) for creating the [3D-hand models](https://github.com/aframevr/assets/tree/gh-pages/controllers/hands) used for controllers in these examples.
 
 ## License
+
+As the base project used the Apache License, Version 2.0, we will continue with it.
+
+Unity WebVR Export License:
 
 Copyright 2017 - 2018 Mozilla Corporation
 
