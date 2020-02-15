@@ -4,4 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/WebVR/Scenes/WebVR.unity
+    guid: 85380d4847db7b74a850284461349c36
+  m_configObjects: {}
