@@ -235,7 +235,7 @@
       if (!this.bindedRF)
       {
         this.bindedRF = true;
-        window.requestAnimationFrame = this.requestAnimationFrame.bind(this);
+        this.gameInstance.Module.requestAnimationFrame = this.requestAnimationFrame.bind(this);
       }
     });
   }
