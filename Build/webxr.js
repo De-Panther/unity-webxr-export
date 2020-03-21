@@ -64,7 +64,7 @@
 
   XRManager.prototype.onRequestSession = function () {
     if (!this.isXrSupported) return;
-    navigator.xr.requestSession('immersive-vr').then( (session) => {this.onSessionStarted(session)});
+    navigator.xr.requestSession('immersive-vr').then(async (session) => {this.onSessionStarted(session)});
   }
 
   XRManager.prototype.exitSession = function () {
@@ -241,7 +241,11 @@
   }
 
   XRManager.prototype.animate = function (frame) {
-
+    if (!this.xrSession)
+    {
+      return;
+    }
+    
     let pose = frame.getViewerPose(this.xrRefSpace);
     if (!pose) {
       return;
