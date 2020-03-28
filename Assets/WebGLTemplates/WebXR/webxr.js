@@ -28,12 +28,17 @@
     this.isPresenting = false;
     this.isXrSupported = false;
     this.xrRefSpace = null;
-    this.bindedRF = false;
+    this.rAFCB = null;
+    this.originalWidth = null;
+    this.originalHeight = null;
     this.init();
   }
 
   XRManager.prototype.init = async function () {
-
+    if (window.WebXRPolyfill) {
+      this.polyfill = new WebXRPolyfill();
+    }
+    
     this.attachEventListeners();
 
     navigator.xr.isSessionSupported('immersive-vr').then((supported) => {
@@ -41,11 +46,6 @@
     });
   }
 
-  XRManager.prototype.requestAnimationFrame = function(cb) {
-    if (this.xrSession) {
-      return this.xrSession.requestAnimationFrame(cb);
-    }
-  }
 
   XRManager.prototype.attachEventListeners = function () {
     var onToggleVr = this.toggleVr.bind(this);
@@ -84,6 +84,12 @@
     this.xrSession = null;
     this.gameInstance.SendMessage(this.unityObjectName, 'OnEndXR');
     this.isPresenting = false;
+    this.canvas.width = this.originalWidth;
+    this.canvas.height = this.originalHeight;
+    if (this.polyfill)
+    {
+      this.gameInstance.Module.InternalBrowser.requestAnimationFrame(this.rAFCB);
+    }
   }
 
   XRManager.prototype.toggleVr = function () {
@@ -105,6 +111,24 @@
       this.gameInstance = gameInstance;
       this.canvas = this.gameInstance.Module.canvas;
       this.ctx = this.gameInstance.Module.ctx;
+      var thisXRMananger = this;
+      this.gameInstance.Module.InternalBrowser.requestAnimationFrame = function (func) {
+        if (!thisXRMananger.rAFCB)
+        {
+          thisXRMananger.rAFCB=func;
+        }
+        if (thisXRMananger.xrSession) {
+          return thisXRMananger.xrSession.requestAnimationFrame((time, xrFrame) =>
+          {
+            thisXRMananger.animate(xrFrame);
+            func(time);
+          });
+        }
+        else
+        {
+          window.requestAnimationFrame(func);
+        }
+      };
     }
   }
 
@@ -223,19 +247,20 @@
     var onSessionEnded = this.onEndSession.bind(this);
     session.addEventListener('end', onSessionEnded);
 
-    this.ctx.makeXRCompatible();
-
-    session.updateRenderState({ baseLayer: new XRWebGLLayer(session, this.ctx) });
+    let glLayer = new XRWebGLLayer(session, this.ctx);
+    session.updateRenderState({ baseLayer: glLayer });
+    
+    this.originalWidth = this.canvas.width;
+    this.originalHeight = this.canvas.height;
+    this.canvas.width = glLayer.framebufferWidth;
+    this.canvas.height = glLayer.framebufferHeight;
 
     session.requestReferenceSpace('local').then((refSpace) => {
       this.xrRefSpace = refSpace;
-
       // Inform the session that we're ready to begin drawing.
-      //session.requestAnimationFrame(onXRFrame);
-      if (!this.bindedRF)
+      if (!this.polyfill)
       {
-        this.bindedRF = true;
-        this.gameInstance.Module.requestAnimationFrame = this.requestAnimationFrame.bind(this);
+        this.gameInstance.Module.InternalBrowser.requestAnimationFrame(this.rAFCB);
       }
     });
   }
@@ -250,6 +275,10 @@
     if (!pose) {
       return;
     }
+    
+    let glLayer = this.xrSession.renderState.baseLayer;
+    this.ctx.bindFramebuffer(this.ctx.FRAMEBUFFER, glLayer.framebuffer);
+    this.ctx.clear(this.ctx.COLOR_BUFFER_BIT | this.ctx.DEPTH_BUFFER_BIT);
 
     var xrData = this.xrData;
 
@@ -289,14 +318,11 @@
   }
 
   XRManager.prototype.unityMessage = function (msg) {
-      var boundAnimate = this.animate.bind(this);
 
       if (typeof msg.detail === 'string') {
         // Wait for Unity to render the frame; then submit the frame to the VR display.
         if (msg.detail === 'PostRender') {
-          if (this.xrSession) {
-            this.xrSession.requestAnimationFrame((t, frame) => {boundAnimate(frame)});
-          }
+          // TODO: remove calls for PostRender
         }
 
         // Assign VR toggle key from Unity on WebXRManager component.
@@ -337,11 +363,10 @@
   function init() {
     if (typeof(navigator.xr) == 'undefined') {
       var script = document.createElement('script');
-      script.src = 'https://cdn.jsdelivr.net/npm/webxr-polyfill@latest/build/webxr-polyfill.js';
+      script.src = 'webxr-polyfill/build/webxr-polyfill.js';
       document.getElementsByTagName('head')[0].appendChild(script);
 
       script.addEventListener('load', function () {
-        console.log(navigator.xr);
         initWebXRManager();
       });
 
@@ -349,9 +374,11 @@
         console.warn('Could not load the WebXR Polyfill script:', err);
       });
     }
-
-    //initWebXRManager();
+    else
+    {
+      initWebXRManager();
+    }
   }
 
-  initWebXRManager();
+  init();
 })();
