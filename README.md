@@ -1,12 +1,14 @@
 # Unity WebXR Export
 
-This is a project based on Mozilla's [Unity WebVR Export](https://github.com/mozilla/unity-webvr-export).
+You can [check live demo here](https://de-panther.github.io/unity-webxr-export)
+
+This is a project based on Mozilla's [Unity WebXR Export](https://github.com/mozilla/unity-webxr-export) (from when it was WebVR export).
 
 WebVR and WebXR, while having lots in common, are different in the way they calling a frame, using controllers, and the fact the WebXR have the ground for support AR and not just VR.
 
 That, and the fact that I want to use more updated version of Unity Editor and tools/practices, made me to create this fork.
 
-The current docs are still in the repository as reference, but I modified this README file, as some of the links and info is no longer relevant or won't be relevant soon.
+The current docs are still in the repository as reference, but I modified this README file, as some of the links and info are no longer relevant or won't be relevant soon.
 
 <hr>
 
@@ -45,7 +47,9 @@ You as a developer can turn off this data collection by [modifying the configura
 
 ## Credits
 
-Unity WebVR Export credits:
+Thanks to [Brandon Jones (@toji)](https://github.com/toji) who wrote [WebVR to WebXR Migration Guide](https://github.com/immersive-web/webxr/blob/master/webvr-migration.md) and lots of samples that helped in converting the code from WebVR to WebXR.
+
+Mozilla's Unity WebVR Export credits:
 
 This project was heavily influenced by early explorations in using Unity to build for WebVR by [@gtk2k](https://github.com/gtk2k), [Chris Miller (@chrmi)](https://github.com/chrmi) and [Anthony Palma](https://twitter.com/anthonyrpalma).
 
