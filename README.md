@@ -2,7 +2,7 @@
 
 You can [check live demo here](https://de-panther.github.io/unity-webxr-export)
 
-This is a project based on Mozilla's [Unity WebXR Export](https://github.com/mozilla/unity-webxr-export) (from when it was WebVR export).
+This is a project based on Mozilla's [Unity WebXR Export](https://github.com/MozillaReality/unity-webxr-export) (from when it was WebVR export).
 
 WebVR and WebXR, while having lots in common, are different in the way they calling a frame, using controllers, and the fact the WebXR have the ground for support AR and not just VR.
 
