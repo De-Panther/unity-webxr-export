@@ -15,9 +15,6 @@
     this.enterVRButton = document.getElementById('entervr');
     this.gameContainer = document.getElementById('unityContainer');
 
-    // Unity GameObject name which we will SendMessage to
-    this.unityObjectName = 'WebXRCameraSet';
-
     this.xrSession = null;
     this.isInXRSession = false;
     this.inlineSession = null;
@@ -91,15 +88,11 @@
       session.end();
     }
     
-    this.gameInstance.SendMessage(this.unityObjectName, 'OnEndXR');
+    this.gameInstance.Module.WebXR.OnEndXR();
     this.isInXRSession = false;
     this.didNotifyUnity = false;
     this.canvas.width = this.originalWidth;
     this.canvas.height = this.originalHeight;
-    if (this.polyfill)
-    {
-      this.gameInstance.Module.InternalBrowser.requestAnimationFrame(this.rAFCB);
-    }
   }
 
   XRManager.prototype.toggleVr = function () {
@@ -165,8 +158,7 @@
     
     this.enterVRButton.disabled = !this.isXrSupported;
 
-    this.gameInstance.SendMessage(
-      this.unityObjectName, 'OnXRCapabilities',
+    this.gameInstance.Module.WebXR.OnXRCapabilities(
       JSON.stringify({
         canPresent: canPresent,
         hasPosition: hasPosition,
@@ -284,10 +276,7 @@
         this.xrInlineRefSpace = refSpace;
       }
       // Inform the session that we're ready to begin drawing.
-      if (!this.polyfill)
-      {
-        this.gameInstance.Module.InternalBrowser.requestAnimationFrame(this.rAFCB);
-      }
+      this.gameInstance.Module.InternalBrowser.requestAnimationFrame(this.rAFCB);
     });
   }
 
@@ -340,11 +329,12 @@
     
     if (!this.didNotifyUnity)
     {
-      this.gameInstance.SendMessage(this.unityObjectName, 'OnStartXR');
+      this.gameInstance.Module.WebXR.OnStartXR();
       this.didNotifyUnity = true;
     }
 
-    this.gameInstance.SendMessage(this.unityObjectName, 'OnWebXRData', JSON.stringify({
+    this.gameInstance.Module.WebXR.OnWebXRData(
+      JSON.stringify({
       controllers: xrData.gamepads
     }));
   }
@@ -352,11 +342,6 @@
   XRManager.prototype.unityMessage = function (msg) {
 
       if (typeof msg.detail === 'string') {
-        // Wait for Unity to render the frame; then submit the frame to the VR display.
-        if (msg.detail === 'PostRender') {
-          // TODO: remove calls for PostRender
-        }
-
         // Assign VR toggle key from Unity on WebXRManager component.
         if (msg.detail.indexOf('ConfigureToggleVRKeyName') === 0) {
           this.toggleVRKeyName = msg.detail.split(':')[1];
