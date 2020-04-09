@@ -4,10 +4,6 @@ mergeInto(LibraryManager.library, {
     document.dispatchEvent(new CustomEvent('Unity', {detail: 'Ready'}));
   },
 
-  PostRender: function () {
-    document.dispatchEvent(new CustomEvent('Unity', {detail: 'PostRender'}));
-  },
-
   ConfigureToggleVRKeyName: function (keyName) {
     document.dispatchEvent(new CustomEvent('Unity', {detail: 'ConfigureToggleVRKeyName:' + Pointer_stringify(keyName)}));
   },

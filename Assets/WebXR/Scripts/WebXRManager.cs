@@ -1,9 +1,7 @@
+using AOT;
 using UnityEngine;
 using UnityEngine.XR;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
 
 public enum WebXRState { ENABLED, NORMAL }
@@ -62,6 +60,12 @@ public class WebXRManager : MonoBehaviour
     [DllImport("__Internal")]
     private static extern void ListenWebXRData();
 
+    [DllImport("__Internal")]
+    private static extern void set_webxr_events(Action on_start_xr,
+                                                Action on_end_xr,
+                                                Action<string> on_xr_capabilities,
+                                                Action<string> on_webxr_data);
+
     // Shared array which we will load headset data in from webxr.jslib
     // Array stores  5 matrices, each 16 values, stored linearly.
     float[] sharedArray = new float[5 * 16];
@@ -117,7 +121,8 @@ public class WebXRManager : MonoBehaviour
     }
 
     // Handles WebXR data from browser
-    public void OnWebXRData (string jsonString)
+    [MonoPInvokeCallback(typeof(Action<string>))]
+    public static void OnWebXRData (string jsonString)
     {
         WebXRData webXRData = WebXRData.CreateFromJSON (jsonString);
 
@@ -126,8 +131,8 @@ public class WebXRManager : MonoBehaviour
         {
             foreach (WebXRControllerData controllerData in webXRData.controllers)
             {
-                if (OnControllerUpdate != null)
-                    OnControllerUpdate(controllerData.id,
+                if (instance.OnControllerUpdate != null)
+                    instance.OnControllerUpdate(controllerData.id,
                         controllerData.index,
                         controllerData.hand,
                         controllerData.hasOrientation,
@@ -143,9 +148,10 @@ public class WebXRManager : MonoBehaviour
     }
 
     // Handles WebXR capabilities from browser
-    public void OnXRCapabilities(string json) {
+    [MonoPInvokeCallback(typeof(Action<string>))]
+    public static void OnXRCapabilities(string json) {
         WebXRDisplayCapabilities capabilities = JsonUtility.FromJson<WebXRDisplayCapabilities>(json);
-        OnXRCapabilities(capabilities);
+        instance.OnXRCapabilities(capabilities);
     }
 
     public void OnXRCapabilities(WebXRDisplayCapabilities capabilities) {
@@ -177,13 +183,15 @@ public class WebXRManager : MonoBehaviour
     }
 
     // received start VR from WebVR browser
-    public void OnStartXR()
+    [MonoPInvokeCallback(typeof(Action))]
+    public static void OnStartXR()
     {
         Instance.setXrState(WebXRState.ENABLED);        
     }
 
     // receive end VR from WebVR browser
-    public void OnEndXR()
+    [MonoPInvokeCallback(typeof(Action))]
+    public static void OnEndXR()
     {
         Instance.setXrState(WebXRState.NORMAL);
     }
@@ -200,6 +208,7 @@ public class WebXRManager : MonoBehaviour
     void Start()
     {
         #if !UNITY_EDITOR && UNITY_WEBGL
+        set_webxr_events(OnStartXR, OnEndXR, OnXRCapabilities, OnWebXRData);
         ConfigureToggleVRKeyName(toggleVRKeyName);
         InitSharedArray(sharedArray, sharedArray.Length);
         ListenWebXRData();
