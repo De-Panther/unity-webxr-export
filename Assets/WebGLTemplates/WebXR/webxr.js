@@ -19,15 +19,18 @@
     this.unityObjectName = 'WebXRCameraSet';
 
     this.xrSession = null;
+    this.isInXRSession = false;
+    this.inlineSession = null;
     this.xrData = new XRData();
     this.canvas = null;
     this.ctx = null;
     this.gameInstance = null;
     this.polyfill = null;
     this.toggleVRKeyName = '';
-    this.isPresenting = false;
+    this.didNotifyUnity = false;
     this.isXrSupported = false;
-    this.xrRefSpace = null;
+    this.xrImmersiveRefSpace = null;
+    this.xrInlineRefSpace = null;
     this.rAFCB = null;
     this.originalWidth = null;
     this.originalHeight = null;
@@ -64,26 +67,33 @@
 
   XRManager.prototype.onRequestSession = function () {
     if (!this.isXrSupported) return;
-    navigator.xr.requestSession('immersive-vr').then(async (session) => {this.onSessionStarted(session)});
+    navigator.xr.requestSession('immersive-vr', {
+      requiredFeatures: ['local-floor'] // TODO: Get this value from Unity
+    }).then(async (session) => {
+      session.isImmersive = true;
+      this.isInXRSession = true;
+      this.xrSession = session;
+      this.onSessionStarted(session);
+    });
   }
 
   XRManager.prototype.exitSession = function () {
-    if (!this.xrSession) {
+    if (!this.isInXRSession) {
       console.warn('No VR display to exit VR mode');
       return;
     }
 
     this.xrSession.end();
-    this.xrSession = null;
   }
 
   XRManager.prototype.onEndSession = function (session) {
     if (session && session.end) {
       session.end();
     }
-    this.xrSession = null;
+    
     this.gameInstance.SendMessage(this.unityObjectName, 'OnEndXR');
-    this.isPresenting = false;
+    this.isInXRSession = false;
+    this.didNotifyUnity = false;
     this.canvas.width = this.originalWidth;
     this.canvas.height = this.originalHeight;
     if (this.polyfill)
@@ -93,7 +103,7 @@
   }
 
   XRManager.prototype.toggleVr = function () {
-    if (this.isXrSupported && this.xrSession && this.gameInstance) {
+    if (this.isXrSupported && this.isInXRSession && this.gameInstance) {
       this.exitSession();
     } else {
       this.onRequestSession();
@@ -117,15 +127,19 @@
         {
           thisXRMananger.rAFCB=func;
         }
-        if (thisXRMananger.xrSession) {
+        if (thisXRMananger.xrSession && thisXRMananger.isInXRSession) {
           return thisXRMananger.xrSession.requestAnimationFrame((time, xrFrame) =>
           {
             thisXRMananger.animate(xrFrame);
             func(time);
           });
-        }
-        else
-        {
+        } else if (thisXRMananger.inlineSession) {
+          return thisXRMananger.inlineSession.requestAnimationFrame((time, xrFrame) =>
+          {
+            thisXRMananger.animate(xrFrame);
+            func(time);
+          });
+        } else {
           window.requestAnimationFrame(func);
         }
       };
@@ -159,6 +173,11 @@
         hasExternalDisplay: hasExternalDisplay
       })
     );
+
+    navigator.xr.requestSession('inline').then((session) => {
+      this.inlineSession = session;
+      this.onSessionStarted(session);
+    });
   }
 
   XRManager.prototype.getGamepadAxes = function(gamepad) {
@@ -181,12 +200,12 @@
     return buttons;
   }
 
-  XRManager.prototype.getXRGamepads = function(frame, inputSources) {
+  XRManager.prototype.getXRGamepads = function(frame, inputSources, refSpace) {
     var vrGamepads = []
     for (let inputSource of inputSources) {
       // Show the input source if it has a grip space
       if (inputSource.gripSpace && inputSource.gamepad) {
-        let inputPose = frame.getPose(inputSource.gripSpace, this.xrRefSpace);
+        let inputPose = frame.getPose(inputSource.gripSpace, refSpace);
         
         var position = inputPose.transform.position;
         var orientation = inputPose.transform.orientation;
@@ -243,20 +262,27 @@
   }
 
   XRManager.prototype.onSessionStarted = function (session) {
-    this.xrSession = session;
     var onSessionEnded = this.onEndSession.bind(this);
     session.addEventListener('end', onSessionEnded);
 
     let glLayer = new XRWebGLLayer(session, this.ctx);
     session.updateRenderState({ baseLayer: glLayer });
     
-    this.originalWidth = this.canvas.width;
-    this.originalHeight = this.canvas.height;
-    this.canvas.width = glLayer.framebufferWidth;
-    this.canvas.height = glLayer.framebufferHeight;
-
-    session.requestReferenceSpace('local').then((refSpace) => {
-      this.xrRefSpace = refSpace;
+    let refSpaceType = 'viewer';
+    if (session.isImmersive){
+      refSpaceType = 'local';
+      this.originalWidth = this.canvas.width;
+      this.originalHeight = this.canvas.height;
+      this.canvas.width = glLayer.framebufferWidth;
+      this.canvas.height = glLayer.framebufferHeight;
+    }
+    
+    session.requestReferenceSpace(refSpaceType).then((refSpace) => {
+      if (session.isImmersive) {
+        this.xrImmersiveRefSpace = refSpace;
+      } else {
+        this.xrInlineRefSpace = refSpace;
+      }
       // Inform the session that we're ready to begin drawing.
       if (!this.polyfill)
       {
@@ -266,19 +292,25 @@
   }
 
   XRManager.prototype.animate = function (frame) {
-    if (!this.xrSession)
-    {
-      return;
-    }
+    let session = frame.session;
+
+    let refSpace = session.isImmersive ?
+                         this.xrImmersiveRefSpace :
+                         this.xrInlineRefSpace;
     
-    let pose = frame.getViewerPose(this.xrRefSpace);
+    let pose = frame.getViewerPose(refSpace);
     if (!pose) {
       return;
     }
     
-    let glLayer = this.xrSession.renderState.baseLayer;
+    let glLayer = session.renderState.baseLayer;
     this.ctx.bindFramebuffer(this.ctx.FRAMEBUFFER, glLayer.framebuffer);
     this.ctx.clear(this.ctx.COLOR_BUFFER_BIT | this.ctx.DEPTH_BUFFER_BIT);
+
+    if (!session.isImmersive)
+    {
+      return;
+    }
 
     var xrData = this.xrData;
 
@@ -295,7 +327,7 @@
     }
 
     // Gamepads
-    xrData.gamepads = this.getXRGamepads(frame, this.xrSession.inputSources);
+    xrData.gamepads = this.getXRGamepads(frame, session.inputSources, refSpace);
 
     // Dispatch event with headset data to be handled in webxr.jslib
     document.dispatchEvent(new CustomEvent('XRData', { detail: {
@@ -306,10 +338,10 @@
       sitStandMatrix: xrData.sitStandMatrix
     }}));
     
-    if (!this.isPresenting)
+    if (!this.didNotifyUnity)
     {
       this.gameInstance.SendMessage(this.unityObjectName, 'OnStartXR');
-      this.isPresenting = true;
+      this.didNotifyUnity = true;
     }
 
     this.gameInstance.SendMessage(this.unityObjectName, 'OnWebXRData', JSON.stringify({
