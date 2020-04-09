@@ -93,10 +93,6 @@
     this.didNotifyUnity = false;
     this.canvas.width = this.originalWidth;
     this.canvas.height = this.originalHeight;
-    if (this.polyfill)
-    {
-      this.gameInstance.Module.InternalBrowser.requestAnimationFrame(this.rAFCB);
-    }
   }
 
   XRManager.prototype.toggleVr = function () {
@@ -280,10 +276,7 @@
         this.xrInlineRefSpace = refSpace;
       }
       // Inform the session that we're ready to begin drawing.
-      if (!this.polyfill)
-      {
-        this.gameInstance.Module.InternalBrowser.requestAnimationFrame(this.rAFCB);
-      }
+      this.gameInstance.Module.InternalBrowser.requestAnimationFrame(this.rAFCB);
     });
   }
 
