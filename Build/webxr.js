@@ -262,7 +262,7 @@
     
     let refSpaceType = 'viewer';
     if (session.isImmersive){
-      refSpaceType = 'local';
+      refSpaceType = 'local-floor';
       this.originalWidth = this.canvas.width;
       this.originalHeight = this.canvas.height;
       this.canvas.width = glLayer.framebufferWidth;
