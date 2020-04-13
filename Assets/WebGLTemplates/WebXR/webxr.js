@@ -333,7 +333,10 @@
     
     let glLayer = session.renderState.baseLayer;
     this.ctx.bindFramebuffer(this.ctx.FRAMEBUFFER, glLayer.framebuffer);
-    this.ctx.clear(this.ctx.COLOR_BUFFER_BIT | this.ctx.DEPTH_BUFFER_BIT);
+    if (!session.isAR)
+    {
+      this.ctx.clear(this.ctx.COLOR_BUFFER_BIT | this.ctx.DEPTH_BUFFER_BIT);
+    }
     
     let pose = frame.getViewerPose(session.refSpace);
     if (!pose) {
