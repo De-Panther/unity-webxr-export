@@ -22,9 +22,14 @@ setTimeout(function () {
 
 Module['WebXR'] = Module['WebXR'] || {};
 
-Module['WebXR'].OnStartXR = function () {
-  this.OnStartXRInternal = this.OnStartXRInternal || Module.cwrap("on_start_xr", null, []);
-  this.OnStartXRInternal();
+Module['WebXR'].OnStartAR = function () {
+  this.OnStartARInternal = this.OnStartARInternal || Module.cwrap("on_start_ar", null, []);
+  this.OnStartARInternal();
+}
+
+Module['WebXR'].OnStartVR = function () {
+  this.OnStartVRInternal = this.OnStartVRInternal || Module.cwrap("on_start_vr", null, []);
+  this.OnStartVRInternal();
 }
 
 Module['WebXR'].OnEndXR = function () {

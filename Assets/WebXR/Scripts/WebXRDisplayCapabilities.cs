@@ -3,7 +3,8 @@
 [System.Serializable]
 public class WebXRDisplayCapabilities
 {
-	public bool canPresent;
+	public bool canPresentAR;
+  public bool canPresentVR;
 	public bool hasPosition;
 	public bool hasExternalDisplay;
 }

@@ -12,9 +12,11 @@
   }
 
   function XRManager() {
+    this.enterARButton = document.getElementById('enterar');
     this.enterVRButton = document.getElementById('entervr');
     this.gameContainer = document.getElementById('unityContainer');
 
+    this.arSession = null;
     this.vrSession = null;
     this.inlineSession = null;
     this.xrData = new XRData();
@@ -24,6 +26,7 @@
     this.polyfill = null;
     this.toggleVRKeyName = '';
     this.didNotifyUnity = false;
+    this.isARSupported = false;
     this.isVRSupported = false;
     this.rAFCB = null;
     this.originalWidth = null;
@@ -41,10 +44,15 @@
     navigator.xr.isSessionSupported('immersive-vr').then((supported) => {
       this.isVRSupported = supported;
     });
+
+    navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
+      this.isARSupported = supported;
+    });
   }
 
 
   XRManager.prototype.attachEventListeners = function () {
+    var onToggleAr = this.toggleAr.bind(this);
     var onToggleVr = this.toggleVr.bind(this);
     var onKeyUp = this.keyUp.bind(this);
     var onUnityLoaded = this.unityLoaded.bind(this);
@@ -57,9 +65,23 @@
     document.addEventListener('Unity', onUnityMessage, false);
 
     this.enterVRButton.addEventListener('click', onToggleVr, false);
+    this.enterARButton.addEventListener('click', onToggleAr, false);
   }
 
-  XRManager.prototype.onRequestSession = function () {
+  XRManager.prototype.onRequestARSession = function () {
+    if (!this.isARSupported) return;
+    navigator.xr.requestSession('immersive-ar', {
+      requiredFeatures: ['local-floor'] // TODO: Get this value from Unity
+    }).then(async (session) => {
+      session.isImmersive = true;
+      session.isInSession = true;
+      session.isAR = true;
+      this.arSession = session;
+      this.onSessionStarted(session);
+    });
+  }
+
+  XRManager.prototype.onRequestVRSession = function () {
     if (!this.isVRSupported) return;
     navigator.xr.requestSession('immersive-vr', {
       requiredFeatures: ['local-floor'] // TODO: Get this value from Unity
@@ -71,7 +93,16 @@
     });
   }
 
-  XRManager.prototype.exitSession = function () {
+  XRManager.prototype.exitARSession = function () {
+    if (!this.arSession || !this.arSession.isInSession) {
+      console.warn('No AR display to exit VR mode');
+      return;
+    }
+
+    this.arSession.end();
+  }
+
+  XRManager.prototype.exitVRSession = function () {
     if (!this.vrSession || !this.vrSession.isInSession) {
       console.warn('No VR display to exit VR mode');
       return;
@@ -91,11 +122,19 @@
     this.canvas.height = this.originalHeight;
   }
 
+  XRManager.prototype.toggleAr = function () {
+    if (this.isARSupported && this.arSession && this.arSession.isInSession && this.gameInstance) {
+      this.exitARSession();
+    } else {
+      this.onRequestARSession();
+    }
+  }
+
   XRManager.prototype.toggleVr = function () {
     if (this.isVRSupported && this.vrSession && this.vrSession.isInSession && this.gameInstance) {
-      this.exitSession();
+      this.exitVRSession();
     } else {
-      this.onRequestSession();
+      this.onRequestVRSession();
     }
   }
 
@@ -116,7 +155,13 @@
         {
           thisXRMananger.rAFCB=func;
         }
-        if (thisXRMananger.vrSession && thisXRMananger.vrSession.isInSession) {
+        if (thisXRMananger.arSession && thisXRMananger.arSession.isInSession) {
+          return thisXRMananger.arSession.requestAnimationFrame((time, xrFrame) =>
+          {
+            thisXRMananger.animate(xrFrame);
+            func(time);
+          });
+        } else if (thisXRMananger.vrSession && thisXRMananger.vrSession.isInSession) {
           return thisXRMananger.vrSession.requestAnimationFrame((time, xrFrame) =>
           {
             thisXRMananger.animate(xrFrame);
@@ -146,17 +191,20 @@
     document.body.dataset.unityLoaded = 'true';
 
     // Send browser capabilities to Unity.
-    var canPresent = this.isVRSupported;
+    var canPresentAR = this.isARSupported;
+    var canPresentVR = this.isVRSupported;
     var hasPosition = true;
     var hasExternalDisplay = false;
 
     this.setGameInstance(unityInstance);
     
     this.enterVRButton.disabled = !this.isVRSupported;
+    this.enterARButton.disabled = !this.isARSupported;
 
     this.gameInstance.Module.WebXR.OnXRCapabilities(
       JSON.stringify({
-        canPresent: canPresent,
+        canPresentAR: canPresentAR,
+        canPresentVR: canPresentVR,
         hasPosition: hasPosition,
         hasExternalDisplay: hasExternalDisplay
       })
@@ -255,7 +303,7 @@
     session.updateRenderState({ baseLayer: glLayer });
     
     let refSpaceType = 'viewer';
-    if (session.isImmersive){
+    if (session.isImmersive) {
       refSpaceType = 'local-floor';
       
       var onSessionEnded = this.onEndSession.bind(this);
@@ -325,7 +373,12 @@
     
     if (!this.didNotifyUnity)
     {
-      this.gameInstance.Module.WebXR.OnStartXR();
+      if (session.isAR)
+      {
+        this.gameInstance.Module.WebXR.OnStartAR();
+      } else {
+        this.gameInstance.Module.WebXR.OnStartVR();
+      }
       this.didNotifyUnity = true;
     }
 
