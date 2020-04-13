@@ -4,7 +4,7 @@ using UnityEngine.XR;
 using System;
 using System.Runtime.InteropServices;
 
-public enum WebXRState { ENABLED, NORMAL }
+public enum WebXRState { VR, AR, NORMAL }
 
 public class WebXRManager : MonoBehaviour
 {
@@ -61,7 +61,8 @@ public class WebXRManager : MonoBehaviour
     private static extern void ListenWebXRData();
 
     [DllImport("__Internal")]
-    private static extern void set_webxr_events(Action on_start_xr,
+    private static extern void set_webxr_events(Action on_start_ar,
+                                                Action on_start_vr,
                                                 Action on_end_xr,
                                                 Action<string> on_xr_capabilities,
                                                 Action<string> on_webxr_data);
@@ -109,6 +110,7 @@ public class WebXRManager : MonoBehaviour
         {
             DontDestroyOnLoad(instance);
         }
+        xrState = WebXRState.NORMAL;
     }
 
     private void SetTrackingSpaceType()
@@ -157,22 +159,12 @@ public class WebXRManager : MonoBehaviour
     public void OnXRCapabilities(WebXRDisplayCapabilities capabilities) {
         #if !UNITY_EDITOR && UNITY_WEBGL
         this.capabilities = capabilities;
-        if (!capabilities.canPresent)
+        if (!capabilities.canPresentVR)
             WebXRUI.displayElementId("novr");
         #endif
 
         if (OnXRCapabilitiesUpdate != null)
             OnXRCapabilitiesUpdate(capabilities);
-    }
-
-    public void toggleXrState()
-    {
-        #if !UNITY_EDITOR && UNITY_WEBGL
-        if (this.xrState == WebXRState.ENABLED)
-            setXrState(WebXRState.NORMAL);
-        else
-            setXrState(WebXRState.ENABLED);
-        #endif
     }
 
     public void setXrState(WebXRState state)
@@ -184,9 +176,15 @@ public class WebXRManager : MonoBehaviour
 
     // received start VR from WebVR browser
     [MonoPInvokeCallback(typeof(Action))]
-    public static void OnStartXR()
+    public static void OnStartAR()
     {
-        Instance.setXrState(WebXRState.ENABLED);        
+        Instance.setXrState(WebXRState.AR);        
+    }
+
+    [MonoPInvokeCallback(typeof(Action))]
+    public static void OnStartVR()
+    {
+        Instance.setXrState(WebXRState.VR);        
     }
 
     // receive end VR from WebVR browser
@@ -208,7 +206,7 @@ public class WebXRManager : MonoBehaviour
     void Start()
     {
         #if !UNITY_EDITOR && UNITY_WEBGL
-        set_webxr_events(OnStartXR, OnEndXR, OnXRCapabilities, OnWebXRData);
+        set_webxr_events(OnStartAR, OnStartVR, OnEndXR, OnXRCapabilities, OnWebXRData);
         ConfigureToggleVRKeyName(toggleVRKeyName);
         InitSharedArray(sharedArray, sharedArray.Length);
         ListenWebXRData();
@@ -216,18 +214,9 @@ public class WebXRManager : MonoBehaviour
         SetTrackingSpaceType();
     }
 
-    void Update()
-    {
-        #if UNITY_EDITOR || !UNITY_WEBGL
-        bool quickToggleEnabled = toggleVRKeyName != null && toggleVRKeyName != "";
-        if (quickToggleEnabled && Input.GetKeyUp(toggleVRKeyName))
-            toggleXrState();
-        #endif
-    }
-
     void LateUpdate()
     {
-        if (OnHeadsetUpdate != null && this.xrState == WebXRState.ENABLED) {
+        if (OnHeadsetUpdate != null && this.xrState != WebXRState.NORMAL) {
             Matrix4x4 leftProjectionMatrix = WebXRMatrixUtil.NumbersToMatrix(GetFromSharedArray(0));
             Matrix4x4 rightProjectionMatrix = WebXRMatrixUtil.NumbersToMatrix(GetFromSharedArray(1));
             Matrix4x4 leftViewMatrix = WebXRMatrixUtil.NumbersToMatrix(GetFromSharedArray(2));

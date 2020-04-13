@@ -4,26 +4,34 @@
 typedef void (*webxr_void)();
 typedef void (*webxr_void_string)();
 
-webxr_void on_start_xr_ref;
+webxr_void on_start_ar_ref;
+webxr_void on_start_vr_ref;
 webxr_void on_end_xr_ref;
 webxr_void_string on_xr_capabilities_ref;
 webxr_void_string on_webxr_data_ref;
 
 void set_webxr_events(
-  webxr_void _on_start_xr,
+  webxr_void _on_start_ar,
+  webxr_void _on_start_vr,
   webxr_void _on_end_xr,
   webxr_void_string _on_xr_capabilities,
   webxr_void_string _on_webxr_data
 ) {
-  on_start_xr_ref = _on_start_xr;
+  on_start_ar_ref = _on_start_ar;
+  on_start_vr_ref = _on_start_vr;
   on_end_xr_ref = _on_end_xr;
   on_xr_capabilities_ref = _on_xr_capabilities;
   on_webxr_data_ref = _on_webxr_data;
 }
 
-void EMSCRIPTEN_KEEPALIVE on_start_xr()
+void EMSCRIPTEN_KEEPALIVE on_start_ar()
 {
-  on_start_xr_ref();
+  on_start_ar_ref();
+}
+
+void EMSCRIPTEN_KEEPALIVE on_start_vr()
+{
+  on_start_vr_ref();
 }
 
 void EMSCRIPTEN_KEEPALIVE on_end_xr()
