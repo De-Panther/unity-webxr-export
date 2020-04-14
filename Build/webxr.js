@@ -333,8 +333,9 @@
     
     let glLayer = session.renderState.baseLayer;
     this.ctx.bindFramebuffer(this.ctx.FRAMEBUFFER, glLayer.framebuffer);
-    if (!session.isAR)
-    {
+    if (session.isAR) {
+      this.ctx.dontClearOnFrameStart = true;
+    } else {
       this.ctx.clear(this.ctx.COLOR_BUFFER_BIT | this.ctx.DEPTH_BUFFER_BIT);
     }
     
