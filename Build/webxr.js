@@ -12,10 +12,6 @@
   }
 
   function XRManager() {
-    this.enterARButton = document.getElementById('enterar');
-    this.enterVRButton = document.getElementById('entervr');
-    this.gameContainer = document.getElementById('unityContainer');
-
     this.arSession = null;
     this.vrSession = null;
     this.inlineSession = null;
@@ -64,8 +60,8 @@
     document.addEventListener('UnityLoaded', onUnityLoaded, false);
     document.addEventListener('Unity', onUnityMessage, false);
 
-    this.enterVRButton.addEventListener('click', onToggleVr, false);
-    this.enterARButton.addEventListener('click', onToggleAr, false);
+    document.addEventListener('toggleAR', onToggleAr, false);
+    document.addEventListener('toggleVR', onToggleVr, false);
   }
 
   XRManager.prototype.onRequestARSession = function () {
@@ -123,7 +119,11 @@
   }
 
   XRManager.prototype.toggleAr = function () {
-    if (this.isARSupported && this.arSession && this.arSession.isInSession && this.gameInstance) {
+    if (!this.gameInstance)
+    {
+      return;
+    }
+    if (this.isARSupported && this.arSession && this.arSession.isInSession) {
       this.exitARSession();
     } else {
       this.onRequestARSession();
@@ -131,7 +131,11 @@
   }
 
   XRManager.prototype.toggleVr = function () {
-    if (this.isVRSupported && this.vrSession && this.vrSession.isInSession && this.gameInstance) {
+    if (!this.gameInstance)
+    {
+      return;
+    }
+    if (this.isVRSupported && this.vrSession && this.vrSession.isInSession) {
       this.exitVRSession();
     } else {
       this.onRequestVRSession();
@@ -180,13 +184,6 @@
     }
   }
 
-  XRManager.prototype.unityProgressStart = new Promise(function (resolve) {
-    // dispatched by index.html
-    document.addEventListener('UnityProgressStart', function (evt) {
-      resolve(window.gameInstance);
-    }, false);
-  });
-
   XRManager.prototype.unityLoaded = function () {
     document.body.dataset.unityLoaded = 'true';
 
@@ -197,9 +194,9 @@
     var hasExternalDisplay = false;
 
     this.setGameInstance(unityInstance);
-    
-    this.enterVRButton.disabled = !this.isVRSupported;
-    this.enterARButton.disabled = !this.isARSupported;
+
+    document.dispatchEvent(new CustomEvent('onARSupportedCheck', { detail:{supported:this.isARSupported} }));
+    document.dispatchEvent(new CustomEvent('onVRSupportedCheck', { detail:{supported:this.isVRSupported} }));
 
     this.gameInstance.Module.WebXR.OnXRCapabilities(
       JSON.stringify({
