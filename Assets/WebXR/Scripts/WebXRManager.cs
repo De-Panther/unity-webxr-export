@@ -26,7 +26,7 @@ public class WebXRManager : MonoBehaviour
     public delegate void XRCapabilitiesUpdate(WebXRDisplayCapabilities capabilities);
     public event XRCapabilitiesUpdate OnXRCapabilitiesUpdate;
 
-    public delegate void XRChange(WebXRState state);
+    public delegate void XRChange(WebXRState state, int viewsCount);
     public event XRChange OnXRChange;
     
     public delegate void HeadsetUpdate(
@@ -61,8 +61,8 @@ public class WebXRManager : MonoBehaviour
     private static extern void ListenWebXRData();
 
     [DllImport("__Internal")]
-    private static extern void set_webxr_events(Action on_start_ar,
-                                                Action on_start_vr,
+    private static extern void set_webxr_events(Action<int> on_start_ar,
+                                                Action<int> on_start_vr,
                                                 Action on_end_xr,
                                                 Action<string> on_xr_capabilities,
                                                 Action<string> on_webxr_data);
@@ -167,31 +167,31 @@ public class WebXRManager : MonoBehaviour
             OnXRCapabilitiesUpdate(capabilities);
     }
 
-    public void setXrState(WebXRState state)
+    public void setXrState(WebXRState state, int viewsCount)
     {
         this.xrState = state;
         if (OnXRChange != null)
-            OnXRChange(state);
+            OnXRChange(state, viewsCount);
     }
 
     // received start VR from WebVR browser
-    [MonoPInvokeCallback(typeof(Action))]
-    public static void OnStartAR()
+    [MonoPInvokeCallback(typeof(Action<int>))]
+    public static void OnStartAR(int viewsCount)
     {
-        Instance.setXrState(WebXRState.AR);        
+        Instance.setXrState(WebXRState.AR, viewsCount);        
     }
 
-    [MonoPInvokeCallback(typeof(Action))]
-    public static void OnStartVR()
+    [MonoPInvokeCallback(typeof(Action<int>))]
+    public static void OnStartVR(int viewsCount)
     {
-        Instance.setXrState(WebXRState.VR);        
+        Instance.setXrState(WebXRState.VR, viewsCount);        
     }
 
     // receive end VR from WebVR browser
     [MonoPInvokeCallback(typeof(Action))]
     public static void OnEndXR()
     {
-        Instance.setXrState(WebXRState.NORMAL);
+        Instance.setXrState(WebXRState.NORMAL, 1);
     }
 
     float[] GetFromSharedArray(int index)

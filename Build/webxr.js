@@ -355,8 +355,6 @@
       } else if (view.eye === 'right') {
         xrData.rightProjectionMatrix = this.GLProjectionToUnity(view.projectionMatrix);
         xrData.rightViewMatrix = this.GLViewToUnity(view.transform.inverse.matrix);
-      } else {
-        xrData.sitStandMatrix = this.GLViewToUnity(view.transform.inverse.matrix);
       }
     }
 
@@ -376,9 +374,9 @@
     {
       if (session.isAR)
       {
-        this.gameInstance.Module.WebXR.OnStartAR();
+        this.gameInstance.Module.WebXR.OnStartAR(pose.views.length);
       } else {
-        this.gameInstance.Module.WebXR.OnStartVR();
+        this.gameInstance.Module.WebXR.OnStartVR(pose.views.length);
       }
       this.didNotifyUnity = true;
     }
