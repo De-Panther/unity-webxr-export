@@ -22,14 +22,14 @@ setTimeout(function () {
 
 Module['WebXR'] = Module['WebXR'] || {};
 
-Module['WebXR'].OnStartAR = function () {
-  this.OnStartARInternal = this.OnStartARInternal || Module.cwrap("on_start_ar", null, []);
-  this.OnStartARInternal();
+Module['WebXR'].OnStartAR = function (views_count) {
+  this.OnStartARInternal = this.OnStartARInternal || Module.cwrap("on_start_ar", null, ["number"]);
+  this.OnStartARInternal(views_count);
 }
 
-Module['WebXR'].OnStartVR = function () {
-  this.OnStartVRInternal = this.OnStartVRInternal || Module.cwrap("on_start_vr", null, []);
-  this.OnStartVRInternal();
+Module['WebXR'].OnStartVR = function (views_count) {
+  this.OnStartVRInternal = this.OnStartVRInternal || Module.cwrap("on_start_vr", null, ["number"]);
+  this.OnStartVRInternal(views_count);
 }
 
 Module['WebXR'].OnEndXR = function () {

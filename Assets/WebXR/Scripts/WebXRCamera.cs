@@ -2,8 +2,12 @@
 
 public class WebXRCamera : MonoBehaviour
 {
-  private Camera cameraMain, cameraL, cameraR, cameraAR;
+  private Camera cameraMain, cameraL, cameraR, cameraARL, cameraARR;
   private WebXRState xrState = WebXRState.NORMAL;
+
+  private int viewsCount = 1;
+
+  private bool switched = false;
 
   void OnEnable()
   {
@@ -13,37 +17,49 @@ public class WebXRCamera : MonoBehaviour
     cameraMain = GameObject.Find("CameraMain").GetComponent<Camera>();
     cameraL = GameObject.Find("CameraL").GetComponent<Camera>();
     cameraR = GameObject.Find("CameraR").GetComponent<Camera>();
-    cameraAR = GameObject.Find("CameraAR").GetComponent<Camera>();
+    cameraARL = GameObject.Find("CameraARL").GetComponent<Camera>();
+    cameraARR = GameObject.Find("CameraARR").GetComponent<Camera>();
   }
 
   void Update()
   {
+    if (switched)
+    {
+      return;
+    }
+    switched = true;
     switch (xrState)
     {
       case WebXRState.AR:
         cameraMain.enabled = false;
         cameraL.enabled = false;
         cameraR.enabled = false;
-        cameraAR.enabled = true;
+        cameraARL.enabled = viewsCount > 0;
+        cameraARL.rect = new Rect(0, 0, 1f / (float)viewsCount, 1);
+        cameraARR.enabled = viewsCount > 1;
         break;
       case WebXRState.VR:
         cameraMain.enabled = false;
-        cameraL.enabled = true;
-        cameraR.enabled = true;
-        cameraAR.enabled = false;
+        cameraL.enabled = viewsCount > 0;
+        cameraR.enabled = viewsCount > 1;
+        cameraARL.enabled = false;
+        cameraARR.enabled = false;
         break;
       case WebXRState.NORMAL:
         cameraMain.enabled = true;
         cameraL.enabled = false;
         cameraR.enabled = false;
-        cameraAR.enabled = false;
+        cameraARL.enabled = false;
+        cameraARR.enabled = false;
         break;
     }
   }
 
-  private void onXRChange(WebXRState state)
+  private void onXRChange(WebXRState state, int viewsCount)
   {
     xrState = state;
+    this.viewsCount = viewsCount;
+    switched = false;
   }
 
   private void onHeadsetUpdate(
@@ -62,8 +78,10 @@ public class WebXRCamera : MonoBehaviour
     }
     else if (xrState == WebXRState.AR)
     {
-      WebXRMatrixUtil.SetTransformFromViewMatrix(cameraAR.transform, leftViewMatrix * sitStandMatrix.inverse);
-      cameraAR.projectionMatrix = leftProjectionMatrix;
+      WebXRMatrixUtil.SetTransformFromViewMatrix(cameraARL.transform, leftViewMatrix * sitStandMatrix.inverse);
+      cameraARL.projectionMatrix = leftProjectionMatrix;
+      WebXRMatrixUtil.SetTransformFromViewMatrix(cameraARR.transform, rightViewMatrix * sitStandMatrix.inverse);
+      cameraARR.projectionMatrix = rightProjectionMatrix;
     }
   }
 }

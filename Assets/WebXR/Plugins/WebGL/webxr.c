@@ -2,17 +2,18 @@
 #include "emscripten.h"
 
 typedef void (*webxr_void)();
+typedef void (*webxr_void_int)();
 typedef void (*webxr_void_string)();
 
-webxr_void on_start_ar_ref;
-webxr_void on_start_vr_ref;
+webxr_void_int on_start_ar_ref;
+webxr_void_int on_start_vr_ref;
 webxr_void on_end_xr_ref;
 webxr_void_string on_xr_capabilities_ref;
 webxr_void_string on_webxr_data_ref;
 
 void set_webxr_events(
-  webxr_void _on_start_ar,
-  webxr_void _on_start_vr,
+  webxr_void_int _on_start_ar,
+  webxr_void_int _on_start_vr,
   webxr_void _on_end_xr,
   webxr_void_string _on_xr_capabilities,
   webxr_void_string _on_webxr_data
@@ -24,14 +25,14 @@ void set_webxr_events(
   on_webxr_data_ref = _on_webxr_data;
 }
 
-void EMSCRIPTEN_KEEPALIVE on_start_ar()
+void EMSCRIPTEN_KEEPALIVE on_start_ar(int views_count)
 {
-  on_start_ar_ref();
+  on_start_ar_ref(views_count);
 }
 
-void EMSCRIPTEN_KEEPALIVE on_start_vr()
+void EMSCRIPTEN_KEEPALIVE on_start_vr(int views_count)
 {
-  on_start_vr_ref();
+  on_start_vr_ref(views_count);
 }
 
 void EMSCRIPTEN_KEEPALIVE on_end_xr()
