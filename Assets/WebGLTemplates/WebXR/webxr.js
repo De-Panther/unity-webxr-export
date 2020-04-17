@@ -428,7 +428,7 @@
   function init() {
     if (typeof(navigator.xr) == 'undefined') {
       var script = document.createElement('script');
-      script.src = 'webxr-polyfill/build/webxr-polyfill.js';
+      script.src = 'https://cdn.jsdelivr.net/npm/webxr-polyfill@latest/build/webxr-polyfill.js';
       document.getElementsByTagName('head')[0].appendChild(script);
 
       script.addEventListener('load', function () {
