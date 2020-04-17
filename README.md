@@ -8,7 +8,9 @@ WebVR and WebXR, while having lots in common, are different in the way they call
 
 That, and the fact that I want to use more updated version of Unity Editor and tools/practices, made me to create this fork.
 
-The current docs are still in the repository as reference, but I modified this README file, as some of the links and info are no longer relevant or won't be relevant soon.
+I'm continuing to update this fork as an experimental project, Mozilla's repository is more stable, and I'll merge there features that I tested here.
+
+I deleted all the docs, as they are no longer relevant.
 
 <hr>
 
@@ -20,7 +22,7 @@ The current docs are still in the repository as reference, but I modified this R
 
 ### Browser Compatibility
 
-Tested with Firefox on Windows, and Oculus Browser on Oculus Quest
+Tested with Firefox on Windows, Oculus Browser on Oculus Quest, and Google Chrome on Android (Included AR).
 
 ### Polyfilled WebXR
 
@@ -34,7 +36,7 @@ This asset works by utilizing Unity's WebGL platform support and therefore share
 
 ## Contributing
 
-Contributions from the developer community are very important to us. You're encouraged to [open an issue](https://github.com/De-Panther/unity-webxr-export/issues/new), report a problem, contribute with code, open a feature request, share your work or ask a question.
+You're encouraged to [open an issue](https://github.com/De-Panther/unity-webxr-export/issues/new), report a problem, contribute with code, open a feature request, share your work or ask a question. But remember that it's an experimental project.
 
 ## Credits
 
