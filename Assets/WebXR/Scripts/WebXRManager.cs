@@ -2,7 +2,9 @@ using AOT;
 using UnityEngine;
 using UnityEngine.XR;
 using System;
+#if UNITY_WEBGL && !UNITY_EDITOR
 using System.Runtime.InteropServices;
+#endif
 
 namespace WebXR
 {
@@ -52,6 +54,7 @@ namespace WebXR
         float[] axes);
     public event ControllerUpdate OnControllerUpdate;
 
+#if UNITY_WEBGL && !UNITY_EDITOR
     // link WebGL plugin for interacting with browser scripts.
     [DllImport("__Internal")]
     private static extern void ConfigureToggleVRKeyName(string keyName);
@@ -68,12 +71,13 @@ namespace WebXR
                                                 Action on_end_xr,
                                                 Action<string> on_xr_capabilities,
                                                 Action<string> on_webxr_data);
+#endif
 
     // Shared array which we will load headset data in from webxr.jslib
     // Array stores  5 matrices, each 16 values, stored linearly.
     float[] sharedArray = new float[5 * 16];
 
-    private WebXRDisplayCapabilities capabilities;
+    private WebXRDisplayCapabilities capabilities = new WebXRDisplayCapabilities();
 
     public static WebXRManager Instance
     {
@@ -103,13 +107,6 @@ namespace WebXR
     {
       Debug.Log("Active Graphics Tier: " + Graphics.activeTier);
       instance = this;
-
-      if (!GlobalName.Equals(instance.name))
-      {
-        Debug.LogError("The webxr.jspre script requires the WebXRManager gameobject to be named "
-        + GlobalName + " for proper functioning");
-      }
-
       if (instance.dontDestroyOnLoad)
       {
         DontDestroyOnLoad(instance);
