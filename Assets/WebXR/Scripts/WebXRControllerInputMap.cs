@@ -2,14 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "WebXRControllerInputMap")]
-public class WebXRControllerInputMap : ScriptableObject {
+namespace WebXR
+{
+  [CreateAssetMenu(menuName = "WebXRControllerInputMap")]
+  public class WebXRControllerInputMap : ScriptableObject
+  {
     [Header("WebXR Controller Input Map")]
     public List<WebXRControllerInput> inputs;
-}
+  }
 
-[System.Serializable]
-public class WebXRControllerInput {
+  [System.Serializable]
+  public class WebXRControllerInput
+  {
     [Tooltip("A meaningful name describing the gesture performed on the controller.")]
     public string actionName;
 
@@ -24,4 +28,5 @@ public class WebXRControllerInput {
     public string unityInputName;
     [Tooltip("Whether gesture derives its value from Unity using `Input.GetButton` function.")]
     public bool unityInputIsButton;
+  }
 }
