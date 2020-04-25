@@ -38,6 +38,16 @@ This asset works by utilizing Unity's WebGL platform support and therefore share
 
 You're encouraged to [open an issue](https://github.com/De-Panther/unity-webxr-export/issues/new), report a problem, contribute with code, open a feature request, share your work or ask a question. But remember that it's an experimental project.
 
+## Useful links and info
+
+Much of the WebXR upgrades and API usage made possible thanks to these resources.
+[WebVR to WebXR Migration Guide](https://github.com/immersive-web/webxr/blob/master/webvr-migration.md)
+[WebXR Device API Explained](https://github.com/immersive-web/webxr/blob/master/explainer.md)
+[WebXR Input Profile Viewer](https://immersive-web.github.io/webxr-input-profiles/packages/viewer/dist/index.html)
+[WebXR Samples](https://immersive-web.github.io/webxr-samples/)
+[WebXR Polyfill](https://github.com/immersive-web/webxr-polyfill)
+[The Immersive Web Working Group/Community Group](https://immersive-web.github.io/)
+
 ## Credits
 
 Thanks to [Brandon Jones (@toji)](https://github.com/toji) who wrote [WebVR to WebXR Migration Guide](https://github.com/immersive-web/webxr/blob/master/webvr-migration.md) and lots of samples that helped in converting the code from WebVR to WebXR.
