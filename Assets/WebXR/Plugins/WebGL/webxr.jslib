@@ -1,17 +1,5 @@
 /* functions called from unity */
 mergeInto(LibraryManager.library, {
-  FinishLoading: function() {
-    document.dispatchEvent(new CustomEvent('Unity', {detail: 'Ready'}));
-  },
-
-  ConfigureToggleVRKeyName: function (keyName) {
-    document.dispatchEvent(new CustomEvent('Unity', {detail: 'ConfigureToggleVRKeyName:' + Pointer_stringify(keyName)}));
-  },
-
-  displayElementId: function (id) {
-    document.dispatchEvent(new CustomEvent('Unity', {detail: {type: 'displayElementId', id: Pointer_stringify(id)}}));
-  },
-
   InitSharedArray: function(byteOffset, length) {
     SharedArray = new Float32Array(buffer, byteOffset, length);
     document.dispatchEvent(new CustomEvent('UnityLoaded', {detail: 'Ready'}));

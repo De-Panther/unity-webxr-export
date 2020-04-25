@@ -972,10 +972,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 519f6ee6510174b44bbe9a8a2d3b6a6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  toggleVRKeyName: 
   dontDestroyOnLoad: 1
   DefaultHeight: 1.2
-  TrackingSpace: 1
   xrState: 2
 --- !u!1 &1644691530447244
 GameObject:
