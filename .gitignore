@@ -38,3 +38,6 @@ sysinfo.txt
 JetBrains.meta
 Assets/Plugins/Editor/JetBrains
 /Logs
+
+# Local server
+*.pem
