@@ -1,10 +1,9 @@
-using AOT;
-using UnityEngine;
-using UnityEngine.XR;
-using System;
 #if UNITY_WEBGL && !UNITY_EDITOR
+using AOT;
+using System;
 using System.Runtime.InteropServices;
 #endif
+using UnityEngine;
 
 namespace WebXR
 {
@@ -12,17 +11,12 @@ namespace WebXR
 
   public class WebXRManager : MonoBehaviour
   {
-    [Tooltip("Name of the key used to alternate between VR and normal mode. Leave blank to disable.")]
-    public string toggleVRKeyName;
     [Tooltip("Preserve the manager across scenes changes.")]
     public bool dontDestroyOnLoad = true;
     [Header("Tracking")]
     [Tooltip("Default height of camera if no room-scale transform is present.")]
     public float DefaultHeight = 1.2f;
-    [Tooltip("Represents the size of physical space available for XR.")]
-    public TrackingSpaceType TrackingSpace = TrackingSpaceType.RoomScale;
 
-    private static string GlobalName = "WebXRCameraSet";
     private static WebXRManager instance;
     [HideInInspector]
     public WebXRState xrState = WebXRState.NORMAL;
@@ -55,10 +49,6 @@ namespace WebXR
     public event ControllerUpdate OnControllerUpdate;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
-    // link WebGL plugin for interacting with browser scripts.
-    [DllImport("__Internal")]
-    private static extern void ConfigureToggleVRKeyName(string keyName);
-
     [DllImport("__Internal")]
     private static extern void InitSharedArray(float[] array, int length);
 
@@ -86,16 +76,14 @@ namespace WebXR
         if (instance == null)
         {
           var managerInScene = FindObjectOfType<WebXRManager>();
-          var name = GlobalName;
 
           if (managerInScene != null)
           {
             instance = managerInScene;
-            instance.name = name;
           }
           else
           {
-            GameObject go = new GameObject(name);
+            GameObject go = new GameObject("WebXRCameraSet");
             go.AddComponent<WebXRManager>();
           }
         }
@@ -114,17 +102,10 @@ namespace WebXR
       xrState = WebXRState.NORMAL;
     }
 
-    private void SetTrackingSpaceType()
-    {
-      if (XRDevice.isPresent)
-      {
-        XRDevice.SetTrackingSpaceType(WebXRManager.Instance.TrackingSpace);
-        Debug.Log("Tracking Space: " + XRDevice.GetTrackingSpaceType());
-      }
-    }
-
     // Handles WebXR data from browser
+    #if UNITY_WEBGL && !UNITY_EDITOR
     [MonoPInvokeCallback(typeof(Action<string>))]
+    #endif
     public static void OnWebXRData(string jsonString)
     {
       WebXRData webXRData = WebXRData.CreateFromJSON(jsonString);
@@ -151,7 +132,9 @@ namespace WebXR
     }
 
     // Handles WebXR capabilities from browser
+    #if UNITY_WEBGL && !UNITY_EDITOR
     [MonoPInvokeCallback(typeof(Action<string>))]
+    #endif
     public static void OnXRCapabilities(string json)
     {
       WebXRDisplayCapabilities capabilities = JsonUtility.FromJson<WebXRDisplayCapabilities>(json);
@@ -162,8 +145,6 @@ namespace WebXR
     {
 #if !UNITY_EDITOR && UNITY_WEBGL
         this.capabilities = capabilities;
-        if (!capabilities.canPresentVR)
-            WebXRUI.displayElementId("novr");
 #endif
 
       if (OnXRCapabilitiesUpdate != null)
@@ -178,20 +159,26 @@ namespace WebXR
     }
 
     // received start VR from WebVR browser
+    #if UNITY_WEBGL && !UNITY_EDITOR
     [MonoPInvokeCallback(typeof(Action<int>))]
+    #endif
     public static void OnStartAR(int viewsCount)
     {
       Instance.setXrState(WebXRState.AR, viewsCount);
     }
 
+    #if UNITY_WEBGL && !UNITY_EDITOR
     [MonoPInvokeCallback(typeof(Action<int>))]
+    #endif
     public static void OnStartVR(int viewsCount)
     {
       Instance.setXrState(WebXRState.VR, viewsCount);
     }
 
     // receive end VR from WebVR browser
+    #if UNITY_WEBGL && !UNITY_EDITOR
     [MonoPInvokeCallback(typeof(Action))]
+    #endif
     public static void OnEndXR()
     {
       Instance.setXrState(WebXRState.NORMAL, 1);
@@ -211,11 +198,9 @@ namespace WebXR
     {
 #if !UNITY_EDITOR && UNITY_WEBGL
         set_webxr_events(OnStartAR, OnStartVR, OnEndXR, OnXRCapabilities, OnWebXRData);
-        ConfigureToggleVRKeyName(toggleVRKeyName);
         InitSharedArray(sharedArray, sharedArray.Length);
         ListenWebXRData();
 #endif
-      SetTrackingSpaceType();
     }
 
     void LateUpdate()

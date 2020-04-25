@@ -20,7 +20,6 @@
     this.ctx = null;
     this.gameInstance = null;
     this.polyfill = null;
-    this.toggleVRKeyName = '';
     this.didNotifyUnity = false;
     this.isARSupported = false;
     this.isVRSupported = false;
@@ -39,10 +38,20 @@
 
     navigator.xr.isSessionSupported('immersive-vr').then((supported) => {
       this.isVRSupported = supported;
+      if (document.body.dataset.unityLoaded)
+      {
+        document.dispatchEvent(new CustomEvent('onVRSupportedCheck', { detail:{supported:this.isVRSupported} }));
+        this.UpdateXRCapabilities();
+      }
     });
 
     navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
       this.isARSupported = supported;
+      if (document.body.dataset.unityLoaded)
+      {
+        document.dispatchEvent(new CustomEvent('onARSupportedCheck', { detail:{supported:this.isARSupported} }));
+        this.UpdateXRCapabilities();
+      }
     });
   }
 
@@ -50,15 +59,10 @@
   XRManager.prototype.attachEventListeners = function () {
     var onToggleAr = this.toggleAr.bind(this);
     var onToggleVr = this.toggleVr.bind(this);
-    var onKeyUp = this.keyUp.bind(this);
     var onUnityLoaded = this.unityLoaded.bind(this);
-    var onUnityMessage = this.unityMessage.bind(this);
-
-    window.addEventListener('keyup', onKeyUp, false);
 
     // dispatched by index.html
     document.addEventListener('UnityLoaded', onUnityLoaded, false);
-    document.addEventListener('Unity', onUnityMessage, false);
 
     document.addEventListener('toggleAR', onToggleAr, false);
     document.addEventListener('toggleVR', onToggleVr, false);
@@ -91,7 +95,7 @@
 
   XRManager.prototype.exitARSession = function () {
     if (!this.arSession || !this.arSession.isInSession) {
-      console.warn('No AR display to exit VR mode');
+      console.warn('No AR display to exit AR mode');
       return;
     }
 
@@ -142,12 +146,6 @@
     }
   }
 
-  XRManager.prototype.keyUp = function (evt) {
-    if (this.toggleVRKeyName && this.toggleVRKeyName === evt.key) {
-      this.toggleVr();
-    }
-  }
-
   XRManager.prototype.setGameInstance = function (gameInstance) {
     if (!this.gameInstance) {
       this.gameInstance = gameInstance;
@@ -187,31 +185,30 @@
   XRManager.prototype.unityLoaded = function () {
     document.body.dataset.unityLoaded = 'true';
 
-    // Send browser capabilities to Unity.
-    var canPresentAR = this.isARSupported;
-    var canPresentVR = this.isVRSupported;
-    var hasPosition = true;
-    var hasExternalDisplay = false;
-
     this.setGameInstance(unityInstance);
 
     document.dispatchEvent(new CustomEvent('onARSupportedCheck', { detail:{supported:this.isARSupported} }));
     document.dispatchEvent(new CustomEvent('onVRSupportedCheck', { detail:{supported:this.isVRSupported} }));
 
-    this.gameInstance.Module.WebXR.OnXRCapabilities(
-      JSON.stringify({
-        canPresentAR: canPresentAR,
-        canPresentVR: canPresentVR,
-        hasPosition: hasPosition,
-        hasExternalDisplay: hasExternalDisplay
-      })
-    );
+    this.UpdateXRCapabilities();
 
     navigator.xr.requestSession('inline').then((session) => {
       session.isInSession = true;
       this.inlineSession = session;
       this.onSessionStarted(session);
     });
+  }
+
+  XRManager.prototype.UpdateXRCapabilities = function() {
+    // Send browser capabilities to Unity.
+    this.gameInstance.Module.WebXR.OnXRCapabilities(
+      JSON.stringify({
+        canPresentAR: this.isARSupported,
+        canPresentVR: this.isVRSupported,
+        hasPosition: true, // TODO: check this
+        hasExternalDisplay: false // TODO: check this
+      })
+    );
   }
 
   XRManager.prototype.getGamepadAxes = function(gamepad) {
@@ -385,24 +382,6 @@
       JSON.stringify({
       controllers: xrData.gamepads
     }));
-  }
-
-  XRManager.prototype.unityMessage = function (msg) {
-
-      if (typeof msg.detail === 'string') {
-        // Assign VR toggle key from Unity on WebXRManager component.
-        if (msg.detail.indexOf('ConfigureToggleVRKeyName') === 0) {
-          this.toggleVRKeyName = msg.detail.split(':')[1];
-        }
-      }
-
-      // Handle UI dialogue
-      if (msg.detail.type === 'displayElementId') {
-        var el = document.getElementById(msg.detail.id);
-        if (el) {
-          this.displayElement(el);
-        }
-      }
   }
 
   // Show instruction dialogue for non-VR enabled browsers.
