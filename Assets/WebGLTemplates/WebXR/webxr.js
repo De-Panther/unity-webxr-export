@@ -151,6 +151,7 @@
       this.gameInstance = gameInstance;
       this.canvas = this.gameInstance.Module.canvas;
       this.ctx = this.gameInstance.Module.ctx;
+
       var thisXRMananger = this;
       this.gameInstance.Module.InternalBrowser.requestAnimationFrame = function (func) {
         if (!thisXRMananger.rAFCB)
@@ -179,6 +180,25 @@
           window.requestAnimationFrame(func);
         }
       };
+
+      // bindFramebuffer frameBufferObject null in XRSession should use XRWebGLLayer FBO instead
+      this.ctx.bindFramebuffer = (oldBindFramebuffer => function bindFramebuffer(target, fbo) {
+        if (!fbo) {
+          if (thisXRMananger.arSession && thisXRMananger.arSession.isInSession) {
+            if (thisXRMananger.arSession.renderState.baseLayer) {
+              fbo = thisXRMananger.arSession.renderState.baseLayer.framebuffer;
+            }
+          } else if (thisXRMananger.vrSession && thisXRMananger.vrSession.isInSession) {
+            if (thisXRMananger.vrSession.renderState.baseLayer) {
+              fbo = thisXRMananger.vrSession.renderState.baseLayer.framebuffer;
+            }
+          } else if (thisXRMananger.inlineSession && thisXRMananger.inlineSession.isInSession &&
+                     thisXRMananger.inlineSession.renderState.baseLayer) {
+            fbo = thisXRMananger.inlineSession.renderState.baseLayer.framebuffer;
+          }
+        }
+        return oldBindFramebuffer.call(this, target, fbo);
+      })(this.ctx.bindFramebuffer);
     }
   }
 
@@ -192,10 +212,14 @@
 
     this.UpdateXRCapabilities();
 
-    navigator.xr.requestSession('inline').then((session) => {
-      session.isInSession = true;
-      this.inlineSession = session;
-      this.onSessionStarted(session);
+    navigator.xr.isSessionSupported('inline').then((supported) => {
+      if (supported) {
+        navigator.xr.requestSession('inline').then((session) => {
+          session.isInSession = true;
+          this.inlineSession = session;
+          this.onSessionStarted(session);
+        });
+      }
     });
   }
 
