@@ -24,8 +24,6 @@
     this.isARSupported = false;
     this.isVRSupported = false;
     this.rAFCB = null;
-    this.originalWidth = null;
-    this.originalHeight = null;
     this.init();
   }
 
@@ -118,8 +116,8 @@
     
     this.gameInstance.Module.WebXR.OnEndXR();
     this.didNotifyUnity = false;
-    this.canvas.width = this.originalWidth;
-    this.canvas.height = this.originalHeight;
+    this.canvas.width = this.canvas.parentElement.clientWidth * window.devicePixelRatio;
+    this.canvas.height = this.canvas.parentElement.clientHeight * window.devicePixelRatio;
   }
 
   XRManager.prototype.toggleAr = function () {
@@ -323,12 +321,10 @@
     let refSpaceType = 'viewer';
     if (session.isImmersive) {
       refSpaceType = 'local-floor';
-      
+
       var onSessionEnded = this.onEndSession.bind(this);
       session.addEventListener('end', onSessionEnded);
-    
-      this.originalWidth = this.canvas.width;
-      this.originalHeight = this.canvas.height;
+
       this.canvas.width = glLayer.framebufferWidth;
       this.canvas.height = glLayer.framebufferHeight;
     }
@@ -350,6 +346,14 @@
     }
     
     let glLayer = session.renderState.baseLayer;
+    
+    if (this.canvas.width != glLayer.framebufferWidth ||
+        this.canvas.height != glLayer.framebufferHeight)
+    {
+      this.canvas.width = glLayer.framebufferWidth;
+      this.canvas.height = glLayer.framebufferHeight;
+    }
+    
     this.ctx.bindFramebuffer(this.ctx.FRAMEBUFFER, glLayer.framebuffer);
     if (session.isAR) {
       this.ctx.dontClearOnFrameStart = true;
