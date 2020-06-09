@@ -94,7 +94,12 @@ namespace WebXR
     private void Awake()
     {
       Debug.Log("Active Graphics Tier: " + Graphics.activeTier);
-      instance = this;
+      if (null == instance) {
+        instance = this;
+      } else if (instance != this) {
+        Destroy(gameObject);
+      }
+
       if (instance.dontDestroyOnLoad)
       {
         DontDestroyOnLoad(instance);
