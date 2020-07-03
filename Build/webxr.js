@@ -255,7 +255,11 @@
 
   XRManager.prototype.getXRGamepads = function(frame, inputSources, refSpace) {
     var vrGamepads = []
-    for (let inputSource of inputSources) {
+    if (!inputSources || !inputSources.length) {
+      return vrGamepads;
+    }
+    for (var i = 0; i < inputSources.length; i++) {
+      let inputSource = inputSources[i];
       // Show the input source if it has a grip space
       if (inputSource.gripSpace && inputSource.gamepad) {
         let inputPose = frame.getPose(inputSource.gripSpace, refSpace);
