@@ -95,7 +95,9 @@
   XRManager.prototype.onRequestARSession = function () {
     if (!this.isARSupported) return;
     navigator.xr.requestSession('immersive-ar', {
-      requiredFeatures: ['local-floor'] // TODO: Get this value from Unity
+      requiredFeatures: ['local-floor'], // TODO: Get this value from Unity
+      optionalFeatures: ['dom-overlay'],
+      domOverlay: {root: this.canvas}
     }).then(async (session) => {
       session.isImmersive = true;
       session.isInSession = true;
