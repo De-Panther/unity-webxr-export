@@ -4,23 +4,6 @@ using System.Collections.Generic;
 
 namespace WebXR
 {
-  public enum WebXRControllerHand { NONE, LEFT, RIGHT };
-
-  [System.Serializable]
-  public class WebXRControllerButton
-  {
-    public bool pressed;
-    public bool prevPressedState;
-    public bool touched;
-    public float value;
-
-    public WebXRControllerButton(bool isPressed, float buttonValue)
-    {
-      pressed = isPressed;
-      prevPressedState = false;
-      value = buttonValue;
-    }
-  }
 
   public class WebXRController : MonoBehaviour
   {
@@ -39,7 +22,17 @@ namespace WebXR
     public GameObject[] showGOs;
 
     private Matrix4x4 sitStand;
-    private float[] axes;
+
+    private float trigger;
+    private float squeeze;
+    private float thumbstick;
+    private float thumbstickX;
+    private float thumbstickY;
+    private float touchpad;
+    private float touchpadX;
+    private float touchpadY;
+    private float buttonA;
+    private float buttonB;
 
     private Quaternion headRotation;
     private Vector3 headPosition;
@@ -61,24 +54,12 @@ namespace WebXR
 
     public float GetAxis(string action)
     {
-      for (var i = 0; i < inputMap.inputs.Count; i++)
+      switch (action)
       {
-        WebXRControllerInput input = inputMap.inputs[i];
-        if (action == input.actionName)
-        {
-          if (input.gamepadIsButton)
-          {
-            if (!buttonStates.ContainsKey(action))
-            {
-              return 0;
-            }
-            return buttonStates[action].value;
-          }
-          else
-          {
-            return axes[i];
-          }
-        }
+        case "Grip":
+          return squeeze;
+        case "Trigger":
+          return trigger;
       }
       return 0;
     }
@@ -149,27 +130,34 @@ namespace WebXR
       this.sitStand = sitStandMatrix;
     }
 
-    private void onControllerUpdate(string id,
-        int index,
-        string handValue,
-        bool hasOrientation,
-        bool hasPosition,
-        Quaternion orientation,
-        Vector3 position,
-        Vector3 linearAcceleration,
-        Vector3 linearVelocity,
-        WebXRControllerButton[] buttonValues,
-        float[] axesValues)
+    private void onControllerUpdate(WebXRControllerData2 controllerData)
     {
-      if (handFromString(handValue) == hand)
+      if (controllerData.hand == (int)hand)
       {
         SetVisible(true);
 
-        transform.localRotation = orientation;
-        transform.localPosition = position;
+        transform.localRotation = controllerData.rotation;
+        transform.localPosition = controllerData.position;
 
-        UpdateButtons(buttonValues);
-        this.axes = axesValues;
+        trigger = controllerData.trigger;
+        squeeze = controllerData.squeeze;
+        thumbstick = controllerData.thumbstick;
+        thumbstickX = controllerData.thumbstickX;
+        thumbstickY = controllerData.thumbstickY;
+        touchpad = controllerData.touchpad;
+        touchpadX = controllerData.touchpadX;
+        touchpadY = controllerData.touchpadY;
+        buttonA = controllerData.buttonA;
+        buttonB = controllerData.buttonB;
+
+        WebXRControllerButton[] buttons = new WebXRControllerButton[6];
+        buttons[0] = new WebXRControllerButton(trigger==1, trigger);
+        buttons[1] = new WebXRControllerButton(squeeze==1, squeeze);
+        buttons[2] = new WebXRControllerButton(thumbstick==1, thumbstick);
+        buttons[3] = new WebXRControllerButton(touchpad==1, touchpad);
+        buttons[4] = new WebXRControllerButton(buttonA==1, buttonA);
+        buttons[5] = new WebXRControllerButton(buttonB==1, buttonB);
+        UpdateButtons(buttons);
       }
     }
 
@@ -193,32 +181,10 @@ namespace WebXR
 
     private void SetVisible(bool visible)
     {
-      //Transform[] transforms = GetComponentsInChildren<Transform>();
       foreach (var showGO in showGOs)
       {
         showGO.SetActive(visible);
       }
-    }
-
-    // Arm model adapted from: https://github.com/aframevr/aframe/blob/master/src/components/tracked-controls.js
-    private Vector3 applyArmModel(Vector3 controllerPosition, Quaternion controllerRotation, Quaternion headRotation)
-    {
-      // Set offset for degenerate "arm model" to elbow.
-      Vector3 deltaControllerPosition = new Vector3(
-          this.eyesToElbow.x * (this.hand == WebXRControllerHand.LEFT ? -1 : this.hand == WebXRControllerHand.RIGHT ? 1 : 0),
-          this.eyesToElbow.y,
-          this.eyesToElbow.z);
-
-      // Apply camera Y rotation (not X or Z, so you can look down at your hand).
-      Quaternion headYRotation = Quaternion.Euler(0, headRotation.eulerAngles.y, 0);
-      deltaControllerPosition = (headYRotation * deltaControllerPosition);
-      controllerPosition += deltaControllerPosition;
-
-      // Set offset for forearm sticking out from elbow.
-      deltaControllerPosition.Set(this.elbowHand.x, this.elbowHand.y, this.elbowHand.z);
-      deltaControllerPosition = Quaternion.Euler(controllerRotation.eulerAngles.x, controllerRotation.eulerAngles.y, 0) * deltaControllerPosition;
-      controllerPosition += deltaControllerPosition;
-      return controllerPosition;
     }
 
     void OnEnable()
