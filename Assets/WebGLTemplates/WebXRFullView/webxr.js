@@ -8,7 +8,32 @@
     this.rightViewMatrix = mat4.create();
     this.sitStandMatrix = mat4.create();
     this.gamepads = [];
+    this.controllerA = new XRControllerData();
+    this.controllerB = new XRControllerData();
     this.xrData = null;
+  }
+  
+  function XRControllerData() {
+    // TODO: set enabled 0 if controller was enable and then disable
+    this.enabled = 0;
+    this.hand = 0;
+    this.positionX = 0;
+    this.positionY = 0;
+    this.positionZ = 0;
+    this.rotationX = 0;
+    this.rotationY = 0;
+    this.rotationZ = 0;
+    this.rotationW = 0;
+    this.trigger = 0;
+    this.squeeze = 0;
+    this.thumbstick = 0;
+    this.thumbstickX = 0;
+    this.thumbstickY = 0;
+    this.touchpad = 0;
+    this.touchpadX = 0;
+    this.touchpadY = 0;
+    this.buttonA = 0;
+    this.buttonB = 0;
   }
 
   function XRManager() {
@@ -24,6 +49,7 @@
     this.isARSupported = false;
     this.isVRSupported = false;
     this.rAFCB = null;
+    this.onInputEvent = null;
     this.init();
   }
 
@@ -112,12 +138,64 @@
   XRManager.prototype.onEndSession = function (xrSessionEvent) {
     if (xrSessionEvent.session) {
       xrSessionEvent.session.isInSession = false;
+      xrSessionEvent.session.removeEventListener('select', this.onInputEvent);
+      xrSessionEvent.session.removeEventListener('selectstart', this.onInputEvent);
+      xrSessionEvent.session.removeEventListener('selectend', this.onInputEvent);
+      xrSessionEvent.session.removeEventListener('squeeze', this.onInputEvent);
+      xrSessionEvent.session.removeEventListener('squeezestart', this.onInputEvent);
+      xrSessionEvent.session.removeEventListener('squeezeend', this.onInputEvent);
     }
     
     this.gameInstance.Module.WebXR.OnEndXR();
     this.didNotifyUnity = false;
     this.canvas.width = this.canvas.parentElement.clientWidth * window.devicePixelRatio;
     this.canvas.height = this.canvas.parentElement.clientHeight * window.devicePixelRatio;
+  }
+  
+  XRManager.prototype.onInputSourceEvent = function (xrInputSourceEvent) {
+    if (xrInputSourceEvent.type && xrInputSourceEvent.inputSource
+        && xrInputSourceEvent.inputSource.handedness) {
+      var hand = 0;
+      var inputSource = xrInputSourceEvent.inputSource;
+      var xrData = this.xrData;
+      var controller = this.xrData.controllerA;
+      if (inputSource.handedness == 'left') {
+          hand = 1;
+          controller = this.xrData.controllerB;
+      } else if (inputSource.handedness == 'right') {
+          hand = 2;
+      }
+      
+      controller.enabled = 1;
+      controller.hand = hand;
+      
+      switch (xrInputSourceEvent.type) {
+        case "select":
+          controller.trigger = 1;
+          break;
+        case "selectstart":
+          controller.trigger = 1;
+          break;
+        case "selectend":
+          controller.trigger = 0;
+          break;
+        case "squeeze":
+          controller.squeeze = 1;
+          break;
+        case "squeezestart":
+          controller.squeeze = 1;
+          break;
+        case "squeezeend":
+          controller.squeeze = 0;
+          break;
+      }
+      
+      if (hand == 0 || hand == 2) {
+        xrData.controllerA = controller;
+      } else {
+        xrData.controllerB = controller;
+      }
+    }
   }
 
   XRManager.prototype.toggleAr = function () {
@@ -209,6 +287,8 @@
     document.dispatchEvent(new CustomEvent('onVRSupportedCheck', { detail:{supported:this.isVRSupported} }));
 
     this.UpdateXRCapabilities();
+    
+    this.onInputEvent = this.onInputSourceEvent.bind(this);
 
     navigator.xr.isSessionSupported('inline').then((supported) => {
       if (supported) {
@@ -232,57 +312,90 @@
       })
     );
   }
-
-  XRManager.prototype.getGamepadAxes = function(gamepad) {
-    var axes = [];
-    for (var i = 0; i < gamepad.axes.length; i++) {
-      axes.push(gamepad.axes[i]);
-    }
-    return axes;
-  }
-
-  XRManager.prototype.getGamepadButtons = function(gamepad) {
-    var buttons = [];
-    for (var i = 0; i < gamepad.buttons.length; i++) {
-      buttons.push({
-        pressed: gamepad.buttons[i].pressed,
-        touched: gamepad.buttons[i].touched,
-        value: gamepad.buttons[i].value
-      });
-    }
-    return buttons;
-  }
-
-  XRManager.prototype.getXRGamepads = function(frame, inputSources, refSpace) {
-    var vrGamepads = []
+  
+  XRManager.prototype.getXRControllersData = function(frame, inputSources, refSpace, xrData) {
     if (!inputSources || !inputSources.length) {
-      return vrGamepads;
+      return;
     }
     for (var i = 0; i < inputSources.length; i++) {
       let inputSource = inputSources[i];
       // Show the input source if it has a grip space
-      if (inputSource.gripSpace && inputSource.gamepad) {
+      if (inputSource.gripSpace) {
         let inputPose = frame.getPose(inputSource.gripSpace, refSpace);
         
         var position = inputPose.transform.position;
         var orientation = inputPose.transform.orientation;
-
-        vrGamepads.push({
-          id: inputSource.gamepad.id,
-          index: inputSource.gamepad.index,
-          hand: inputSource.handedness,
-          buttons: this.getGamepadButtons(inputSource.gamepad),
-          axes: this.getGamepadAxes(inputSource.gamepad),
-          hasOrientation: true,
-          hasPosition: true,
-          orientation: this.GLQuaternionToUnity([orientation.x, orientation.y, orientation.z, orientation.w]),
-          position: this.GLVec3ToUnity([position.x, position.y, position.z]),
-          linearAcceleration: [0, 0, 0],
-          linearVelocity: [0, 0, 0]
-        });
+        var hand = 0;
+        var controller = xrData.controllerA;
+        if (inputSource.handedness == 'left') {
+          hand = 1;
+          controller = xrData.controllerB;
+        } else if (inputSource.handedness == 'right') {
+          hand = 2;
+        }
+        
+        controller.enabled = 1;
+        controller.hand = hand;
+        
+        controller.positionX = position.x;
+        controller.positionY = position.y;
+        controller.positionZ = -position.z;
+        
+        controller.rotationX = -orientation.x;
+        controller.rotationY = -orientation.y;
+        controller.rotationZ = orientation.z;
+        controller.rotationW = orientation.w;
+        
+        // if there's gamepad, use the xr-standard mapping
+        // TODO: check for profiles
+        if (inputSource.gamepad) {
+          for (var j = 0; j < inputSource.gamepad.buttons.length; j++) {
+            switch (j) {
+              case 0:
+                controller.trigger = inputSource.gamepad.buttons[j].value;
+                break;
+              case 1:
+                controller.squeeze = inputSource.gamepad.buttons[j].value;
+                break;
+              case 2:
+                controller.touchpad = inputSource.gamepad.buttons[j].value;
+                break;
+              case 3:
+                controller.thumbstick = inputSource.gamepad.buttons[j].value;
+                break;
+              case 4:
+                controller.buttonA = inputSource.gamepad.buttons[j].value;
+                break;
+              case 5:
+                controller.buttonB = inputSource.gamepad.buttons[j].value;
+                break;
+            }
+          }
+          for (var j = 0; j < inputSource.gamepad.axes.length; j++) {
+            switch (j) {
+              case 0:
+                controller.touchpadX = inputSource.gamepad.axes[j].value;
+                break;
+              case 1:
+                controller.touchpadY = inputSource.gamepad.axes[j].value;
+                break;
+              case 2:
+                controller.thumbstickX = inputSource.gamepad.axes[j].value;
+                break;
+              case 3:
+                controller.thumbstickY = inputSource.gamepad.axes[j].value;
+                break;
+            }
+          }
+        }
+        
+        if (hand == 0 || hand == 2) {
+          xrData.controllerA = controller;
+        } else {
+          xrData.controllerB = controller;
+        }
       }
     }
-    return vrGamepads;
   }
 
   // Convert WebGL to Unity compatible Vector3
@@ -322,6 +435,8 @@
     let glLayer = new XRWebGLLayer(session, this.ctx);
     session.updateRenderState({ baseLayer: glLayer });
     
+    
+    
     let refSpaceType = 'viewer';
     if (session.isImmersive) {
       refSpaceType = 'local-floor';
@@ -331,6 +446,13 @@
 
       this.canvas.width = glLayer.framebufferWidth;
       this.canvas.height = glLayer.framebufferHeight;
+      
+      session.addEventListener('select', this.onInputEvent);
+      session.addEventListener('selectstart', this.onInputEvent);
+      session.addEventListener('selectend', this.onInputEvent);
+      session.addEventListener('squeeze', this.onInputEvent);
+      session.addEventListener('squeezestart', this.onInputEvent);
+      session.addEventListener('squeezeend', this.onInputEvent);
     }
     
     session.requestReferenceSpace(refSpaceType).then((refSpace) => {
@@ -387,16 +509,17 @@
       }
     }
 
-    // Gamepads
-    xrData.gamepads = this.getXRGamepads(frame, session.inputSources, session.refSpace);
-
+    this.getXRControllersData(frame, session.inputSources, session.refSpace, xrData);
+    
     // Dispatch event with headset data to be handled in webxr.jslib
     document.dispatchEvent(new CustomEvent('XRData', { detail: {
       leftProjectionMatrix: xrData.leftProjectionMatrix,
       rightProjectionMatrix: xrData.rightProjectionMatrix,
       leftViewMatrix: xrData.leftViewMatrix,
       rightViewMatrix: xrData.rightViewMatrix,
-      sitStandMatrix: xrData.sitStandMatrix
+      sitStandMatrix: xrData.sitStandMatrix,
+      controllerA: xrData.controllerA,
+      controllerB: xrData.controllerB
     }}));
     
     if (!this.didNotifyUnity)
@@ -409,26 +532,6 @@
       }
       this.didNotifyUnity = true;
     }
-
-    this.gameInstance.Module.WebXR.OnWebXRData(
-      JSON.stringify({
-      controllers: xrData.gamepads
-    }));
-  }
-
-  // Show instruction dialogue for non-VR enabled browsers.
-  XRManager.prototype.displayElement = function (el) {
-    if (el.dataset.enabled) {
-      return;
-    }
-    var confirmButton = el.querySelector('button');
-    el.dataset.enabled = true;
-
-    function onConfirm () {
-      el.dataset.enabled = false;
-      confirmButton.removeEventListener('click', onConfirm);
-    }
-    confirmButton.addEventListener('click', onConfirm);
   }
 
   function initWebXRManager () {

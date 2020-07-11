@@ -35,17 +35,7 @@ namespace WebXR
         Matrix4x4 sitStandMatrix);
     public event HeadsetUpdate OnHeadsetUpdate;
 
-    public delegate void ControllerUpdate(string id,
-        int index,
-        string hand,
-        bool hasOrientation,
-        bool hasPosition,
-        Quaternion orientation,
-        Vector3 position,
-        Vector3 linearAcceleration,
-        Vector3 linearVelocity,
-        WebXRControllerButton[] buttons,
-        float[] axes);
+    public delegate void ControllerUpdate(WebXRControllerData2 controllerData);
     public event ControllerUpdate OnControllerUpdate;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -65,7 +55,7 @@ namespace WebXR
 
     // Shared array which we will load headset data in from webxr.jslib
     // Array stores  5 matrices, each 16 values, stored linearly.
-    float[] sharedArray = new float[5 * 16];
+    float[] sharedArray = new float[5 * 16 + 2 * 19];
 
     private WebXRDisplayCapabilities capabilities = new WebXRDisplayCapabilities();
 
@@ -113,10 +103,10 @@ namespace WebXR
     #endif
     public static void OnWebXRData(string jsonString)
     {
-      WebXRData webXRData = WebXRData.CreateFromJSON(jsonString);
+      //WebXRData webXRData = WebXRData.CreateFromJSON(jsonString);
 
       // Update controllers
-      if (webXRData.controllers.Length > 0)
+      /*if (webXRData.controllers.Length > 0)
       {
         foreach (WebXRControllerData controllerData in webXRData.controllers)
         {
@@ -133,7 +123,7 @@ namespace WebXR
                 controllerData.buttons,
                 controllerData.axes);
         }
-      }
+      }*/
     }
 
     // Handles WebXR capabilities from browser
@@ -189,7 +179,7 @@ namespace WebXR
       Instance.setXrState(WebXRState.NORMAL, 1);
     }
 
-    float[] GetFromSharedArray(int index)
+    float[] GetMatrixFromSharedArray(int index)
     {
       float[] newArray = new float[16];
       for (int i = 0; i < newArray.Length; i++)
@@ -197,6 +187,27 @@ namespace WebXR
         newArray[i] = sharedArray[index * 16 + i];
       }
       return newArray;
+    }
+
+    WebXRControllerData2 GetGamepadFromSharedArray(int startIndex, int controllerIndex)
+    {
+      WebXRControllerData2 newControllerData = new WebXRControllerData2();
+      int arrayPosition = startIndex + controllerIndex * 19;
+      newControllerData.enabled = sharedArray[arrayPosition++] != 0;
+      newControllerData.hand = (int)sharedArray[arrayPosition++];
+      newControllerData.position = new Vector3(sharedArray[arrayPosition++], sharedArray[arrayPosition++], sharedArray[arrayPosition++]);
+      newControllerData.rotation = new Quaternion(sharedArray[arrayPosition++], sharedArray[arrayPosition++], sharedArray[arrayPosition++], sharedArray[arrayPosition++]);
+      newControllerData.trigger = sharedArray[arrayPosition++];
+      newControllerData.squeeze = sharedArray[arrayPosition++];
+      newControllerData.thumbstick = sharedArray[arrayPosition++];
+      newControllerData.thumbstickX = sharedArray[arrayPosition++];
+      newControllerData.thumbstickY = sharedArray[arrayPosition++];
+      newControllerData.touchpad = sharedArray[arrayPosition++];
+      newControllerData.touchpadX = sharedArray[arrayPosition++];
+      newControllerData.touchpadY = sharedArray[arrayPosition++];
+      newControllerData.buttonA = sharedArray[arrayPosition++];
+      newControllerData.buttonB = sharedArray[arrayPosition];
+      return newControllerData;
     }
 
     void Start()
@@ -208,15 +219,32 @@ namespace WebXR
 #endif
     }
 
+    void Update()
+    {
+      if (OnControllerUpdate != null && this.xrState != WebXRState.NORMAL)
+      {
+        var controller1 = GetGamepadFromSharedArray(80, 0);
+        if (controller1.enabled)
+        {
+          OnControllerUpdate(controller1);
+        }
+        var controller2 = GetGamepadFromSharedArray(80, 1);
+        if (controller2.enabled)
+        {
+          OnControllerUpdate(controller2);
+        }
+      }
+    }
+
     void LateUpdate()
     {
       if (OnHeadsetUpdate != null && this.xrState != WebXRState.NORMAL)
       {
-        Matrix4x4 leftProjectionMatrix = WebXRMatrixUtil.NumbersToMatrix(GetFromSharedArray(0));
-        Matrix4x4 rightProjectionMatrix = WebXRMatrixUtil.NumbersToMatrix(GetFromSharedArray(1));
-        Matrix4x4 leftViewMatrix = WebXRMatrixUtil.NumbersToMatrix(GetFromSharedArray(2));
-        Matrix4x4 rightViewMatrix = WebXRMatrixUtil.NumbersToMatrix(GetFromSharedArray(3));
-        Matrix4x4 sitStandMatrix = WebXRMatrixUtil.NumbersToMatrix(GetFromSharedArray(4));
+        Matrix4x4 leftProjectionMatrix = WebXRMatrixUtil.NumbersToMatrix(GetMatrixFromSharedArray(0));
+        Matrix4x4 rightProjectionMatrix = WebXRMatrixUtil.NumbersToMatrix(GetMatrixFromSharedArray(1));
+        Matrix4x4 leftViewMatrix = WebXRMatrixUtil.NumbersToMatrix(GetMatrixFromSharedArray(2));
+        Matrix4x4 rightViewMatrix = WebXRMatrixUtil.NumbersToMatrix(GetMatrixFromSharedArray(3));
+        Matrix4x4 sitStandMatrix = WebXRMatrixUtil.NumbersToMatrix(GetMatrixFromSharedArray(4));
         if (!this.capabilities.hasPosition)
         {
           sitStandMatrix = Matrix4x4.Translate(new Vector3(0, this.DefaultHeight, 0));
