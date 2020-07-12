@@ -50,6 +50,7 @@
     this.isVRSupported = false;
     this.rAFCB = null;
     this.onInputEvent = null;
+    this.waitingHandheldARHack = false;
     this.init();
   }
 
@@ -94,16 +95,33 @@
 
   XRManager.prototype.onRequestARSession = function () {
     if (!this.isARSupported) return;
+    // The window on Chrome for Android lose focus when asking permissions.
+    // A popup is opened and the Canvas is painted with the last frame.
+    // We want to make sure that the Canvas is transparent when entering Handheld AR Session.
+    this.waitingHandheldARHack = true;
+    var thisXRMananger = this;
+    var tempRender = function () {
+      thisXRMananger.ctx.clearColor(0, 0, 0, 0);
+      thisXRMananger.ctx.clear(thisXRMananger.ctx.COLOR_BUFFER_BIT | thisXRMananger.ctx.DEPTH_BUFFER_BIT);
+      if (thisXRMananger.waitingHandheldARHack)
+      {
+        window.requestAnimationFrame( tempRender );
+      }
+    }
+    window.requestAnimationFrame( tempRender );
     navigator.xr.requestSession('immersive-ar', {
       requiredFeatures: ['local-floor'], // TODO: Get this value from Unity
       optionalFeatures: ['dom-overlay'],
-      domOverlay: {root: this.canvas}
+      domOverlay: {root: this.canvas.parentElement}
     }).then(async (session) => {
+      this.waitingHandheldARHack = false;
       session.isImmersive = true;
       session.isInSession = true;
       session.isAR = true;
       this.arSession = session;
       this.onSessionStarted(session);
+    }).catch((error) => {
+      thisXRMananger.waitingHandheldARHack = false;
     });
   }
 
@@ -255,7 +273,9 @@
             func(time);
           });
         } else {
-          window.requestAnimationFrame(func);
+          if (!thisXRMananger.waitingHandheldARHack) {
+            window.requestAnimationFrame(func);
+          }
         }
       };
 
