@@ -344,77 +344,78 @@
       // Show the input source if it has a grip space
       if (inputSource.gripSpace) {
         let inputPose = frame.getPose(inputSource.gripSpace, refSpace);
-        
-        var position = inputPose.transform.position;
-        var orientation = inputPose.transform.orientation;
-        var hand = 0;
-        var controller = xrData.controllerA;
-        if (inputSource.handedness == 'left') {
-          hand = 1;
-          controller = xrData.controllerB;
-        } else if (inputSource.handedness == 'right') {
-          hand = 2;
-        }
-        
-        controller.enabled = 1;
-        controller.hand = hand;
-        
-        controller.positionX = position.x;
-        controller.positionY = position.y;
-        controller.positionZ = -position.z;
-        
-        controller.rotationX = -orientation.x;
-        controller.rotationY = -orientation.y;
-        controller.rotationZ = orientation.z;
-        controller.rotationW = orientation.w;
-        
-        // if there's gamepad, use the xr-standard mapping
-        // TODO: check for profiles
-        if (inputSource.gamepad) {
-          for (var j = 0; j < inputSource.gamepad.buttons.length; j++) {
-            switch (j) {
-              case 0:
-                controller.trigger = inputSource.gamepad.buttons[j].value;
-                break;
-              case 1:
-                controller.squeeze = inputSource.gamepad.buttons[j].value;
-                break;
-              case 2:
-                controller.touchpad = inputSource.gamepad.buttons[j].value;
-                break;
-              case 3:
-                controller.thumbstick = inputSource.gamepad.buttons[j].value;
-                break;
-              case 4:
-                controller.buttonA = inputSource.gamepad.buttons[j].value;
-                break;
-              case 5:
-                controller.buttonB = inputSource.gamepad.buttons[j].value;
-                break;
+        if (inputPose) {
+          var position = inputPose.transform.position;
+          var orientation = inputPose.transform.orientation;
+          var hand = 0;
+          var controller = xrData.controllerA;
+          if (inputSource.handedness == 'left') {
+            hand = 1;
+            controller = xrData.controllerB;
+          } else if (inputSource.handedness == 'right') {
+            hand = 2;
+          }
+          
+          controller.enabled = 1;
+          controller.hand = hand;
+          
+          controller.positionX = position.x;
+          controller.positionY = position.y;
+          controller.positionZ = -position.z;
+          
+          controller.rotationX = -orientation.x;
+          controller.rotationY = -orientation.y;
+          controller.rotationZ = orientation.z;
+          controller.rotationW = orientation.w;
+          
+          // if there's gamepad, use the xr-standard mapping
+          // TODO: check for profiles
+          if (inputSource.gamepad) {
+            for (var j = 0; j < inputSource.gamepad.buttons.length; j++) {
+              switch (j) {
+                case 0:
+                  controller.trigger = inputSource.gamepad.buttons[j].value;
+                  break;
+                case 1:
+                  controller.squeeze = inputSource.gamepad.buttons[j].value;
+                  break;
+                case 2:
+                  controller.touchpad = inputSource.gamepad.buttons[j].value;
+                  break;
+                case 3:
+                  controller.thumbstick = inputSource.gamepad.buttons[j].value;
+                  break;
+                case 4:
+                  controller.buttonA = inputSource.gamepad.buttons[j].value;
+                  break;
+                case 5:
+                  controller.buttonB = inputSource.gamepad.buttons[j].value;
+                  break;
+              }
+            }
+            for (var j = 0; j < inputSource.gamepad.axes.length; j++) {
+              switch (j) {
+                case 0:
+                  controller.touchpadX = inputSource.gamepad.axes[j];
+                  break;
+                case 1:
+                  controller.touchpadY = inputSource.gamepad.axes[j];
+                  break;
+                case 2:
+                  controller.thumbstickX = inputSource.gamepad.axes[j];
+                  break;
+                case 3:
+                  controller.thumbstickY = inputSource.gamepad.axes[j];
+                  break;
+              }
             }
           }
-          for (var j = 0; j < inputSource.gamepad.axes.length; j++) {
-            switch (j) {
-              case 0:
-                controller.touchpadX = inputSource.gamepad.axes[j];
-                break;
-              case 1:
-                controller.touchpadY = inputSource.gamepad.axes[j];
-                break;
-              case 2:
-                controller.thumbstickX = inputSource.gamepad.axes[j];
-                break;
-              case 3:
-                controller.thumbstickY = inputSource.gamepad.axes[j];
-                break;
-            }
+          
+          if (hand == 0 || hand == 2) {
+            xrData.controllerA = controller;
+          } else {
+            xrData.controllerB = controller;
           }
-        }
-        
-        if (hand == 0 || hand == 2) {
-          xrData.controllerA = controller;
-        } else {
-          xrData.controllerB = controller;
         }
       }
     }
