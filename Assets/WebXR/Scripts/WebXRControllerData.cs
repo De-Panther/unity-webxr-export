@@ -3,23 +3,7 @@
 namespace WebXR
 {
   [System.Serializable]
-  class WebXRControllerData
-  {
-    public string id = null;
-    public int index = 0;
-    public string hand = null;
-    public bool hasOrientation = false;
-    public bool hasPosition = false;
-    public float[] orientation = null;
-    public float[] position = null;
-    public float[] linearAcceleration = null;
-    public float[] linearVelocity = null;
-    public float[] axes = null;
-    public WebXRControllerButton[] buttons = new WebXRControllerButton[0];
-  }
-
-  [System.Serializable]
-  public struct WebXRControllerData2
+  public struct WebXRControllerData
   {
     public bool enabled;
     public int hand;
@@ -35,6 +19,48 @@ namespace WebXR
     public float touchpadY;
     public float buttonA;
     public float buttonB;
+  }
+
+  [System.Serializable]
+  public class WebXRHandData
+  {
+    public bool enabled;
+    public int hand;
+    public WebXRJointData[] joints = new WebXRJointData[25];
+    public const int WRIST = 0;
+    public const int THUMB_METACARPAL = 1;
+    public const int THUMB_PHALANX_PROXIMAL = 2;
+    public const int THUMB_PHALANX_DISTAL = 3;
+    public const int THUMB_PHALANX_TIP = 4;
+    public const int INDEX_METACARPAL = 5;
+    public const int INDEX_PHALANX_PROXIMAL = 6;
+    public const int INDEX_PHALANX_INTERMEDIATE = 7;
+    public const int INDEX_PHALANX_DISTAL = 8;
+    public const int INDEX_PHALANX_TIP = 9;
+    public const int MIDDLE_METACARPAL = 10;
+    public const int MIDDLE_PHALANX_PROXIMAL = 11;
+    public const int MIDDLE_PHALANX_INTERMEDIATE = 12;
+    public const int MIDDLE_PHALANX_DISTAL = 13;
+    public const int MIDDLE_PHALANX_TIP = 14;
+    public const int RING_METACARPAL = 15;
+    public const int RING_PHALANX_PROXIMAL = 16;
+    public const int RING_PHALANX_INTERMEDIATE = 17;
+    public const int RING_PHALANX_DISTAL = 18;
+    public const int RING_PHALANX_TIP = 19;
+    public const int LITTLE_METACARPAL = 20;
+    public const int LITTLE_PHALANX_PROXIMAL = 21;
+    public const int LITTLE_PHALANX_INTERMEDIATE = 22;
+    public const int LITTLE_PHALANX_DISTAL = 23;
+    public const int LITTLE_PHALANX_TIP = 24;
+  }
+
+  [System.Serializable]
+  public struct WebXRJointData
+  {
+    public bool enabled;
+    public Vector3 position;
+    public Quaternion rotation;
+    public float radius;
   }
 
   public enum WebXRControllerHand { NONE, LEFT, RIGHT };

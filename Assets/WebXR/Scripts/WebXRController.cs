@@ -18,6 +18,8 @@ namespace WebXR
     [Tooltip("Vector from elbow to hand")]
     public Vector3 elbowHand = new Vector3(0, 0, 0.25f);
 
+    public Transform handJointPrefab;
+
 
     public GameObject[] showGOs;
 
@@ -37,6 +39,8 @@ namespace WebXR
     private Quaternion headRotation;
     private Vector3 headPosition;
     private Dictionary<string, WebXRControllerButton> buttonStates = new Dictionary<string, WebXRControllerButton>();
+
+    private Dictionary<int, Transform> handJoints = new Dictionary<int, Transform>();
 
     // Updates button states from Web gamepad API.
     private void UpdateButtons(WebXRControllerButton[] buttons)
@@ -130,10 +134,15 @@ namespace WebXR
       this.sitStand = sitStandMatrix;
     }
 
-    private void onControllerUpdate(WebXRControllerData2 controllerData)
+    private void OnControllerUpdate(WebXRControllerData controllerData)
     {
       if (controllerData.hand == (int)hand)
       {
+        if (!controllerData.enabled)
+        {
+          SetVisible(false);
+          return;
+        }
         SetVisible(true);
 
         transform.localRotation = controllerData.rotation;
@@ -158,6 +167,47 @@ namespace WebXR
         buttons[4] = new WebXRControllerButton(buttonA==1, buttonA);
         buttons[5] = new WebXRControllerButton(buttonB==1, buttonB);
         UpdateButtons(buttons);
+      }
+    }
+
+    private void OnHandUpdate(WebXRHandData handData)
+    {
+      if (handData.hand == (int)hand)
+      {
+        if (!handData.enabled)
+        {
+          SetVisible(false);
+          return;
+        }
+        SetVisible(true);
+
+        transform.localRotation = Quaternion.identity; //handData.joints[0].rotation;
+        transform.localPosition = Vector3.zero; //handData.joints[0].position;
+
+        for(int i=0; i<=WebXRHandData.LITTLE_PHALANX_TIP; i++)
+        {
+          if (handData.joints[i].enabled)
+          {
+            if (handJoints.ContainsKey(i))
+            {
+              handJoints[i].localPosition = handData.joints[i].position;
+              handJoints[i].localRotation = handData.joints[i].rotation;
+            }
+            else
+            {
+              var clone = Instantiate(handJointPrefab, handData.joints[i].position, handData.joints[i].rotation, transform);
+              if (handData.joints[i].radius > 0f)
+              {
+                clone.localScale = new Vector3(handData.joints[i].radius, handData.joints[i].radius, handData.joints[i].radius);
+              }
+              else
+              {
+                clone.localScale = new Vector3(0.005f, 0.005f, 0.005f);
+              }
+              handJoints.Add(i, clone);
+            }
+          }
+        }
       }
     }
 
@@ -194,14 +244,16 @@ namespace WebXR
         Debug.LogError("A Input Map must be assigned to WebXRController!");
         return;
       }
-      WebXRManager.Instance.OnControllerUpdate += onControllerUpdate;
+      WebXRManager.Instance.OnControllerUpdate += OnControllerUpdate;
+      WebXRManager.Instance.OnHandUpdate += OnHandUpdate;
       WebXRManager.Instance.OnHeadsetUpdate += onHeadsetUpdate;
       SetVisible(false);
     }
 
     void OnDisabled()
     {
-      WebXRManager.Instance.OnControllerUpdate -= onControllerUpdate;
+      WebXRManager.Instance.OnControllerUpdate -= OnControllerUpdate;
+      WebXRManager.Instance.OnHandUpdate -= OnHandUpdate;
       WebXRManager.Instance.OnHeadsetUpdate -= onHeadsetUpdate;
       SetVisible(false);
     }
