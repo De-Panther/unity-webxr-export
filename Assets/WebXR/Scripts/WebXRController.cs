@@ -41,6 +41,7 @@ namespace WebXR
     private Dictionary<string, WebXRControllerButton> buttonStates = new Dictionary<string, WebXRControllerButton>();
 
     private Dictionary<int, Transform> handJoints = new Dictionary<int, Transform>();
+    private bool handJointsVisible = false;
 
     // Updates button states from Web gamepad API.
     private void UpdateButtons(WebXRControllerButton[] buttons)
@@ -176,9 +177,11 @@ namespace WebXR
       {
         if (!handData.enabled)
         {
+          SetHandJointsVisible(false);
           return;
         }
         SetVisible(false);
+        SetHandJointsVisible(true);
 
         transform.localPosition = handData.joints[0].position;
         transform.localRotation = handData.joints[0].rotation;
@@ -212,6 +215,14 @@ namespace WebXR
             }
           }
         }
+
+        trigger = handData.trigger;
+        squeeze = handData.squeeze;
+
+        WebXRControllerButton[] buttons = new WebXRControllerButton[2];
+        buttons[0] = new WebXRControllerButton(trigger==1, trigger);
+        buttons[1] = new WebXRControllerButton(squeeze==1, squeeze);
+        UpdateButtons(buttons);
       }
     }
 
@@ -238,6 +249,19 @@ namespace WebXR
       foreach (var showGO in showGOs)
       {
         showGO.SetActive(visible);
+      }
+    }
+
+    private void SetHandJointsVisible(bool visible)
+    {
+      if (handJointsVisible == visible)
+      {
+        return;
+      }
+      handJointsVisible = visible;
+      foreach (var handJoint in handJoints)
+      {
+        handJoint.Value.gameObject.SetActive(visible);
       }
     }
 

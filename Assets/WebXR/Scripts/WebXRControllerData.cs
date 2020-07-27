@@ -28,6 +28,8 @@ namespace WebXR
     public int frame;
     public bool enabled;
     public int hand;
+    public float trigger;
+    public float squeeze;
     public WebXRJointData[] joints = new WebXRJointData[25];
     public const int WRIST = 0;
     public const int THUMB_METACARPAL = 1;

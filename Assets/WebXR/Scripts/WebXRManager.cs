@@ -69,7 +69,7 @@ namespace WebXR
     float[] controllersArray = new float[2 * 20];
 
     // Shared array for hands data
-    float[] handsArray = new float[2 * (25 * 9 + 3)];
+    float[] handsArray = new float[2 * (25 * 9 + 5)];
 
     private WebXRHandData leftHand = new WebXRHandData();
     private WebXRHandData rightHand = new WebXRHandData();
@@ -212,7 +212,7 @@ namespace WebXR
 
     bool GetHandFromHandsArray(int handIndex, ref WebXRHandData handObject)
     {
-      int arrayPosition = handIndex * 228;
+      int arrayPosition = handIndex * 230;
       int frameNumber = (int)handsArray[arrayPosition++];
       if (handObject.frame == frameNumber)
       {
@@ -221,6 +221,8 @@ namespace WebXR
       handObject.frame = frameNumber;
       handObject.enabled = handsArray[arrayPosition++] != 0;
       handObject.hand = (int)handsArray[arrayPosition++];
+      handObject.trigger = handsArray[arrayPosition++];
+      handObject.squeeze = handsArray[arrayPosition++];
       if (!handObject.enabled)
       {
         return true;

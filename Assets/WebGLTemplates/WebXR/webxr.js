@@ -45,6 +45,8 @@
     // TODO: set enabled 0 if hand was enable and then disable
     this.enabled = 0;
     this.hand = 0;
+    this.trigger = 0;
+    this.squeeze = 0;
     this.joints = [];
     for (let i = 0; i < 25; i++) {
       this.joints.push(new XRJointData());
@@ -235,8 +237,12 @@
       
       if (hand == 0 || hand == 2) {
         xrData.controllerA = controller;
+        xrData.handRight.trigger = controller.trigger;
+        xrData.handRight.squeeze = controller.squeeze;
       } else {
         xrData.controllerB = controller;
+        xrData.handLeft.trigger = controller.trigger;
+        xrData.handLeft.squeeze = controller.squeeze;
       }
     }
   }

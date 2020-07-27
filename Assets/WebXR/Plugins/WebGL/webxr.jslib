@@ -60,6 +60,8 @@ mergeInto(LibraryManager.library, {
         HandsArray[index++] = data[key].frame;
         HandsArray[index++] = data[key].enabled;
         HandsArray[index++] = data[key].hand;
+        HandsArray[index++] = data[key].trigger;
+        HandsArray[index++] = data[key].squeeze;
         for (var j = 0; j < 25; j++) {
           HandsArray[index++] = data[key].joints[j].enabled;
           HandsArray[index++] = data[key].joints[j].position[0];
