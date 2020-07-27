@@ -66,13 +66,16 @@ namespace WebXR
     float[] sharedArray = new float[5 * 16];
 
     // Shared array for controllers data
-    float[] controllersArray = new float[2 * 19];
+    float[] controllersArray = new float[2 * 20];
 
     // Shared array for hands data
-    float[] handsArray = new float[2 * (25 * 9 + 2)];
+    float[] handsArray = new float[2 * (25 * 9 + 3)];
 
     private WebXRHandData leftHand = new WebXRHandData();
     private WebXRHandData rightHand = new WebXRHandData();
+
+    private WebXRControllerData controller1 = new WebXRControllerData();
+    private WebXRControllerData controller2 = new WebXRControllerData();
 
     private WebXRDisplayCapabilities capabilities = new WebXRDisplayCapabilities();
 
@@ -177,12 +180,21 @@ namespace WebXR
       return newArray;
     }
 
-    WebXRControllerData GetGamepadFromControllersArray(int controllerIndex)
+    bool GetGamepadFromControllersArray(int controllerIndex, ref WebXRControllerData newControllerData)
     {
-      WebXRControllerData newControllerData = new WebXRControllerData();
-      int arrayPosition = controllerIndex * 19;
+      int arrayPosition = controllerIndex * 20;
+      int frameNumber = (int)controllersArray[arrayPosition++];
+      if (newControllerData.frame == frameNumber)
+      {
+        return false;
+      }
+      newControllerData.frame = frameNumber;
       newControllerData.enabled = controllersArray[arrayPosition++] != 0;
       newControllerData.hand = (int)controllersArray[arrayPosition++];
+      if (!newControllerData.enabled)
+      {
+        return true;
+      }
       newControllerData.position = new Vector3(controllersArray[arrayPosition++], controllersArray[arrayPosition++], controllersArray[arrayPosition++]);
       newControllerData.rotation = new Quaternion(controllersArray[arrayPosition++], controllersArray[arrayPosition++], controllersArray[arrayPosition++], controllersArray[arrayPosition++]);
       newControllerData.trigger = controllersArray[arrayPosition++];
@@ -195,17 +207,23 @@ namespace WebXR
       newControllerData.touchpadY = controllersArray[arrayPosition++];
       newControllerData.buttonA = controllersArray[arrayPosition++];
       newControllerData.buttonB = controllersArray[arrayPosition];
-      return newControllerData;
+      return true;
     }
 
-    WebXRHandData GetHandFromHandsArray(int handIndex, WebXRHandData handObject)
+    bool GetHandFromHandsArray(int handIndex, ref WebXRHandData handObject)
     {
-      int arrayPosition = handIndex * 227;
+      int arrayPosition = handIndex * 228;
+      int frameNumber = (int)handsArray[arrayPosition++];
+      if (handObject.frame == frameNumber)
+      {
+        return false;
+      }
+      handObject.frame = frameNumber;
       handObject.enabled = handsArray[arrayPosition++] != 0;
       handObject.hand = (int)handsArray[arrayPosition++];
       if (!handObject.enabled)
       {
-        return handObject;
+        return true;
       }
       for (int i=0; i<=WebXRHandData.LITTLE_PHALANX_TIP; i++)
       {
@@ -214,7 +232,7 @@ namespace WebXR
         handObject.joints[i].rotation = new Quaternion(handsArray[arrayPosition++], handsArray[arrayPosition++], handsArray[arrayPosition++], handsArray[arrayPosition++]);
         handObject.joints[i].radius = handsArray[arrayPosition++];
       }
-      return handObject;
+      return true;
     }
 
     void Start()
@@ -230,21 +248,30 @@ namespace WebXR
 
     void Update()
     {
-      /*if (OnControllerUpdate != null && this.xrState != WebXRState.NORMAL)
-      {
-        var controller1 = GetGamepadFromControllersArray(0);
-        OnControllerUpdate(controller1);
-        var controller2 = GetGamepadFromControllersArray(1);
-        OnControllerUpdate(controller2);
-      }*/
-
+      bool hasHandsData = false;
       if (OnHandUpdate != null && this.xrState != WebXRState.NORMAL)
       {
-        var hand1 = GetHandFromHandsArray(0, leftHand);
-        OnHandUpdate(hand1);
-        var hand2 = GetHandFromHandsArray(1, rightHand);
-        OnHandUpdate(hand2);
-        //Debug.LogError($"OnHandsSent {hand1.enabled} {hand2.enabled}");
+        if (GetHandFromHandsArray(0, ref leftHand))
+        {
+          OnHandUpdate(leftHand);
+        }
+        if (GetHandFromHandsArray(1, ref rightHand))
+        {
+          OnHandUpdate(rightHand);
+        }
+        hasHandsData = leftHand.enabled || rightHand.enabled;
+      }
+      
+      if (!hasHandsData && OnControllerUpdate != null && this.xrState != WebXRState.NORMAL)
+      {
+        if (GetGamepadFromControllersArray(0, ref controller1))
+        {
+          OnControllerUpdate(controller1);
+        }
+        if (GetGamepadFromControllersArray(1, ref controller2))
+        {
+          OnControllerUpdate(controller2);
+        }
       }
     }
 

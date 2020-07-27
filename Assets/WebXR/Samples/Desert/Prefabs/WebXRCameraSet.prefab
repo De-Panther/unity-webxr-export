@@ -937,7 +937,7 @@ GameObject:
   - component: {fileID: 4545079059221816}
   - component: {fileID: 114038308936181916}
   m_Layer: 0
-  m_Name: WebVRCameraSet
+  m_Name: WebXRCameraSet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1374,6 +1374,8 @@ MonoBehaviour:
   simulate3dof: 0
   eyesToElbow: {x: 0.1, y: -0.4, z: 0.15}
   elbowHand: {x: 0, y: 0, z: 0.25}
+  handJointPrefab: {fileID: 8513787482403080262, guid: 67541c9d1fd5e2c4798986ee73c07923,
+    type: 3}
   showGOs:
   - {fileID: 1136128897566686}
   - {fileID: 1664295426898042}
@@ -1825,6 +1827,8 @@ MonoBehaviour:
   simulate3dof: 0
   eyesToElbow: {x: 0.1, y: -0.4, z: 0.15}
   elbowHand: {x: 0, y: 0, z: 0.25}
+  handJointPrefab: {fileID: 8513787482403080262, guid: 67541c9d1fd5e2c4798986ee73c07923,
+    type: 3}
   showGOs:
   - {fileID: 1644997114004198}
   - {fileID: 1091283458777958}

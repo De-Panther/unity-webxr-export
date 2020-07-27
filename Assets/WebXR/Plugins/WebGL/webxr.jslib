@@ -31,6 +31,7 @@ mergeInto(LibraryManager.library, {
       var data = evt.detail;
       var index = 0;
       Object.keys(data).forEach(function (key, i) {
+        ControllersArray[index++] = data[key].frame;
         ControllersArray[index++] = data[key].enabled;
         ControllersArray[index++] = data[key].hand;
         ControllersArray[index++] = data[key].positionX;
@@ -56,6 +57,7 @@ mergeInto(LibraryManager.library, {
       var data = evt.detail;
       var index = 0;
       Object.keys(data).forEach(function (key, i) {
+        HandsArray[index++] = data[key].frame;
         HandsArray[index++] = data[key].enabled;
         HandsArray[index++] = data[key].hand;
         for (var j = 0; j < 25; j++) {

@@ -12,10 +12,12 @@
     this.controllerB = new XRControllerData();
     this.handLeft = new XRHandData();
     this.handRight = new XRHandData();
+    this.frameNumber = 0;
     this.xrData = null;
   }
   
   function XRControllerData() {
+    this.frame = 0;
     // TODO: set enabled 0 if controller was enable and then disable
     this.enabled = 0;
     this.hand = 0;
@@ -39,6 +41,7 @@
   }
 
   function XRHandData() {
+    this.frame = 0;
     // TODO: set enabled 0 if hand was enable and then disable
     this.enabled = 0;
     this.hand = 0;
@@ -356,6 +359,14 @@
   }
   
   XRManager.prototype.getXRControllersData = function(frame, inputSources, refSpace, xrData) {
+    xrData.handLeft.enabled = 0;
+    xrData.handRight.enabled = 0;
+    xrData.controllerA.enabled = 0;
+    xrData.controllerB.enabled = 0;
+    xrData.handLeft.frame = xrData.frameNumber;
+    xrData.handRight.frame = xrData.frameNumber;
+    xrData.controllerA.frame = xrData.frameNumber;
+    xrData.controllerB.frame = xrData.frameNumber;
     if (!inputSources || !inputSources.length) {
       return;
     }
@@ -569,6 +580,7 @@
     }
 
     var xrData = this.xrData;
+    xrData.frameNumber++;
 
     for (let view of pose.views) {
       if (view.eye === 'left') {

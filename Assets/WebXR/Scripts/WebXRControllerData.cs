@@ -3,8 +3,9 @@
 namespace WebXR
 {
   [System.Serializable]
-  public struct WebXRControllerData
+  public class WebXRControllerData
   {
+    public int frame;
     public bool enabled;
     public int hand;
     public Vector3 position;
@@ -24,6 +25,7 @@ namespace WebXR
   [System.Serializable]
   public class WebXRHandData
   {
+    public int frame;
     public bool enabled;
     public int hand;
     public WebXRJointData[] joints = new WebXRJointData[25];

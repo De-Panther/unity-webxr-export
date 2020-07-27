@@ -176,13 +176,12 @@ namespace WebXR
       {
         if (!handData.enabled)
         {
-          SetVisible(false);
           return;
         }
-        SetVisible(true);
+        SetVisible(false);
 
-        transform.localRotation = Quaternion.identity; //handData.joints[0].rotation;
-        transform.localPosition = Vector3.zero; //handData.joints[0].position;
+        transform.localPosition = handData.joints[0].position;
+        transform.localRotation = handData.joints[0].rotation;
 
         for(int i=0; i<=WebXRHandData.LITTLE_PHALANX_TIP; i++)
         {
@@ -190,12 +189,15 @@ namespace WebXR
           {
             if (handJoints.ContainsKey(i))
             {
-              handJoints[i].localPosition = handData.joints[i].position;
-              handJoints[i].localRotation = handData.joints[i].rotation;
+              handJoints[i].localPosition = GetJointLocalPosition(handData.joints[i].position, handData.joints[0].position, handData.joints[0].rotation);
+              handJoints[i].localRotation = GetJointLocalRotation(handData.joints[i].rotation, handData.joints[0].rotation);
             }
             else
             {
-              var clone = Instantiate(handJointPrefab, handData.joints[i].position, handData.joints[i].rotation, transform);
+              var clone = Instantiate(handJointPrefab,
+                                      GetJointLocalPosition(handData.joints[i].position, handData.joints[0].position, handData.joints[0].rotation),
+                                      GetJointLocalRotation(handData.joints[i].rotation, handData.joints[0].rotation),
+                                      transform);
               if (handData.joints[i].radius > 0f)
               {
                 clone.localScale = new Vector3(handData.joints[i].radius, handData.joints[i].radius, handData.joints[i].radius);
@@ -209,6 +211,16 @@ namespace WebXR
           }
         }
       }
+    }
+
+    private Vector3 GetJointLocalPosition(Vector3 position, Vector3 originPosition, Quaternion originRotation)
+    {
+      return Quaternion.Inverse(originRotation) * (position-originPosition);
+    }
+
+    private Quaternion GetJointLocalRotation(Quaternion rotation, Quaternion originRotation)
+    {
+      return Quaternion.Inverse(originRotation) * rotation;
     }
 
     private WebXRControllerHand handFromString(string handValue)
