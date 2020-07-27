@@ -183,20 +183,22 @@ namespace WebXR
         transform.localPosition = handData.joints[0].position;
         transform.localRotation = handData.joints[0].rotation;
 
+        Quaternion rotationOffset = Quaternion.Inverse(handData.joints[0].rotation);
+
         for(int i=0; i<=WebXRHandData.LITTLE_PHALANX_TIP; i++)
         {
           if (handData.joints[i].enabled)
           {
             if (handJoints.ContainsKey(i))
             {
-              handJoints[i].localPosition = GetJointLocalPosition(handData.joints[i].position, handData.joints[0].position, handData.joints[0].rotation);
-              handJoints[i].localRotation = GetJointLocalRotation(handData.joints[i].rotation, handData.joints[0].rotation);
+              handJoints[i].localPosition = rotationOffset * (handData.joints[i].position - handData.joints[0].position);
+              handJoints[i].localRotation = rotationOffset * handData.joints[i].rotation;
             }
             else
             {
               var clone = Instantiate(handJointPrefab,
-                                      GetJointLocalPosition(handData.joints[i].position, handData.joints[0].position, handData.joints[0].rotation),
-                                      GetJointLocalRotation(handData.joints[i].rotation, handData.joints[0].rotation),
+                                      rotationOffset * (handData.joints[i].position - handData.joints[0].position),
+                                      rotationOffset * handData.joints[i].rotation,
                                       transform);
               if (handData.joints[i].radius > 0f)
               {
@@ -211,16 +213,6 @@ namespace WebXR
           }
         }
       }
-    }
-
-    private Vector3 GetJointLocalPosition(Vector3 position, Vector3 originPosition, Quaternion originRotation)
-    {
-      return Quaternion.Inverse(originRotation) * (position-originPosition);
-    }
-
-    private Quaternion GetJointLocalRotation(Quaternion rotation, Quaternion originRotation)
-    {
-      return Quaternion.Inverse(originRotation) * rotation;
     }
 
     private WebXRControllerHand handFromString(string handValue)
