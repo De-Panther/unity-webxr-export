@@ -10,10 +10,14 @@
     this.gamepads = [];
     this.controllerA = new XRControllerData();
     this.controllerB = new XRControllerData();
+    this.handLeft = new XRHandData();
+    this.handRight = new XRHandData();
+    this.frameNumber = 0;
     this.xrData = null;
   }
   
   function XRControllerData() {
+    this.frame = 0;
     // TODO: set enabled 0 if controller was enable and then disable
     this.enabled = 0;
     this.hand = 0;
@@ -34,6 +38,26 @@
     this.touchpadY = 0;
     this.buttonA = 0;
     this.buttonB = 0;
+  }
+
+  function XRHandData() {
+    this.frame = 0;
+    // TODO: set enabled 0 if hand was enable and then disable
+    this.enabled = 0;
+    this.hand = 0;
+    this.trigger = 0;
+    this.squeeze = 0;
+    this.joints = [];
+    for (let i = 0; i < 25; i++) {
+      this.joints.push(new XRJointData());
+    }
+  }
+
+  function XRJointData() {
+    this.enabled = 0;
+    this.position = [0, 0, 0];
+    this.rotation = [0, 0, 0, 1];
+    this.radius = 0;
   }
 
   function XRManager() {
@@ -111,7 +135,7 @@
     window.requestAnimationFrame( tempRender );
     navigator.xr.requestSession('immersive-ar', {
       requiredFeatures: ['local-floor'], // TODO: Get this value from Unity
-      optionalFeatures: ['dom-overlay'],
+      optionalFeatures: ['dom-overlay', 'hand-tracking'],
       domOverlay: {root: this.canvas.parentElement}
     }).then(async (session) => {
       this.waitingHandheldARHack = false;
@@ -128,7 +152,8 @@
   XRManager.prototype.onRequestVRSession = function () {
     if (!this.isVRSupported) return;
     navigator.xr.requestSession('immersive-vr', {
-      requiredFeatures: ['local-floor'] // TODO: Get this value from Unity
+      requiredFeatures: ['local-floor'], // TODO: Get this value from Unity
+      optionalFeatures: ['hand-tracking']
     }).then(async (session) => {
       session.isImmersive = true;
       session.isInSession = true;
@@ -212,8 +237,12 @@
       
       if (hand == 0 || hand == 2) {
         xrData.controllerA = controller;
+        xrData.handRight.trigger = controller.trigger;
+        xrData.handRight.squeeze = controller.squeeze;
       } else {
         xrData.controllerB = controller;
+        xrData.handLeft.trigger = controller.trigger;
+        xrData.handLeft.squeeze = controller.squeeze;
       }
     }
   }
@@ -336,13 +365,49 @@
   }
   
   XRManager.prototype.getXRControllersData = function(frame, inputSources, refSpace, xrData) {
+    xrData.handLeft.enabled = 0;
+    xrData.handRight.enabled = 0;
+    xrData.controllerA.enabled = 0;
+    xrData.controllerB.enabled = 0;
+    xrData.handLeft.frame = xrData.frameNumber;
+    xrData.handRight.frame = xrData.frameNumber;
+    xrData.controllerA.frame = xrData.frameNumber;
+    xrData.controllerB.frame = xrData.frameNumber;
     if (!inputSources || !inputSources.length) {
       return;
     }
     for (var i = 0; i < inputSources.length; i++) {
       let inputSource = inputSources[i];
       // Show the input source if it has a grip space
-      if (inputSource.gripSpace) {
+      if (inputSource.hand) {
+        var hand = 1;
+        var xrHand = xrData.handLeft;
+        if (inputSource.handedness == 'right') {
+          hand = 2;
+          xrHand = xrData.handRight;
+        }
+        xrHand.enabled = 1;
+        xrHand.hand = hand;
+        for (let j = 0; j < 25; j++) {
+          let joint = null;
+          if (inputSource.hand[j] !== null) {
+            joint = frame.getJointPose(inputSource.hand[j], refSpace);
+          }
+          if (joint !== null) {
+            xrHand.joints[j].enabled = 1;
+            xrHand.joints[j].position[0] = joint.transform.position.x;
+            xrHand.joints[j].position[1] = joint.transform.position.y;
+            xrHand.joints[j].position[2] = -joint.transform.position.z;
+            xrHand.joints[j].rotation[0] = -joint.transform.orientation.x;
+            xrHand.joints[j].rotation[1] = -joint.transform.orientation.y;
+            xrHand.joints[j].rotation[2] = joint.transform.orientation.z;
+            xrHand.joints[j].rotation[3] = joint.transform.orientation.w;
+            if (joint.radius !== null) {
+              xrHand.joints[j].radius = joint.radius;
+            }
+          }
+        }
+      } else if (inputSource.gripSpace) {
         let inputPose = frame.getPose(inputSource.gripSpace, refSpace);
         if (inputPose) {
           var position = inputPose.transform.position;
@@ -521,6 +586,7 @@
     }
 
     var xrData = this.xrData;
+    xrData.frameNumber++;
 
     for (let view of pose.views) {
       if (view.eye === 'left') {
@@ -543,6 +609,16 @@
       sitStandMatrix: xrData.sitStandMatrix,
       controllerA: xrData.controllerA,
       controllerB: xrData.controllerB
+    }}));
+
+    document.dispatchEvent(new CustomEvent('XRControllersData', { detail: {
+      controllerA: xrData.controllerA,
+      controllerB: xrData.controllerB
+    }}));
+
+    document.dispatchEvent(new CustomEvent('XRHandsData', { detail: {
+      handLeft: xrData.handLeft,
+      handRight: xrData.handRight
     }}));
     
     if (!this.didNotifyUnity)

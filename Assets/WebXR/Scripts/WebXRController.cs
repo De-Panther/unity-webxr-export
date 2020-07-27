@@ -18,6 +18,8 @@ namespace WebXR
     [Tooltip("Vector from elbow to hand")]
     public Vector3 elbowHand = new Vector3(0, 0, 0.25f);
 
+    public Transform handJointPrefab;
+
 
     public GameObject[] showGOs;
 
@@ -37,6 +39,9 @@ namespace WebXR
     private Quaternion headRotation;
     private Vector3 headPosition;
     private Dictionary<string, WebXRControllerButton> buttonStates = new Dictionary<string, WebXRControllerButton>();
+
+    private Dictionary<int, Transform> handJoints = new Dictionary<int, Transform>();
+    private bool handJointsVisible = false;
 
     // Updates button states from Web gamepad API.
     private void UpdateButtons(WebXRControllerButton[] buttons)
@@ -130,10 +135,15 @@ namespace WebXR
       this.sitStand = sitStandMatrix;
     }
 
-    private void onControllerUpdate(WebXRControllerData2 controllerData)
+    private void OnControllerUpdate(WebXRControllerData controllerData)
     {
       if (controllerData.hand == (int)hand)
       {
+        if (!controllerData.enabled)
+        {
+          SetVisible(false);
+          return;
+        }
         SetVisible(true);
 
         transform.localRotation = controllerData.rotation;
@@ -157,6 +167,61 @@ namespace WebXR
         buttons[3] = new WebXRControllerButton(touchpad==1, touchpad);
         buttons[4] = new WebXRControllerButton(buttonA==1, buttonA);
         buttons[5] = new WebXRControllerButton(buttonB==1, buttonB);
+        UpdateButtons(buttons);
+      }
+    }
+
+    private void OnHandUpdate(WebXRHandData handData)
+    {
+      if (handData.hand == (int)hand)
+      {
+        if (!handData.enabled)
+        {
+          SetHandJointsVisible(false);
+          return;
+        }
+        SetVisible(false);
+        SetHandJointsVisible(true);
+
+        transform.localPosition = handData.joints[0].position;
+        transform.localRotation = handData.joints[0].rotation;
+
+        Quaternion rotationOffset = Quaternion.Inverse(handData.joints[0].rotation);
+
+        for(int i=0; i<=WebXRHandData.LITTLE_PHALANX_TIP; i++)
+        {
+          if (handData.joints[i].enabled)
+          {
+            if (handJoints.ContainsKey(i))
+            {
+              handJoints[i].localPosition = rotationOffset * (handData.joints[i].position - handData.joints[0].position);
+              handJoints[i].localRotation = rotationOffset * handData.joints[i].rotation;
+            }
+            else
+            {
+              var clone = Instantiate(handJointPrefab,
+                                      rotationOffset * (handData.joints[i].position - handData.joints[0].position),
+                                      rotationOffset * handData.joints[i].rotation,
+                                      transform);
+              if (handData.joints[i].radius > 0f)
+              {
+                clone.localScale = new Vector3(handData.joints[i].radius, handData.joints[i].radius, handData.joints[i].radius);
+              }
+              else
+              {
+                clone.localScale = new Vector3(0.005f, 0.005f, 0.005f);
+              }
+              handJoints.Add(i, clone);
+            }
+          }
+        }
+
+        trigger = handData.trigger;
+        squeeze = handData.squeeze;
+
+        WebXRControllerButton[] buttons = new WebXRControllerButton[2];
+        buttons[0] = new WebXRControllerButton(trigger==1, trigger);
+        buttons[1] = new WebXRControllerButton(squeeze==1, squeeze);
         UpdateButtons(buttons);
       }
     }
@@ -187,6 +252,19 @@ namespace WebXR
       }
     }
 
+    private void SetHandJointsVisible(bool visible)
+    {
+      if (handJointsVisible == visible)
+      {
+        return;
+      }
+      handJointsVisible = visible;
+      foreach (var handJoint in handJoints)
+      {
+        handJoint.Value.gameObject.SetActive(visible);
+      }
+    }
+
     void OnEnable()
     {
       if (inputMap == null)
@@ -194,14 +272,16 @@ namespace WebXR
         Debug.LogError("A Input Map must be assigned to WebXRController!");
         return;
       }
-      WebXRManager.Instance.OnControllerUpdate += onControllerUpdate;
+      WebXRManager.Instance.OnControllerUpdate += OnControllerUpdate;
+      WebXRManager.Instance.OnHandUpdate += OnHandUpdate;
       WebXRManager.Instance.OnHeadsetUpdate += onHeadsetUpdate;
       SetVisible(false);
     }
 
     void OnDisabled()
     {
-      WebXRManager.Instance.OnControllerUpdate -= onControllerUpdate;
+      WebXRManager.Instance.OnControllerUpdate -= OnControllerUpdate;
+      WebXRManager.Instance.OnHandUpdate -= OnHandUpdate;
       WebXRManager.Instance.OnHeadsetUpdate -= onHeadsetUpdate;
       SetVisible(false);
     }
