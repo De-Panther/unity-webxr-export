@@ -309,7 +309,7 @@
       };
 
       // bindFramebuffer frameBufferObject null in XRSession should use XRWebGLLayer FBO instead
-      this.ctx.bindFramebuffer = (oldBindFramebuffer => function bindFramebuffer(target, fbo) {
+      /*this.ctx.bindFramebuffer = (oldBindFramebuffer => function bindFramebuffer(target, fbo) {
         if (!fbo) {
           if (thisXRMananger.arSession && thisXRMananger.arSession.isInSession) {
             if (thisXRMananger.arSession.renderState.baseLayer) {
@@ -325,7 +325,7 @@
           }
         }
         return oldBindFramebuffer.call(this, target, fbo);
-      })(this.ctx.bindFramebuffer);
+      })(this.ctx.bindFramebuffer);*/
     }
   }
 
@@ -532,7 +532,7 @@
       var onSessionEnded = this.onEndSession.bind(this);
       session.addEventListener('end', onSessionEnded);
 
-      this.canvas.width = glLayer.framebufferWidth * 2;
+      this.canvas.width = glLayer.framebufferWidth;
       this.canvas.height = glLayer.framebufferHeight;
       
       session.addEventListener('select', this.onInputEvent);
@@ -561,10 +561,10 @@
     
     let glLayer = session.renderState.baseLayer;
     
-    if (this.canvas.width != glLayer.framebufferWidth * 2 ||
+    if (this.canvas.width != glLayer.framebufferWidth ||
         this.canvas.height != glLayer.framebufferHeight)
     {
-      this.canvas.width = glLayer.framebufferWidth * 2;
+      this.canvas.width = glLayer.framebufferWidth;
       this.canvas.height = glLayer.framebufferHeight;
     }
     
@@ -629,7 +629,7 @@
         let leftRect = {
           x:0,
           y:0,
-          w:0.5,
+          w:1,
           h:1
         }
         let rightRect = {
@@ -641,20 +641,20 @@
         for (let view of pose.views) {
           let viewport = session.renderState.baseLayer.getViewport(view);
           if (view.eye === 'left') {
-            /*if (viewport) {
+            if (viewport) {
               leftRect.x = viewport.x / glLayer.framebufferWidth;
               leftRect.y = viewport.y / glLayer.framebufferHeight;
               leftRect.w = viewport.width / glLayer.framebufferWidth;
               leftRect.h = viewport.height / glLayer.framebufferHeight;
-            }*/
+            }
           } else if (view.eye === 'right') {
             eyeCount = 2;
-            /*if (viewport) {
+            if (viewport) {
               rightRect.x = viewport.x / glLayer.framebufferWidth;
               rightRect.y = viewport.y / glLayer.framebufferHeight;
               rightRect.w = viewport.width / glLayer.framebufferWidth;
               rightRect.h = viewport.height / glLayer.framebufferHeight;
-            }*/
+            }
           }
         }
         this.gameInstance.Module.WebXR.OnStartAR(eyeCount, leftRect, rightRect);
