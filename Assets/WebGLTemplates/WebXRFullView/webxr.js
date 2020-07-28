@@ -625,7 +625,39 @@
     {
       if (session.isAR)
       {
-        this.gameInstance.Module.WebXR.OnStartAR(pose.views.length);
+        let eyeCount = 1;
+        let leftRect = {
+          x:0,
+          y:0,
+          w:1,
+          h:1
+        }
+        let rightRect = {
+          x:0.5,
+          y:0,
+          w:0.5,
+          h:1
+        }
+        for (let view of pose.views) {
+          let viewport = session.renderState.baseLayer.getViewport(view);
+          if (view.eye === 'left') {
+            if (viewport) {
+              leftRect.x = viewport.x / glLayer.framebufferWidth;
+              leftRect.y = viewport.y / glLayer.framebufferHeight;
+              leftRect.w = viewport.width / glLayer.framebufferWidth;
+              leftRect.h = viewport.height / glLayer.framebufferHeight;
+            }
+          } else if (view.eye === 'right') {
+            eyeCount = 2;
+            if (viewport) {
+              rightRect.x = viewport.x / glLayer.framebufferWidth;
+              rightRect.y = viewport.y / glLayer.framebufferHeight;
+              rightRect.w = viewport.width / glLayer.framebufferWidth;
+              rightRect.h = viewport.height / glLayer.framebufferHeight;
+            }
+          }
+        }
+        this.gameInstance.Module.WebXR.OnStartAR(eyeCount, leftRect, rightRect);
       } else {
         this.gameInstance.Module.WebXR.OnStartVR(pose.views.length);
       }
