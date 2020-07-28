@@ -24,7 +24,7 @@ namespace WebXR
     public delegate void XRCapabilitiesUpdate(WebXRDisplayCapabilities capabilities);
     public event XRCapabilitiesUpdate OnXRCapabilitiesUpdate;
 
-    public delegate void XRChange(WebXRState state, int viewsCount);
+    public delegate void XRChange(WebXRState state, int viewsCount, Rect leftRect, Rect rightRect);
     public event XRChange OnXRChange;
 
     public delegate void HeadsetUpdate(
@@ -55,7 +55,7 @@ namespace WebXR
     private static extern void ListenWebXRData();
 
     [DllImport("__Internal")]
-    private static extern void set_webxr_events(Action<int> on_start_ar,
+    private static extern void set_webxr_events(Action<int, float, float, float, float, float, float, float, float> on_start_ar,
                                                 Action<int> on_start_vr,
                                                 Action on_end_xr,
                                                 Action<string> on_xr_capabilities);
@@ -137,20 +137,24 @@ namespace WebXR
         OnXRCapabilitiesUpdate(capabilities);
     }
 
-    public void setXrState(WebXRState state, int viewsCount)
+    public void setXrState(WebXRState state, int viewsCount, Rect leftRect, Rect rightRect)
     {
       this.xrState = state;
       if (OnXRChange != null)
-        OnXRChange(state, viewsCount);
+        OnXRChange(state, viewsCount, leftRect, rightRect);
     }
 
     // received start VR from WebVR browser
     #if UNITY_WEBGL && !UNITY_EDITOR
-    [MonoPInvokeCallback(typeof(Action<int>))]
+    [MonoPInvokeCallback(typeof(Action<int, float, float, float, float, float, float, float, float>))]
     #endif
-    public static void OnStartAR(int viewsCount)
+    public static void OnStartAR(int viewsCount,
+      float left_x, float left_y, float left_w, float left_h,
+      float right_x, float right_y, float right_w, float right_h)
     {
-      Instance.setXrState(WebXRState.AR, viewsCount);
+      Instance.setXrState(WebXRState.AR, viewsCount,
+                          new Rect(left_x, left_y, left_w, left_h),
+                          new Rect(right_x, right_y, right_w, right_h));
     }
 
     #if UNITY_WEBGL && !UNITY_EDITOR
@@ -158,7 +162,7 @@ namespace WebXR
     #endif
     public static void OnStartVR(int viewsCount)
     {
-      Instance.setXrState(WebXRState.VR, viewsCount);
+      Instance.setXrState(WebXRState.VR, viewsCount, new Rect(), new Rect());
     }
 
     // receive end VR from WebVR browser
@@ -167,7 +171,7 @@ namespace WebXR
     #endif
     public static void OnEndXR()
     {
-      Instance.setXrState(WebXRState.NORMAL, 1);
+      Instance.setXrState(WebXRState.NORMAL, 1, new Rect(), new Rect());
     }
 
     float[] GetMatrixFromSharedArray(int index)

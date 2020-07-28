@@ -6,6 +6,7 @@ namespace WebXR
   {
     private Camera cameraMain, cameraL, cameraR, cameraARL, cameraARR;
     private WebXRState xrState = WebXRState.NORMAL;
+    private Rect leftRect, rightRect;
 
     private int viewsCount = 1;
 
@@ -37,8 +38,9 @@ namespace WebXR
           cameraL.enabled = false;
           cameraR.enabled = false;
           cameraARL.enabled = viewsCount > 0;
-          cameraARL.rect = new Rect(0, 0, 1f / (float)viewsCount, 1);
+          cameraARL.rect = leftRect;
           cameraARR.enabled = viewsCount > 1;
+          cameraARR.rect = rightRect;
           break;
         case WebXRState.VR:
           cameraMain.enabled = false;
@@ -57,10 +59,12 @@ namespace WebXR
       }
     }
 
-    private void onXRChange(WebXRState state, int viewsCount)
+    private void onXRChange(WebXRState state, int viewsCount, Rect leftRect, Rect rightRect)
     {
       xrState = state;
       this.viewsCount = viewsCount;
+      this.leftRect = leftRect;
+      this.rightRect = rightRect;
       switched = false;
     }
 
