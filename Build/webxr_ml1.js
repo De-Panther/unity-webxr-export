@@ -532,7 +532,7 @@
       var onSessionEnded = this.onEndSession.bind(this);
       session.addEventListener('end', onSessionEnded);
 
-      this.canvas.width = glLayer.framebufferWidth;
+      this.canvas.width = glLayer.framebufferWidth * 2;
       this.canvas.height = glLayer.framebufferHeight;
       
       session.addEventListener('select', this.onInputEvent);
@@ -561,10 +561,10 @@
     
     let glLayer = session.renderState.baseLayer;
     
-    if (this.canvas.width != glLayer.framebufferWidth ||
+    if (this.canvas.width != glLayer.framebufferWidth * 2 ||
         this.canvas.height != glLayer.framebufferHeight)
     {
-      this.canvas.width = glLayer.framebufferWidth;
+      this.canvas.width = glLayer.framebufferWidth * 2;
       this.canvas.height = glLayer.framebufferHeight;
     }
     
@@ -629,13 +629,13 @@
         let leftRect = {
           x:0,
           y:0,
-          w:1,
+          w:0.5,
           h:1
         }
         let rightRect = {
-          x:1,
+          x:0.5,
           y:0,
-          w:1,
+          w:0.5,
           h:1
         }
         for (let view of pose.views) {
