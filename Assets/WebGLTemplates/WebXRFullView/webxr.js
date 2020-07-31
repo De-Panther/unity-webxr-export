@@ -61,8 +61,7 @@
   }
 
   function XRManager() {
-    this.arSession = null;
-    this.vrSession = null;
+    this.xrSession = null;
     this.inlineSession = null;
     this.xrData = new XRData();
     this.canvas = null;
@@ -142,7 +141,7 @@
       session.isImmersive = true;
       session.isInSession = true;
       session.isAR = true;
-      this.arSession = session;
+      this.xrSession = session;
       this.onSessionStarted(session);
     }).catch((error) => {
       thisXRMananger.waitingHandheldARHack = false;
@@ -157,27 +156,19 @@
     }).then(async (session) => {
       session.isImmersive = true;
       session.isInSession = true;
-      this.vrSession = session;
+      session.isAR = false;
+      this.xrSession = session;
       this.onSessionStarted(session);
     });
   }
 
-  XRManager.prototype.exitARSession = function () {
-    if (!this.arSession || !this.arSession.isInSession) {
-      console.warn('No AR display to exit AR mode');
+  XRManager.prototype.exitXRSession = function () {
+    if (!this.xrSession || !this.xrSession.isInSession) {
+      console.warn('No XR display to exit XR mode');
       return;
     }
 
-    this.arSession.end();
-  }
-
-  XRManager.prototype.exitVRSession = function () {
-    if (!this.vrSession || !this.vrSession.isInSession) {
-      console.warn('No VR display to exit VR mode');
-      return;
-    }
-
-    this.vrSession.end();
+    this.xrSession.end();
   }
 
   XRManager.prototype.onEndSession = function (xrSessionEvent) {
@@ -252,8 +243,8 @@
     {
       return;
     }
-    if (this.isARSupported && this.arSession && this.arSession.isInSession) {
-      this.exitARSession();
+    if (this.xrSession && this.xrSession.isInSession) {
+      this.exitXRSession();
     } else {
       this.onRequestARSession();
     }
@@ -264,8 +255,8 @@
     {
       return;
     }
-    if (this.isVRSupported && this.vrSession && this.vrSession.isInSession) {
-      this.exitVRSession();
+    if (this.xrSession && this.xrSession.isInSession) {
+      this.exitXRSession();
     } else {
       this.onRequestVRSession();
     }
@@ -283,14 +274,8 @@
         {
           thisXRMananger.rAFCB=func;
         }
-        if (thisXRMananger.arSession && thisXRMananger.arSession.isInSession) {
-          return thisXRMananger.arSession.requestAnimationFrame((time, xrFrame) =>
-          {
-            thisXRMananger.animate(xrFrame);
-            func(time);
-          });
-        } else if (thisXRMananger.vrSession && thisXRMananger.vrSession.isInSession) {
-          return thisXRMananger.vrSession.requestAnimationFrame((time, xrFrame) =>
+        if (thisXRMananger.xrSession && thisXRMananger.xrSession.isInSession) {
+          return thisXRMananger.xrSession.requestAnimationFrame((time, xrFrame) =>
           {
             thisXRMananger.animate(xrFrame);
             func(time);
@@ -311,13 +296,9 @@
       // bindFramebuffer frameBufferObject null in XRSession should use XRWebGLLayer FBO instead
       this.ctx.bindFramebuffer = (oldBindFramebuffer => function bindFramebuffer(target, fbo) {
         if (!fbo) {
-          if (thisXRMananger.arSession && thisXRMananger.arSession.isInSession) {
-            if (thisXRMananger.arSession.renderState.baseLayer) {
-              fbo = thisXRMananger.arSession.renderState.baseLayer.framebuffer;
-            }
-          } else if (thisXRMananger.vrSession && thisXRMananger.vrSession.isInSession) {
-            if (thisXRMananger.vrSession.renderState.baseLayer) {
-              fbo = thisXRMananger.vrSession.renderState.baseLayer.framebuffer;
+          if (thisXRMananger.xrSession && thisXRMananger.xrSession.isInSession) {
+            if (thisXRMananger.xrSession.renderState.baseLayer) {
+              fbo = thisXRMananger.xrSession.renderState.baseLayer.framebuffer;
             }
           } else if (thisXRMananger.inlineSession && thisXRMananger.inlineSession.isInSession &&
                      thisXRMananger.inlineSession.renderState.baseLayer) {
