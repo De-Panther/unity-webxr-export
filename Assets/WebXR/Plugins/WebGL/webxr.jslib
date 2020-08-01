@@ -13,6 +13,14 @@ mergeInto(LibraryManager.library, {
     HandsArray = new Float32Array(buffer, byteOffset, length);
   },
 
+  InitViewerHitTestPoseArray: function(byteOffset, length) {
+    ViewerHitTestPoseArray = new Float32Array(buffer, byteOffset, length);
+  },
+
+  ToggleViewerHitTest: function() {
+    document.dispatchEvent(new CustomEvent('toggleHitTest', {}));
+  },
+
   ListenWebXRData: function() {
     // Listen for headset updates from webxr.jspre and load data into shared Array which we pick up in Unity.
     document.addEventListener('XRData', function(evt) {
@@ -74,6 +82,19 @@ mergeInto(LibraryManager.library, {
           HandsArray[index++] = data[key].joints[j].radius;
         }
       });
+    });
+    document.addEventListener('XRViewerHitTestPose', function(evt) {
+      var data = evt.detail;
+      var index = 0;
+      ViewerHitTestPoseArray[index++] = data.viewerHitTestPose.frame;
+      ViewerHitTestPoseArray[index++] = data.viewerHitTestPose.available;
+      ViewerHitTestPoseArray[index++] = data.viewerHitTestPose.position[0];
+      ViewerHitTestPoseArray[index++] = data.viewerHitTestPose.position[1];
+      ViewerHitTestPoseArray[index++] = data.viewerHitTestPose.position[2];
+      ViewerHitTestPoseArray[index++] = data.viewerHitTestPose.rotation[0];
+      ViewerHitTestPoseArray[index++] = data.viewerHitTestPose.rotation[1];
+      ViewerHitTestPoseArray[index++] = data.viewerHitTestPose.rotation[2];
+      ViewerHitTestPoseArray[index++] = data.viewerHitTestPose.rotation[3];
     });
   }
 });

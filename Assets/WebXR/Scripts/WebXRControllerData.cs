@@ -67,6 +67,15 @@ namespace WebXR
     public float radius;
   }
 
+  [System.Serializable]
+  public class WebXRHitPoseData
+  {
+    public int frame;
+    public bool available;
+    public Vector3 position;
+    public Quaternion rotation;
+  }
+
   public enum WebXRControllerHand { NONE, LEFT, RIGHT };
 
   [System.Serializable]

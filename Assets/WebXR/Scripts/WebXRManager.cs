@@ -41,6 +41,9 @@ namespace WebXR
     public delegate void HandUpdate(WebXRHandData handData);
     public event HandUpdate OnHandUpdate;
 
+    public delegate void HitTestUpdate(WebXRHitPoseData hitPoseData);
+    public event HitTestUpdate OnViewerHitTestUpdate;
+
 #if UNITY_WEBGL && !UNITY_EDITOR
     [DllImport("__Internal")]
     private static extern void InitXRSharedArray(float[] array, int length);
@@ -50,6 +53,12 @@ namespace WebXR
 
     [DllImport("__Internal")]
     private static extern void InitHandsArray(float[] array, int length);
+
+    [DllImport("__Internal")]
+    private static extern void InitViewerHitTestPoseArray(float[] array, int length);
+
+    [DllImport("__Internal")]
+    private static extern void ToggleViewerHitTest();
 
     [DllImport("__Internal")]
     private static extern void ListenWebXRData();
@@ -71,11 +80,18 @@ namespace WebXR
     // Shared array for hands data
     float[] handsArray = new float[2 * (25 * 9 + 5)];
 
+    // Shared array for hit-test pose data
+    float[] viewerHitTestPoseArray = new float[9];
+
+    bool viewerHitTestOn = false;
+
     private WebXRHandData leftHand = new WebXRHandData();
     private WebXRHandData rightHand = new WebXRHandData();
 
     private WebXRControllerData controller1 = new WebXRControllerData();
     private WebXRControllerData controller2 = new WebXRControllerData();
+
+    private WebXRHitPoseData viewerHitTestPose = new WebXRHitPoseData();
 
     private WebXRDisplayCapabilities capabilities = new WebXRDisplayCapabilities();
 
@@ -140,6 +156,7 @@ namespace WebXR
     public void setXrState(WebXRState state, int viewsCount, Rect leftRect, Rect rightRect)
     {
       this.xrState = state;
+      viewerHitTestOn = false;
       if (OnXRChange != null)
         OnXRChange(state, viewsCount, leftRect, rightRect);
     }
@@ -172,6 +189,28 @@ namespace WebXR
     public static void OnEndXR()
     {
       Instance.setXrState(WebXRState.NORMAL, 1, new Rect(), new Rect());
+    }
+
+    public void StartViewerHitTest()
+    {
+      if (xrState == WebXRState.AR && !viewerHitTestOn)
+      {
+        viewerHitTestOn = true;
+#if UNITY_WEBGL && !UNITY_EDITOR
+        ToggleViewerHitTest();
+#endif
+      }
+    }
+
+    public void StopViewerHitTest()
+    {
+      if (xrState == WebXRState.AR && viewerHitTestOn)
+      {
+        viewerHitTestOn = false;
+#if UNITY_WEBGL && !UNITY_EDITOR
+        ToggleViewerHitTest();
+#endif
+      }
     }
 
     float[] GetMatrixFromSharedArray(int index)
@@ -241,12 +280,32 @@ namespace WebXR
       return true;
     }
 
+    bool GetHitTestPoseFromViewerHitTestPoseArray(ref WebXRHitPoseData hitPoseData)
+    {
+      int arrayPosition = 0;
+      int frameNumber = (int)viewerHitTestPoseArray[arrayPosition++];
+      if (hitPoseData.frame == frameNumber)
+      {
+        return false;
+      }
+      hitPoseData.frame = frameNumber;
+      hitPoseData.available = viewerHitTestPoseArray[arrayPosition++] != 0;
+      if (!hitPoseData.available)
+      {
+        return true;
+      }
+      hitPoseData.position = new Vector3(viewerHitTestPoseArray[arrayPosition++], viewerHitTestPoseArray[arrayPosition++], viewerHitTestPoseArray[arrayPosition++]);
+      hitPoseData.rotation = new Quaternion(viewerHitTestPoseArray[arrayPosition++], viewerHitTestPoseArray[arrayPosition++], viewerHitTestPoseArray[arrayPosition++], viewerHitTestPoseArray[arrayPosition++]);
+      return true;
+    }
+
     void Start()
     {
 #if !UNITY_EDITOR && UNITY_WEBGL
         set_webxr_events(OnStartAR, OnStartVR, OnEndXR, OnXRCapabilities);
         InitControllersArray(controllersArray, controllersArray.Length);
         InitHandsArray(handsArray, handsArray.Length);
+        InitViewerHitTestPoseArray(viewerHitTestPoseArray, viewerHitTestPoseArray.Length);
         InitXRSharedArray(sharedArray, sharedArray.Length);
         ListenWebXRData();
 #endif
@@ -277,6 +336,14 @@ namespace WebXR
         if (GetGamepadFromControllersArray(1, ref controller2))
         {
           OnControllerUpdate(controller2);
+        }
+      }
+
+      if (OnViewerHitTestUpdate != null && this.xrState == WebXRState.AR)
+      {
+        if (GetHitTestPoseFromViewerHitTestPoseArray(ref viewerHitTestPose))
+        {
+          OnViewerHitTestUpdate(viewerHitTestPose);
         }
       }
     }

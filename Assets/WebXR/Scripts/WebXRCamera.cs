@@ -4,7 +4,18 @@ namespace WebXR
 {
   public class WebXRCamera : MonoBehaviour
   {
+    public enum CameraID
+    {
+      Main,
+      LeftVR,
+      RightVR,
+      LeftAR,
+      RightAR
+    }
+
+    [SerializeField]
     private Camera cameraMain, cameraL, cameraR, cameraARL, cameraARR;
+
     private WebXRState xrState = WebXRState.NORMAL;
     private Rect leftRect, rightRect;
 
@@ -16,12 +27,6 @@ namespace WebXR
     {
       WebXRManager.Instance.OnXRChange += onXRChange;
       WebXRManager.Instance.OnHeadsetUpdate += onHeadsetUpdate;
-
-      cameraMain = GameObject.Find("CameraMain").GetComponent<Camera>();
-      cameraL = GameObject.Find("CameraL").GetComponent<Camera>();
-      cameraR = GameObject.Find("CameraR").GetComponent<Camera>();
-      cameraARL = GameObject.Find("CameraARL").GetComponent<Camera>();
-      cameraARR = GameObject.Find("CameraARR").GetComponent<Camera>();
     }
 
     void Update()
@@ -57,6 +62,22 @@ namespace WebXR
           cameraARR.enabled = false;
           break;
       }
+    }
+
+    public Camera GetCamera(CameraID cameraID)
+    {
+      switch (cameraID)
+      {
+        case CameraID.LeftVR:
+          return cameraL;
+        case CameraID.RightVR:
+          return cameraR;
+        case CameraID.LeftAR:
+          return cameraARL;
+        case CameraID.RightAR:
+          return cameraARR;
+      }
+      return cameraMain;
     }
 
     private void onXRChange(WebXRState state, int viewsCount, Rect leftRect, Rect rightRect)

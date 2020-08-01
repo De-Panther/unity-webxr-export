@@ -12,6 +12,7 @@
     this.controllerB = new XRControllerData();
     this.handLeft = new XRHandData();
     this.handRight = new XRHandData();
+    this.viewerHitTestPose = new XRHitPoseData();
     this.frameNumber = 0;
     this.xrData = null;
   }
@@ -60,9 +61,18 @@
     this.radius = 0;
   }
 
+  function XRHitPoseData() {
+    this.frame = 0;
+    this.available = 0;
+    this.position = [0, 0, 0];
+    this.rotation = [0, 0, 0, 1];
+  }
+
   function XRManager() {
     this.xrSession = null;
     this.inlineSession = null;
+    this.viewerSpace = null;
+    this.viewerHitTestSource = null;
     this.xrData = new XRData();
     this.canvas = null;
     this.ctx = null;
@@ -108,12 +118,15 @@
     var onToggleAr = this.toggleAr.bind(this);
     var onToggleVr = this.toggleVr.bind(this);
     var onUnityLoaded = this.unityLoaded.bind(this);
+    var onToggleHitTest = this.toggleHitTest.bind(this);
 
     // dispatched by index.html
     document.addEventListener('UnityLoaded', onUnityLoaded, false);
 
     document.addEventListener('toggleAR', onToggleAr, false);
     document.addEventListener('toggleVR', onToggleVr, false);
+
+    document.addEventListener('toggleHitTest', onToggleHitTest, false);
   }
 
   XRManager.prototype.onRequestARSession = function () {
@@ -134,7 +147,7 @@
     window.requestAnimationFrame( tempRender );
     navigator.xr.requestSession('immersive-ar', {
       requiredFeatures: ['local-floor'], // TODO: Get this value from Unity
-      optionalFeatures: ['dom-overlay', 'hand-tracking'],
+      optionalFeatures: ['dom-overlay', 'hand-tracking', 'hit-test'],
       domOverlay: {root: this.canvas.parentElement}
     }).then(async (session) => {
       this.waitingHandheldARHack = false;
@@ -180,6 +193,11 @@
       xrSessionEvent.session.removeEventListener('squeeze', this.onInputEvent);
       xrSessionEvent.session.removeEventListener('squeezestart', this.onInputEvent);
       xrSessionEvent.session.removeEventListener('squeezeend', this.onInputEvent);
+    }
+
+    if (this.viewerHitTestSource) {
+      this.viewerHitTestSource.cancel();
+      this.viewerHitTestSource = null;
     }
     
     this.gameInstance.Module.WebXR.OnEndXR();
@@ -259,6 +277,26 @@
       this.exitXRSession();
     } else {
       this.onRequestVRSession();
+    }
+  }
+
+  XRManager.prototype.toggleHitTest = function () {
+    if (!this.gameInstance)
+    {
+      return;
+    }
+    if (this.xrSession && this.xrSession.isInSession && this.xrSession.isAR) {
+      if (this.viewerHitTestSource) {
+        this.viewerHitTestSource.cancel();
+        this.viewerHitTestSource = null;
+      } else {
+        this.xrSession.requestReferenceSpace('viewer').then((refSpace) => {
+          this.viewerSpace = refSpace;
+          this.xrSession.requestHitTestSource({space: this.viewerSpace}).then((hitTestSource) => {
+            this.viewerHitTestSource = hitTestSource;
+          });
+        });
+      }
     }
   }
 
@@ -580,6 +618,27 @@
     }
 
     this.getXRControllersData(frame, session.inputSources, session.refSpace, xrData);
+
+    if (session.isAR && this.viewerHitTestSource) {
+      xrData.viewerHitTestPose.frame = xrData.frameNumber;
+      let viewerHitTestResults = frame.getHitTestResults(this.viewerHitTestSource);
+      if (viewerHitTestResults.length > 0) {
+        let hitTestPose = viewerHitTestResults[0].getPose(session.refSpace);
+        xrData.viewerHitTestPose.available = 1;
+        xrData.viewerHitTestPose.position[0] = hitTestPose.transform.position.x;
+        xrData.viewerHitTestPose.position[1] = hitTestPose.transform.position.y;
+        xrData.viewerHitTestPose.position[2] = -hitTestPose.transform.position.z;
+        xrData.viewerHitTestPose.rotation[0] = -hitTestPose.transform.orientation.x;
+        xrData.viewerHitTestPose.rotation[1] = -hitTestPose.transform.orientation.y;
+        xrData.viewerHitTestPose.rotation[2] = hitTestPose.transform.orientation.z;
+        xrData.viewerHitTestPose.rotation[3] = hitTestPose.transform.orientation.w;
+      } else {
+        xrData.viewerHitTestPose.available = 0;
+      }
+      document.dispatchEvent(new CustomEvent('XRViewerHitTestPose', { detail: {
+        viewerHitTestPose: xrData.viewerHitTestPose
+      }}));
+    }
     
     // Dispatch event with headset data to be handled in webxr.jslib
     document.dispatchEvent(new CustomEvent('XRData', { detail: {
@@ -587,9 +646,7 @@
       rightProjectionMatrix: xrData.rightProjectionMatrix,
       leftViewMatrix: xrData.leftViewMatrix,
       rightViewMatrix: xrData.rightViewMatrix,
-      sitStandMatrix: xrData.sitStandMatrix,
-      controllerA: xrData.controllerA,
-      controllerB: xrData.controllerB
+      sitStandMatrix: xrData.sitStandMatrix
     }}));
 
     document.dispatchEvent(new CustomEvent('XRControllersData', { detail: {
