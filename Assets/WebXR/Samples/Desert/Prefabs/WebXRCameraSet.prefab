@@ -734,6 +734,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f6b70cf8d6f4f94f931699457ea09a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cameraMain: {fileID: 20092747195267750}
+  cameraL: {fileID: 20930522213222284}
+  cameraR: {fileID: 20572450475250664}
+  cameraARL: {fileID: 8992034749185188121}
+  cameraARR: {fileID: 3431978019681743018}
 --- !u!81 &81178167226133646
 AudioListener:
   m_ObjectHideFlags: 0
