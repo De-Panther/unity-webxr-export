@@ -1,5 +1,6 @@
 setTimeout(function () {
     Module['InternalBrowser'] = Browser || {};
+    Module["InternalJSEvents"] = JSEvents || {};
     if (GL && GL.createContext)
     {
         GL.createContextOld = GL.createContext;

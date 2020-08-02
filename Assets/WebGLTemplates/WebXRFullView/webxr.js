@@ -14,6 +14,7 @@
     this.handRight = new XRHandData();
     this.viewerHitTestPose = new XRHitPoseData();
     this.frameNumber = 0;
+    this.handHeldMove = false;
     this.xrData = null;
   }
   
@@ -66,6 +67,56 @@
     this.available = 0;
     this.position = [0, 0, 0];
     this.rotation = [0, 0, 0, 1];
+  }
+
+  function lerp(start, end, percentage)
+  {
+    return start + (end - start) * percentage;
+  }
+
+  function XRMouseEvent(eventName, pageElement, xPercentage, yPercentage, buttonNumber) {
+    let rect = pageElement.getBoundingClientRect();
+    this.type = eventName;
+    this.clientX = lerp(rect.left, rect.left + pageElement.width / window.devicePixelRatio, xPercentage);
+    this.clientY = lerp(rect.top, rect.top + pageElement.height / window.devicePixelRatio, yPercentage);
+    this.layerX = this.clientX;
+    this.layerY = this.clientY;
+    this.offsetX = this.clientX;
+    this.offsetY = this.clientY;
+    this.pageX = this.clientX;
+    this.pageY = this.clientY;
+    this.x = this.clientX;
+    this.y = this.clientY;
+    this.screenX = this.clientX;
+    this.screenY = this.clientY;
+    this.movementX = 0; // diff between movements
+    this.movementY = 0; // diff between movements
+    this.button = 0; // 0 none or main, 1 middle, 2 secondary
+    this.buttons = 0; // 0 none, 1 main, 4 middle, 2 secondary
+    switch (buttonNumber)
+    {
+      case -1:
+        this.button = 0;
+        this.buttons = 0;
+        break;
+      case 0:
+        this.button = 0;
+        this.buttons = 1;
+        break;
+      case 1:
+        this.button = 1;
+        this.buttons = 4;
+        break;
+      case 2:
+        this.button = 2;
+        this.buttons = 2;
+        break;
+    }
+    this.ctrlKey = false;
+    this.altKey = false;
+    this.metaKey = false;
+    this.shiftKey = false;
+    this.detail = 0;
   }
 
   function XRManager() {
@@ -147,8 +198,7 @@
     window.requestAnimationFrame( tempRender );
     navigator.xr.requestSession('immersive-ar', {
       requiredFeatures: ['local-floor'], // TODO: Get this value from Unity
-      optionalFeatures: ['dom-overlay', 'hand-tracking', 'hit-test'],
-      domOverlay: {root: this.canvas.parentElement}
+      optionalFeatures: ['hand-tracking', 'hit-test']
     }).then(async (session) => {
       this.waitingHandheldARHack = false;
       session.isImmersive = true;
@@ -208,7 +258,7 @@
   
   XRManager.prototype.onInputSourceEvent = function (xrInputSourceEvent) {
     if (xrInputSourceEvent.type && xrInputSourceEvent.inputSource
-        && xrInputSourceEvent.inputSource.handedness) {
+        && xrInputSourceEvent.inputSource.handedness != 'none') {
       var hand = 0;
       var inputSource = xrInputSourceEvent.inputSource;
       var xrData = this.xrData;
@@ -252,6 +302,33 @@
         xrData.controllerB = controller;
         xrData.handLeft.trigger = controller.trigger;
         xrData.handLeft.squeeze = controller.squeeze;
+      }
+    } else {
+      let xPercentage = 0.5;
+      let yPercentage = 0.5;
+      if (xrInputSourceEvent.inputSource &&
+          xrInputSourceEvent.inputSource.gamepad &&
+          xrInputSourceEvent.inputSource.gamepad.axes) {
+        xPercentage = (xrInputSourceEvent.inputSource.gamepad.axes[0] + 1.0) * 0.5;
+        yPercentage = (xrInputSourceEvent.inputSource.gamepad.axes[1] + 1.0) * 0.5;
+      }
+      switch (xrInputSourceEvent.type) {
+        case "select": // mousemove 5
+          unityInstance.Module.InternalJSEvents.eventHandlers[5].eventListenerFunc(
+            new XRMouseEvent("mousemove", this.canvas, xPercentage, yPercentage, 0));
+          break;
+        case "selectstart": // mousedown 4
+          this.xrData.handHeldMove = true;
+          unityInstance.Module.InternalJSEvents.eventHandlers[5].eventListenerFunc(
+            new XRMouseEvent("mousemove", this.canvas, xPercentage, yPercentage, 0));
+          unityInstance.Module.InternalJSEvents.eventHandlers[4].eventListenerFunc(
+            new XRMouseEvent("mousedown", this.canvas, xPercentage, yPercentage, 0));
+          break;
+        case "selectend": // mouseup 3
+          this.xrData.handHeldMove = false;
+          unityInstance.Module.InternalJSEvents.eventHandlers[3].eventListenerFunc(
+            new XRMouseEvent("mouseup", this.canvas, xPercentage, yPercentage, 0));
+          break;
       }
     }
   }
@@ -501,6 +578,14 @@
             xrData.controllerB = controller;
           }
         }
+      } else if (xrData.handHeldMove && inputSource.gamepad && inputSource.gamepad.axes) {
+            if (xrData.handHeldMove)
+            {
+              unityInstance.Module.InternalJSEvents.eventHandlers[5].eventListenerFunc(
+                new XRMouseEvent("mousemove", this.canvas,
+                                  (inputSource.gamepad.axes[0] + 1.0) * 0.5,
+                                  (inputSource.gamepad.axes[1] + 1.0) * 0.5, 0));
+            }
       }
     }
   }
