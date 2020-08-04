@@ -265,6 +265,12 @@ namespace WebXR
       }
     }
 
+    // intensity 0 to 1, duration milliseconds
+    public void Pulse(float intensity, float duration)
+    {
+      WebXRManager.Instance.HapticPulse(hand, intensity, duration);
+    }
+
     void OnEnable()
     {
       if (inputMap == null)

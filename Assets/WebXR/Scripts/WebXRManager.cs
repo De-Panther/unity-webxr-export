@@ -61,6 +61,9 @@ namespace WebXR
     private static extern void ToggleViewerHitTest();
 
     [DllImport("__Internal")]
+    private static extern void ControllerPulse(int controller, float intensity, float duration);
+
+    [DllImport("__Internal")]
     private static extern void ListenWebXRData();
 
     [DllImport("__Internal")]
@@ -211,6 +214,13 @@ namespace WebXR
         ToggleViewerHitTest();
 #endif
       }
+    }
+
+    public void HapticPulse(WebXRControllerHand hand, float intensity, float duration)
+    {
+#if UNITY_WEBGL && !UNITY_EDITOR
+        ControllerPulse((int)hand, intensity, duration);
+#endif
     }
 
     float[] GetMatrixFromSharedArray(int index)

@@ -21,6 +21,10 @@ mergeInto(LibraryManager.library, {
     document.dispatchEvent(new CustomEvent('toggleHitTest', {}));
   },
 
+  ControllerPulse: function(controller, intensity, duration) {
+    document.dispatchEvent(new CustomEvent('callHapticPulse', {detail: {'controller' : controller, 'intensity' : intensity, 'duration': duration}}));
+  },
+
   ListenWebXRData: function() {
     // Listen for headset updates from webxr.jspre and load data into shared Array which we pick up in Unity.
     document.addEventListener('XRData', function(evt) {
