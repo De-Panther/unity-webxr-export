@@ -10,6 +10,7 @@ namespace WebXR
     private List<Rigidbody> contactRigidBodies = new List<Rigidbody>();
 
     private Animator anim;
+    private WebXRController controller;
 
     void Awake()
     {
@@ -19,12 +20,11 @@ namespace WebXR
     void Start()
     {
       anim = gameObject.GetComponent<Animator>();
+      controller = gameObject.GetComponent<WebXRController>();
     }
 
     void Update()
     {
-      WebXRController controller = gameObject.GetComponent<WebXRController>();
-
       float normalizedTime = controller.GetButton("Trigger") ? 1 : controller.GetAxis("Grip");
 
       if (controller.GetButtonDown("Trigger") || controller.GetButtonDown("Grip"))
@@ -43,6 +43,7 @@ namespace WebXR
         return;
 
       contactRigidBodies.Add(other.gameObject.GetComponent<Rigidbody>());
+      controller.Pulse(0.5f, 250);
     }
 
     void OnTriggerExit(Collider other)

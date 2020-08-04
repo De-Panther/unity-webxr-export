@@ -40,6 +40,7 @@
     this.touchpadY = 0;
     this.buttonA = 0;
     this.buttonB = 0;
+    this.gamepad = null;
   }
 
   function XRHandData() {
@@ -170,6 +171,7 @@
     var onToggleVr = this.toggleVr.bind(this);
     var onUnityLoaded = this.unityLoaded.bind(this);
     var onToggleHitTest = this.toggleHitTest.bind(this);
+    var onCallHapticPulse = this.hapticPulse.bind(this);
 
     // dispatched by index.html
     document.addEventListener('UnityLoaded', onUnityLoaded, false);
@@ -178,6 +180,7 @@
     document.addEventListener('toggleVR', onToggleVr, false);
 
     document.addEventListener('toggleHitTest', onToggleHitTest, false);
+    document.addEventListener('callHapticPulse', onCallHapticPulse, false);
   }
 
   XRManager.prototype.onRequestARSession = function () {
@@ -376,6 +379,24 @@
       }
     }
   }
+  
+  XRManager.prototype.hapticPulse = function (hapticPulseAction) {
+    let controller = null;
+    switch(hapticPulseAction.detail.controller)
+    {
+      case 0:
+      case 2:
+        controller = this.xrData.controllerA;
+        break;
+      case 1:
+        controller = this.xrData.controllerB;
+        break;
+    }
+    if (controller && controller.enabled == 1 && controller.gamepad && controller.gamepad.hapticActuators && controller.gamepad.hapticActuators.length > 0)
+    {
+      controller.gamepad.hapticActuators[0].pulse(hapticPulseAction.detail.intensity, hapticPulseAction.detail.duration);
+    }
+  }
 
   XRManager.prototype.setGameInstance = function (gameInstance) {
     if (!this.gameInstance) {
@@ -571,6 +592,7 @@
               }
             }
           }
+          controller.gamepad = inputSource.gamepad;
           
           if (hand == 0 || hand == 2) {
             xrData.controllerA = controller;
