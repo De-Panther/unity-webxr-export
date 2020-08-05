@@ -22,7 +22,41 @@ I deleted all the docs, as they are no longer relevant.
 
 ### Browser Compatibility
 
-Tested with Firefox on Windows, Oculus Browser on Oculus Quest, and Google Chrome on Android (Included AR).
+This is a list of browsers and platforms that the export demo was tested on.
+
+Google Chrome on Widnwos.
+
+Mozilla Firefox on Windows.
+
+Oculus Browser on Oculus Quest (Supports WebXR Hand Input).
+
+Firefox Reality on Oculus Quest.
+
+Firefox Reality on Hololens 2 (Supports WebXR Hand Input).
+
+Google Chrome on Android (Supports both AR and VR sessions).
+
+Samsung Internet Browser on Android (Supports both AR and VR sessions).
+
+Firefox Reality on Vive Focus Plus.
+
+#### Has bugs/issues
+
+Mozilla WebXR Viewer on iOS (Has a bug related to touch input).
+
+Helio on Magic Leap One (Has a bug related to eye views).
+
+### WebXR APIs support
+
+[WebXR Device API](https://immersive-web.github.io/webxr/)
+
+[WebXR Gamepads Module](https://immersive-web.github.io/webxr-gamepads-module/) (Include [hapticActuators](https://w3c.github.io/gamepad/extensions.html) on supported devices)
+
+[WebXR Augmented Reality Module](https://immersive-web.github.io/webxr-ar-module/)
+
+[WebXR Hit Test Module](https://immersive-web.github.io/hit-test/) (Currently limited to viewer space Hit Test source)
+
+[WebXR Hand Input](https://github.com/immersive-web/webxr-hand-input)
 
 ### Polyfilled WebXR
 
@@ -30,7 +64,7 @@ If the user does not have supported headset, browser or device, the content will
 
 ### Mobile support
 
-This asset works by utilizing Unity's WebGL platform support and therefore shares the same limitations. Because of this, mobile support is limited and may not work. See [Unity's WebGL browser compatibility](https://docs.unity3d.com/2019.3/Documentation/Manual/webgl-browsercompatibility.html).
+This asset works by utilizing Unity's WebGL platform support and therefore shares the same limitations. Because of this, mobile support is limited and may not work. We did made sure to make it light, so mobile devices would be able to handle it, and it is able to run on high end mobile devices with some optimizations. See [Unity's WebGL browser compatibility](https://docs.unity3d.com/2019.3/Documentation/Manual/webgl-browsercompatibility.html).
 
 ### Version History and Notes
 
