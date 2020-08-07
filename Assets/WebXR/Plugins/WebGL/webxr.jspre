@@ -1,6 +1,4 @@
 setTimeout(function () {
-    Module['InternalBrowser'] = Browser || {};
-    Module["InternalJSEvents"] = JSEvents || {};
     if (GL && GL.createContext)
     {
         GL.createContextOld = GL.createContext;
@@ -22,6 +20,14 @@ setTimeout(function () {
 }, 0);
 
 Module['WebXR'] = Module['WebXR'] || {};
+
+Module['WebXR'].GetBrowserObject = function () {
+  return Browser;
+}
+
+Module['WebXR'].GetJSEventsObject = function () {
+  return JSEvents;
+}
 
 Module['WebXR'].OnStartAR = function (views_count, left_rect, right_rect) {
   this.OnStartARInternal = this.OnStartARInternal || Module.cwrap("on_start_ar", null, ["number",

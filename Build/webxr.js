@@ -133,9 +133,10 @@
     this.didNotifyUnity = false;
     this.isARSupported = false;
     this.isVRSupported = false;
-    this.rAFCB = null;
     this.onInputEvent = null;
     this.waitingHandheldARHack = false;
+    this.BrowserObject = null;
+    this.JSEventsObject = null;
     this.init();
   }
 
@@ -317,19 +318,19 @@
       }
       switch (xrInputSourceEvent.type) {
         case "select": // mousemove 5
-          unityInstance.Module.InternalJSEvents.eventHandlers[5].eventListenerFunc(
+          this.JSEventsObject.eventHandlers[5].eventListenerFunc(
             new XRMouseEvent("mousemove", this.canvas, xPercentage, yPercentage, 0));
           break;
         case "selectstart": // mousedown 4
           this.xrData.handHeldMove = true;
-          unityInstance.Module.InternalJSEvents.eventHandlers[5].eventListenerFunc(
+          this.JSEventsObject.eventHandlers[5].eventListenerFunc(
             new XRMouseEvent("mousemove", this.canvas, xPercentage, yPercentage, 0));
-          unityInstance.Module.InternalJSEvents.eventHandlers[4].eventListenerFunc(
+            this.JSEventsObject.eventHandlers[4].eventListenerFunc(
             new XRMouseEvent("mousedown", this.canvas, xPercentage, yPercentage, 0));
           break;
         case "selectend": // mouseup 3
           this.xrData.handHeldMove = false;
-          unityInstance.Module.InternalJSEvents.eventHandlers[3].eventListenerFunc(
+          this.JSEventsObject.eventHandlers[3].eventListenerFunc(
             new XRMouseEvent("mouseup", this.canvas, xPercentage, yPercentage, 0));
           break;
       }
@@ -405,11 +406,9 @@
       this.ctx = this.gameInstance.Module.ctx;
 
       var thisXRMananger = this;
-      this.gameInstance.Module.InternalBrowser.requestAnimationFrame = function (func) {
-        if (!thisXRMananger.rAFCB)
-        {
-          thisXRMananger.rAFCB=func;
-        }
+      this.JSEventsObject = this.gameInstance.Module.WebXR.GetJSEventsObject();
+      this.BrowserObject = this.gameInstance.Module.WebXR.GetBrowserObject();
+      this.BrowserObject.requestAnimationFrame = function (func) {
         if (thisXRMananger.xrSession && thisXRMananger.xrSession.isInSession) {
           return thisXRMananger.xrSession.requestAnimationFrame((time, xrFrame) =>
           {
@@ -603,7 +602,7 @@
       } else if (xrData.handHeldMove && inputSource.gamepad && inputSource.gamepad.axes) {
             if (xrData.handHeldMove)
             {
-              unityInstance.Module.InternalJSEvents.eventHandlers[5].eventListenerFunc(
+              this.JSEventsObject.eventHandlers[5].eventListenerFunc(
                 new XRMouseEvent("mousemove", this.canvas,
                                   (inputSource.gamepad.axes[0] + 1.0) * 0.5,
                                   (inputSource.gamepad.axes[1] + 1.0) * 0.5, 0));
@@ -674,7 +673,7 @@
       if (session.isImmersive)
       {
         // Inform the session that we're ready to begin drawing.
-        this.gameInstance.Module.InternalBrowser.requestAnimationFrame(this.rAFCB);
+        this.BrowserObject.requestAnimationFrame(this.BrowserObject.mainLoop.runner);
       }
     });
   }

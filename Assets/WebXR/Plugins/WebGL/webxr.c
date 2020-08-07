@@ -2,9 +2,9 @@
 #include "emscripten.h"
 
 typedef void (*webxr_void)();
-typedef void (*webxr_void_int)();
+typedef void (*webxr_void_int)(int32_t);
 typedef void (*webxr_void_int_float4_float4)(int32_t, float, float, float, float, float, float, float, float);
-typedef void (*webxr_void_string)();
+typedef void (*webxr_void_string)(const char *ptr);
 
 webxr_void_int_float4_float4 on_start_ar_ref;
 webxr_void_int on_start_vr_ref;
