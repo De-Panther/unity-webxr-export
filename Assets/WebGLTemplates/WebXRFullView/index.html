@@ -15,12 +15,6 @@
         if (!UnityLoader.SystemInfo.hasWebGL) {
           unityInstance.popup('Your browser does not support WebGL',
             [{text: 'OK', callback: onerror}]);
-        } else if (['Edge', 'Firefox', 'Chrome', 'Safari'].indexOf(UnityLoader.SystemInfo.browser) == -1 && UnityLoader.SystemInfo.os != 'iOS') {
-          unityInstance.popup([
-            UnityLoader.SystemInfo.os,
-            UnityLoader.SystemInfo.browser,
-            'No support for Unity WebGL content'
-          ].join(' '), [{text: 'OK', callback: onsuccess}]);
         } else {
           onsuccess();
         }
