@@ -1,19 +1,27 @@
 /* functions called from unity */
 mergeInto(LibraryManager.library, {
   InitXRSharedArray: function(byteOffset, length) {
+    Module.XRSharedArrayOffset = byteOffset;
+    Module.XRSharedArrayLength= length;
     Module.XRSharedArray = new Float32Array(buffer, byteOffset, length);
     document.dispatchEvent(new CustomEvent('UnityLoaded', {detail: 'Ready'}));
   },
 
   InitControllersArray: function(byteOffset, length) {
+    Module.ControllersArrayOffset = byteOffset;
+    Module.ControllersArrayLength= length;
     Module.ControllersArray = new Float32Array(buffer, byteOffset, length);
   },
 
   InitHandsArray: function(byteOffset, length) {
+    Module.HandsArrayOffset = byteOffset;
+    Module.HandsArrayLength= length;
     Module.HandsArray = new Float32Array(buffer, byteOffset, length);
   },
 
   InitViewerHitTestPoseArray: function(byteOffset, length) {
+    Module.ViewerHitTestPoseArrayOffset = byteOffset;
+    Module.ViewerHitTestPoseArrayLength= length;
     Module.ViewerHitTestPoseArray = new Float32Array(buffer, byteOffset, length);
   },
 
@@ -30,6 +38,9 @@ mergeInto(LibraryManager.library, {
     document.addEventListener('XRData', function(evt) {
       var data = evt.detail;
       var index = 0;
+      if (Module.XRSharedArray.byteLength == 0) {
+        Module.XRSharedArray = new Float32Array(buffer, Module.XRSharedArrayOffset, Module.XRSharedArrayLength);
+      }
       Object.keys(data).forEach(function (key, i) {
         var dataLength = data[key].length;
         if (dataLength) {
@@ -42,6 +53,9 @@ mergeInto(LibraryManager.library, {
     document.addEventListener('XRControllersData', function(evt) {
       var data = evt.detail;
       var index = 0;
+      if (Module.ControllersArray.byteLength == 0) {
+        Module.ControllersArray = new Float32Array(buffer, Module.ControllersArrayOffset, Module.ControllersArrayLength);
+      }
       Object.keys(data).forEach(function (key, i) {
         Module.ControllersArray[index++] = data[key].frame;
         Module.ControllersArray[index++] = data[key].enabled;
@@ -68,6 +82,9 @@ mergeInto(LibraryManager.library, {
     document.addEventListener('XRHandsData', function(evt) {
       var data = evt.detail;
       var index = 0;
+      if (Module.HandsArray.byteLength == 0) {
+        Module.HandsArray = new Float32Array(buffer, Module.HandsArrayOffset, Module.HandsArrayLength);
+      }
       Object.keys(data).forEach(function (key, i) {
         Module.HandsArray[index++] = data[key].frame;
         Module.HandsArray[index++] = data[key].enabled;
@@ -90,6 +107,9 @@ mergeInto(LibraryManager.library, {
     document.addEventListener('XRViewerHitTestPose', function(evt) {
       var data = evt.detail;
       var index = 0;
+      if (Module.ViewerHitTestPoseArray.byteLength == 0) {
+        Module.ViewerHitTestPoseArray = new Float32Array(buffer, Module.ViewerHitTestPoseArrayOffset, Module.ViewerHitTestPoseArrayLength);
+      }
       Module.ViewerHitTestPoseArray[index++] = data.viewerHitTestPose.frame;
       Module.ViewerHitTestPoseArray[index++] = data.viewerHitTestPose.available;
       Module.ViewerHitTestPoseArray[index++] = data.viewerHitTestPose.position[0];
