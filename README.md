@@ -102,7 +102,7 @@ Also, thanks to [Arturo Paracuellos (@arturitu)](https://github.com/arturitu) fo
 
 As the base project used the Apache License, Version 2.0, we will continue with it.
 
-Unity WebXR Export License:
+WebXR Export License:
 
 Copyright 2020 Oren Weizman
 
