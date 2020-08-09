@@ -90,6 +90,8 @@ Much of the WebXR upgrades and API usage made possible thanks to these resources
 
 ## Credits
 
+Special thanks to [needle.tools](https://needle.tools/) for the help in making this a proper package.
+
 Thanks to [Brandon Jones (@toji)](https://github.com/toji) who wrote [WebVR to WebXR Migration Guide](https://github.com/immersive-web/webxr/blob/master/webvr-migration.md) and lots of samples that helped in converting the code from WebVR to WebXR.
 
 Mozilla's Unity WebVR Export credits:
