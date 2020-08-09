@@ -4,4 +4,4 @@ Component Name: Unity WebVR Export by Mozilla
 
 License Type: "Apache License 2.0"
 
-[SemVer License](https://github.com/MozillaReality/unity-webxr-export/blob/master/LICENSE)
+[Unity WebVR Export License](https://github.com/MozillaReality/unity-webxr-export/blob/master/LICENSE)
