@@ -1,10 +1,17 @@
 {
   "name": "com.de-panther.webxr",
   "displayName": "WebXR Export",
-  "version": "0.0.1",
+  "version": "0.1.0-preview",
   "unity": "2019.3",
-  "description": "Export to WebXR",
+  "description": "Export Unity projects to WebXR",
   "keywords": [
-    "webxr"
-  ]
+    "webxr",
+    "xr",
+    "ar",
+    "vr"
+  ],
+  "author": {
+    "name": "De-Panther",
+    "url": "https://github.com/De-Panther/unity-webxr-export"
+  }
 }
