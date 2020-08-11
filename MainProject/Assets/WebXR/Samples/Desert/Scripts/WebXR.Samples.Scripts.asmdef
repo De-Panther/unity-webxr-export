@@ -1,10 +1,9 @@
 {
-    "name": "WebXR",
-    "references": [],
-    "includePlatforms": [
-        "Editor",
-        "WebGL"
+    "name": "WebXR.Samples.Scripts",
+    "references": [
+        "GUID:fd4abe4ffe74ef1448afe15c6cb36bb7"
     ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
