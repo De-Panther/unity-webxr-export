@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.de-panther.webxr": {
-      "version": "file:../../com.de-panther.webxr",
+      "version": "file:../../Packages/webxr",
       "depth": 0,
       "source": "local",
       "dependencies": {}
