@@ -1,9 +1,9 @@
 {
   "dependencies": {
     "com.de-panther.webxr": {
-      "version": "file:webxr",
+      "version": "file:../../com.de-panther.webxr",
       "depth": 0,
-      "source": "embedded",
+      "source": "local",
       "dependencies": {}
     },
     "com.unity.ext.nunit": {
@@ -41,7 +41,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.timeline": {
-      "version": "1.2.15",
+      "version": "1.2.16",
       "depth": 0,
       "source": "registry",
       "dependencies": {},

@@ -41,3 +41,5 @@ Assets/Plugins/Editor/JetBrains
 
 # Local server
 *.pem
+*/Library
+*/Temp
