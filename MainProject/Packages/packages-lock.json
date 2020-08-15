@@ -1,9 +1,9 @@
 {
   "dependencies": {
     "com.de-panther.webxr": {
-      "version": "file:../../Packages/webxr",
+      "version": "file:webxr",
       "depth": 0,
-      "source": "local",
+      "source": "embedded",
       "dependencies": {}
     },
     "com.unity.ext.nunit": {
