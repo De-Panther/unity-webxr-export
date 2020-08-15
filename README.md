@@ -16,6 +16,10 @@ I deleted all the docs, as they are no longer relevant.
 
 ## Compatibility
 
+Important notice regarding this Git repository - This repository use Symlinks. make sure that Symlinks are enabled when you clone.
+
+`git config core.symlinks true`
+
 ### Unity editor version
 
 * `2019.3` and above.
