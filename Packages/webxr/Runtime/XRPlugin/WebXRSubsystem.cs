@@ -130,7 +130,7 @@ namespace WebXR
             Native.ListenWebXRData();
         }
 
-        private class Native
+        private static class Native
         {
             [DllImport("__Internal")]
             public static extern void InitXRSharedArray(float[] array, int length);
