@@ -9,5 +9,7 @@ EditorBuildSettings:
     path: Assets/WebXR/Samples/Desert/Scenes/Desert.unity
     guid: 85380d4847db7b74a850284461349c36
   m_configObjects:
+    Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 65eada5edf5f16b4a9d0bd3a76fa026f,
+      type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 552445d583cb06c4eaf9d56596dd45c2,
       type: 2}
