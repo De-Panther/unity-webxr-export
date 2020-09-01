@@ -21,6 +21,11 @@ namespace WebXR.Editor
       DestroyImmediate(webXRMenu);
       string packagePath = Path.GetDirectoryName(packageAssetFullPath);
 
+      if (packagePath == null)
+      {
+        Debug.LogError("Copy failed, could not find package");
+        return;
+      }
       CopyFolder(Path.Combine(packagePath, "Hidden~"), Application.dataPath);
       AssetDatabase.Refresh();
     }
