@@ -14,11 +14,31 @@ namespace WebXR
   {
       public static WebXRManager Instance { get; private set; }
 
-      public event WebXRSubsystem.XRChange OnXRChange;
-      public event WebXRSubsystem.ControllerUpdate OnControllerUpdate;
-      public event WebXRSubsystem.HandUpdate OnHandUpdate;
-      public event WebXRSubsystem.HeadsetUpdate OnHeadsetUpdate;
-      public event WebXRSubsystem.HitTestUpdate OnViewerHitTestUpdate;
+      public event WebXRSubsystem.XRChange OnXRChange
+      {
+          add => subsystem.OnXRChange += value;
+          remove => subsystem.OnXRChange -= value;
+      }
+      public event WebXRSubsystem.ControllerUpdate OnControllerUpdate
+      {
+          add => subsystem.OnControllerUpdate += value;
+          remove => subsystem.OnControllerUpdate -= value;
+      }
+      public event WebXRSubsystem.HandUpdate OnHandUpdate
+      {
+          add => subsystem.OnHandUpdate += value;
+          remove => subsystem.OnHandUpdate -= value;
+      }
+      public event WebXRSubsystem.HeadsetUpdate OnHeadsetUpdate
+      {
+          add => subsystem.OnHeadsetUpdate += value;
+          remove => subsystem.OnHeadsetUpdate -= value;
+      }
+      public event WebXRSubsystem.HitTestUpdate OnViewerHitTestUpdate
+      {
+          add => subsystem.OnViewerHitTestUpdate += value;
+          remove => subsystem.OnViewerHitTestUpdate -= value;
+      }
       
       public void HapticPulse(WebXRControllerHand hand, float intensity, float duration)
       {
@@ -41,26 +61,17 @@ namespace WebXR
           Instance = this;
       }
 
-      protected override void OnEnable()
+      private void Update()
       {
-          base.OnEnable();
-          subsystem.OnXRChange += OnXRChange;
-          subsystem.OnControllerUpdate += OnControllerUpdate;
-          subsystem.OnHandUpdate += OnHandUpdate;
-          subsystem.OnHeadsetUpdate += OnHeadsetUpdate;
-          subsystem.OnViewerHitTestUpdate += OnViewerHitTestUpdate;
+          subsystem.OnUpdate();
       }
 
-      private void OnDisable()
+      private void LateUpdate()
       {
-          subsystem.OnXRChange -= OnXRChange;
-          subsystem.OnControllerUpdate -= OnControllerUpdate;
-          subsystem.OnHandUpdate -= OnHandUpdate;
-          subsystem.OnHeadsetUpdate -= OnHeadsetUpdate;
-          subsystem.OnViewerHitTestUpdate -= OnViewerHitTestUpdate;
+          subsystem.OnLateUpdate();
       }
-    
-//     [Tooltip("Preserve the manager across scenes changes.")]
+
+      //     [Tooltip("Preserve the manager across scenes changes.")]
 //     public bool dontDestroyOnLoad = true;
 //     [Header("Tracking")]
 //     [Tooltip("Default height of camera if no room-scale transform is present.")]
