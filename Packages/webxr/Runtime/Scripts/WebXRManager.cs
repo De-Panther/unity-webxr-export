@@ -14,6 +14,8 @@ namespace WebXR
   {
       public static WebXRManager Instance { get; private set; }
 
+      public WebXRState XRState => subsystem.xrState;
+      
       public event WebXRSubsystem.XRChange OnXRChange
       {
           add => subsystem.OnXRChange += value;

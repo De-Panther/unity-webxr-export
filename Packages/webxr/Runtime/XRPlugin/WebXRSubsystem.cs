@@ -5,6 +5,8 @@ using UnityEngine;
 
 namespace WebXR
 {
+    // TODO: we need an XRInputSubsystem implementation - this can only be done via native code
+    
     public class WebXRSubsystemDescriptor : SubsystemDescriptor<WebXRSubsystem>
     {
     }
@@ -27,7 +29,7 @@ namespace WebXR
         public override void Start()
         {
             if (running) return;
-            Debug.Log("Hello " + nameof(WebXRSubsystem));
+            Debug.Log("Start " + nameof(WebXRSubsystem));
             _running = true;
             Instance = this;
             InternalStart();
@@ -36,7 +38,7 @@ namespace WebXR
         public override void Stop()
         {
             if (!_running) return;
-            Debug.Log("Goodbye " + nameof(WebXRSubsystem));
+            Debug.Log("Stop " + nameof(WebXRSubsystem));
             _running = false;
             Instance = null;
         }
@@ -44,7 +46,7 @@ namespace WebXR
         protected override void OnDestroy()
         {
             if (!running) return;
-            Debug.Log("The End of " + nameof(WebXRSubsystem));
+            Debug.Log("Destroy " + nameof(WebXRSubsystem));
             _running = false;
             Instance = null;
         }
