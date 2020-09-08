@@ -2,13 +2,13 @@
 
 You can [check the live demo here](https://de-panther.github.io/unity-webxr-export)
 
-This is a project based on Mozilla's [Unity WebXR Export](https://github.com/MozillaReality/unity-webxr-export) (from when it was WebVR export).
+This is a project based on Mozilla's [Unity WebXR Exporter](https://github.com/MozillaReality/unity-webxr-export) (from when it was WebVR exporter).
 
 WebVR and WebXR, while having lots in common, are different in the way they calling a frame, using controllers, and the fact the WebXR have the ground for support AR and not just VR.
 
 That, and the fact that I want to use more updated version of Unity Editor and tools/practices, made me to create this fork.
 
-I'm continuing to update this fork as an experimental project, Mozilla's repository is more stable, and I'll merge there features that I tested here.
+I'm continuing to update this fork, fix bugs and add features.
 
 I deleted all the docs, as they are no longer relevant.
 
@@ -16,9 +16,11 @@ I deleted all the docs, as they are no longer relevant.
 
 ## Compatibility
 
-Important notice regarding this Git repository - This repository use Symlinks. make sure that Symlinks are enabled when you clone.
+**Important notice** regarding this Git repository - This repository use Symlinks. make sure that Symlinks are enabled when you clone.
 
 `git config core.symlinks true`
+
+Or just use this as a Unity Package (UPM), more info [here](webxr/README.md)
 
 ### Unity editor version
 
@@ -91,6 +93,8 @@ Much of the WebXR upgrades and API usage made possible thanks to these resources
 [WebXR Polyfill](https://github.com/immersive-web/webxr-polyfill)
 
 [The Immersive Web Working Group/Community Group](https://immersive-web.github.io/)
+
+[SimpleWebXR by Rufus31415](https://github.com/Rufus31415/Simple-WebXR-Unity)
 
 ## Credits
 
