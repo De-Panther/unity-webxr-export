@@ -5,16 +5,16 @@ using UnityEditor.XR.Management.Metadata;
 
 namespace WebXR.Editor
 {
-    internal class XRPackage : IXRPackage
+    internal class WebXRPackage : IXRPackage
     {
-        private class XRPluginSampleLoaderMetadata : IXRLoaderMetadata
+        private class WebXRLoaderMetadata : IXRLoaderMetadata
         {
             public string loaderName { get; set; }
             public string loaderType { get; set; }
             public List<BuildTargetGroup> supportedBuildTargets { get; set; }
         }
 
-        private class XRPluginSampleMetadata : IXRPackageMetadata
+        private class WebXRPackageMetadata : IXRPackageMetadata
         {
             public string packageName { get; set; }
             public string packageId { get; set; }
@@ -22,17 +22,17 @@ namespace WebXR.Editor
             public List<IXRLoaderMetadata> loaderMetadata { get; set; } 
         }
 
-        static readonly IXRPackageMetadata s_Metadata = new XRPluginSampleMetadata()
+        static readonly IXRPackageMetadata s_Metadata = new WebXRPackageMetadata()
         {
             packageName = "WebXR Export",
             packageId = "com.de-panther.webxr",
-            settingsType = typeof(WebXRPluginLoader).FullName,
+            settingsType = typeof(WebXRSettings).FullName,
             loaderMetadata = new List<IXRLoaderMetadata>() 
             {
-                new XRPluginSampleLoaderMetadata() 
+                new WebXRLoaderMetadata() 
                 {
-                    loaderName = "Web XR Plugin",
-                    loaderType = typeof(WebXRPluginLoader).FullName,
+                    loaderName = "WebXR Export",
+                    loaderType = typeof(WebXRLoader).FullName,
                     supportedBuildTargets = new List<BuildTargetGroup>() 
                     {
                         BuildTargetGroup.WebGL
@@ -45,7 +45,12 @@ namespace WebXR.Editor
 
         public bool PopulateNewSettingsInstance(ScriptableObject obj)
         {
-            return true;
+            var settings = obj as WebXRSettings;
+            if (settings != null)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

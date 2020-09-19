@@ -4,14 +4,14 @@ using UnityEngine.XR.Management;
 
 namespace WebXR
 {
-    public class WebXRPluginLoader : XRLoaderHelper
+    public class WebXRLoader : XRLoaderHelper
     {
         static readonly List<WebXRSubsystemDescriptor> sampleSubsystemDescriptors = new List<WebXRSubsystemDescriptor>();
         public WebXRSubsystem WebXRSubsystem => GetLoadedSubsystem<WebXRSubsystem>();
         
         public override bool Initialize()
         {
-            Debug.Log("Initialize " + nameof(WebXRPluginLoader));
+            Debug.Log("Initialize " + nameof(WebXRLoader));
             CreateSubsystem<WebXRSubsystemDescriptor, WebXRSubsystem>(sampleSubsystemDescriptors, typeof(WebXRSubsystem).FullName);
             return WebXRSubsystem != null;
         }

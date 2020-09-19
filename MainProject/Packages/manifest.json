@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "com.de-panther.webxr": "file:../../Packages/webxr",
     "com.unity.ide.rider": "2.0.5",
     "com.unity.ide.vscode": "1.2.1",
     "com.unity.test-framework": "1.1.16",
