@@ -1,0 +1,16 @@
+{
+	"name": "WebXR Export",
+	"version": "0.0.1",
+	"libraryName": "__Internal",
+
+	"displays": [
+		{
+			"id": "WebXR VR Display"
+		}
+	],
+	"inputs": [
+		{
+			"id": "WebXR Inputs"
+		}
+	]
+}
