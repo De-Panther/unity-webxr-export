@@ -353,6 +353,9 @@
         this.viewerHitTestSource.cancel();
         this.viewerHitTestSource = null;
       } else {
+        this.xrSession.requestReferenceSpace('local').then((refSpace) => {
+          this.xrSession.localRefSpace = refSpace;
+        });
         this.xrSession.requestReferenceSpace('viewer').then((refSpace) => {
           this.viewerSpace = refSpace;
           this.xrSession.requestHitTestSource({space: this.viewerSpace}).then((hitTestSource) => {
@@ -709,10 +712,11 @@
       xrData.viewerHitTestPose.frame = xrData.frameNumber;
       let viewerHitTestResults = frame.getHitTestResults(this.viewerHitTestSource);
       if (viewerHitTestResults.length > 0) {
-        let hitTestPose = viewerHitTestResults[0].getPose(session.refSpace);
+        let hitTestPose = viewerHitTestResults[0].getPose(session.localRefSpace);
         xrData.viewerHitTestPose.available = 1;
         xrData.viewerHitTestPose.position[0] = hitTestPose.transform.position.x;
-        xrData.viewerHitTestPose.position[1] = hitTestPose.transform.position.y;
+        let hitTestPoseBase = viewerHitTestResults[0].getPose(session.refSpace); // Ugly hack for y position on Samsung Internet
+        xrData.viewerHitTestPose.position[1] = hitTestPose.transform.position.y + Math.abs(hitTestPose.transform.position.y - hitTestPoseBase.transform.position.y);
         xrData.viewerHitTestPose.position[2] = -hitTestPose.transform.position.z;
         xrData.viewerHitTestPose.rotation[0] = -hitTestPose.transform.orientation.x;
         xrData.viewerHitTestPose.rotation[1] = -hitTestPose.transform.orientation.y;
