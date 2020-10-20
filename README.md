@@ -20,7 +20,7 @@ I deleted all the docs, as they are no longer relevant.
 
 `git config core.symlinks true`
 
-Or just use this as a Unity Package (UPM), more info [here](webxr/README.md)
+Or just use this as a Unity Package (UPM), more info [here](Packages/webxr/README.md)
 
 ### Unity editor version
 
