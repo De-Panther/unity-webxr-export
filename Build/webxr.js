@@ -557,6 +557,19 @@
                   break;
               }
             }
+            
+            if (controller.trigger <= 0.02) {
+              controller.trigger = 0;
+            } else if (controller.trigger >= 0.98) {
+              controller.trigger = 1;
+            }
+            
+            if (controller.squeeze <= 0.02) {
+              controller.squeeze = 0;
+            } else if (controller.squeeze >= 0.98) {
+              controller.squeeze = 1;
+            }
+            
             for (var j = 0; j < inputSource.gamepad.axes.length; j++) {
               switch (j) {
                 case 0:
