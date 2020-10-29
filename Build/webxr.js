@@ -134,7 +134,6 @@
     this.isARSupported = false;
     this.isVRSupported = false;
     this.onInputEvent = null;
-    this.waitingHandheldARHack = false;
     this.BrowserObject = null;
     this.JSEventsObject = null;
     this.init();
@@ -186,32 +185,15 @@
 
   XRManager.prototype.onRequestARSession = function () {
     if (!this.isARSupported) return;
-    // The window on Chrome for Android lose focus when asking permissions.
-    // A popup is opened and the Canvas is painted with the last frame.
-    // We want to make sure that the Canvas is transparent when entering Handheld AR Session.
-    this.waitingHandheldARHack = true;
-    var thisXRMananger = this;
-    var tempRender = function () {
-      thisXRMananger.ctx.clearColor(0, 0, 0, 0);
-      thisXRMananger.ctx.clear(thisXRMananger.ctx.COLOR_BUFFER_BIT | thisXRMananger.ctx.DEPTH_BUFFER_BIT);
-      if (thisXRMananger.waitingHandheldARHack)
-      {
-        window.requestAnimationFrame( tempRender );
-      }
-    }
-    window.requestAnimationFrame( tempRender );
     navigator.xr.requestSession('immersive-ar', {
       requiredFeatures: ['local-floor'], // TODO: Get this value from Unity
       optionalFeatures: ['hand-tracking', 'hit-test']
     }).then(async (session) => {
-      this.waitingHandheldARHack = false;
       session.isImmersive = true;
       session.isInSession = true;
       session.isAR = true;
       this.xrSession = session;
       this.onSessionStarted(session);
-    }).catch((error) => {
-      thisXRMananger.waitingHandheldARHack = false;
     });
   }
 
@@ -371,6 +353,9 @@
         this.viewerHitTestSource.cancel();
         this.viewerHitTestSource = null;
       } else {
+        this.xrSession.requestReferenceSpace('local').then((refSpace) => {
+          this.xrSession.localRefSpace = refSpace;
+        });
         this.xrSession.requestReferenceSpace('viewer').then((refSpace) => {
           this.viewerSpace = refSpace;
           this.xrSession.requestHitTestSource({space: this.viewerSpace}).then((hitTestSource) => {
@@ -422,9 +407,7 @@
             func(time);
           });
         } else {
-          if (!thisXRMananger.waitingHandheldARHack) {
-            window.requestAnimationFrame(func);
-          }
+          window.requestAnimationFrame(func);
         }
       };
 
@@ -574,6 +557,19 @@
                   break;
               }
             }
+            
+            if (controller.trigger <= 0.02) {
+              controller.trigger = 0;
+            } else if (controller.trigger >= 0.98) {
+              controller.trigger = 1;
+            }
+            
+            if (controller.squeeze <= 0.02) {
+              controller.squeeze = 0;
+            } else if (controller.squeeze >= 0.98) {
+              controller.squeeze = 1;
+            }
+            
             for (var j = 0; j < inputSource.gamepad.axes.length; j++) {
               switch (j) {
                 case 0:
@@ -729,10 +725,11 @@
       xrData.viewerHitTestPose.frame = xrData.frameNumber;
       let viewerHitTestResults = frame.getHitTestResults(this.viewerHitTestSource);
       if (viewerHitTestResults.length > 0) {
-        let hitTestPose = viewerHitTestResults[0].getPose(session.refSpace);
+        let hitTestPose = viewerHitTestResults[0].getPose(session.localRefSpace);
         xrData.viewerHitTestPose.available = 1;
         xrData.viewerHitTestPose.position[0] = hitTestPose.transform.position.x;
-        xrData.viewerHitTestPose.position[1] = hitTestPose.transform.position.y;
+        let hitTestPoseBase = viewerHitTestResults[0].getPose(session.refSpace); // Ugly hack for y position on Samsung Internet
+        xrData.viewerHitTestPose.position[1] = hitTestPose.transform.position.y + Math.abs(hitTestPose.transform.position.y - hitTestPoseBase.transform.position.y);
         xrData.viewerHitTestPose.position[2] = -hitTestPose.transform.position.z;
         xrData.viewerHitTestPose.rotation[0] = -hitTestPose.transform.orientation.x;
         xrData.viewerHitTestPose.rotation[1] = -hitTestPose.transform.orientation.y;
