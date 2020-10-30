@@ -1,0 +1,24 @@
+{
+  "name": "com.de-panther.webxr-interactions",
+  "displayName": "WebXR Interactions",
+  "version": "0.2.0-preview",
+  "unity": "2019.4",
+  "description": "WebXR interactions components and samples for WebXR Export",
+  "keywords": [
+    "webxr",
+    "xr",
+    "ar",
+    "vr"
+  ],
+  "author": {
+    "name": "De-Panther",
+    "url": "https://github.com/De-Panther/unity-webxr-export"
+  },
+  "samples": [
+    {
+      "displayName": "Sample Scene",
+      "description": "Sample Scene with full WebXR Camera rig, including Controllers and Hands components",
+      "path": "Samples~/Desert"
+    }
+  ]
+}
