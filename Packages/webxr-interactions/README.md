@@ -1,6 +1,6 @@
 # WebXR Interactions
 
-This package adds Interaction components and samples for the WebXR Export package
+This package adds Interaction Components and Samples for the WebXR Export package
 
 You can [check the live demo here](https://de-panther.github.io/unity-webxr-export)
 
