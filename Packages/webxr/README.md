@@ -10,4 +10,4 @@ To update the package, you'll have to manually remove the corresponding package 
 
 
 You might also want to add the WebXR Interactions package, as it has some Interaction Components and Samples.
-You can get the WebXR Interactions package [here](../webxr-interactions/README.md)
+You can get the WebXR Interactions package [here](../webxr-interactions)
