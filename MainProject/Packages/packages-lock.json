@@ -4,13 +4,17 @@
       "version": "file:webxr",
       "depth": 0,
       "source": "embedded",
-      "dependencies": {}
+      "dependencies": {
+        "com.unity.xr.management": "3.2.13"
+      }
     },
     "com.de-panther.webxr-interactions": {
       "version": "file:webxr-interactions",
       "depth": 0,
       "source": "embedded",
-      "dependencies": {}
+      "dependencies": {
+        "com.de-panther.webxr": "0.2.0"
+      }
     },
     "com.unity.ext.nunit": {
       "version": "1.0.0",

@@ -12,3 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc85f61fbfe6db9419f177419a072d26, type: 3}
   m_Name: Web XR Settings
   m_EditorClassIdentifier: 
+  VRRequiredReferenceSpace: 2
+  VROptionalFeatures: 2
+  ARRequiredReferenceSpace: 2
+  AROptionalFeatures: -1

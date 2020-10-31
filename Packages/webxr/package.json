@@ -3,6 +3,7 @@
   "displayName": "WebXR Export",
   "version": "0.2.0-preview",
   "unity": "2019.4",
+  "unityRelease": "7f1",
   "description": "Export Unity projects to WebXR",
   "keywords": [
     "webxr",
@@ -13,5 +14,8 @@
   "author": {
     "name": "De-Panther",
     "url": "https://github.com/De-Panther/unity-webxr-export"
+  },
+  "dependencies": {
+    "com.unity.xr.management": "3.2.13"
   }
 }

@@ -3,6 +3,7 @@
   "displayName": "WebXR Interactions",
   "version": "0.2.0-preview",
   "unity": "2019.4",
+  "unityRelease": "7f1",
   "description": "WebXR interactions components and samples for WebXR Export",
   "keywords": [
     "webxr",
@@ -20,5 +21,8 @@
       "description": "Sample Scene with full WebXR Camera rig, including Controllers and Hands components",
       "path": "Samples~/Desert"
     }
-  ]
+  ],
+  "dependencies": {
+    "com.de-panther.webxr": "0.2.0"
+  }
 }

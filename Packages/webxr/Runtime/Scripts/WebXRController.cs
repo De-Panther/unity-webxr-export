@@ -278,17 +278,17 @@ namespace WebXR
         Debug.LogError("A Input Map must be assigned to WebXRController!");
         return;
       }
-      WebXRManager.Instance.OnControllerUpdate += OnControllerUpdate;
-      WebXRManager.Instance.OnHandUpdate += OnHandUpdate;
-      WebXRManager.Instance.OnHeadsetUpdate += onHeadsetUpdate;
+      WebXRManager.OnControllerUpdate += OnControllerUpdate;
+      WebXRManager.OnHandUpdate += OnHandUpdate;
+      WebXRManager.OnHeadsetUpdate += onHeadsetUpdate;
       SetVisible(false);
     }
 
     void OnDisabled()
     {
-      WebXRManager.Instance.OnControllerUpdate -= OnControllerUpdate;
-      WebXRManager.Instance.OnHandUpdate -= OnHandUpdate;
-      WebXRManager.Instance.OnHeadsetUpdate -= onHeadsetUpdate;
+      WebXRManager.OnControllerUpdate -= OnControllerUpdate;
+      WebXRManager.OnHandUpdate -= OnHandUpdate;
+      WebXRManager.OnHeadsetUpdate -= onHeadsetUpdate;
       SetVisible(false);
     }
   }

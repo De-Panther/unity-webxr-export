@@ -1,5 +1,10 @@
 /* functions called from unity */
 mergeInto(LibraryManager.library, {
+  SetWebXRSettings: function(strJson) {
+    Module.WebXR.Settings = JSON.parse(Pointer_stringify(strJson));
+    console.log(Module.WebXR.Settings);
+  },
+
   InitXRSharedArray: function(byteOffset, length) {
     Module.XRSharedArrayOffset = byteOffset;
     Module.XRSharedArrayLength= length;

@@ -164,11 +164,11 @@ namespace WebXR
 
         public delegate void XRCapabilitiesUpdate(WebXRDisplayCapabilities capabilities);
 
-        public event XRCapabilitiesUpdate OnXRCapabilitiesUpdate;
+        public static event XRCapabilitiesUpdate OnXRCapabilitiesUpdate;
 
         public delegate void XRChange(WebXRState state, int viewsCount, Rect leftRect, Rect rightRect);
 
-        public event XRChange OnXRChange;
+        public static event XRChange OnXRChange;
 
         public delegate void HeadsetUpdate(
             Matrix4x4 leftProjectionMatrix,
@@ -177,19 +177,19 @@ namespace WebXR
             Matrix4x4 rightViewMatrix,
             Matrix4x4 sitStandMatrix);
 
-        public event HeadsetUpdate OnHeadsetUpdate;
+        public static event HeadsetUpdate OnHeadsetUpdate;
 
         public delegate void ControllerUpdate(WebXRControllerData controllerData);
 
-        public event ControllerUpdate OnControllerUpdate;
+        public static event ControllerUpdate OnControllerUpdate;
 
         public delegate void HandUpdate(WebXRHandData handData);
 
-        public event HandUpdate OnHandUpdate;
+        public static event HandUpdate OnHandUpdate;
 
         public delegate void HitTestUpdate(WebXRHitPoseData hitPoseData);
 
-        public event HitTestUpdate OnViewerHitTestUpdate;
+        public static event HitTestUpdate OnViewerHitTestUpdate;
 
         // Shared array which we will load headset data in from webxr.jslib
         // Array stores  5 matrices, each 16 values, stored linearly.

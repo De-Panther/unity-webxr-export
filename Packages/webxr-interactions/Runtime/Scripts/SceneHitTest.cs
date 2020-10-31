@@ -1,85 +1,88 @@
 ﻿using UnityEngine;
-using WebXR;
 
-public class SceneHitTest : MonoBehaviour
+namespace WebXR.Interactions
 {
-  public GameObject visual;
-
-  private bool isFollowing = false;
-
-  private Vector3 originPosition;
-  private Quaternion originRotation;
-
-  private Transform arCameraTransform;
-
-  void OnEnable()
+  public class SceneHitTest : MonoBehaviour
   {
-    isFollowing = false;
-    visual.SetActive(false);
-    originPosition = WebXRManager.Instance.transform.localPosition;
-    originRotation = WebXRManager.Instance.transform.localRotation;
-    WebXRManager.Instance.OnXRChange += HandleOnXRChange;
-    arCameraTransform = FindObjectOfType<WebXRCamera>().GetCamera(WebXRCamera.CameraID.LeftAR).transform;
-  }
+    public Transform originTransform;
+    public GameObject visual;
 
-  void OnDisable()
-  {
-    WebXRManager.Instance.OnXRChange -= HandleOnXRChange;
-    WebXRManager.Instance.OnViewerHitTestUpdate -= HandleOnViewerHitTestUpdate;
-  }
+    private bool isFollowing = false;
 
-  void Update()
-  {
-    if (isFollowing && Input.GetMouseButtonDown(0))
+    private Vector3 originPosition;
+    private Quaternion originRotation;
+
+    private Transform arCameraTransform;
+
+    void OnEnable()
     {
       isFollowing = false;
       visual.SetActive(false);
-      WebXRManager.Instance.OnViewerHitTestUpdate -= HandleOnViewerHitTestUpdate;
-      WebXRManager.Instance.StopViewerHitTest();
+      originPosition = originTransform.localPosition;
+      originRotation = originTransform.localRotation;
+      WebXRManager.OnXRChange += HandleOnXRChange;
+      arCameraTransform = FindObjectOfType<WebXRCamera>().GetCamera(WebXRCamera.CameraID.LeftAR).transform;
     }
-  }
 
-  private void HandleOnXRChange(WebXRState state, int viewsCount, Rect leftRect, Rect rightRect)
-  {
-    WebXRManager.Instance.transform.localPosition = originPosition;
-    WebXRManager.Instance.transform.localRotation = originRotation;
-    isFollowing = false;
-    if (state == WebXRState.AR)
+    void OnDisable()
     {
-      WebXRManager.Instance.OnViewerHitTestUpdate += HandleOnViewerHitTestUpdate;
-      WebXRManager.Instance.StartViewerHitTest();
+      WebXRManager.OnXRChange -= HandleOnXRChange;
+      WebXRManager.OnViewerHitTestUpdate -= HandleOnViewerHitTestUpdate;
     }
-    else
+
+    void Update()
     {
-      WebXRManager.Instance.OnViewerHitTestUpdate -= HandleOnViewerHitTestUpdate;
+      if (isFollowing && Input.GetMouseButtonDown(0))
+      {
+        isFollowing = false;
+        visual.SetActive(false);
+        WebXRManager.OnViewerHitTestUpdate -= HandleOnViewerHitTestUpdate;
+        WebXRManager.Instance.StopViewerHitTest();
+      }
     }
-  }
 
-  void HandleOnViewerHitTestUpdate(WebXRHitPoseData hitPoseData)
-  {
-    visual.SetActive(hitPoseData.available);
-    if (hitPoseData.available)
+    private void HandleOnXRChange(WebXRState state, int viewsCount, Rect leftRect, Rect rightRect)
     {
-      isFollowing = true;
-      transform.localPosition = hitPoseData.position;
-      transform.localRotation = hitPoseData.rotation;
-      FollowByViewRotation(hitPoseData);
+      WebXRManager.Instance.transform.localPosition = originPosition;
+      WebXRManager.Instance.transform.localRotation = originRotation;
+      isFollowing = false;
+      if (state == WebXRState.AR)
+      {
+        WebXRManager.OnViewerHitTestUpdate += HandleOnViewerHitTestUpdate;
+        WebXRManager.Instance.StartViewerHitTest();
+      }
+      else
+      {
+        WebXRManager.OnViewerHitTestUpdate -= HandleOnViewerHitTestUpdate;
+      }
     }
-  }
 
-  void FollowByHitRotation(WebXRHitPoseData hitPoseData)
-  {
-    Quaternion rotationOffset = Quaternion.Inverse(hitPoseData.rotation);
-    WebXRManager.Instance.transform.localPosition = rotationOffset * (originPosition-hitPoseData.position);
-    WebXRManager.Instance.transform.localRotation = rotationOffset;
-  }
+    void HandleOnViewerHitTestUpdate(WebXRHitPoseData hitPoseData)
+    {
+      visual.SetActive(hitPoseData.available);
+      if (hitPoseData.available)
+      {
+        isFollowing = true;
+        transform.localPosition = hitPoseData.position;
+        transform.localRotation = hitPoseData.rotation;
+        FollowByViewRotation(hitPoseData);
+      }
+    }
 
-  void FollowByViewRotation(WebXRHitPoseData hitPoseData)
-  {
-    Vector2 diff = new Vector2(hitPoseData.position.x, hitPoseData.position.z) - new Vector2(arCameraTransform.localPosition.x, arCameraTransform.localPosition.z);
-    float angle = Mathf.Atan2(diff.y, diff.x) * Mathf.Rad2Deg - 90f;
-    Quaternion rotationOffset = Quaternion.Euler(0, angle, 0);
-    WebXRManager.Instance.transform.localPosition = rotationOffset * (originPosition-hitPoseData.position);
-    WebXRManager.Instance.transform.localRotation = rotationOffset;
+    void FollowByHitRotation(WebXRHitPoseData hitPoseData)
+    {
+      Quaternion rotationOffset = Quaternion.Inverse(hitPoseData.rotation);
+      WebXRManager.Instance.transform.localPosition = rotationOffset * (originPosition - hitPoseData.position);
+      WebXRManager.Instance.transform.localRotation = rotationOffset;
+    }
+
+    void FollowByViewRotation(WebXRHitPoseData hitPoseData)
+    {
+      Vector2 diff = new Vector2(hitPoseData.position.x, hitPoseData.position.z) - new Vector2(arCameraTransform.localPosition.x, arCameraTransform.localPosition.z);
+      float angle = Mathf.Atan2(diff.y, diff.x) * Mathf.Rad2Deg - 90f;
+      Quaternion rotationOffset = Quaternion.Euler(0, angle, 0);
+      WebXRManager.Instance.transform.localPosition = rotationOffset * (originPosition - hitPoseData.position);
+      WebXRManager.Instance.transform.localRotation = rotationOffset;
+    }
   }
 }

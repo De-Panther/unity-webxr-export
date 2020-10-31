@@ -1,4 +1,3 @@
-
 namespace WebXR
 {
   public enum WebXRState { VR, AR, NORMAL }
@@ -9,30 +8,30 @@ namespace WebXR
 
       public WebXRState XRState => subsystem.xrState;
       
-      public event WebXRSubsystem.XRChange OnXRChange
+      public static event WebXRSubsystem.XRChange OnXRChange
       {
-          add => subsystem.OnXRChange += value;
-          remove => subsystem.OnXRChange -= value;
+          add => WebXRSubsystem.OnXRChange += value;
+          remove => WebXRSubsystem.OnXRChange -= value;
       }
-      public event WebXRSubsystem.ControllerUpdate OnControllerUpdate
+      public static event WebXRSubsystem.ControllerUpdate OnControllerUpdate
       {
-          add => subsystem.OnControllerUpdate += value;
-          remove => subsystem.OnControllerUpdate -= value;
+          add => WebXRSubsystem.OnControllerUpdate += value;
+          remove => WebXRSubsystem.OnControllerUpdate -= value;
       }
-      public event WebXRSubsystem.HandUpdate OnHandUpdate
+      public static event WebXRSubsystem.HandUpdate OnHandUpdate
       {
-          add => subsystem.OnHandUpdate += value;
-          remove => subsystem.OnHandUpdate -= value;
+          add => WebXRSubsystem.OnHandUpdate += value;
+          remove => WebXRSubsystem.OnHandUpdate -= value;
       }
-      public event WebXRSubsystem.HeadsetUpdate OnHeadsetUpdate
+      public static event WebXRSubsystem.HeadsetUpdate OnHeadsetUpdate
       {
-          add => subsystem.OnHeadsetUpdate += value;
-          remove => subsystem.OnHeadsetUpdate -= value;
+          add => WebXRSubsystem.OnHeadsetUpdate += value;
+          remove => WebXRSubsystem.OnHeadsetUpdate -= value;
       }
-      public event WebXRSubsystem.HitTestUpdate OnViewerHitTestUpdate
+      public static event WebXRSubsystem.HitTestUpdate OnViewerHitTestUpdate
       {
-          add => subsystem.OnViewerHitTestUpdate += value;
-          remove => subsystem.OnViewerHitTestUpdate -= value;
+          add => WebXRSubsystem.OnViewerHitTestUpdate += value;
+          remove => WebXRSubsystem.OnViewerHitTestUpdate -= value;
       }
       
       public void HapticPulse(WebXRControllerHand hand, float intensity, float duration)
@@ -54,6 +53,7 @@ namespace WebXR
       {
           base.Awake();
           Instance = this;
+          enabled = subsystem != null;
       }
 
       private void Update()
