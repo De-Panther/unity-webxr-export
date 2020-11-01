@@ -977,9 +977,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 519f6ee6510174b44bbe9a8a2d3b6a6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dontDestroyOnLoad: 1
-  DefaultHeight: 1.2
-  xrState: 2
 --- !u!1 &1644691530447244
 GameObject:
   m_ObjectHideFlags: 0
@@ -1277,6 +1274,7 @@ GameObject:
   - component: {fileID: 135139238002636258}
   - component: {fileID: 114128207473628304}
   - component: {fileID: 114589835210473740}
+  - component: {fileID: 7185579886917944061}
   m_Layer: 0
   m_Name: handL
   m_TagString: Untagged
@@ -1396,6 +1394,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 580e3dd931df2bd42b042a7e8fde2aa8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &7185579886917944061
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1799026754646168}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a2a9c34df4095f47b9ca8f975175f5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Device: 1
+  m_PoseSource: 4
+  m_PoseProviderComponent: {fileID: 0}
+  m_TrackingType: 0
+  m_UpdateType: 0
+  m_UseRelativeTransform: 0
 --- !u!1 &1836701339249518
 GameObject:
   m_ObjectHideFlags: 0
@@ -1437,6 +1453,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4684771153913254}
   - component: {fileID: 20092747195267750}
+  - component: {fileID: 2441852088187987231}
   m_Layer: 0
   m_Name: CameraMain
   m_TagString: Untagged
@@ -1501,6 +1518,24 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!114 &2441852088187987231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1854678450583440}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a2a9c34df4095f47b9ca8f975175f5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Device: 0
+  m_PoseSource: 2
+  m_PoseProviderComponent: {fileID: 0}
+  m_TrackingType: 0
+  m_UpdateType: 0
+  m_UseRelativeTransform: 0
 --- !u!1 &1859026024318526
 GameObject:
   m_ObjectHideFlags: 0
@@ -1730,6 +1765,7 @@ GameObject:
   - component: {fileID: 135505933631826540}
   - component: {fileID: 114546255618804366}
   - component: {fileID: 114372649503696970}
+  - component: {fileID: 1966769163579045322}
   m_Layer: 0
   m_Name: handR
   m_TagString: Untagged
@@ -1849,6 +1885,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 580e3dd931df2bd42b042a7e8fde2aa8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1966769163579045322
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1986733487743170}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a2a9c34df4095f47b9ca8f975175f5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Device: 1
+  m_PoseSource: 5
+  m_PoseProviderComponent: {fileID: 0}
+  m_TrackingType: 0
+  m_UpdateType: 0
+  m_UseRelativeTransform: 0
 --- !u!1 &3250837035476248814
 GameObject:
   m_ObjectHideFlags: 0

@@ -13,6 +13,14 @@ namespace WebXR
         /// </summary>
         public TSubsystem subsystem { get; private set; }
 
+        public bool isSubsystemAvailable
+        {
+          get
+          {
+            return subsystem != null;
+          }
+        }
+
         protected virtual void Awake()
         {
             EnsureSubsystem();

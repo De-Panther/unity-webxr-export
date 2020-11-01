@@ -25,6 +25,8 @@ namespace WebXR.Interactions
 
     void Update()
     {
+      controller.TryUpdateButtons();
+
       float normalizedTime = controller.GetButton("Trigger") ? 1 : controller.GetAxis("Grip");
 
       if (controller.GetButtonDown("Trigger") || controller.GetButtonDown("Grip"))
