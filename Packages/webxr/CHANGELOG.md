@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2020-11-01
+### Added
+- Support for XR providers in the editor.
+- Settings asset required and optional features in WebXR Session.
+
+### Changed
+- Fixed compile and runtime errors, to make sure that WebGL build works again.
+
 ## [0.2.0] - 2020-10-30
 ### Added
 - Some XR SDK features, like the subsystems. Still not fully support the XR SDK.
