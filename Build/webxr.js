@@ -186,8 +186,8 @@
   XRManager.prototype.onRequestARSession = function () {
     if (!this.isARSupported) return;
     navigator.xr.requestSession('immersive-ar', {
-      requiredFeatures: ['local-floor'], // TODO: Get this value from Unity
-      optionalFeatures: ['hand-tracking', 'hit-test']
+      requiredFeatures: this.gameInstance.Module.WebXR.Settings.ARRequiredReferenceSpace,
+      optionalFeatures: this.gameInstance.Module.WebXR.Settings.AROptionalFeatures
     }).then(async (session) => {
       session.isImmersive = true;
       session.isInSession = true;
@@ -200,8 +200,8 @@
   XRManager.prototype.onRequestVRSession = function () {
     if (!this.isVRSupported) return;
     navigator.xr.requestSession('immersive-vr', {
-      requiredFeatures: ['local-floor'], // TODO: Get this value from Unity
-      optionalFeatures: ['hand-tracking']
+      requiredFeatures: this.gameInstance.Module.WebXR.Settings.VRRequiredReferenceSpace,
+      optionalFeatures: this.gameInstance.Module.WebXR.Settings.VROptionalFeatures
     }).then(async (session) => {
       session.isImmersive = true;
       session.isInSession = true;
@@ -648,7 +648,10 @@
     
     let refSpaceType = 'viewer';
     if (session.isImmersive) {
-      refSpaceType = 'local-floor';
+      refSpaceType = this.gameInstance.Module.WebXR.Settings.VRRequiredReferenceSpace[0];
+      if (session.isAR) {
+        refSpaceType = this.gameInstance.Module.WebXR.Settings.ARRequiredReferenceSpace[0];
+      }
 
       var onSessionEnded = this.onEndSession.bind(this);
       session.addEventListener('end', onSessionEnded);

@@ -4,7 +4,17 @@
       "version": "file:webxr",
       "depth": 0,
       "source": "embedded",
-      "dependencies": {}
+      "dependencies": {
+        "com.unity.xr.management": "3.2.13"
+      }
+    },
+    "com.de-panther.webxr-interactions": {
+      "version": "file:webxr-interactions",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.de-panther.webxr": "0.3.0"
+      }
     },
     "com.unity.ext.nunit": {
       "version": "1.0.0",
@@ -23,8 +33,15 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.vscode": {
-      "version": "1.2.1",
+      "version": "1.2.3",
       "depth": 0,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.subsystemregistration": {
+      "version": "1.0.6",
+      "depth": 1,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"
@@ -54,6 +71,33 @@
       "dependencies": {
         "com.unity.modules.ui": "1.0.0"
       }
+    },
+    "com.unity.xr.legacyinputhelpers": {
+      "version": "2.1.4",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.xr.management": {
+      "version": "3.2.13",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.xr.legacyinputhelpers": "2.1.2",
+        "com.unity.subsystemregistration": "1.0.6"
+      },
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.xr.oculus": {
+      "version": "1.4.3",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.xr.management": "3.0.6",
+        "com.unity.ugui": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
     },
     "com.unity.modules.ai": {
       "version": "1.0.0",

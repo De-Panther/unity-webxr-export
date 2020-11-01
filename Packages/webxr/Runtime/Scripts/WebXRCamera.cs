@@ -25,8 +25,8 @@ namespace WebXR
 
     void OnEnable()
     {
-      WebXRManager.Instance.OnXRChange += onXRChange;
-      WebXRManager.Instance.OnHeadsetUpdate += onHeadsetUpdate;
+      WebXRManager.OnXRChange += onXRChange;
+      WebXRManager.OnHeadsetUpdate += onHeadsetUpdate;
     }
 
     void Update()

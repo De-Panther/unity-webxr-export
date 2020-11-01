@@ -1,4 +1,7 @@
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEngine.XR;
+#endif
 using System;
 using System.Collections.Generic;
 
@@ -42,6 +45,78 @@ namespace WebXR
 
     private Dictionary<int, Transform> handJoints = new Dictionary<int, Transform>();
     private bool handJointsVisible = false;
+
+#if UNITY_EDITOR
+    private InputDeviceCharacteristics xrHand = InputDeviceCharacteristics.Controller;
+    private InputDevice? inputDevice;
+    private HapticCapabilities? hapticCapabilities;
+#endif
+
+    public void TryUpdateButtons()
+    {
+#if UNITY_EDITOR
+      if (!WebXRManager.Instance.isSubsystemAvailable && inputDevice != null)
+      {
+        inputDevice.Value.TryGetFeatureValue(CommonUsages.trigger, out trigger);
+        inputDevice.Value.TryGetFeatureValue(CommonUsages.grip, out squeeze);
+        if (trigger <= 0.02)
+        {
+          trigger = 0;
+        }
+        else if (trigger >= 0.98)
+        {
+          trigger = 1;
+        }
+
+        if (squeeze <= 0.02)
+        {
+          squeeze = 0;
+        }
+        else if (squeeze >= 0.98)
+        {
+          squeeze = 1;
+        }
+
+        Vector2 axis2D;
+        if (inputDevice.Value.TryGetFeatureValue(CommonUsages.primary2DAxis, out axis2D))
+        {
+          thumbstickX = axis2D.x;
+          thumbstickY = axis2D.y;
+        }
+        if (inputDevice.Value.TryGetFeatureValue(CommonUsages.secondary2DAxis, out axis2D))
+        {
+          touchpadX = axis2D.x;
+          touchpadY = axis2D.y;
+        }
+        bool buttonPressed;
+        if (inputDevice.Value.TryGetFeatureValue(CommonUsages.primary2DAxisClick, out buttonPressed))
+        {
+          thumbstick = buttonPressed ? 1 : 0;
+        }
+        if (inputDevice.Value.TryGetFeatureValue(CommonUsages.secondary2DAxisClick, out buttonPressed))
+        {
+          touchpad = buttonPressed ? 1 : 0;
+        }
+        if (inputDevice.Value.TryGetFeatureValue(CommonUsages.primaryButton, out buttonPressed))
+        {
+          buttonA = buttonPressed ? 1 : 0;
+        }
+        if (inputDevice.Value.TryGetFeatureValue(CommonUsages.secondaryButton, out buttonPressed))
+        {
+          buttonB = buttonPressed ? 1 : 0;
+        }
+
+        WebXRControllerButton[] buttons = new WebXRControllerButton[6];
+        buttons[0] = new WebXRControllerButton(trigger == 1, trigger);
+        buttons[1] = new WebXRControllerButton(squeeze == 1, squeeze);
+        buttons[2] = new WebXRControllerButton(thumbstick == 1, thumbstick);
+        buttons[3] = new WebXRControllerButton(touchpad == 1, touchpad);
+        buttons[4] = new WebXRControllerButton(buttonA == 1, buttonA);
+        buttons[5] = new WebXRControllerButton(buttonB == 1, buttonB);
+        UpdateButtons(buttons);
+      }
+#endif
+    }
 
     // Updates button states from Web gamepad API.
     private void UpdateButtons(WebXRControllerButton[] buttons)
@@ -161,12 +236,12 @@ namespace WebXR
         buttonB = controllerData.buttonB;
 
         WebXRControllerButton[] buttons = new WebXRControllerButton[6];
-        buttons[0] = new WebXRControllerButton(trigger==1, trigger);
-        buttons[1] = new WebXRControllerButton(squeeze==1, squeeze);
-        buttons[2] = new WebXRControllerButton(thumbstick==1, thumbstick);
-        buttons[3] = new WebXRControllerButton(touchpad==1, touchpad);
-        buttons[4] = new WebXRControllerButton(buttonA==1, buttonA);
-        buttons[5] = new WebXRControllerButton(buttonB==1, buttonB);
+        buttons[0] = new WebXRControllerButton(trigger == 1, trigger);
+        buttons[1] = new WebXRControllerButton(squeeze == 1, squeeze);
+        buttons[2] = new WebXRControllerButton(thumbstick == 1, thumbstick);
+        buttons[3] = new WebXRControllerButton(touchpad == 1, touchpad);
+        buttons[4] = new WebXRControllerButton(buttonA == 1, buttonA);
+        buttons[5] = new WebXRControllerButton(buttonB == 1, buttonB);
         UpdateButtons(buttons);
       }
     }
@@ -188,7 +263,7 @@ namespace WebXR
 
         Quaternion rotationOffset = Quaternion.Inverse(handData.joints[0].rotation);
 
-        for(int i=0; i<=WebXRHandData.LITTLE_PHALANX_TIP; i++)
+        for (int i = 0; i <= WebXRHandData.LITTLE_PHALANX_TIP; i++)
         {
           if (handData.joints[i].enabled)
           {
@@ -220,8 +295,8 @@ namespace WebXR
         squeeze = handData.squeeze;
 
         WebXRControllerButton[] buttons = new WebXRControllerButton[2];
-        buttons[0] = new WebXRControllerButton(trigger==1, trigger);
-        buttons[1] = new WebXRControllerButton(squeeze==1, squeeze);
+        buttons[0] = new WebXRControllerButton(trigger == 1, trigger);
+        buttons[1] = new WebXRControllerButton(squeeze == 1, squeeze);
         UpdateButtons(buttons);
       }
     }
@@ -268,7 +343,19 @@ namespace WebXR
     // intensity 0 to 1, duration milliseconds
     public void Pulse(float intensity, float duration)
     {
-      WebXRManager.Instance.HapticPulse(hand, intensity, duration);
+      if (WebXRManager.Instance.isSubsystemAvailable)
+      {
+        WebXRManager.Instance.HapticPulse(hand, intensity, duration);
+      }
+#if UNITY_EDITOR
+      else if (inputDevice != null && hapticCapabilities != null
+               && hapticCapabilities.Value.supportsImpulse)
+      {
+        // duration in seconds
+        duration = duration * 0.001f;
+        inputDevice.Value.SendHapticImpulse(0, intensity, duration);
+      }
+#endif
     }
 
     void OnEnable()
@@ -278,18 +365,70 @@ namespace WebXR
         Debug.LogError("A Input Map must be assigned to WebXRController!");
         return;
       }
-      WebXRManager.Instance.OnControllerUpdate += OnControllerUpdate;
-      WebXRManager.Instance.OnHandUpdate += OnHandUpdate;
-      WebXRManager.Instance.OnHeadsetUpdate += onHeadsetUpdate;
+      WebXRManager.OnControllerUpdate += OnControllerUpdate;
+      WebXRManager.OnHandUpdate += OnHandUpdate;
+      WebXRManager.OnHeadsetUpdate += onHeadsetUpdate;
       SetVisible(false);
+#if UNITY_EDITOR
+      switch (hand)
+      {
+        case WebXRControllerHand.LEFT:
+          xrHand = InputDeviceCharacteristics.Controller | InputDeviceCharacteristics.Left;
+          break;
+        case WebXRControllerHand.RIGHT:
+          xrHand = InputDeviceCharacteristics.Controller | InputDeviceCharacteristics.Right;
+          break;
+      }
+
+      List<InputDevice> allDevices = new List<InputDevice>();
+      InputDevices.GetDevicesWithCharacteristics(xrHand, allDevices);
+      foreach (InputDevice device in allDevices)
+      {
+        HandleInputDevicesConnected(device);
+      }
+
+      InputDevices.deviceConnected += HandleInputDevicesConnected;
+      InputDevices.deviceDisconnected += HandleInputDevicesDisconnected;
+#endif
     }
 
     void OnDisabled()
     {
-      WebXRManager.Instance.OnControllerUpdate -= OnControllerUpdate;
-      WebXRManager.Instance.OnHandUpdate -= OnHandUpdate;
-      WebXRManager.Instance.OnHeadsetUpdate -= onHeadsetUpdate;
+      WebXRManager.OnControllerUpdate -= OnControllerUpdate;
+      WebXRManager.OnHandUpdate -= OnHandUpdate;
+      WebXRManager.OnHeadsetUpdate -= onHeadsetUpdate;
       SetVisible(false);
+#if UNITY_EDITOR
+      InputDevices.deviceConnected -= HandleInputDevicesConnected;
+      InputDevices.deviceDisconnected -= HandleInputDevicesDisconnected;
+      inputDevice = null;
+#endif
     }
+
+#if UNITY_EDITOR
+    private void HandleInputDevicesConnected(InputDevice device)
+    {
+      if (device.characteristics.HasFlag(xrHand))
+      {
+        inputDevice = device;
+        HapticCapabilities capabilities;
+        if (device.TryGetHapticCapabilities(out capabilities))
+        {
+          hapticCapabilities = capabilities;
+        }
+        SetVisible(true);
+      }
+    }
+
+    private void HandleInputDevicesDisconnected(InputDevice device)
+    {
+      if (inputDevice != null && inputDevice.Value == device)
+      {
+        inputDevice = null;
+        hapticCapabilities = null;
+        SetVisible(false);
+      }
+    }
+#endif
   }
 }

@@ -96,6 +96,8 @@ Much of the WebXR upgrades and API usage made possible thanks to these resources
 
 [SimpleWebXR by Rufus31415](https://github.com/Rufus31415/Simple-WebXR-Unity)
 
+[WebXR Discord](https://discord.gg/Jt5tfaM)
+
 ## Credits
 
 Special thanks to [needle.tools](https://needle.tools/) for the help in making this a proper package.

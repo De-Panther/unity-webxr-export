@@ -7,3 +7,7 @@ To add the package to your Unity project, open the Package Manager window, click
 `https://github.com/De-Panther/unity-webxr-export.git?path=/Packages/webxr`
 
 To update the package, you'll have to manually remove the corresponding package section from the `packages-lock.json` file. For more info read about [Git dependencies](https://docs.unity3d.com/Manual/upm-git.html) in Unity's manual.
+
+
+You might also want to add the WebXR Interactions package, as it has some Interaction Components and Samples.
+You can get the WebXR Interactions package [here](../webxr-interactions/README.md)

@@ -1783,9 +1783,9 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Convex: 0
-  m_CookingOptions: 14
+  m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: 55a05d7345e094dee9a176728bb6070f, type: 3}
 --- !u!1 &1119766361
 GameObject:
@@ -2056,6 +2056,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d8c4d90294a1624e93fed88ebf25ac0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  originTransform: {fileID: 214930529}
   visual: {fileID: 1694373858}
 --- !u!4 &1241030032
 Transform:

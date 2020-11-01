@@ -41,3 +41,5 @@ ExportedObj/
 
 # Local server
 *.pem
+*/Assets/WebGLTemplates
+*/Assets/WebGLTemplates.meta

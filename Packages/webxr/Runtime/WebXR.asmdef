@@ -1,6 +1,9 @@
 {
     "name": "WebXR",
-    "references": [],
+    "references": [
+        "Unity.XR.Management",
+        "Unity.Subsystem.Registration"
+    ],
     "includePlatforms": [
         "Editor",
         "WebGL"
