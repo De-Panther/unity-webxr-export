@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2020-11-08
+### Added
+- Support for the missing controller inputs.
+
+### Changed
+- Sample scene - Changed Rigidbody Interpolate for the Interactables.
+- ControllerInteraction - Changed what values to check for pick/drop Interactables.
+
 ## [0.3.0] - 2020-11-01
 ### Added
 - Support for XR providers in the sample WebXRCameraSet prefab.
