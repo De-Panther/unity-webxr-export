@@ -27,13 +27,24 @@ namespace WebXR.Interactions
     {
       controller.TryUpdateButtons();
 
-      float normalizedTime = controller.GetButton("Trigger") ? 1 : controller.GetAxis("Grip");
+      // Get button A(0 or 1), or Axis Trigger/Grip (0 to 1), the larger between them all, by that order
+      float normalizedTime = controller.GetButton(WebXRController.ButtonTypes.ButtonA) ? 1 :
+                              Mathf.Max(controller.GetAxis(WebXRController.AxisTypes.Trigger),
+                              controller.GetAxis(WebXRController.AxisTypes.Grip));
 
-      if (controller.GetButtonDown("Trigger") || controller.GetButtonDown("Grip"))
+      if (controller.GetButtonDown(WebXRController.ButtonTypes.Trigger)
+          || controller.GetButtonDown(WebXRController.ButtonTypes.Grip)
+          || controller.GetButtonDown(WebXRController.ButtonTypes.ButtonA))
+      {
         Pickup();
+      }
 
-      if (controller.GetButtonUp("Trigger") || controller.GetButtonUp("Grip"))
+      if (controller.GetButtonUp(WebXRController.ButtonTypes.Trigger)
+          || controller.GetButtonUp(WebXRController.ButtonTypes.Grip)
+          || controller.GetButtonUp(WebXRController.ButtonTypes.ButtonA))
+      {
         Drop();
+      }
 
       // Use the controller button or axis position to manipulate the playback time for hand model.
       anim.Play("Take", -1, normalizedTime);

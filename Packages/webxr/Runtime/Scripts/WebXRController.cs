@@ -10,10 +10,30 @@ namespace WebXR
 
   public class WebXRController : MonoBehaviour
   {
+    public enum ButtonTypes
+    {
+      Trigger = 0,
+      Grip = 1,
+      Thumbstick = 2,
+      Touchpad = 3,
+      ButtonA = 4,
+      ButtonB = 5
+    }
+
+    public enum AxisTypes
+    {
+      Trigger,
+      Grip
+    }
+
+    public enum Axis2DTypes
+    {
+      Thumbstick, // primary2DAxis
+      Touchpad // secondary2DAxis
+    }
+
     [Tooltip("Controller hand to use.")]
     public WebXRControllerHand hand = WebXRControllerHand.NONE;
-    [Tooltip("Controller input settings.")]
-    public WebXRControllerInputMap inputMap;
     [Tooltip("Simulate 3dof controller")]
     public bool simulate3dof = false;
     [Tooltip("Vector from head to elbow")]
@@ -41,7 +61,7 @@ namespace WebXR
 
     private Quaternion headRotation;
     private Vector3 headPosition;
-    private Dictionary<string, WebXRControllerButton> buttonStates = new Dictionary<string, WebXRControllerButton>();
+    private Dictionary<ButtonTypes, WebXRControllerButton> buttonStates = new Dictionary<ButtonTypes, WebXRControllerButton>();
 
     private Dictionary<int, Transform> handJoints = new Dictionary<int, Transform>();
     private bool handJointsVisible = false;
@@ -107,12 +127,12 @@ namespace WebXR
         }
 
         WebXRControllerButton[] buttons = new WebXRControllerButton[6];
-        buttons[0] = new WebXRControllerButton(trigger == 1, trigger);
-        buttons[1] = new WebXRControllerButton(squeeze == 1, squeeze);
-        buttons[2] = new WebXRControllerButton(thumbstick == 1, thumbstick);
-        buttons[3] = new WebXRControllerButton(touchpad == 1, touchpad);
-        buttons[4] = new WebXRControllerButton(buttonA == 1, buttonA);
-        buttons[5] = new WebXRControllerButton(buttonB == 1, buttonB);
+        buttons[(int)ButtonTypes.Trigger] = new WebXRControllerButton(trigger == 1, trigger);
+        buttons[(int)ButtonTypes.Grip] = new WebXRControllerButton(squeeze == 1, squeeze);
+        buttons[(int)ButtonTypes.Thumbstick] = new WebXRControllerButton(thumbstick == 1, thumbstick);
+        buttons[(int)ButtonTypes.Touchpad] = new WebXRControllerButton(touchpad == 1, touchpad);
+        buttons[(int)ButtonTypes.ButtonA] = new WebXRControllerButton(buttonA == 1, buttonA);
+        buttons[(int)ButtonTypes.ButtonB] = new WebXRControllerButton(buttonB == 1, buttonB);
         UpdateButtons(buttons);
       }
 #endif
@@ -124,27 +144,35 @@ namespace WebXR
       for (int i = 0; i < buttons.Length; i++)
       {
         WebXRControllerButton button = buttons[i];
-        foreach (WebXRControllerInput input in inputMap.inputs)
-        {
-          if (input.gamepadId == i)
-            SetButtonState(input.actionName, button.pressed, button.value);
-        }
+        SetButtonState((ButtonTypes)i, button.pressed, button.value);
       }
     }
 
-    public float GetAxis(string action)
+    public float GetAxis(AxisTypes action)
     {
       switch (action)
       {
-        case "Grip":
+        case AxisTypes.Grip:
           return squeeze;
-        case "Trigger":
+        case AxisTypes.Trigger:
           return trigger;
       }
       return 0;
     }
 
-    public bool GetButton(string action)
+    public Vector2 GetAxis2D(Axis2DTypes action)
+    {
+      switch (action)
+      {
+        case Axis2DTypes.Thumbstick:
+          return new Vector2(thumbstickX, thumbstickY);
+        case Axis2DTypes.Touchpad:
+          return new Vector2(touchpadX, touchpadY);
+      }
+      return Vector2.zero;
+    }
+
+    public bool GetButton(ButtonTypes action)
     {
       if (!buttonStates.ContainsKey(action))
       {
@@ -153,14 +181,14 @@ namespace WebXR
       return buttonStates[action].pressed;
     }
 
-    private bool GetPastButtonState(string action)
+    private bool GetPastButtonState(ButtonTypes action)
     {
       if (!buttonStates.ContainsKey(action))
         return false;
       return buttonStates[action].prevPressedState;
     }
 
-    private void SetButtonState(string action, bool isPressed, float value)
+    private void SetButtonState(ButtonTypes action, bool isPressed, float value)
     {
       if (buttonStates.ContainsKey(action))
       {
@@ -171,14 +199,14 @@ namespace WebXR
         buttonStates.Add(action, new WebXRControllerButton(isPressed, value));
     }
 
-    private void SetPastButtonState(string action, bool isPressed)
+    private void SetPastButtonState(ButtonTypes action, bool isPressed)
     {
       if (!buttonStates.ContainsKey(action))
         return;
       buttonStates[action].prevPressedState = isPressed;
     }
 
-    public bool GetButtonDown(string action)
+    public bool GetButtonDown(ButtonTypes action)
     {
       if (GetButton(action) && !GetPastButtonState(action))
       {
@@ -188,7 +216,7 @@ namespace WebXR
       return false;
     }
 
-    public bool GetButtonUp(string action)
+    public bool GetButtonUp(ButtonTypes action)
     {
       if (!GetButton(action) && GetPastButtonState(action))
       {
@@ -236,12 +264,12 @@ namespace WebXR
         buttonB = controllerData.buttonB;
 
         WebXRControllerButton[] buttons = new WebXRControllerButton[6];
-        buttons[0] = new WebXRControllerButton(trigger == 1, trigger);
-        buttons[1] = new WebXRControllerButton(squeeze == 1, squeeze);
-        buttons[2] = new WebXRControllerButton(thumbstick == 1, thumbstick);
-        buttons[3] = new WebXRControllerButton(touchpad == 1, touchpad);
-        buttons[4] = new WebXRControllerButton(buttonA == 1, buttonA);
-        buttons[5] = new WebXRControllerButton(buttonB == 1, buttonB);
+        buttons[(int)ButtonTypes.Trigger] = new WebXRControllerButton(trigger == 1, trigger);
+        buttons[(int)ButtonTypes.Grip] = new WebXRControllerButton(squeeze == 1, squeeze);
+        buttons[(int)ButtonTypes.Thumbstick] = new WebXRControllerButton(thumbstick == 1, thumbstick);
+        buttons[(int)ButtonTypes.Touchpad] = new WebXRControllerButton(touchpad == 1, touchpad);
+        buttons[(int)ButtonTypes.ButtonA] = new WebXRControllerButton(buttonA == 1, buttonA);
+        buttons[(int)ButtonTypes.ButtonB] = new WebXRControllerButton(buttonB == 1, buttonB);
         UpdateButtons(buttons);
       }
     }
@@ -295,8 +323,8 @@ namespace WebXR
         squeeze = handData.squeeze;
 
         WebXRControllerButton[] buttons = new WebXRControllerButton[2];
-        buttons[0] = new WebXRControllerButton(trigger == 1, trigger);
-        buttons[1] = new WebXRControllerButton(squeeze == 1, squeeze);
+        buttons[(int)ButtonTypes.Trigger] = new WebXRControllerButton(trigger == 1, trigger);
+        buttons[(int)ButtonTypes.Grip] = new WebXRControllerButton(squeeze == 1, squeeze);
         UpdateButtons(buttons);
       }
     }
@@ -360,11 +388,6 @@ namespace WebXR
 
     void OnEnable()
     {
-      if (inputMap == null)
-      {
-        Debug.LogError("A Input Map must be assigned to WebXRController!");
-        return;
-      }
       WebXRManager.OnControllerUpdate += OnControllerUpdate;
       WebXRManager.OnHandUpdate += OnHandUpdate;
       WebXRManager.OnHeadsetUpdate += onHeadsetUpdate;
