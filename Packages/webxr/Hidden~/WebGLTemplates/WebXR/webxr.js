@@ -680,6 +680,7 @@
     
     session.requestReferenceSpace(refSpaceType).then((refSpace) => {
       session.refSpace = refSpace;
+      this.BrowserObject.resumeAsyncCallbacks();
       this.BrowserObject.mainLoop.resume();
     });
   }
