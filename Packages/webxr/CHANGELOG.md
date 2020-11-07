@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2020-11-08
+### Added
+- Added missing OnXRCapabilitiesUpdate to WebXRManager.
+- Added missing controller inputs.
+
+### Changed
+- Changed controller action names to enums.
+
 ## [0.3.1] - 2020-11-07
 ### Added
 - emscripten browser object pause/resume when switching sessions.
