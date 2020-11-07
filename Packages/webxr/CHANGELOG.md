@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2020-11-07
+### Added
+- emscripten browser object pause/resume when switching sessions.
+
+### Changed
+- Replaced Inline XR Session with window.rAF.
+
 ## [0.3.0] - 2020-11-01
 ### Added
 - Support for XR providers in the editor.
