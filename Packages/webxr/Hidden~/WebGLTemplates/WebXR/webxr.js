@@ -122,7 +122,6 @@
 
   function XRManager() {
     this.xrSession = null;
-    this.inlineSession = null;
     this.viewerSpace = null;
     this.viewerHitTestSource = null;
     this.xrData = new XRData();
@@ -185,6 +184,14 @@
 
   XRManager.prototype.onRequestARSession = function () {
     if (!this.isARSupported) return;
+    this.BrowserObject.pauseAsyncCallbacks();
+    this.BrowserObject.mainLoop.pause();
+    var thisXRMananger = this;
+    var tempRender = function () {
+      thisXRMananger.ctx.clearColor(0, 0, 0, 0);
+      thisXRMananger.ctx.clear(thisXRMananger.ctx.COLOR_BUFFER_BIT | thisXRMananger.ctx.DEPTH_BUFFER_BIT);
+    }
+    window.requestAnimationFrame( tempRender );
     navigator.xr.requestSession('immersive-ar', {
       requiredFeatures: this.gameInstance.Module.WebXR.Settings.ARRequiredReferenceSpace,
       optionalFeatures: this.gameInstance.Module.WebXR.Settings.AROptionalFeatures
@@ -194,11 +201,22 @@
       session.isAR = true;
       this.xrSession = session;
       this.onSessionStarted(session);
+    }).catch((error) => {
+      this.BrowserObject.resumeAsyncCallbacks();
+      this.BrowserObject.mainLoop.resume();
     });
   }
 
   XRManager.prototype.onRequestVRSession = function () {
     if (!this.isVRSupported) return;
+    this.BrowserObject.pauseAsyncCallbacks();
+    this.BrowserObject.mainLoop.pause();
+    var thisXRMananger = this;
+    var tempRender = function () {
+      thisXRMananger.ctx.clearColor(0, 0, 0, 0);
+      thisXRMananger.ctx.clear(thisXRMananger.ctx.COLOR_BUFFER_BIT | thisXRMananger.ctx.DEPTH_BUFFER_BIT);
+    }
+    window.requestAnimationFrame( tempRender );
     navigator.xr.requestSession('immersive-vr', {
       requiredFeatures: this.gameInstance.Module.WebXR.Settings.VRRequiredReferenceSpace,
       optionalFeatures: this.gameInstance.Module.WebXR.Settings.VROptionalFeatures
@@ -208,6 +226,9 @@
       session.isAR = false;
       this.xrSession = session;
       this.onSessionStarted(session);
+    }).catch((error) => {
+      this.BrowserObject.resumeAsyncCallbacks();
+      this.BrowserObject.mainLoop.resume();
     });
   }
 
@@ -240,6 +261,15 @@
     this.didNotifyUnity = false;
     this.canvas.width = this.canvas.parentElement.clientWidth * window.devicePixelRatio;
     this.canvas.height = this.canvas.parentElement.clientHeight * window.devicePixelRatio;
+    
+    this.BrowserObject.pauseAsyncCallbacks();
+    this.BrowserObject.mainLoop.pause();
+    this.ctx.bindFramebuffer(this.ctx.FRAMEBUFFER);
+    var thisXRMananger = this;
+    window.setTimeout(function () {
+      thisXRMananger.BrowserObject.resumeAsyncCallbacks();
+      thisXRMananger.BrowserObject.mainLoop.resume();
+    });
   }
   
   XRManager.prototype.onInputSourceEvent = function (xrInputSourceEvent) {
@@ -400,12 +430,6 @@
             thisXRMananger.animate(xrFrame);
             func(time);
           });
-        } else if (thisXRMananger.inlineSession && thisXRMananger.inlineSession.isInSession) {
-          return thisXRMananger.inlineSession.requestAnimationFrame((time, xrFrame) =>
-          {
-            thisXRMananger.animate(xrFrame);
-            func(time);
-          });
         } else {
           window.requestAnimationFrame(func);
         }
@@ -418,9 +442,6 @@
             if (thisXRMananger.xrSession.renderState.baseLayer) {
               fbo = thisXRMananger.xrSession.renderState.baseLayer.framebuffer;
             }
-          } else if (thisXRMananger.inlineSession && thisXRMananger.inlineSession.isInSession &&
-                     thisXRMananger.inlineSession.renderState.baseLayer) {
-            fbo = thisXRMananger.inlineSession.renderState.baseLayer.framebuffer;
           }
         }
         return oldBindFramebuffer.call(this, target, fbo);
@@ -439,16 +460,6 @@
     this.UpdateXRCapabilities();
     
     this.onInputEvent = this.onInputSourceEvent.bind(this);
-
-    navigator.xr.isSessionSupported('inline').then((supported) => {
-      if (supported) {
-        navigator.xr.requestSession('inline').then((session) => {
-          session.isInSession = true;
-          this.inlineSession = session;
-          this.onSessionStarted(session);
-        });
-      }
-    });
   }
 
   XRManager.prototype.UpdateXRCapabilities = function() {
@@ -669,11 +680,8 @@
     
     session.requestReferenceSpace(refSpaceType).then((refSpace) => {
       session.refSpace = refSpace;
-      if (session.isImmersive)
-      {
-        // Inform the session that we're ready to begin drawing.
-        this.BrowserObject.requestAnimationFrame(this.BrowserObject.mainLoop.runner);
-      }
+      this.BrowserObject.resumeAsyncCallbacks();
+      this.BrowserObject.mainLoop.resume();
     });
   }
 
