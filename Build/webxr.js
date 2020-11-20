@@ -587,13 +587,13 @@
                   controller.touchpadX = inputSource.gamepad.axes[j];
                   break;
                 case 1:
-                  controller.touchpadY = inputSource.gamepad.axes[j];
+                  controller.touchpadY = -inputSource.gamepad.axes[j];
                   break;
                 case 2:
                   controller.thumbstickX = inputSource.gamepad.axes[j];
                   break;
                 case 3:
-                  controller.thumbstickY = inputSource.gamepad.axes[j];
+                  controller.thumbstickY = -inputSource.gamepad.axes[j];
                   break;
               }
             }
