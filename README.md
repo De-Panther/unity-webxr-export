@@ -14,6 +14,14 @@ I deleted all the docs, as they are no longer relevant.
 
 <hr>
 
+## Downloads
+
+Better option: Import WebXR Export and WebXR Interactions packages from OpenUPM.
+- WebXR Export [![openupm](https://img.shields.io/npm/v/com.de-panther.webxr?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.de-panther.webxr/)
+- WebXR Interactions [![openupm](https://img.shields.io/npm/v/com.de-panther.webxr-interactions?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.de-panther.webxr-interactions/)
+
+Or import the packages from git, more info at [WebXR Export](Packages/webxr/README.md) and [WebXR Interactions](Packages/webxr-interactions/README.md).
+
 ## Compatibility
 
 **Important notice** regarding this Git repository - This repository use Symlinks. make sure that Symlinks are enabled when you clone.
