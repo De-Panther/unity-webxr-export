@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Fixes for JavaScript and Unity communication to support both Unity 2019.1 and Unity 2020.1.
 - Added info about OpenUPM package in README.md.
+- Invert Y axis for touchpad and thumbstick, so they'll work the same as other XR Providers in Unity.
 
 ## [0.4.0] - 2020-11-08
 ### Added
