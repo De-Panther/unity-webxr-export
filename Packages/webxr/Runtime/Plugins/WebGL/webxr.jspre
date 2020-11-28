@@ -30,6 +30,7 @@ Module['WebXR'].GetJSEventsObject = function () {
 }
 
 Module['WebXR'].OnStartAR = function (views_count, left_rect, right_rect) {
+  Module.WebXR.isInXR = true;
   this.OnStartARInternal = this.OnStartARInternal || Module.cwrap("on_start_ar", null, ["number",
                                                                   "number", "number", "number", "number",
                                                                   "number", "number", "number", "number"]);
@@ -38,12 +39,18 @@ Module['WebXR'].OnStartAR = function (views_count, left_rect, right_rect) {
                           right_rect.x, right_rect.y, right_rect.w, right_rect.h);
 }
 
-Module['WebXR'].OnStartVR = function (views_count) {
-  this.OnStartVRInternal = this.OnStartVRInternal || Module.cwrap("on_start_vr", null, ["number"]);
-  this.OnStartVRInternal(views_count);
+Module['WebXR'].OnStartVR = function (views_count, left_rect, right_rect) {
+  Module.WebXR.isInXR = true;
+  this.OnStartVRInternal = this.OnStartVRInternal || Module.cwrap("on_start_vr", null, ["number",
+                                                                  "number", "number", "number", "number",
+                                                                  "number", "number", "number", "number"]);
+  this.OnStartVRInternal(views_count,
+                          left_rect.x, left_rect.y, left_rect.w, left_rect.h,
+                          right_rect.x, right_rect.y, right_rect.w, right_rect.h);
 }
 
 Module['WebXR'].OnEndXR = function () {
+  Module.WebXR.isInXR = false;
   this.OnEndXRInternal = this.OnEndXRInternal || Module.cwrap("on_end_xr", null, []);
   this.OnEndXRInternal();
 }

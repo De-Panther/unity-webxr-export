@@ -78,8 +78,9 @@
   function XRMouseEvent(eventName, pageElement, xPercentage, yPercentage, buttonNumber) {
     let rect = pageElement.getBoundingClientRect();
     this.type = eventName;
-    this.clientX = lerp(rect.left, rect.left + pageElement.width / window.devicePixelRatio, xPercentage);
-    this.clientY = lerp(rect.top, rect.top + pageElement.height / window.devicePixelRatio, yPercentage);
+    // It was pageElement.size / window.devicePixelRatio, but now we treat devicePixelRatio in XR session as 1
+    this.clientX = lerp(rect.left, rect.left + pageElement.width / 1, xPercentage);
+    this.clientY = lerp(rect.top, rect.top + pageElement.height / 1, yPercentage);
     this.layerX = this.clientX;
     this.layerY = this.clientY;
     this.offsetX = this.clientX;
@@ -127,7 +128,7 @@
     this.xrData = new XRData();
     this.canvas = null;
     this.ctx = null;
-    this.gameInstance = null;
+    this.gameModule = null;
     this.polyfill = null;
     this.didNotifyUnity = false;
     this.isARSupported = false;
@@ -193,8 +194,8 @@
     }
     window.requestAnimationFrame( tempRender );
     navigator.xr.requestSession('immersive-ar', {
-      requiredFeatures: this.gameInstance.Module.WebXR.Settings.ARRequiredReferenceSpace,
-      optionalFeatures: this.gameInstance.Module.WebXR.Settings.AROptionalFeatures
+      requiredFeatures: this.gameModule.WebXR.Settings.ARRequiredReferenceSpace,
+      optionalFeatures: this.gameModule.WebXR.Settings.AROptionalFeatures
     }).then(async (session) => {
       session.isImmersive = true;
       session.isInSession = true;
@@ -218,8 +219,8 @@
     }
     window.requestAnimationFrame( tempRender );
     navigator.xr.requestSession('immersive-vr', {
-      requiredFeatures: this.gameInstance.Module.WebXR.Settings.VRRequiredReferenceSpace,
-      optionalFeatures: this.gameInstance.Module.WebXR.Settings.VROptionalFeatures
+      requiredFeatures: this.gameModule.WebXR.Settings.VRRequiredReferenceSpace,
+      optionalFeatures: this.gameModule.WebXR.Settings.VROptionalFeatures
     }).then(async (session) => {
       session.isImmersive = true;
       session.isInSession = true;
@@ -257,10 +258,10 @@
       this.viewerHitTestSource = null;
     }
     
-    this.gameInstance.Module.WebXR.OnEndXR();
+    this.gameModule.WebXR.OnEndXR();
     this.didNotifyUnity = false;
-    this.canvas.width = this.canvas.parentElement.clientWidth * window.devicePixelRatio;
-    this.canvas.height = this.canvas.parentElement.clientHeight * window.devicePixelRatio;
+    this.canvas.width = this.canvas.parentElement.clientWidth * this.gameModule.asmLibraryArg._JS_SystemInfo_GetPreferredDevicePixelRatio();
+    this.canvas.height = this.canvas.parentElement.clientHeight * this.gameModule.asmLibraryArg._JS_SystemInfo_GetPreferredDevicePixelRatio();
     
     this.BrowserObject.pauseAsyncCallbacks();
     this.BrowserObject.mainLoop.pause();
@@ -350,7 +351,7 @@
   }
 
   XRManager.prototype.toggleAr = function () {
-    if (!this.gameInstance)
+    if (!this.gameModule)
     {
       return;
     }
@@ -362,7 +363,7 @@
   }
 
   XRManager.prototype.toggleVr = function () {
-    if (!this.gameInstance)
+    if (!this.gameModule)
     {
       return;
     }
@@ -374,7 +375,7 @@
   }
 
   XRManager.prototype.toggleHitTest = function () {
-    if (!this.gameInstance)
+    if (!this.gameModule)
     {
       return;
     }
@@ -414,15 +415,15 @@
     }
   }
 
-  XRManager.prototype.setGameInstance = function (gameInstance) {
-    if (!this.gameInstance) {
-      this.gameInstance = gameInstance;
-      this.canvas = this.gameInstance.Module.canvas;
-      this.ctx = this.gameInstance.Module.ctx;
+  XRManager.prototype.setGameModule = function (gameModule) {
+    if (gameModule && !this.gameModule) {
+      this.gameModule = gameModule;
+      this.canvas = this.gameModule.canvas;
+      this.ctx = this.gameModule.ctx;
 
       var thisXRMananger = this;
-      this.JSEventsObject = this.gameInstance.Module.WebXR.GetJSEventsObject();
-      this.BrowserObject = this.gameInstance.Module.WebXR.GetBrowserObject();
+      this.JSEventsObject = this.gameModule.WebXR.GetJSEventsObject();
+      this.BrowserObject = this.gameModule.WebXR.GetBrowserObject();
       this.BrowserObject.requestAnimationFrame = function (func) {
         if (thisXRMananger.xrSession && thisXRMananger.xrSession.isInSession) {
           return thisXRMananger.xrSession.requestAnimationFrame((time, xrFrame) =>
@@ -449,10 +450,10 @@
     }
   }
 
-  XRManager.prototype.unityLoaded = function () {
+  XRManager.prototype.unityLoaded = function (event) {
     document.body.dataset.unityLoaded = 'true';
 
-    this.setGameInstance(unityInstance);
+    this.setGameModule(event.detail.module);
 
     document.dispatchEvent(new CustomEvent('onARSupportedCheck', { detail:{supported:this.isARSupported} }));
     document.dispatchEvent(new CustomEvent('onVRSupportedCheck', { detail:{supported:this.isVRSupported} }));
@@ -464,7 +465,7 @@
 
   XRManager.prototype.UpdateXRCapabilities = function() {
     // Send browser capabilities to Unity.
-    this.gameInstance.Module.WebXR.OnXRCapabilities(
+    this.gameModule.WebXR.OnXRCapabilities(
       JSON.stringify({
         canPresentAR: this.isARSupported,
         canPresentVR: this.isVRSupported,
@@ -659,9 +660,9 @@
     
     let refSpaceType = 'viewer';
     if (session.isImmersive) {
-      refSpaceType = this.gameInstance.Module.WebXR.Settings.VRRequiredReferenceSpace[0];
+      refSpaceType = this.gameModule.WebXR.Settings.VRRequiredReferenceSpace[0];
       if (session.isAR) {
-        refSpaceType = this.gameInstance.Module.WebXR.Settings.ARRequiredReferenceSpace[0];
+        refSpaceType = this.gameModule.WebXR.Settings.ARRequiredReferenceSpace[0];
       }
 
       var onSessionEnded = this.onEndSession.bind(this);
@@ -775,43 +776,43 @@
     
     if (!this.didNotifyUnity)
     {
-      if (session.isAR)
-      {
-        let eyeCount = 1;
-        let leftRect = {
-          x:0,
-          y:0,
-          w:1,
-          h:1
-        }
-        let rightRect = {
-          x:0.5,
-          y:0,
-          w:0.5,
-          h:1
-        }
-        for (let view of pose.views) {
-          let viewport = session.renderState.baseLayer.getViewport(view);
-          if (view.eye === 'left') {
-            if (viewport) {
-              leftRect.x = viewport.x / glLayer.framebufferWidth;
-              leftRect.y = viewport.y / glLayer.framebufferHeight;
-              leftRect.w = viewport.width / glLayer.framebufferWidth;
-              leftRect.h = viewport.height / glLayer.framebufferHeight;
-            }
-          } else if (view.eye === 'right') {
-            eyeCount = 2;
-            if (viewport) {
-              rightRect.x = viewport.x / glLayer.framebufferWidth;
-              rightRect.y = viewport.y / glLayer.framebufferHeight;
-              rightRect.w = viewport.width / glLayer.framebufferWidth;
-              rightRect.h = viewport.height / glLayer.framebufferHeight;
-            }
+      let eyeCount = 1;
+      let leftRect = {
+        x:0,
+        y:0,
+        w:1,
+        h:1
+      }
+      let rightRect = {
+        x:0.5,
+        y:0,
+        w:0.5,
+        h:1
+      }
+      for (let view of pose.views) {
+        let viewport = session.renderState.baseLayer.getViewport(view);
+        if (view.eye === 'left') {
+          if (viewport) {
+            leftRect.x = (viewport.x / glLayer.framebufferWidth) * (glLayer.framebufferWidth / this.canvas.width);
+            leftRect.y = (viewport.y / glLayer.framebufferHeight) * (glLayer.framebufferHeight / this.canvas.height);
+            leftRect.w = (viewport.width / glLayer.framebufferWidth) * (glLayer.framebufferWidth / this.canvas.width);
+            leftRect.h = (viewport.height / glLayer.framebufferHeight) * (glLayer.framebufferHeight / this.canvas.height);
+          }
+        } else if (view.eye === 'right') {
+          eyeCount = 2;
+          if (viewport) {
+            rightRect.x = (viewport.x / glLayer.framebufferWidth) * (glLayer.framebufferWidth / this.canvas.width);
+            rightRect.y = (viewport.y / glLayer.framebufferHeight) * (glLayer.framebufferHeight / this.canvas.height);
+            rightRect.w = (viewport.width / glLayer.framebufferWidth) * (glLayer.framebufferWidth / this.canvas.width);
+            rightRect.h = (viewport.height / glLayer.framebufferHeight) * (glLayer.framebufferHeight / this.canvas.height);
           }
         }
-        this.gameInstance.Module.WebXR.OnStartAR(eyeCount, leftRect, rightRect);
+      }
+      if (session.isAR)
+      {
+        this.gameModule.WebXR.OnStartAR(eyeCount, leftRect, rightRect);
       } else {
-        this.gameInstance.Module.WebXR.OnStartVR(pose.views.length);
+        this.gameModule.WebXR.OnStartVR(eyeCount, leftRect, rightRect);
       }
       this.didNotifyUnity = true;
     }
