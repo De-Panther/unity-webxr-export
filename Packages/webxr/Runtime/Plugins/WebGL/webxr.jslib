@@ -9,7 +9,7 @@ mergeInto(LibraryManager.library, {
     Module.XRSharedArrayOffset = byteOffset;
     Module.XRSharedArrayLength= length;
     Module.XRSharedArray = new Float32Array(buffer, byteOffset, length);
-    document.dispatchEvent(new CustomEvent('UnityLoaded', {detail: 'Ready'}));
+    document.dispatchEvent(new CustomEvent('UnityLoaded', {detail: {state: 'Ready', module: Module}}));
   },
 
   InitControllersArray: function(byteOffset, length) {

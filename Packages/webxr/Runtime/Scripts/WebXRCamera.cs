@@ -14,7 +14,7 @@ namespace WebXR
     }
 
     [SerializeField]
-    private Camera cameraMain, cameraL, cameraR, cameraARL, cameraARR;
+    private Camera cameraMain = null, cameraL = null, cameraR = null, cameraARL = null, cameraARR = null;
 
     private WebXRState xrState = WebXRState.NORMAL;
     private Rect leftRect, rightRect;
@@ -50,7 +50,9 @@ namespace WebXR
         case WebXRState.VR:
           cameraMain.enabled = false;
           cameraL.enabled = viewsCount > 0;
+          cameraL.rect = leftRect;
           cameraR.enabled = viewsCount > 1;
+          cameraR.rect = rightRect;
           cameraARL.enabled = false;
           cameraARR.enabled = false;
           break;

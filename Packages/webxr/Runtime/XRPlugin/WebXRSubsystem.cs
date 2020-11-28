@@ -155,7 +155,7 @@ namespace WebXR
 
             [DllImport("__Internal")]
             public static extern void set_webxr_events(Action<int, float, float, float, float, float, float, float, float> on_start_ar,
-                Action<int> on_start_vr,
+                Action<int, float, float, float, float, float, float, float, float> on_start_vr,
                 Action on_end_xr,
                 Action<string> on_xr_capabilities);
         }
@@ -237,7 +237,7 @@ namespace WebXR
             OnXRChange?.Invoke(state, viewsCount, leftRect, rightRect);
         }
 
-        // received start VR from WebVR browser
+        // received start AR from WebXR browser
         [MonoPInvokeCallback(typeof(Action<int, float, float, float, float, float, float, float, float>))]
         public static void OnStartAR(int viewsCount,
             float left_x, float left_y, float left_w, float left_h,
@@ -248,10 +248,15 @@ namespace WebXR
                 new Rect(right_x, right_y, right_w, right_h));
         }
 
-        [MonoPInvokeCallback(typeof(Action<int>))]
-        public static void OnStartVR(int viewsCount)
+        // received start VR from WebXR browser
+        [MonoPInvokeCallback(typeof(Action<int, float, float, float, float, float, float, float, float>))]
+        public static void OnStartVR(int viewsCount,
+            float left_x, float left_y, float left_w, float left_h,
+            float right_x, float right_y, float right_w, float right_h)
         {
-            Instance.setXrState(WebXRState.VR, viewsCount, new Rect(), new Rect());
+            Instance.setXrState(WebXRState.VR, viewsCount,
+                new Rect(left_x, left_y, left_w, left_h),
+                new Rect(right_x, right_y, right_w, right_h));
         }
 
         // receive end VR from WebVR browser
