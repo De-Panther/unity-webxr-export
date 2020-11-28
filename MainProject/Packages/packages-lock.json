@@ -13,7 +13,7 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "com.de-panther.webxr": "0.4.0-preview"
+        "com.de-panther.webxr": "0.4.1-preview"
       }
     },
     "com.unity.ext.nunit": {

@@ -6,9 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.2] - 2020-11-28
+### Changed
+- WebXR Export dependency update.
+- Added info about OpenUPM package in README.md.
+
 ## [0.4.1] - 2020-11-17
 ### Changed
-- WebXR Export dependency fix
+- WebXR Export dependency fix.
 
 ## [0.4.0] - 2020-11-08
 ### Added
