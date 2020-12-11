@@ -19,3 +19,7 @@ To add the package to your Unity project using Git, open the Package Manager win
 `https://github.com/De-Panther/unity-webxr-export.git?path=/Packages/webxr-interactions`
 
 To update the package, you'll have to manually remove the corresponding package section from the `packages-lock.json` file. For more info read about [Git dependencies](https://docs.unity3d.com/Manual/upm-git.html) in Unity's manual.
+
+## Sample Scene
+
+You can import the `Sample Scene` from `Window > Package Manager > WebXR Interactions > Sample Scene > Import into Project`.
