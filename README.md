@@ -18,6 +18,10 @@ Better option: Import WebXR Export and WebXR Interactions packages from OpenUPM.
 
 Or import the packages from git, more info at [WebXR Export](Packages/webxr/README.md) and [WebXR Interactions](Packages/webxr-interactions/README.md).
 
+## Documentation
+
+For more info on getting started and how to use WebXR Export, you can check the [Documentation](Documentation) folder.
+
 ## Compatibility
 
 **Important notice** regarding this Git repository - This repository use Symlinks. make sure that Symlinks are enabled when you clone.
