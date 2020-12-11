@@ -1,16 +1,12 @@
 # WebXR Export
 
-You can [check the live demo here](https://de-panther.github.io/unity-webxr-export)
+You can [check the live demo here](https://de-panther.github.io/unity-webxr-export).
 
-This is a project based on Mozilla's [Unity WebXR Exporter](https://github.com/MozillaReality/unity-webxr-export) (from when it was WebVR exporter).
+Develop and export WebXR experiences using the [Unity Engine](https://unity.com/).
 
-WebVR and WebXR, while having lots in common, are different in the way they calling a frame, using controllers, and the fact the WebXR have the ground for support AR and not just VR.
+WebXR Export supports both Augmented Reality and Virtual Reality [WebXR API](https://www.w3.org/TR/webxr/) immersive sessions.
 
-That, and the fact that I want to use more updated version of Unity Editor and tools/practices, made me to create this fork.
-
-I'm continuing to update this fork, fix bugs and add features.
-
-I deleted all the docs, as they are no longer relevant.
+It integrates the WebXR JavaScript API to [Unity WebGL](https://docs.unity3d.com/Manual/webgl.html) and lets you develop experiences in the familiar editor using C#.
 
 <hr>
 
@@ -30,14 +26,14 @@ Or import the packages from git, more info at [WebXR Export](Packages/webxr/READ
 
 Or just use this as a Unity Package (UPM), more info [here](Packages/webxr/README.md)
 
-### Unity editor version
+### Unity Editor version
 
 * `2019.4.7` and up.
 * `2020.1` and up.
 
 ### Browser Compatibility
 
-This is a list of browsers and platforms that the export demo was tested on.
+This is a list of browsers and platforms that the WebXR Export demo was tested on.
 
 Google Chrome on Widnwos.
 
@@ -73,7 +69,7 @@ Helio on Magic Leap One (Has a bug related to eye views).
 
 [WebXR Hand Input](https://github.com/immersive-web/webxr-hand-input)
 
-### Polyfilled WebXR
+### Polyfilled WebXR / WebVR
 
 If the user does not have supported headset, browser or device, the content will still work through the use of the [WebXR Polyfill](https://github.com/immersive-web/webxr-polyfill).
 
@@ -82,6 +78,8 @@ If the user does not have supported headset, browser or device, the content will
 This asset works by utilizing Unity's WebGL platform support and therefore shares the same limitations. Because of this, mobile support is limited and may not work. We did made sure to make it light, so mobile devices would be able to handle it, and it is able to run on high end mobile devices with some optimizations. See [Unity's WebGL browser compatibility](https://docs.unity3d.com/2019.3/Documentation/Manual/webgl-browsercompatibility.html).
 
 ### Version History and Notes
+
+You can check the changelogs of [WebXR Export](Packages/webxr/CHANGELOG.md) and [WebXR Interactions](Packages/webxr-interactions/CHANGELOG.md) for version history.
 
 ## Contributing
 
@@ -139,7 +137,11 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-Unity WebVR Export License:
+<hr>
+
+This is a project based on Mozilla's [Unity WebXR Exporter](https://github.com/MozillaReality/unity-webxr-export) (from when it was WebVR exporter).
+
+Unity WebVR Exporter License:
 
 Copyright 2017 - 2018 Mozilla Corporation
 
