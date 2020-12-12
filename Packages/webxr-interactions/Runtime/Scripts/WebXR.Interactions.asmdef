@@ -10,6 +10,12 @@
     "precompiledReferences": [],
     "autoReferenced": false,
     "defineConstraints": [],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "com.de-panther.webxr-input-profiles-loader",
+            "expression": "0.2.0",
+            "define": "WEBXR_INPUT_PROFILES"
+        }
+    ],
     "noEngineReferences": false
 }

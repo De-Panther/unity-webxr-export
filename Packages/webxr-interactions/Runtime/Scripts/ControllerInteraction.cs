@@ -12,9 +12,30 @@ namespace WebXR.Interactions
     private Animator anim;
     private WebXRController controller;
 
+    public GameObject[] controllerVisuals;
+
+    public Transform handJointPrefab;
+
+    private GameObject[] handJointsVisuals = new GameObject[25];
+    private Dictionary<int, Transform> handJoints = new Dictionary<int, Transform>();
+
     void Awake()
     {
       attachJoint = GetComponent<FixedJoint>();
+    }
+
+    void OnEnable()
+    {
+      controller.OnControllerActive += SetControllerVisible;
+      controller.OnHandActive += SetHandJointsVisible;
+      controller.OnHandUpdate += OnHandUpdate;
+    }
+
+    void OnDisabled()
+    {
+      controller.OnControllerActive -= SetControllerVisible;
+      controller.OnHandActive -= SetHandJointsVisible;
+      controller.OnHandUpdate -= OnHandUpdate;
     }
 
     void Start()
@@ -65,6 +86,56 @@ namespace WebXR.Interactions
         return;
 
       contactRigidBodies.Remove(other.gameObject.GetComponent<Rigidbody>());
+    }
+
+    void SetControllerVisible(bool visible)
+    {
+      foreach (var visual in controllerVisuals)
+      {
+        visual.SetActive(visible);
+      }
+    }
+
+    void SetHandJointsVisible(bool visible)
+    {
+      foreach (var visual in handJointsVisuals)
+      {
+        visual?.SetActive(visible);
+      }
+    }
+
+    private void OnHandUpdate(WebXRHandData handData)
+    {
+      Quaternion rotationOffset = Quaternion.Inverse(handData.joints[0].rotation);
+
+      for (int i = 0; i <= WebXRHandData.LITTLE_PHALANX_TIP; i++)
+      {
+        if (handData.joints[i].enabled)
+        {
+          if (handJoints.ContainsKey(i))
+          {
+            handJoints[i].localPosition = rotationOffset * (handData.joints[i].position - handData.joints[0].position);
+            handJoints[i].localRotation = rotationOffset * handData.joints[i].rotation;
+          }
+          else
+          {
+            var clone = Instantiate(handJointPrefab,
+                                    rotationOffset * (handData.joints[i].position - handData.joints[0].position),
+                                    rotationOffset * handData.joints[i].rotation,
+                                    transform);
+            if (handData.joints[i].radius > 0f)
+            {
+              clone.localScale = new Vector3(handData.joints[i].radius, handData.joints[i].radius, handData.joints[i].radius);
+            }
+            else
+            {
+              clone.localScale = new Vector3(0.005f, 0.005f, 0.005f);
+            }
+            handJoints.Add(i, clone);
+            handJointsVisuals[i] = clone.gameObject;
+          }
+        }
+      }
     }
 
     public void Pickup()

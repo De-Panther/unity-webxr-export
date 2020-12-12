@@ -1376,11 +1376,6 @@ MonoBehaviour:
   simulate3dof: 0
   eyesToElbow: {x: 0.1, y: -0.4, z: 0.15}
   elbowHand: {x: 0, y: 0, z: 0.25}
-  handJointPrefab: {fileID: 8513787482403080262, guid: 67541c9d1fd5e2c4798986ee73c07923,
-    type: 3}
-  showGOs:
-  - {fileID: 1136128897566686}
-  - {fileID: 1664295426898042}
 --- !u!114 &114589835210473740
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1393,6 +1388,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 580e3dd931df2bd42b042a7e8fde2aa8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controllerVisuals:
+  - {fileID: 1136128897566686}
+  - {fileID: 1664295426898042}
+  handJointPrefab: {fileID: 8513787482403080262, guid: 67541c9d1fd5e2c4798986ee73c07923,
+    type: 3}
 --- !u!114 &7185579886917944061
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1866,11 +1866,6 @@ MonoBehaviour:
   simulate3dof: 0
   eyesToElbow: {x: 0.1, y: -0.4, z: 0.15}
   elbowHand: {x: 0, y: 0, z: 0.25}
-  handJointPrefab: {fileID: 8513787482403080262, guid: 67541c9d1fd5e2c4798986ee73c07923,
-    type: 3}
-  showGOs:
-  - {fileID: 1644997114004198}
-  - {fileID: 1091283458777958}
 --- !u!114 &114372649503696970
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1883,6 +1878,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 580e3dd931df2bd42b042a7e8fde2aa8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controllerVisuals:
+  - {fileID: 1644997114004198}
+  - {fileID: 1091283458777958}
+  handJointPrefab: {fileID: 8513787482403080262, guid: 67541c9d1fd5e2c4798986ee73c07923,
+    type: 3}
 --- !u!114 &1966769163579045322
 MonoBehaviour:
   m_ObjectHideFlags: 0
