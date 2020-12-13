@@ -41,6 +41,8 @@
     this.buttonA = 0;
     this.buttonB = 0;
     this.gamepad = null;
+    this.profiles = [];
+    this.updatedProfiles = 0;
   }
 
   function XRHandData() {
@@ -257,6 +259,21 @@
       this.viewerHitTestSource.cancel();
       this.viewerHitTestSource = null;
     }
+
+    this.xrData.controllerA.enabled = 0;
+    this.xrData.controllerB.enabled = 0;
+    this.xrData.handLeft.enabled = 0;
+    this.xrData.handRight.enabled = 0;
+
+    document.dispatchEvent(new CustomEvent('XRControllersData', { detail: {
+      controllerA: this.xrData.controllerA,
+      controllerB: this.xrData.controllerB
+    }}));
+
+    document.dispatchEvent(new CustomEvent('XRHandsData', { detail: {
+      handLeft: this.xrData.handLeft,
+      handRight: this.xrData.handRight
+    }}));
     
     this.gameModule.WebXR.OnEndXR();
     this.didNotifyUnity = false;
@@ -534,6 +551,12 @@
           
           controller.enabled = 1;
           controller.hand = hand;
+
+          if (controller.updatedProfiles == 0)
+          {
+            controller.profiles = inputSource.profiles;
+            controller.updatedProfiles = 1;
+          }
           
           controller.positionX = position.x;
           controller.positionY = position.y;
@@ -677,6 +700,11 @@
       session.addEventListener('squeeze', this.onInputEvent);
       session.addEventListener('squeezestart', this.onInputEvent);
       session.addEventListener('squeezeend', this.onInputEvent);
+
+      this.xrData.controllerA.updatedProfiles = 0;
+      this.xrData.controllerB.updatedProfiles = 0;
+      this.xrData.controllerA.profiles = [];
+      this.xrData.controllerB.profiles = [];
     }
     
     session.requestReferenceSpace(refSpaceType).then((refSpace) => {
@@ -753,6 +781,22 @@
       document.dispatchEvent(new CustomEvent('XRViewerHitTestPose', { detail: {
         viewerHitTestPose: xrData.viewerHitTestPose
       }}));
+    }
+
+    if (xrData.controllerA.updatedProfiles == 1 || xrData.controllerB.updatedProfiles == 1)
+    {
+      let inputProfiles = {};
+      inputProfiles.conrtoller1 = xrData.controllerA.profiles;
+      inputProfiles.conrtoller2 = xrData.controllerB.profiles;
+      if (xrData.controllerA.updatedProfiles == 1)
+      {
+        xrData.controllerA.updatedProfiles = 2;
+      }
+      if (xrData.controllerB.updatedProfiles == 1)
+      {
+        xrData.controllerB.updatedProfiles = 2;
+      }
+      this.gameModule.WebXR.OnInputProfiles(JSON.stringify(inputProfiles));
     }
     
     // Dispatch event with headset data to be handled in webxr.jslib

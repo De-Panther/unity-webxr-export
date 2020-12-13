@@ -65,6 +65,8 @@ namespace WebXR
     private bool controllerActive = false;
     private bool handActive = false;
 
+    private string[] profiles = null;
+
 #if UNITY_EDITOR
     private InputDeviceCharacteristics xrHand = InputDeviceCharacteristics.Controller;
     private InputDevice? inputDevice;
@@ -225,6 +227,47 @@ namespace WebXR
       return false;
     }
 
+    public float GetButtonIndexValue(int index)
+    {
+      switch (index)
+      {
+        case 0:
+          return trigger;
+        case 1:
+          return squeeze;
+        case 2:
+          return touchpad;
+        case 3:
+          return thumbstick;
+        case 4:
+          return buttonA;
+        case 5:
+          return buttonB;
+      }
+      return 0;
+    }
+
+    public float GetAxisIndexValue(int index)
+    {
+      switch (index)
+      {
+        case 0:
+          return touchpadX;
+        case 1:
+          return touchpadY;
+        case 2:
+          return thumbstickX;
+        case 3:
+          return thumbstickY;
+      }
+      return 0;
+    }
+
+    public string[] GetProfiles()
+    {
+      return profiles;
+    }
+
     private void OnHeadsetUpdate(Matrix4x4 leftProjectionMatrix,
         Matrix4x4 rightProjectionMatrix,
         Matrix4x4 leftViewMatrix,
@@ -246,7 +289,8 @@ namespace WebXR
           SetControllerActive(false);
           return;
         }
-        SetControllerActive(true);
+
+        profiles = controllerData.profiles;
 
         transform.localRotation = controllerData.rotation;
         transform.localPosition = controllerData.position;
@@ -270,6 +314,8 @@ namespace WebXR
         buttons[(int)ButtonTypes.ButtonA] = new WebXRControllerButton(buttonA == 1, buttonA);
         buttons[(int)ButtonTypes.ButtonB] = new WebXRControllerButton(buttonB == 1, buttonB);
         UpdateButtons(buttons);
+
+        SetControllerActive(true);
       }
     }
 

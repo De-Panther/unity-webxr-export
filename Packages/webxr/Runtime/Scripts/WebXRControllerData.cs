@@ -20,6 +20,14 @@ namespace WebXR
     public float touchpadY;
     public float buttonA;
     public float buttonB;
+    public string[] profiles;
+  }
+
+  [System.Serializable]
+  public class WebXRControllersProfiles
+  {
+    public string[] conrtoller1;
+    public string[] conrtoller2;
   }
 
   [System.Serializable]

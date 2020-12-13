@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+#if WEBXR_INPUT_PROFILES
+using WebXRInputProfile;
+#endif
 
 namespace WebXR.Interactions
 {
@@ -16,12 +19,45 @@ namespace WebXR.Interactions
 
     public Transform handJointPrefab;
 
+    public GameObject inputProfileObject;
+    public GameObject inputProfileModelParent;
+
     private GameObject[] handJointsVisuals = new GameObject[25];
     private Dictionary<int, Transform> handJoints = new Dictionary<int, Transform>();
+
+#if WEBXR_INPUT_PROFILES
+    private InputProfileLoader inputProfileLoader;
+    private InputProfileModel inputProfileModel;
+    private bool hasProfileList = false;
+    private bool loadedModel = false;
+    private string loadedProfile = null;
+#endif
 
     void Awake()
     {
       attachJoint = GetComponent<FixedJoint>();
+      anim = gameObject.GetComponent<Animator>();
+      controller = gameObject.GetComponent<WebXRController>();
+#if WEBXR_INPUT_PROFILES
+      Debug.LogError("WEBXR_INPUT_PROFILES");
+      if (inputProfileObject != null)
+      {
+        inputProfileLoader = inputProfileObject.GetComponent<InputProfileLoader>();
+        if (inputProfileLoader == null)
+        {
+          inputProfileLoader = inputProfileObject.AddComponent<InputProfileLoader>();
+        }
+        if (InputProfileLoader.ProfilesPaths == null || InputProfileLoader.ProfilesPaths.Count == 0)
+        {
+
+          inputProfileLoader.LoadProfilesList(HandleProfilesList);
+        }
+        else
+        {
+          HandleProfilesList(InputProfileLoader.ProfilesPaths);
+        }
+      }
+#endif
     }
 
     void OnEnable()
@@ -36,12 +72,6 @@ namespace WebXR.Interactions
       controller.OnControllerActive -= SetControllerVisible;
       controller.OnHandActive -= SetHandJointsVisible;
       controller.OnHandUpdate -= OnHandUpdate;
-    }
-
-    void Start()
-    {
-      anim = gameObject.GetComponent<Animator>();
-      controller = gameObject.GetComponent<WebXRController>();
     }
 
     void Update()
@@ -67,6 +97,14 @@ namespace WebXR.Interactions
         Drop();
       }
 
+#if WEBXR_INPUT_PROFILES
+      if (loadedModel)
+      {
+        UpdateModelInput();
+        return;
+      }
+#endif
+
       // Use the controller button or axis position to manipulate the playback time for hand model.
       anim.Play("Take", -1, normalizedTime);
     }
@@ -90,6 +128,23 @@ namespace WebXR.Interactions
 
     void SetControllerVisible(bool visible)
     {
+#if WEBXR_INPUT_PROFILES
+      loadedModel = false;
+      if (visible)
+      {
+        inputProfileModelParent.SetActive(true);
+        if (inputProfileModel != null)
+        {
+          loadedModel = true;
+          return;
+        }
+        LoadInputProfile();
+      }
+      else
+      {
+        inputProfileModelParent.SetActive(false);
+      }
+#endif
       foreach (var visual in controllerVisuals)
       {
         visual.SetActive(visible);
@@ -137,6 +192,92 @@ namespace WebXR.Interactions
         }
       }
     }
+
+#if WEBXR_INPUT_PROFILES
+    void HandleProfilesList(Dictionary<string, string> profilesList)
+    {
+      if (profilesList == null || profilesList.Count == 0)
+      {
+        return;
+      }
+      hasProfileList = true;
+    }
+
+    void LoadInputProfile()
+    {
+      var profiles = controller.GetProfiles();
+      Debug.LogError($"LoadInputProfile {hasProfileList} {profiles != null}");
+      if (hasProfileList && profiles != null && profiles.Length > 0)
+      {
+        for (int i = 0; i < profiles.Length; i++)
+        {
+          Debug.LogError(profiles[i]);
+        }
+        loadedProfile = profiles[0];
+        inputProfileLoader.LoadProfile(profiles, OnProfileLoaded);
+      }
+    }
+
+    private void OnProfileLoaded(bool success)
+    {
+      if (success)
+      {
+        LoadInputModel();
+      }
+    }
+
+    void LoadInputModel()
+    {
+      inputProfileModel = inputProfileLoader.LoadModelForHand(loadedProfile, (InputProfileLoader.Handedness)controller.hand, HandleModelLoaded);
+      if (inputProfileModel != null)
+      {
+        var inputProfileModelTransform = inputProfileModel.transform;
+        inputProfileModelTransform.SetParent(inputProfileModelParent.transform);
+        inputProfileModelTransform.localPosition = Vector3.zero;
+        inputProfileModelTransform.rotation = Quaternion.identity;
+        inputProfileModelTransform.localScale = Vector3.one;
+        UpdateModelInput();
+      }
+    }
+
+    void HandleModelLoaded(bool success)
+    {
+      loadedModel = success;
+      if (loadedModel)
+      {
+        foreach (var visual in controllerVisuals)
+        {
+          visual.SetActive(false);
+        }
+      }
+      else
+      {
+        Destroy(inputProfileModel.gameObject);
+      }
+    }
+
+    void UpdateModelInput()
+    {
+      for (int i = 0; i < 6; i++)
+      {
+        SetButtonValue(i);
+      }
+      for (int i = 0; i < 4; i++)
+      {
+        SetAxisValue(i);
+      }
+    }
+
+    void SetButtonValue(int index)
+    {
+      inputProfileModel.SetButtonValue(index, controller.GetButtonIndexValue(index));
+    }
+
+    public void SetAxisValue(int index)
+    {
+      inputProfileModel.SetAxisValue(index, controller.GetAxisIndexValue(index));
+    }
+#endif
 
     public void Pickup()
     {

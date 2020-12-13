@@ -122,7 +122,7 @@ namespace WebXR
 
         private void InternalStart()
         {
-            Native.set_webxr_events(OnStartAR, OnStartVR, OnEndXR, OnXRCapabilities);
+            Native.set_webxr_events(OnStartAR, OnStartVR, OnEndXR, OnXRCapabilities, OnInputProfiles);
             Native.InitControllersArray(controllersArray, controllersArray.Length);
             Native.InitHandsArray(handsArray, handsArray.Length);
             Native.InitViewerHitTestPoseArray(viewerHitTestPoseArray, viewerHitTestPoseArray.Length);
@@ -157,7 +157,8 @@ namespace WebXR
             public static extern void set_webxr_events(Action<int, float, float, float, float, float, float, float, float> on_start_ar,
                 Action<int, float, float, float, float, float, float, float, float> on_start_vr,
                 Action on_end_xr,
-                Action<string> on_xr_capabilities);
+                Action<string> on_xr_capabilities,
+                Action<string> on_input_profiles);
         }
 
         internal WebXRState xrState = WebXRState.NORMAL;
@@ -224,10 +225,23 @@ namespace WebXR
             Instance.OnXRCapabilities(capabilities);
         }
 
+        [MonoPInvokeCallback(typeof(Action<string>))]
+        public static void OnInputProfiles(string json)
+        {
+            WebXRControllersProfiles controllersProfiles = JsonUtility.FromJson<WebXRControllersProfiles>(json);
+            Instance.OnInputProfiles(controllersProfiles);
+        }
+
         public void OnXRCapabilities(WebXRDisplayCapabilities cap)
         {
             this.capabilities = cap;
             OnXRCapabilitiesUpdate?.Invoke(cap);
+        }
+
+        public void OnInputProfiles(WebXRControllersProfiles controllersProfiles)
+        {
+          controller1.profiles = controllersProfiles.conrtoller1;
+          controller2.profiles = controllersProfiles.conrtoller2;
         }
 
         public void setXrState(WebXRState state, int viewsCount, Rect leftRect, Rect rightRect)
