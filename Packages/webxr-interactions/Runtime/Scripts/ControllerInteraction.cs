@@ -234,7 +234,7 @@ namespace WebXR.Interactions
         var inputProfileModelTransform = inputProfileModel.transform;
         inputProfileModelTransform.SetParent(inputProfileModelParent.transform);
         inputProfileModelTransform.localPosition = Vector3.zero;
-        inputProfileModelTransform.rotation = Quaternion.identity;
+        inputProfileModelTransform.localRotation = Quaternion.identity;
         inputProfileModelTransform.localScale = Vector3.one;
         UpdateModelInput();
       }
