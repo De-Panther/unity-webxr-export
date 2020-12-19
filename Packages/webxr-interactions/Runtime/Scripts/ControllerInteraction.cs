@@ -227,6 +227,11 @@ namespace WebXR.Interactions
         return;
       }
       hasProfileList = true;
+
+      if (controllerVisible && useInputProfile)
+      {
+        SetControllerVisible(true);
+      }
     }
 
     private void LoadInputProfile()

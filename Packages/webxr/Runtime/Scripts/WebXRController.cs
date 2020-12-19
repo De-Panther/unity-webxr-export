@@ -494,7 +494,6 @@ namespace WebXR
             profileName += "-button";
           }
           profiles = new string[]{profileName};
-          Debug.LogError(profileName);
         }
         TryUpdateButtons();
         SetControllerActive(true);
