@@ -108,7 +108,7 @@ namespace WebXR.Interactions
       }
 
 #if WEBXR_INPUT_PROFILES
-      if (loadedModel)
+      if (loadedModel && useInputProfile)
       {
         UpdateModelInput();
         return;
