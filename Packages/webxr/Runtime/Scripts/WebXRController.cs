@@ -71,11 +71,22 @@ namespace WebXR
     private InputDeviceCharacteristics xrHand = InputDeviceCharacteristics.Controller;
     private InputDevice? inputDevice;
     private HapticCapabilities? hapticCapabilities;
+    private int buttonsFrameUpdate = -1;
+
+    private void Update()
+    {
+      TryUpdateButtons();
+    }
 #endif
 
-    public void TryUpdateButtons()
+    private void TryUpdateButtons()
     {
 #if UNITY_EDITOR
+      if (buttonsFrameUpdate == Time.frameCount)
+      {
+        return;
+      }
+      buttonsFrameUpdate = Time.frameCount;
       if (!WebXRManager.Instance.isSubsystemAvailable && inputDevice != null)
       {
         inputDevice.Value.TryGetFeatureValue(CommonUsages.trigger, out trigger);
@@ -151,6 +162,7 @@ namespace WebXR
 
     public float GetAxis(AxisTypes action)
     {
+      TryUpdateButtons();
       switch (action)
       {
         case AxisTypes.Grip:
@@ -163,6 +175,7 @@ namespace WebXR
 
     public Vector2 GetAxis2D(Axis2DTypes action)
     {
+      TryUpdateButtons();
       switch (action)
       {
         case Axis2DTypes.Thumbstick:
@@ -175,6 +188,7 @@ namespace WebXR
 
     public bool GetButton(ButtonTypes action)
     {
+      TryUpdateButtons();
       if (!buttonStates.ContainsKey(action))
       {
         return false;
@@ -209,6 +223,7 @@ namespace WebXR
 
     public bool GetButtonDown(ButtonTypes action)
     {
+      TryUpdateButtons();
       if (GetButton(action) && !GetPastButtonState(action))
       {
         SetPastButtonState(action, true);
@@ -219,6 +234,7 @@ namespace WebXR
 
     public bool GetButtonUp(ButtonTypes action)
     {
+      TryUpdateButtons();
       if (!GetButton(action) && GetPastButtonState(action))
       {
         SetPastButtonState(action, false);
@@ -229,6 +245,7 @@ namespace WebXR
 
     public float GetButtonIndexValue(int index)
     {
+      TryUpdateButtons();
       switch (index)
       {
         case 0:
@@ -249,6 +266,7 @@ namespace WebXR
 
     public float GetAxisIndexValue(int index)
     {
+      TryUpdateButtons();
       switch (index)
       {
         case 0:
