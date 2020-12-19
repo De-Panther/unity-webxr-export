@@ -52,14 +52,14 @@ namespace WebXR.Interactions
         {
           inputProfileLoader = inputProfileObject.AddComponent<InputProfileLoader>();
         }
-        if (InputProfileLoader.ProfilesPaths == null || InputProfileLoader.ProfilesPaths.Count == 0)
+        var profilesPaths = inputProfileLoader.GetProfilesPaths();
+        if (profilesPaths == null || profilesPaths.Count == 0)
         {
-
           inputProfileLoader.LoadProfilesList(HandleProfilesList);
         }
         else
         {
-          HandleProfilesList(InputProfileLoader.ProfilesPaths);
+          HandleProfilesList(profilesPaths);
         }
       }
 #endif
@@ -169,6 +169,10 @@ namespace WebXR.Interactions
       {
         visual.SetActive(visible);
       }
+      if (!visible)
+      {
+        contactRigidBodies.Clear();
+      }
     }
 
     private void SetHandJointsVisible(bool visible)
@@ -178,6 +182,10 @@ namespace WebXR.Interactions
       foreach (var visual in handJointsVisuals)
       {
         visual?.SetActive(visible);
+      }
+      if (!visible)
+      {
+        contactRigidBodies.Clear();
       }
     }
 
@@ -280,6 +288,7 @@ namespace WebXR.Interactions
         inputProfileModelTransform.localScale = Vector3.one;
         if (controllerVisible)
         {
+          contactRigidBodies.Clear();
           inputProfileModelParent.SetActive(true);
           foreach (var visual in controllerVisuals)
           {
