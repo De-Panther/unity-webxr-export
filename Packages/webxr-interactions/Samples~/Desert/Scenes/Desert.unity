@@ -1121,12 +1121,12 @@ GameObject:
   - component: {fileID: 660207691}
   - component: {fileID: 660207690}
   m_Layer: 0
-  m_Name: Cube
+  m_Name: TransparentCube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967294
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!23 &660207690
 MeshRenderer:
   m_ObjectHideFlags: 0
