@@ -12,12 +12,18 @@ namespace WebXR.Interactions
     private Rigidbody currentRigidBody = null;
     private List<Rigidbody> contactRigidBodies = new List<Rigidbody>();
 
-    private Animator anim;
+    [SerializeField] private Animator animator = null;
+    [SerializeField] private string animationStateName = "Take";
     private WebXRController controller;
+    private bool hasAnimator = false;
+    private bool controllerVisible = false;
 
     public GameObject[] controllerVisuals;
 
     public Transform handJointPrefab;
+    private bool handJointsVisible = false;
+
+    public bool useInputProfile = true;
 
     public GameObject inputProfileObject;
     public GameObject inputProfileModelParent;
@@ -36,10 +42,9 @@ namespace WebXR.Interactions
     void Awake()
     {
       attachJoint = GetComponent<FixedJoint>();
-      anim = gameObject.GetComponent<Animator>();
+      hasAnimator = animator != null;
       controller = gameObject.GetComponent<WebXRController>();
 #if WEBXR_INPUT_PROFILES
-      Debug.LogError("WEBXR_INPUT_PROFILES");
       if (inputProfileObject != null)
       {
         inputProfileLoader = inputProfileObject.GetComponent<InputProfileLoader>();
@@ -58,6 +63,8 @@ namespace WebXR.Interactions
         }
       }
 #endif
+      SetControllerVisible(false);
+      SetHandJointsVisible(false);
     }
 
     void OnEnable()
@@ -76,7 +83,10 @@ namespace WebXR.Interactions
 
     void Update()
     {
-      controller.TryUpdateButtons();
+      if (!controllerVisible && !handJointsVisible)
+      {
+        return;
+      }
 
       // Get button A(0 or 1), or Axis Trigger/Grip (0 to 1), the larger between them all, by that order
       float normalizedTime = controller.GetButton(WebXRController.ButtonTypes.ButtonA) ? 1 :
@@ -106,7 +116,10 @@ namespace WebXR.Interactions
 #endif
 
       // Use the controller button or axis position to manipulate the playback time for hand model.
-      anim.Play("Take", -1, normalizedTime);
+      if (hasAnimator)
+      {
+        animator.Play(animationStateName, -1, normalizedTime);
+      }
     }
 
     void OnTriggerEnter(Collider other)
@@ -128,13 +141,14 @@ namespace WebXR.Interactions
 
     void SetControllerVisible(bool visible)
     {
+      controllerVisible = visible;
+      Drop();
 #if WEBXR_INPUT_PROFILES
-      loadedModel = false;
-      if (visible)
+      if (visible && useInputProfile)
       {
-        inputProfileModelParent.SetActive(true);
         if (inputProfileModel != null)
         {
+          inputProfileModelParent.SetActive(true);
           loadedModel = true;
           return;
         }
@@ -153,6 +167,8 @@ namespace WebXR.Interactions
 
     void SetHandJointsVisible(bool visible)
     {
+      handJointsVisible = visible;
+      Drop();
       foreach (var visual in handJointsVisuals)
       {
         visual?.SetActive(visible);
@@ -161,6 +177,10 @@ namespace WebXR.Interactions
 
     private void OnHandUpdate(WebXRHandData handData)
     {
+      if (handJointPrefab == null)
+      {
+        return;
+      }
       Quaternion rotationOffset = Quaternion.Inverse(handData.joints[0].rotation);
 
       for (int i = 0; i <= WebXRHandData.LITTLE_PHALANX_TIP; i++)
@@ -206,13 +226,8 @@ namespace WebXR.Interactions
     void LoadInputProfile()
     {
       var profiles = controller.GetProfiles();
-      Debug.LogError($"LoadInputProfile {hasProfileList} {profiles != null}");
       if (hasProfileList && profiles != null && profiles.Length > 0)
       {
-        for (int i = 0; i < profiles.Length; i++)
-        {
-          Debug.LogError(profiles[i]);
-        }
         loadedProfile = profiles[0];
         inputProfileLoader.LoadProfile(profiles, OnProfileLoaded);
       }
@@ -231,11 +246,6 @@ namespace WebXR.Interactions
       inputProfileModel = inputProfileLoader.LoadModelForHand(loadedProfile, (InputProfileLoader.Handedness)controller.hand, HandleModelLoaded);
       if (inputProfileModel != null)
       {
-        var inputProfileModelTransform = inputProfileModel.transform;
-        inputProfileModelTransform.SetParent(inputProfileModelParent.transform);
-        inputProfileModelTransform.localPosition = Vector3.zero;
-        inputProfileModelTransform.localRotation = Quaternion.identity;
-        inputProfileModelTransform.localScale = Vector3.one;
         UpdateModelInput();
       }
     }
@@ -245,9 +255,18 @@ namespace WebXR.Interactions
       loadedModel = success;
       if (loadedModel)
       {
-        foreach (var visual in controllerVisuals)
+        var inputProfileModelTransform = inputProfileModel.transform;
+        inputProfileModelTransform.SetParent(inputProfileModelParent.transform);
+        inputProfileModelTransform.localPosition = Vector3.zero;
+        inputProfileModelTransform.localRotation = Quaternion.identity;
+        inputProfileModelTransform.localScale = Vector3.one;
+        if (controllerVisible)
         {
-          visual.SetActive(false);
+          inputProfileModelParent.SetActive(true);
+          foreach (var visual in controllerVisuals)
+          {
+            visual.SetActive(false);
+          }
         }
       }
       else
