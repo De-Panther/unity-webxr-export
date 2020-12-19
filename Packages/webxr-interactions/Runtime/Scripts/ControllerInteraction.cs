@@ -39,7 +39,7 @@ namespace WebXR.Interactions
     private string loadedProfile = null;
 #endif
 
-    void Awake()
+    private void Awake()
     {
       attachJoint = GetComponent<FixedJoint>();
       hasAnimator = animator != null;
@@ -67,21 +67,21 @@ namespace WebXR.Interactions
       SetHandJointsVisible(false);
     }
 
-    void OnEnable()
+    private void OnEnable()
     {
       controller.OnControllerActive += SetControllerVisible;
       controller.OnHandActive += SetHandJointsVisible;
       controller.OnHandUpdate += OnHandUpdate;
     }
 
-    void OnDisabled()
+    private void OnDisabled()
     {
       controller.OnControllerActive -= SetControllerVisible;
       controller.OnHandActive -= SetHandJointsVisible;
       controller.OnHandUpdate -= OnHandUpdate;
     }
 
-    void Update()
+    private void Update()
     {
       if (!controllerVisible && !handJointsVisible)
       {
@@ -122,7 +122,7 @@ namespace WebXR.Interactions
       }
     }
 
-    void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
       if (other.gameObject.tag != "Interactable")
         return;
@@ -131,7 +131,7 @@ namespace WebXR.Interactions
       controller.Pulse(0.5f, 250);
     }
 
-    void OnTriggerExit(Collider other)
+    private void OnTriggerExit(Collider other)
     {
       if (other.gameObject.tag != "Interactable")
         return;
@@ -139,20 +139,26 @@ namespace WebXR.Interactions
       contactRigidBodies.Remove(other.gameObject.GetComponent<Rigidbody>());
     }
 
-    void SetControllerVisible(bool visible)
+    private void SetControllerVisible(bool visible)
     {
       controllerVisible = visible;
       Drop();
 #if WEBXR_INPUT_PROFILES
+      // We want to use WebXR Input Profiles
       if (visible && useInputProfile)
       {
-        if (inputProfileModel != null)
+        if (inputProfileModel != null && loadedModel)
         {
+          // There's a loaded Input Profile Model
           inputProfileModelParent.SetActive(true);
-          loadedModel = true;
+          UpdateModelInput();
           return;
         }
-        LoadInputProfile();
+        else if (inputProfileModel == null)
+        {
+          // There's no loaded Input Profile Model and it's not in loading process
+          LoadInputProfile();
+        }
       }
       else
       {
@@ -165,7 +171,7 @@ namespace WebXR.Interactions
       }
     }
 
-    void SetHandJointsVisible(bool visible)
+    private void SetHandJointsVisible(bool visible)
     {
       handJointsVisible = visible;
       Drop();
@@ -214,7 +220,7 @@ namespace WebXR.Interactions
     }
 
 #if WEBXR_INPUT_PROFILES
-    void HandleProfilesList(Dictionary<string, string> profilesList)
+    private void HandleProfilesList(Dictionary<string, string> profilesList)
     {
       if (profilesList == null || profilesList.Count == 0)
       {
@@ -223,8 +229,9 @@ namespace WebXR.Interactions
       hasProfileList = true;
     }
 
-    void LoadInputProfile()
+    private void LoadInputProfile()
     {
+      // Start loading possible profiles for the controller
       var profiles = controller.GetProfiles();
       if (hasProfileList && profiles != null && profiles.Length > 0)
       {
@@ -239,22 +246,28 @@ namespace WebXR.Interactions
       {
         LoadInputModel();
       }
+      // Nothing to do if profile didn't load
     }
 
-    void LoadInputModel()
+    private void LoadInputModel()
     {
-      inputProfileModel = inputProfileLoader.LoadModelForHand(loadedProfile, (InputProfileLoader.Handedness)controller.hand, HandleModelLoaded);
+      inputProfileModel = inputProfileLoader.LoadModelForHand(
+                          loadedProfile,
+                          (InputProfileLoader.Handedness)controller.hand,
+                          HandleModelLoaded);
       if (inputProfileModel != null)
       {
+        // Update input state while still loading the model
         UpdateModelInput();
       }
     }
 
-    void HandleModelLoaded(bool success)
+    private void HandleModelLoaded(bool success)
     {
       loadedModel = success;
       if (loadedModel)
       {
+        // Set parent only after successful loading, to not interupt loading in case of disabled object
         var inputProfileModelTransform = inputProfileModel.transform;
         inputProfileModelTransform.SetParent(inputProfileModelParent.transform);
         inputProfileModelTransform.localPosition = Vector3.zero;
@@ -275,7 +288,7 @@ namespace WebXR.Interactions
       }
     }
 
-    void UpdateModelInput()
+    private void UpdateModelInput()
     {
       for (int i = 0; i < 6; i++)
       {
@@ -287,12 +300,12 @@ namespace WebXR.Interactions
       }
     }
 
-    void SetButtonValue(int index)
+    private void SetButtonValue(int index)
     {
       inputProfileModel.SetButtonValue(index, controller.GetButtonIndexValue(index));
     }
 
-    public void SetAxisValue(int index)
+    private void SetAxisValue(int index)
     {
       inputProfileModel.SetAxisValue(index, controller.GetAxisIndexValue(index));
     }

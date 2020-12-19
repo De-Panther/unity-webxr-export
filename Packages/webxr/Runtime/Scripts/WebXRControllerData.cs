@@ -84,7 +84,11 @@ namespace WebXR
     public Quaternion rotation;
   }
 
-  public enum WebXRControllerHand { NONE, LEFT, RIGHT };
+  public enum WebXRControllerHand {
+    NONE = 0,
+    LEFT = 1,
+    RIGHT = 2
+  }
 
   [System.Serializable]
   public class WebXRControllerButton
