@@ -139,6 +139,11 @@ namespace WebXR.Interactions
       contactRigidBodies.Remove(other.gameObject.GetComponent<Rigidbody>());
     }
 
+    public void SetUseInputProfile(bool value)
+    {
+      useInputProfile = value;
+    }
+
     private void SetControllerVisible(bool visible)
     {
       controllerVisible = visible;
