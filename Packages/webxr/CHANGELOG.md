@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - WebXRController no longer instantiate hand joints.
+- Better handling for controllers buttons in the editor.
+- WebXRController TryUpdateButtons is now private.
 
 ## [0.4.1] - 2020-11-28
 ### Added
