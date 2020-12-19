@@ -8,9 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Docs page.
 - WebXR Input Profiles Loader support.
+- UI to toggle WebXR Input Profiles Loader in the sample scene.
 
 ### Changed
 - ControllerInteraction handles hand joints.
+- Disabled the transparent cube in the sample scene. (It's still there for tests)
+
+### Fixed
+- Working default WebXRCameraSet prefab.
 
 ## [0.4.2] - 2020-11-28
 ### Changed
