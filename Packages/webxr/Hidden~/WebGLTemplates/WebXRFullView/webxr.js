@@ -265,6 +265,11 @@
     this.xrData.handLeft.enabled = 0;
     this.xrData.handRight.enabled = 0;
 
+    this.xrData.controllerA.frame = -1;
+    this.xrData.controllerB.frame = -1;
+    this.xrData.handLeft.frame = -1;
+    this.xrData.handRight.frame = -1;
+
     document.dispatchEvent(new CustomEvent('XRControllersData', { detail: {
       controllerA: this.xrData.controllerA,
       controllerB: this.xrData.controllerB
