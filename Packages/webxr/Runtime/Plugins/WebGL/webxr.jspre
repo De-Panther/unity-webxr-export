@@ -59,3 +59,8 @@ Module['WebXR'].OnXRCapabilities = function (display_capabilities) {
   this.OnXRCapabilitiesInternal = this.OnXRCapabilitiesInternal || Module.cwrap("on_xr_capabilities", null, ["string"]);
   this.OnXRCapabilitiesInternal(display_capabilities);
 }
+
+Module['WebXR'].OnInputProfiles = function (input_profiles) {
+  this.OnInputProfilesInternal = this.OnInputProfilesInternal || Module.cwrap("on_input_profiles", null, ["string"]);
+  this.OnInputProfilesInternal(input_profiles);
+}

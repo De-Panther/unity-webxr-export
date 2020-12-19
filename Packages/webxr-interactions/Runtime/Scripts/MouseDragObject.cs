@@ -5,38 +5,38 @@ namespace WebXR.Interactions
   [RequireComponent(typeof(Rigidbody))]
   public class MouseDragObject : MonoBehaviour
   {
-    private Camera currentCamera;
-    private new Rigidbody rigidbody;
-    private Vector3 screenPoint;
-    private Vector3 offset;
+    private Camera m_currentCamera;
+    private Rigidbody m_rigidbody;
+    private Vector3 m_screenPoint;
+    private Vector3 m_offset;
 
     void Awake()
     {
-      rigidbody = GetComponent<Rigidbody>();
+      m_rigidbody = GetComponent<Rigidbody>();
     }
 
     void OnMouseDown()
     {
-      currentCamera = FindCamera();
-      if (currentCamera != null)
+      m_currentCamera = FindCamera();
+      if (m_currentCamera != null)
       {
-        screenPoint = currentCamera.WorldToScreenPoint(gameObject.transform.position);
-        offset = gameObject.transform.position - currentCamera.ScreenToWorldPoint(GetMousePosWithScreenZ(screenPoint.z));
+        m_screenPoint = m_currentCamera.WorldToScreenPoint(gameObject.transform.position);
+        m_offset = gameObject.transform.position - m_currentCamera.ScreenToWorldPoint(GetMousePosWithScreenZ(m_screenPoint.z));
       }
     }
 
     void OnMouseUp()
     {
-      currentCamera = null;
+      m_currentCamera = null;
     }
 
     void FixedUpdate()
     {
-      if (currentCamera != null)
+      if (m_currentCamera != null)
       {
-        Vector3 currentScreenPoint = GetMousePosWithScreenZ(screenPoint.z);
-        rigidbody.velocity = Vector3.zero;
-        rigidbody.MovePosition(currentCamera.ScreenToWorldPoint(currentScreenPoint) + offset);
+        Vector3 currentScreenPoint = GetMousePosWithScreenZ(m_screenPoint.z);
+        m_rigidbody.velocity = Vector3.zero;
+        m_rigidbody.MovePosition(m_currentCamera.ScreenToWorldPoint(currentScreenPoint) + m_offset);
       }
     }
 

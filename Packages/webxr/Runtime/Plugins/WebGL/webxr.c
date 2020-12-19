@@ -10,17 +10,20 @@ webxr_void_int_float4_float4 on_start_ar_ref;
 webxr_void_int_float4_float4 on_start_vr_ref;
 webxr_void on_end_xr_ref;
 webxr_void_string on_xr_capabilities_ref;
+webxr_void_string on_input_profiles_ref;
 
 void set_webxr_events(
   webxr_void_int_float4_float4 _on_start_ar,
   webxr_void_int_float4_float4 _on_start_vr,
   webxr_void _on_end_xr,
-  webxr_void_string _on_xr_capabilities
+  webxr_void_string _on_xr_capabilities,
+  webxr_void_string _on_input_profiles
 ) {
   on_start_ar_ref = _on_start_ar;
   on_start_vr_ref = _on_start_vr;
   on_end_xr_ref = _on_end_xr;
   on_xr_capabilities_ref = _on_xr_capabilities;
+  on_input_profiles_ref = _on_input_profiles;
 }
 
 void EMSCRIPTEN_KEEPALIVE on_start_ar(int views_count,
@@ -50,4 +53,9 @@ void EMSCRIPTEN_KEEPALIVE on_end_xr()
 void EMSCRIPTEN_KEEPALIVE on_xr_capabilities(const char *display_capabilities)
 {
   on_xr_capabilities_ref(display_capabilities);
+}
+
+void EMSCRIPTEN_KEEPALIVE on_input_profiles(const char *input_profiles)
+{
+  on_input_profiles_ref(input_profiles);
 }

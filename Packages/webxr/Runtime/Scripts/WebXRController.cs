@@ -32,6 +32,10 @@ namespace WebXR
       Touchpad // secondary2DAxis
     }
 
+    public Action<bool> OnControllerActive;
+    public Action<bool> OnHandActive;
+    public Action<WebXRHandData> OnHandUpdate;
+
     [Tooltip("Controller hand to use.")]
     public WebXRControllerHand hand = WebXRControllerHand.NONE;
     [Tooltip("Simulate 3dof controller")]
@@ -40,11 +44,6 @@ namespace WebXR
     public Vector3 eyesToElbow = new Vector3(0.1f, -0.4f, 0.15f);
     [Tooltip("Vector from elbow to hand")]
     public Vector3 elbowHand = new Vector3(0, 0, 0.25f);
-
-    public Transform handJointPrefab;
-
-
-    public GameObject[] showGOs;
 
     private Matrix4x4 sitStand;
 
@@ -63,18 +62,31 @@ namespace WebXR
     private Vector3 headPosition;
     private Dictionary<ButtonTypes, WebXRControllerButton> buttonStates = new Dictionary<ButtonTypes, WebXRControllerButton>();
 
-    private Dictionary<int, Transform> handJoints = new Dictionary<int, Transform>();
-    private bool handJointsVisible = false;
+    private bool controllerActive = false;
+    private bool handActive = false;
+
+    private string[] profiles = null;
 
 #if UNITY_EDITOR
     private InputDeviceCharacteristics xrHand = InputDeviceCharacteristics.Controller;
     private InputDevice? inputDevice;
     private HapticCapabilities? hapticCapabilities;
+    private int buttonsFrameUpdate = -1;
+
+    private void Update()
+    {
+      TryUpdateButtons();
+    }
 #endif
 
-    public void TryUpdateButtons()
+    private void TryUpdateButtons()
     {
 #if UNITY_EDITOR
+      if (buttonsFrameUpdate == Time.frameCount)
+      {
+        return;
+      }
+      buttonsFrameUpdate = Time.frameCount;
       if (!WebXRManager.Instance.isSubsystemAvailable && inputDevice != null)
       {
         inputDevice.Value.TryGetFeatureValue(CommonUsages.trigger, out trigger);
@@ -150,6 +162,7 @@ namespace WebXR
 
     public float GetAxis(AxisTypes action)
     {
+      TryUpdateButtons();
       switch (action)
       {
         case AxisTypes.Grip:
@@ -162,6 +175,7 @@ namespace WebXR
 
     public Vector2 GetAxis2D(Axis2DTypes action)
     {
+      TryUpdateButtons();
       switch (action)
       {
         case Axis2DTypes.Thumbstick:
@@ -174,6 +188,7 @@ namespace WebXR
 
     public bool GetButton(ButtonTypes action)
     {
+      TryUpdateButtons();
       if (!buttonStates.ContainsKey(action))
       {
         return false;
@@ -208,6 +223,7 @@ namespace WebXR
 
     public bool GetButtonDown(ButtonTypes action)
     {
+      TryUpdateButtons();
       if (GetButton(action) && !GetPastButtonState(action))
       {
         SetPastButtonState(action, true);
@@ -218,6 +234,7 @@ namespace WebXR
 
     public bool GetButtonUp(ButtonTypes action)
     {
+      TryUpdateButtons();
       if (!GetButton(action) && GetPastButtonState(action))
       {
         SetPastButtonState(action, false);
@@ -226,7 +243,50 @@ namespace WebXR
       return false;
     }
 
-    private void onHeadsetUpdate(Matrix4x4 leftProjectionMatrix,
+    public float GetButtonIndexValue(int index)
+    {
+      TryUpdateButtons();
+      switch (index)
+      {
+        case 0:
+          return trigger;
+        case 1:
+          return squeeze;
+        case 2:
+          return touchpad;
+        case 3:
+          return thumbstick;
+        case 4:
+          return buttonA;
+        case 5:
+          return buttonB;
+      }
+      return 0;
+    }
+
+    public float GetAxisIndexValue(int index)
+    {
+      TryUpdateButtons();
+      switch (index)
+      {
+        case 0:
+          return touchpadX;
+        case 1:
+          return touchpadY;
+        case 2:
+          return thumbstickX;
+        case 3:
+          return thumbstickY;
+      }
+      return 0;
+    }
+
+    public string[] GetProfiles()
+    {
+      return profiles;
+    }
+
+    private void OnHeadsetUpdate(Matrix4x4 leftProjectionMatrix,
         Matrix4x4 rightProjectionMatrix,
         Matrix4x4 leftViewMatrix,
         Matrix4x4 rightViewMatrix,
@@ -244,10 +304,11 @@ namespace WebXR
       {
         if (!controllerData.enabled)
         {
-          SetVisible(false);
+          SetControllerActive(false);
           return;
         }
-        SetVisible(true);
+
+        profiles = controllerData.profiles;
 
         transform.localRotation = controllerData.rotation;
         transform.localPosition = controllerData.position;
@@ -271,53 +332,27 @@ namespace WebXR
         buttons[(int)ButtonTypes.ButtonA] = new WebXRControllerButton(buttonA == 1, buttonA);
         buttons[(int)ButtonTypes.ButtonB] = new WebXRControllerButton(buttonB == 1, buttonB);
         UpdateButtons(buttons);
+
+        SetControllerActive(true);
       }
     }
 
-    private void OnHandUpdate(WebXRHandData handData)
+    private void OnHandUpdateInternal(WebXRHandData handData)
     {
       if (handData.hand == (int)hand)
       {
         if (!handData.enabled)
         {
-          SetHandJointsVisible(false);
+          SetHandActive(false);
           return;
         }
-        SetVisible(false);
-        SetHandJointsVisible(true);
+        SetControllerActive(false);
+        SetHandActive(true);
 
         transform.localPosition = handData.joints[0].position;
         transform.localRotation = handData.joints[0].rotation;
 
         Quaternion rotationOffset = Quaternion.Inverse(handData.joints[0].rotation);
-
-        for (int i = 0; i <= WebXRHandData.LITTLE_PHALANX_TIP; i++)
-        {
-          if (handData.joints[i].enabled)
-          {
-            if (handJoints.ContainsKey(i))
-            {
-              handJoints[i].localPosition = rotationOffset * (handData.joints[i].position - handData.joints[0].position);
-              handJoints[i].localRotation = rotationOffset * handData.joints[i].rotation;
-            }
-            else
-            {
-              var clone = Instantiate(handJointPrefab,
-                                      rotationOffset * (handData.joints[i].position - handData.joints[0].position),
-                                      rotationOffset * handData.joints[i].rotation,
-                                      transform);
-              if (handData.joints[i].radius > 0f)
-              {
-                clone.localScale = new Vector3(handData.joints[i].radius, handData.joints[i].radius, handData.joints[i].radius);
-              }
-              else
-              {
-                clone.localScale = new Vector3(0.005f, 0.005f, 0.005f);
-              }
-              handJoints.Add(i, clone);
-            }
-          }
-        }
 
         trigger = handData.trigger;
         squeeze = handData.squeeze;
@@ -326,62 +361,43 @@ namespace WebXR
         buttons[(int)ButtonTypes.Trigger] = new WebXRControllerButton(trigger == 1, trigger);
         buttons[(int)ButtonTypes.Grip] = new WebXRControllerButton(squeeze == 1, squeeze);
         UpdateButtons(buttons);
+
+        OnHandUpdate?.Invoke(handData);
       }
     }
 
-    private WebXRControllerHand handFromString(string handValue)
+    private void SetControllerActive(bool active)
     {
-      WebXRControllerHand handParsed = WebXRControllerHand.NONE;
-
-      if (!String.IsNullOrEmpty(handValue))
+      if (controllerActive != active)
       {
-        try
-        {
-          handParsed = (WebXRControllerHand)Enum.Parse(typeof(WebXRControllerHand), handValue.ToUpper(), true);
-        }
-        catch
-        {
-          Debug.LogError("Unrecognized controller Hand '" + handValue + "'!");
-        }
-      }
-      return handParsed;
-    }
-
-    private void SetVisible(bool visible)
-    {
-      foreach (var showGO in showGOs)
-      {
-        showGO.SetActive(visible);
+        controllerActive = active;
+        OnControllerActive?.Invoke(controllerActive);
       }
     }
 
-    private void SetHandJointsVisible(bool visible)
+    private void SetHandActive(bool active)
     {
-      if (handJointsVisible == visible)
+      if (handActive == active)
       {
         return;
       }
-      handJointsVisible = visible;
-      foreach (var handJoint in handJoints)
-      {
-        handJoint.Value.gameObject.SetActive(visible);
-      }
+      handActive = active;
+      OnHandActive?.Invoke(handActive);
     }
 
     // intensity 0 to 1, duration milliseconds
-    public void Pulse(float intensity, float duration)
+    public void Pulse(float intensity, float durationMilliseconds)
     {
       if (WebXRManager.Instance.isSubsystemAvailable)
       {
-        WebXRManager.Instance.HapticPulse(hand, intensity, duration);
+        WebXRManager.Instance.HapticPulse(hand, intensity, durationMilliseconds);
       }
 #if UNITY_EDITOR
       else if (inputDevice != null && hapticCapabilities != null
                && hapticCapabilities.Value.supportsImpulse)
       {
         // duration in seconds
-        duration = duration * 0.001f;
-        inputDevice.Value.SendHapticImpulse(0, intensity, duration);
+        inputDevice.Value.SendHapticImpulse(0, intensity, durationMilliseconds * 0.001f);
       }
 #endif
     }
@@ -389,9 +405,10 @@ namespace WebXR
     void OnEnable()
     {
       WebXRManager.OnControllerUpdate += OnControllerUpdate;
-      WebXRManager.OnHandUpdate += OnHandUpdate;
-      WebXRManager.OnHeadsetUpdate += onHeadsetUpdate;
-      SetVisible(false);
+      WebXRManager.OnHandUpdate += OnHandUpdateInternal;
+      WebXRManager.OnHeadsetUpdate += OnHeadsetUpdate;
+      SetControllerActive(false);
+      SetHandActive(false);
 #if UNITY_EDITOR
       switch (hand)
       {
@@ -418,9 +435,10 @@ namespace WebXR
     void OnDisabled()
     {
       WebXRManager.OnControllerUpdate -= OnControllerUpdate;
-      WebXRManager.OnHandUpdate -= OnHandUpdate;
-      WebXRManager.OnHeadsetUpdate -= onHeadsetUpdate;
-      SetVisible(false);
+      WebXRManager.OnHandUpdate -= OnHandUpdateInternal;
+      WebXRManager.OnHeadsetUpdate -= OnHeadsetUpdate;
+      SetControllerActive(false);
+      SetHandActive(false);
 #if UNITY_EDITOR
       InputDevices.deviceConnected -= HandleInputDevicesConnected;
       InputDevices.deviceDisconnected -= HandleInputDevicesDisconnected;
@@ -439,7 +457,46 @@ namespace WebXR
         {
           hapticCapabilities = capabilities;
         }
-        SetVisible(true);
+        profiles = null;
+        // TODO: Find a better way to get device profile
+        if (device.manufacturer == "Oculus")
+        {
+          profiles = new string[]{"oculus-touch-v2"};
+        }
+        else
+        {
+          string profileName = "generic";
+          bool addedFeatures = false;
+          float tempFloat = 0;
+          Vector2 tempVec2 = Vector2.zero;
+          if (device.TryGetFeatureValue(CommonUsages.trigger, out tempFloat))
+          {
+            profileName += "-trigger";
+            addedFeatures = true;
+          }
+          if (device.TryGetFeatureValue(CommonUsages.grip, out tempFloat))
+          {
+            profileName += "-squeeze";
+            addedFeatures = true;
+          }
+          if (device.TryGetFeatureValue(CommonUsages.secondary2DAxis, out tempVec2))
+          {
+            profileName += "-touchpad";
+            addedFeatures = true;
+          }
+          if (device.TryGetFeatureValue(CommonUsages.primary2DAxis, out tempVec2))
+          {
+            profileName += "-thumbstick";
+            addedFeatures = true;
+          }
+          if (!addedFeatures)
+          {
+            profileName += "-button";
+          }
+          profiles = new string[]{profileName};
+        }
+        TryUpdateButtons();
+        SetControllerActive(true);
       }
     }
 
@@ -449,7 +506,7 @@ namespace WebXR
       {
         inputDevice = null;
         hapticCapabilities = null;
-        SetVisible(false);
+        SetControllerActive(false);
       }
     }
 #endif
