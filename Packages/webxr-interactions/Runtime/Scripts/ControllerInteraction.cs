@@ -23,7 +23,7 @@ namespace WebXR.Interactions
     public Transform handJointPrefab;
     private bool handJointsVisible = false;
 
-    public bool useInputProfile = true;
+    [SerializeField] private bool useInputProfile = true;
 
     public GameObject inputProfileObject;
     public GameObject inputProfileModelParent;
@@ -142,6 +142,11 @@ namespace WebXR.Interactions
     public void SetUseInputProfile(bool value)
     {
       useInputProfile = value;
+    }
+
+    public bool GetUseInputProfile()
+    {
+      return useInputProfile;
     }
 
     private void SetControllerVisible(bool visible)
