@@ -196,51 +196,34 @@ namespace WebXR
       return buttonStates[action].pressed;
     }
 
-    private bool GetPastButtonState(ButtonTypes action)
-    {
-      if (!buttonStates.ContainsKey(action))
-        return false;
-      return buttonStates[action].prevPressedState;
-    }
-
     private void SetButtonState(ButtonTypes action, bool isPressed, float value)
     {
       if (buttonStates.ContainsKey(action))
       {
-        buttonStates[action].pressed = isPressed;
-        buttonStates[action].value = value;
+        buttonStates[action].UpdateState(isPressed, value);
       }
       else
         buttonStates.Add(action, new WebXRControllerButton(isPressed, value));
     }
 
-    private void SetPastButtonState(ButtonTypes action, bool isPressed)
-    {
-      if (!buttonStates.ContainsKey(action))
-        return;
-      buttonStates[action].prevPressedState = isPressed;
-    }
-
     public bool GetButtonDown(ButtonTypes action)
     {
       TryUpdateButtons();
-      if (GetButton(action) && !GetPastButtonState(action))
+      if (!buttonStates.ContainsKey(action))
       {
-        SetPastButtonState(action, true);
-        return true;
+        return false;
       }
-      return false;
+      return buttonStates[action].down;
     }
 
     public bool GetButtonUp(ButtonTypes action)
     {
       TryUpdateButtons();
-      if (!GetButton(action) && GetPastButtonState(action))
+      if (!buttonStates.ContainsKey(action))
       {
-        SetPastButtonState(action, false);
-        return true;
+        return false;
       }
-      return false;
+      return buttonStates[action].up;
     }
 
     public float GetButtonIndexValue(int index)

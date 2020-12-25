@@ -84,7 +84,8 @@ namespace WebXR
     public Quaternion rotation;
   }
 
-  public enum WebXRControllerHand {
+  public enum WebXRControllerHand
+  {
     NONE = 0,
     LEFT = 1,
     RIGHT = 2
@@ -94,14 +95,41 @@ namespace WebXR
   public class WebXRControllerButton
   {
     public bool pressed;
-    public bool prevPressedState;
-    public bool touched;
+    public bool down;
+    public bool up;
     public float value;
 
     public WebXRControllerButton(bool isPressed, float buttonValue)
     {
+      down = false;
+      up = false;
       pressed = isPressed;
-      prevPressedState = false;
+      value = buttonValue;
+    }
+
+    public void UpdateState(bool isPressed, float buttonValue)
+    {
+      if (isPressed && pressed) // nothing
+      {
+        down = false;
+        up = false;
+      }
+      else if (isPressed && !pressed) // up
+      {
+        down = true;
+        up = false;
+      }
+      else if (!isPressed && !pressed) // nothing
+      {
+        down = false;
+        up = false;
+      }
+      else if (!isPressed && pressed) // down
+      {
+        down = false;
+        up = true;
+      }
+      pressed = isPressed;
       value = buttonValue;
     }
   }
