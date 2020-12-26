@@ -1,5 +1,5 @@
 using UnityEngine;
-#if UNITY_EDITOR
+#if UNITY_EDITOR || !UNITY_WEBGL
 using UnityEngine.XR;
 #endif
 using System;
@@ -67,7 +67,7 @@ namespace WebXR
 
     private string[] profiles = null;
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR || !UNITY_WEBGL
     private InputDeviceCharacteristics xrHand = InputDeviceCharacteristics.Controller;
     private InputDevice? inputDevice;
     private HapticCapabilities? hapticCapabilities;
@@ -81,7 +81,7 @@ namespace WebXR
 
     private void TryUpdateButtons()
     {
-#if UNITY_EDITOR
+#if UNITY_EDITOR || !UNITY_WEBGL
       if (buttonsFrameUpdate == Time.frameCount)
       {
         return;
@@ -375,7 +375,7 @@ namespace WebXR
       {
         WebXRManager.Instance.HapticPulse(hand, intensity, durationMilliseconds);
       }
-#if UNITY_EDITOR
+#if UNITY_EDITOR || !UNITY_WEBGL
       else if (inputDevice != null && hapticCapabilities != null
                && hapticCapabilities.Value.supportsImpulse)
       {
@@ -392,7 +392,7 @@ namespace WebXR
       WebXRManager.OnHeadsetUpdate += OnHeadsetUpdate;
       SetControllerActive(false);
       SetHandActive(false);
-#if UNITY_EDITOR
+#if UNITY_EDITOR || !UNITY_WEBGL
       switch (hand)
       {
         case WebXRControllerHand.LEFT:
@@ -422,14 +422,14 @@ namespace WebXR
       WebXRManager.OnHeadsetUpdate -= OnHeadsetUpdate;
       SetControllerActive(false);
       SetHandActive(false);
-#if UNITY_EDITOR
+#if UNITY_EDITOR || !UNITY_WEBGL
       InputDevices.deviceConnected -= HandleInputDevicesConnected;
       InputDevices.deviceDisconnected -= HandleInputDevicesDisconnected;
       inputDevice = null;
 #endif
     }
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR || !UNITY_WEBGL
     private void HandleInputDevicesConnected(InputDevice device)
     {
       if (device.characteristics.HasFlag(xrHand))
