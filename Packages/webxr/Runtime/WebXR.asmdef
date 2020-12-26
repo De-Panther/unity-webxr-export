@@ -4,10 +4,7 @@
         "Unity.XR.Management",
         "Unity.Subsystem.Registration"
     ],
-    "includePlatforms": [
-        "Editor",
-        "WebGL"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,

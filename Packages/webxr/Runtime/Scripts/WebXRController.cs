@@ -1,5 +1,5 @@
 using UnityEngine;
-#if UNITY_EDITOR
+#if UNITY_EDITOR || !UNITY_WEBGL
 using UnityEngine.XR;
 #endif
 using System;
@@ -67,7 +67,7 @@ namespace WebXR
 
     private string[] profiles = null;
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR || !UNITY_WEBGL
     private InputDeviceCharacteristics xrHand = InputDeviceCharacteristics.Controller;
     private InputDevice? inputDevice;
     private HapticCapabilities? hapticCapabilities;
@@ -81,7 +81,7 @@ namespace WebXR
 
     private void TryUpdateButtons()
     {
-#if UNITY_EDITOR
+#if UNITY_EDITOR || !UNITY_WEBGL
       if (buttonsFrameUpdate == Time.frameCount)
       {
         return;
@@ -196,51 +196,34 @@ namespace WebXR
       return buttonStates[action].pressed;
     }
 
-    private bool GetPastButtonState(ButtonTypes action)
-    {
-      if (!buttonStates.ContainsKey(action))
-        return false;
-      return buttonStates[action].prevPressedState;
-    }
-
     private void SetButtonState(ButtonTypes action, bool isPressed, float value)
     {
       if (buttonStates.ContainsKey(action))
       {
-        buttonStates[action].pressed = isPressed;
-        buttonStates[action].value = value;
+        buttonStates[action].UpdateState(isPressed, value);
       }
       else
         buttonStates.Add(action, new WebXRControllerButton(isPressed, value));
     }
 
-    private void SetPastButtonState(ButtonTypes action, bool isPressed)
-    {
-      if (!buttonStates.ContainsKey(action))
-        return;
-      buttonStates[action].prevPressedState = isPressed;
-    }
-
     public bool GetButtonDown(ButtonTypes action)
     {
       TryUpdateButtons();
-      if (GetButton(action) && !GetPastButtonState(action))
+      if (!buttonStates.ContainsKey(action))
       {
-        SetPastButtonState(action, true);
-        return true;
+        return false;
       }
-      return false;
+      return buttonStates[action].down;
     }
 
     public bool GetButtonUp(ButtonTypes action)
     {
       TryUpdateButtons();
-      if (!GetButton(action) && GetPastButtonState(action))
+      if (!buttonStates.ContainsKey(action))
       {
-        SetPastButtonState(action, false);
-        return true;
+        return false;
       }
-      return false;
+      return buttonStates[action].up;
     }
 
     public float GetButtonIndexValue(int index)
@@ -392,7 +375,7 @@ namespace WebXR
       {
         WebXRManager.Instance.HapticPulse(hand, intensity, durationMilliseconds);
       }
-#if UNITY_EDITOR
+#if UNITY_EDITOR || !UNITY_WEBGL
       else if (inputDevice != null && hapticCapabilities != null
                && hapticCapabilities.Value.supportsImpulse)
       {
@@ -409,7 +392,7 @@ namespace WebXR
       WebXRManager.OnHeadsetUpdate += OnHeadsetUpdate;
       SetControllerActive(false);
       SetHandActive(false);
-#if UNITY_EDITOR
+#if UNITY_EDITOR || !UNITY_WEBGL
       switch (hand)
       {
         case WebXRControllerHand.LEFT:
@@ -439,14 +422,14 @@ namespace WebXR
       WebXRManager.OnHeadsetUpdate -= OnHeadsetUpdate;
       SetControllerActive(false);
       SetHandActive(false);
-#if UNITY_EDITOR
+#if UNITY_EDITOR || !UNITY_WEBGL
       InputDevices.deviceConnected -= HandleInputDevicesConnected;
       InputDevices.deviceDisconnected -= HandleInputDevicesDisconnected;
       inputDevice = null;
 #endif
     }
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR || !UNITY_WEBGL
     private void HandleInputDevicesConnected(InputDevice device)
     {
       if (device.characteristics.HasFlag(xrHand))
