@@ -415,7 +415,7 @@ namespace WebXR
 #endif
     }
 
-    void OnDisabled()
+    void OnDisable()
     {
       WebXRManager.OnControllerUpdate -= OnControllerUpdate;
       WebXRManager.OnHandUpdate -= OnHandUpdateInternal;
