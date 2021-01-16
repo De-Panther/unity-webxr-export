@@ -791,6 +791,7 @@
     this.ctx.bindFramebuffer(this.ctx.FRAMEBUFFER, glLayer.framebuffer);
     if (session.isAR) {
       this.ctx.dontClearOnFrameStart = true;
+      this.ctx.clear(this.ctx.STENCIL_BUFFER_BIT | this.ctx.DEPTH_BUFFER_BIT);
     } else {
       this.ctx.clear(this.ctx.COLOR_BUFFER_BIT | this.ctx.DEPTH_BUFFER_BIT);
     }
