@@ -14,8 +14,32 @@
     this.handRight = new XRHandData();
     this.viewerHitTestPose = new XRHitPoseData();
     this.frameNumber = 0;
-    this.handHeldMove = false;
-    this.xrData = null;
+    this.touchIDs = [];
+    this.touches = [];
+    this.CreateTouch = function (pageElement, xPercentage, yPercentage) {
+      let touchID = 0;
+      while (this.touchIDs.includes(touchID))
+      {
+        touchID++;
+      }
+      let touch = new XRTouch(touchID, pageElement, xPercentage, yPercentage);
+      this.touchIDs.push(touchID);
+      this.touches.push(touch);
+      return touch;
+    }
+    this.RemoveTouch = function (touch) {
+      touch.ended = true;
+      this.touchIDs = this.touchIDs.filter(function(item) {
+        return item !== touch.identifier
+      });
+      this.touches = this.touches.filter(function(item) {
+        return item !== touch
+      });
+    }
+    this.SendTouchEvent = function(JSEventsObject, eventID, eventName, target, changedTouches) {
+      let touchEvent = new XRTouchEvent(eventName, target, this.touches, this.touches, changedTouches);
+      JSEventsObject.eventHandlers[eventID].eventListenerFunc(touchEvent);
+    }
   }
   
   function XRControllerData() {
@@ -77,9 +101,10 @@
     return start + (end - start) * percentage;
   }
 
-  function XRMouseEvent(eventName, pageElement, xPercentage, yPercentage, buttonNumber) {
+  function XRTouch(touchID, pageElement, xPercentage, yPercentage) {
+    this.identifier = touchID;
+    this.ended = false;
     let rect = pageElement.getBoundingClientRect();
-    this.type = eventName;
     // It was pageElement.size / window.devicePixelRatio, but now we treat devicePixelRatio in XR session as 1
     this.clientX = lerp(rect.left, rect.left + pageElement.width / 1, xPercentage);
     this.clientY = lerp(rect.top, rect.top + pageElement.height / 1, yPercentage);
@@ -95,32 +120,45 @@
     this.screenY = this.clientY;
     this.movementX = 0; // diff between movements
     this.movementY = 0; // diff between movements
-    this.button = 0; // 0 none or main, 1 middle, 2 secondary
-    this.buttons = 0; // 0 none, 1 main, 4 middle, 2 secondary
-    switch (buttonNumber)
-    {
-      case -1:
-        this.button = 0;
-        this.buttons = 0;
-        break;
-      case 0:
-        this.button = 0;
-        this.buttons = 1;
-        break;
-      case 1:
-        this.button = 1;
-        this.buttons = 4;
-        break;
-      case 2:
-        this.button = 2;
-        this.buttons = 2;
-        break;
+    this.UpdateTouch = function (pageElement, xPercentage, yPercentage) {
+      let rect = pageElement.getBoundingClientRect();
+      let newClientX = lerp(rect.left, rect.left + pageElement.width / 1, xPercentage);
+      let newClientY = lerp(rect.top, rect.top + pageElement.height / 1, yPercentage);
+      this.movementX = newClientX-this.clientX;
+      this.movementY = newClientY-this.clientY;
+      this.clientX = newClientX;
+      this.clientY = newClientY;
+      this.layerX = this.clientX;
+      this.layerY = this.clientY;
+      this.offsetX = this.clientX;
+      this.offsetY = this.clientY;
+      this.pageX = this.clientX;
+      this.pageY = this.clientY;
+      this.x = this.clientX;
+      this.y = this.clientY;
+      this.screenX = this.clientX;
+      this.screenY = this.clientY;
     }
+    this.HasMovement = function () {
+      return (this.movementX != 0 || this.movementY != 0);
+    }
+    this.ResetMovement = function () {
+      this.movementX = 0;
+      this.movementY = 0;
+    }
+  }
+  
+  function XRTouchEvent(eventName, target, touches, targetTouchs, changedTouches) {
+    this.type = eventName;
+    this.target = target;
+    this.touches = touches;
+    this.targetTouches = targetTouchs;
+    this.changedTouches = changedTouches;
     this.ctrlKey = false;
     this.altKey = false;
     this.metaKey = false;
     this.shiftKey = false;
-    this.detail = 0;
+    this.preventDefault = function () {};
   }
 
   function XRManager() {
@@ -259,6 +297,8 @@
       this.viewerHitTestSource.cancel();
       this.viewerHitTestSource = null;
     }
+    
+    this.removeRemainingTouches();
 
     this.xrData.controllerA.enabled = 0;
     this.xrData.controllerB.enabled = 0;
@@ -293,6 +333,15 @@
       thisXRMananger.BrowserObject.resumeAsyncCallbacks();
       thisXRMananger.BrowserObject.mainLoop.resume();
     });
+  }
+  
+  XRManager.prototype.removeRemainingTouches = function () {
+    while (this.xrData.touches.length > 0)
+    {
+      let touch = this.xrData.touches[0];
+      this.xrData.RemoveTouch(touch);
+      this.xrData.SendTouchEvent(this.JSEventsObject, 8, "touchend", this.canvas, [touch]);
+    }
   }
   
   XRManager.prototype.onInputSourceEvent = function (xrInputSourceEvent) {
@@ -345,29 +394,27 @@
     } else {
       let xPercentage = 0.5;
       let yPercentage = 0.5;
-      if (xrInputSourceEvent.inputSource &&
-          xrInputSourceEvent.inputSource.gamepad &&
-          xrInputSourceEvent.inputSource.gamepad.axes) {
-        xPercentage = (xrInputSourceEvent.inputSource.gamepad.axes[0] + 1.0) * 0.5;
-        yPercentage = (xrInputSourceEvent.inputSource.gamepad.axes[1] + 1.0) * 0.5;
-      }
-      switch (xrInputSourceEvent.type) {
-        case "select": // mousemove 5
-          this.JSEventsObject.eventHandlers[5].eventListenerFunc(
-            new XRMouseEvent("mousemove", this.canvas, xPercentage, yPercentage, 0));
-          break;
-        case "selectstart": // mousedown 4
-          this.xrData.handHeldMove = true;
-          this.JSEventsObject.eventHandlers[5].eventListenerFunc(
-            new XRMouseEvent("mousemove", this.canvas, xPercentage, yPercentage, 0));
-            this.JSEventsObject.eventHandlers[4].eventListenerFunc(
-            new XRMouseEvent("mousedown", this.canvas, xPercentage, yPercentage, 0));
-          break;
-        case "selectend": // mouseup 3
-          this.xrData.handHeldMove = false;
-          this.JSEventsObject.eventHandlers[3].eventListenerFunc(
-            new XRMouseEvent("mouseup", this.canvas, xPercentage, yPercentage, 0));
-          break;
+      let inputSource = xrInputSourceEvent.inputSource;
+      if (inputSource) {
+        if (inputSource.gamepad &&
+            inputSource.gamepad.axes) {
+          xPercentage = (inputSource.gamepad.axes[0] + 1.0) * 0.5;
+          yPercentage = (inputSource.gamepad.axes[1] + 1.0) * 0.5;
+        }
+        switch (xrInputSourceEvent.type) {
+          case "select": // 9 touchmove
+            // no need to call touchmove here
+            break;
+          case "selectstart": // 7 touchstart
+            inputSource.xrTouchObject = this.xrData.CreateTouch(this.canvas, xPercentage, yPercentage);
+            this.xrData.SendTouchEvent(this.JSEventsObject, 7, "touchstart", this.canvas, [inputSource.xrTouchObject])
+            break;
+          case "selectend": // 8 touchend
+            this.xrData.RemoveTouch(inputSource.xrTouchObject);
+            this.xrData.SendTouchEvent(this.JSEventsObject, 8, "touchend", this.canvas, [inputSource.xrTouchObject]);
+            inputSource.xrTouchObject = null;
+            break;
+        }
       }
     }
   }
@@ -506,9 +553,11 @@
     xrData.handRight.frame = xrData.frameNumber;
     xrData.controllerA.frame = xrData.frameNumber;
     xrData.controllerB.frame = xrData.frameNumber;
-    if (!inputSources || !inputSources.length) {
+    if (!inputSources || !inputSources.length || inputSources.length == 0) {
+      this.removeRemainingTouches();
       return;
     }
+    let touchesToSend = [];
     for (var i = 0; i < inputSources.length; i++) {
       let inputSource = inputSources[i];
       // Show the input source if it has a grip space
@@ -635,14 +684,19 @@
             xrData.controllerB = controller;
           }
         }
-      } else if (xrData.handHeldMove && inputSource.gamepad && inputSource.gamepad.axes) {
-            if (xrData.handHeldMove)
-            {
-              this.JSEventsObject.eventHandlers[5].eventListenerFunc(
-                new XRMouseEvent("mousemove", this.canvas,
-                                  (inputSource.gamepad.axes[0] + 1.0) * 0.5,
-                                  (inputSource.gamepad.axes[1] + 1.0) * 0.5, 0));
-            }
+      } else if (inputSource.xrTouchObject && !inputSource.xrTouchObject.ended && inputSource.gamepad && inputSource.gamepad.axes) {
+        inputSource.xrTouchObject.UpdateTouch( this.canvas,
+                                               (inputSource.gamepad.axes[0] + 1.0) * 0.5,
+                                               (inputSource.gamepad.axes[1] + 1.0) * 0.5);
+        if (inputSource.xrTouchObject.HasMovement()) {
+          touchesToSend.push(inputSource.xrTouchObject);
+        }
+      }
+    }
+    if (touchesToSend.length > 0) {
+      this.xrData.SendTouchEvent(this.JSEventsObject, 9, "touchmove", this.canvas, touchesToSend);
+      for (var i = 0; i < touchesToSend.length; i++) {
+        touchesToSend[i].ResetMovement();
       }
     }
   }
@@ -737,6 +791,7 @@
     this.ctx.bindFramebuffer(this.ctx.FRAMEBUFFER, glLayer.framebuffer);
     if (session.isAR) {
       this.ctx.dontClearOnFrameStart = true;
+      this.ctx.clear(this.ctx.STENCIL_BUFFER_BIT | this.ctx.DEPTH_BUFFER_BIT);
     } else {
       this.ctx.clear(this.ctx.COLOR_BUFFER_BIT | this.ctx.DEPTH_BUFFER_BIT);
     }
@@ -847,7 +902,7 @@
             leftRect.w = (viewport.width / glLayer.framebufferWidth) * (glLayer.framebufferWidth / this.canvas.width);
             leftRect.h = (viewport.height / glLayer.framebufferHeight) * (glLayer.framebufferHeight / this.canvas.height);
           }
-        } else if (view.eye === 'right') {
+        } else if (view.eye === 'right' && viewport.width != 0 && viewport.height != 0) {
           eyeCount = 2;
           if (viewport) {
             rightRect.x = (viewport.x / glLayer.framebufferWidth) * (glLayer.framebufferWidth / this.canvas.width);
