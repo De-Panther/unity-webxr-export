@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - OnDisable in WebXRController.
 - Depth and Stencil clear issue in Handheld AR.
+- Ugly hack to fix WebXR Viewer viewports on iOS.
 
 ## [0.5.1] - 2020-12-26
 ### Fixed
