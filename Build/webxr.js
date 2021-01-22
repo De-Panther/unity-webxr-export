@@ -594,8 +594,13 @@
           xrHand.hand = 2;
         }
         xrHand.enabled = 1;
-        frame.fillPoses(inputSource.hand, refSpace, xrHand.poses);
-        frame.fillJointRadii(inputSource.hand, xrHand.radii);
+        if (inputSource.hand.values) {
+          frame.fillPoses(inputSource.hand.values(), refSpace, xrHand.poses);
+          frame.fillJointRadii(inputSource.hand.values(), xrHand.radii);
+        } else {
+          frame.fillPoses(inputSource.hand, refSpace, xrHand.poses);
+          frame.fillJointRadii(inputSource.hand, xrHand.radii);
+        }
         for (let j = 0; j < 25; j++) {
           xrHand.jointIndex = j*16;
           if (!isNaN(xrHand.poses[xrHand.jointIndex])) {
