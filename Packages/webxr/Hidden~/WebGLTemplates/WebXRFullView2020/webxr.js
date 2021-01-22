@@ -80,6 +80,10 @@
     for (let i = 0; i < 25; i++) {
       this.joints.push(new XRJointData());
     }
+    this.poses = new Float32Array(16 * 25);
+    this.radii = new Float32Array(25);
+    this.jointQuaternion = new Float32Array(4);
+    this.jointIndex = 0;
   }
 
   function XRJointData() {
@@ -544,6 +548,17 @@
     );
   }
   
+  // http://answers.unity.com/answers/11372/view.html
+  XRManager.prototype.quaternionFromMatrix = function(offset, matrix, quaternion) {
+    quaternion[3] = Math.sqrt( Math.max( 0, 1 + matrix[offset+0] + matrix[offset+5] + matrix[offset+10] ) ) / 2; 
+    quaternion[0] = Math.sqrt( Math.max( 0, 1 + matrix[offset+0] - matrix[offset+5] - matrix[offset+10] ) ) / 2; 
+    quaternion[1] = Math.sqrt( Math.max( 0, 1 - matrix[offset+0] + matrix[offset+5] - matrix[offset+10] ) ) / 2; 
+    quaternion[2] = Math.sqrt( Math.max( 0, 1 - matrix[offset+0] - matrix[offset+5] + matrix[offset+10] ) ) / 2; 
+    quaternion[0] *= Math.sign( quaternion[0] * ( matrix[offset+6] - matrix[offset+9] ) );
+    quaternion[1] *= Math.sign( quaternion[1] * ( matrix[offset+8] - matrix[offset+2] ) );
+    quaternion[2] *= Math.sign( quaternion[2] * ( matrix[offset+1] - matrix[offset+4] ) );
+  }
+  
   XRManager.prototype.getXRControllersData = function(frame, inputSources, refSpace, xrData) {
     xrData.handLeft.enabled = 0;
     xrData.handRight.enabled = 0;
@@ -562,30 +577,29 @@
       let inputSource = inputSources[i];
       // Show the input source if it has a grip space
       if (inputSource.hand) {
-        var hand = 1;
         var xrHand = xrData.handLeft;
+        xrHand.hand = 1;
         if (inputSource.handedness == 'right') {
-          hand = 2;
           xrHand = xrData.handRight;
+          xrHand.hand = 2;
         }
         xrHand.enabled = 1;
-        xrHand.hand = hand;
+        frame.fillPoses(inputSource.hand, refSpace, xrHand.poses);
+        frame.fillJointRadii(inputSource.hand, xrHand.radii);
         for (let j = 0; j < 25; j++) {
-          let joint = null;
-          if (inputSource.hand[j] !== null) {
-            joint = frame.getJointPose(inputSource.hand[j], refSpace);
-          }
-          if (joint !== null) {
+          xrHand.jointIndex = j*16;
+          if (!isNaN(xrHand.poses[xrHand.jointIndex])) {
             xrHand.joints[j].enabled = 1;
-            xrHand.joints[j].position[0] = joint.transform.position.x;
-            xrHand.joints[j].position[1] = joint.transform.position.y;
-            xrHand.joints[j].position[2] = -joint.transform.position.z;
-            xrHand.joints[j].rotation[0] = -joint.transform.orientation.x;
-            xrHand.joints[j].rotation[1] = -joint.transform.orientation.y;
-            xrHand.joints[j].rotation[2] = joint.transform.orientation.z;
-            xrHand.joints[j].rotation[3] = joint.transform.orientation.w;
-            if (joint.radius !== null) {
-              xrHand.joints[j].radius = joint.radius;
+            xrHand.joints[j].position[0] = xrHand.poses[xrHand.jointIndex+12];
+            xrHand.joints[j].position[1] = xrHand.poses[xrHand.jointIndex+13];
+            xrHand.joints[j].position[2] = -xrHand.poses[xrHand.jointIndex+14];
+            this.quaternionFromMatrix(xrHand.jointIndex, xrHand.poses, xrHand.jointQuaternion);
+            xrHand.joints[j].rotation[0] = -xrHand.jointQuaternion[0];
+            xrHand.joints[j].rotation[1] = -xrHand.jointQuaternion[1];
+            xrHand.joints[j].rotation[2] = xrHand.jointQuaternion[2];
+            xrHand.joints[j].rotation[3] = xrHand.jointQuaternion[3];
+            if (!isNaN(xrHand.radii[j])) {
+              xrHand.joints[j].radius = xrHand.radii[j];
             }
           }
         }
