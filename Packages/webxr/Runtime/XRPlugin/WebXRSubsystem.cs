@@ -91,6 +91,7 @@ namespace WebXR
       {
         return;
       }
+      UpdateXRCameras();
       bool hasHandsData = false;
       if (OnHandUpdate != null && this.xrState != WebXRState.NORMAL)
       {
@@ -129,27 +130,26 @@ namespace WebXR
       }
     }
 
-    internal void OnLateUpdate()
+    private void UpdateXRCameras()
     {
       if (OnHeadsetUpdate != null && this.xrState != WebXRState.NORMAL)
       {
-        Matrix4x4 leftProjectionMatrix = WebXRMatrixUtil.NumbersToMatrix(GetMatrixFromSharedArray(0));
-        Matrix4x4 rightProjectionMatrix = WebXRMatrixUtil.NumbersToMatrix(GetMatrixFromSharedArray(1));
-        Matrix4x4 leftViewMatrix = WebXRMatrixUtil.NumbersToMatrix(GetMatrixFromSharedArray(2));
-        Matrix4x4 rightViewMatrix = WebXRMatrixUtil.NumbersToMatrix(GetMatrixFromSharedArray(3));
-        Matrix4x4 sitStandMatrix = WebXRMatrixUtil.NumbersToMatrix(GetMatrixFromSharedArray(4));
-        if (!this.capabilities.hasPosition)
-        {
-          const float defaultHeight = 1;
-          sitStandMatrix = Matrix4x4.Translate(new Vector3(0, defaultHeight, 0));
-        }
+        GetMatrixFromSharedArray(0, ref leftProjectionMatrix);
+        GetMatrixFromSharedArray(1, ref rightProjectionMatrix);
+        GetMatrixFromSharedArray(2, ref leftViewMatrix);
+        GetMatrixFromSharedArray(3, ref rightViewMatrix);
+        leftPosition = leftViewMatrix.GetColumn(3);
+        rightPosition = rightViewMatrix.GetColumn(3);
+        leftRotation = Quaternion.LookRotation(leftViewMatrix.GetColumn(2), leftViewMatrix.GetColumn(1));
+        rightRotation = Quaternion.LookRotation(rightViewMatrix.GetColumn(2), rightViewMatrix.GetColumn(1));
 
         OnHeadsetUpdate?.Invoke(
             leftProjectionMatrix,
             rightProjectionMatrix,
-            leftViewMatrix,
-            rightViewMatrix,
-            sitStandMatrix);
+            leftRotation,
+            rightRotation,
+            leftPosition,
+            rightPosition);
       }
     }
 
@@ -211,10 +211,11 @@ namespace WebXR
 
     public delegate void HeadsetUpdate(
         Matrix4x4 leftProjectionMatrix,
-        Matrix4x4 leftViewMatrix,
         Matrix4x4 rightProjectionMatrix,
-        Matrix4x4 rightViewMatrix,
-        Matrix4x4 sitStandMatrix);
+        Quaternion leftRotation,
+        Quaternion rightRotation,
+        Vector3 leftPosition,
+        Vector3 rightPosition);
 
     public static event HeadsetUpdate OnHeadsetUpdate;
 
@@ -230,9 +231,19 @@ namespace WebXR
 
     public static event HitTestUpdate OnViewerHitTestUpdate;
 
+    // Cameras calculations helpers
+    private Matrix4x4 leftProjectionMatrix = new Matrix4x4();
+    private Matrix4x4 rightProjectionMatrix = new Matrix4x4();
+    private Matrix4x4 leftViewMatrix = new Matrix4x4();
+    private Matrix4x4 rightViewMatrix = new Matrix4x4();
+    private Vector3 leftPosition = new Vector3();
+    private Vector3 rightPosition = new Vector3();
+    private Quaternion leftRotation = Quaternion.identity;
+    private Quaternion rightRotation = Quaternion.identity;
+
     // Shared array which we will load headset data in from webxr.jslib
     // Array stores  5 matrices, each 16 values, stored linearly.
-    float[] sharedArray = new float[5 * 16];
+    float[] sharedArray = new float[4 * 16];
 
     // Shared array for controllers data
     float[] controllersArray = new float[2 * 20];
@@ -344,15 +355,13 @@ namespace WebXR
       Native.ControllerPulse((int)hand, intensity, duration);
     }
 
-    float[] GetMatrixFromSharedArray(int index)
+    void GetMatrixFromSharedArray(int index, ref Matrix4x4 matrix)
     {
-      float[] newArray = new float[16];
-      for (int i = 0; i < newArray.Length; i++)
+      index = index * 16;
+      for (int i = 0; i < 16; i++)
       {
-        newArray[i] = sharedArray[index * 16 + i];
+        matrix[i] = sharedArray[index + i];
       }
-
-      return newArray;
     }
 
     bool GetGamepadFromControllersArray(int controllerIndex, ref WebXRControllerData newControllerData)

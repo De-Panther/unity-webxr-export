@@ -70,10 +70,5 @@ namespace WebXR
       {
           subsystem.OnUpdate();
       }
-
-      private void LateUpdate()
-      {
-          subsystem.OnLateUpdate();
-      }
   }
 }

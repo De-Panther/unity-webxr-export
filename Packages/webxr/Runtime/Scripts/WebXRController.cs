@@ -38,14 +38,6 @@ namespace WebXR
 
     [Tooltip("Controller hand to use.")]
     public WebXRControllerHand hand = WebXRControllerHand.NONE;
-    [Tooltip("Simulate 3dof controller")]
-    public bool simulate3dof = false;
-    [Tooltip("Vector from head to elbow")]
-    public Vector3 eyesToElbow = new Vector3(0.1f, -0.4f, 0.15f);
-    [Tooltip("Vector from elbow to hand")]
-    public Vector3 elbowHand = new Vector3(0, 0, 0.25f);
-
-    private Matrix4x4 sitStand;
 
     private float trigger;
     private float squeeze;
@@ -58,8 +50,6 @@ namespace WebXR
     private float buttonA;
     private float buttonB;
 
-    private Quaternion headRotation;
-    private Vector3 headPosition;
     private Dictionary<ButtonTypes, WebXRControllerButton> buttonStates = new Dictionary<ButtonTypes, WebXRControllerButton>();
 
     private bool controllerActive = false;
@@ -269,18 +259,6 @@ namespace WebXR
       return profiles;
     }
 
-    private void OnHeadsetUpdate(Matrix4x4 leftProjectionMatrix,
-        Matrix4x4 rightProjectionMatrix,
-        Matrix4x4 leftViewMatrix,
-        Matrix4x4 rightViewMatrix,
-        Matrix4x4 sitStandMatrix)
-    {
-      Matrix4x4 trs = WebXRMatrixUtil.TransformViewMatrixToTRS(leftViewMatrix);
-      this.headRotation = WebXRMatrixUtil.GetRotationFromMatrix(trs);
-      this.headPosition = WebXRMatrixUtil.GetTranslationFromMatrix(trs);
-      this.sitStand = sitStandMatrix;
-    }
-
     private void OnControllerUpdate(WebXRControllerData controllerData)
     {
       if (controllerData.hand == (int)hand)
@@ -389,7 +367,6 @@ namespace WebXR
     {
       WebXRManager.OnControllerUpdate += OnControllerUpdate;
       WebXRManager.OnHandUpdate += OnHandUpdateInternal;
-      WebXRManager.OnHeadsetUpdate += OnHeadsetUpdate;
       SetControllerActive(false);
       SetHandActive(false);
 #if UNITY_EDITOR || !UNITY_WEBGL
@@ -419,7 +396,6 @@ namespace WebXR
     {
       WebXRManager.OnControllerUpdate -= OnControllerUpdate;
       WebXRManager.OnHandUpdate -= OnHandUpdateInternal;
-      WebXRManager.OnHeadsetUpdate -= OnHeadsetUpdate;
       SetControllerActive(false);
       SetHandActive(false);
 #if UNITY_EDITOR || !UNITY_WEBGL
