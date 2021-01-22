@@ -91,6 +91,7 @@ namespace WebXR
       {
         return;
       }
+      UpdateXRCameras();
       bool hasHandsData = false;
       if (OnHandUpdate != null && this.xrState != WebXRState.NORMAL)
       {
@@ -129,7 +130,7 @@ namespace WebXR
       }
     }
 
-    internal void OnLateUpdate()
+    private void UpdateXRCameras()
     {
       if (OnHeadsetUpdate != null && this.xrState != WebXRState.NORMAL)
       {

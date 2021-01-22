@@ -66,6 +66,34 @@ namespace WebXR
       }
     }
 
+    public Quaternion GetLocalRotation()
+    {
+      switch (xrState)
+      {
+        case WebXRState.AR:
+          return cameraARL.transform.localRotation;
+        case WebXRState.VR:
+          return cameraL.transform.localRotation;
+      }
+      return cameraMain.transform.localRotation;
+    }
+
+    public Vector3 GetLocalPosition()
+    {
+      switch (xrState)
+      {
+        case WebXRState.AR:
+          if (viewsCount > 1)
+          {
+            return (cameraARL.transform.localPosition + cameraARR.transform.localPosition) * 0.5f;
+          }
+          return cameraARL.transform.localPosition;
+        case WebXRState.VR:
+          return (cameraL.transform.localPosition + cameraR.transform.localPosition) * 0.5f;
+      }
+      return cameraMain.transform.localPosition;
+    }
+
     public Camera GetCamera(CameraID cameraID)
     {
       switch (cameraID)
