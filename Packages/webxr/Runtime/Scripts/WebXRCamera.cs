@@ -25,8 +25,8 @@ namespace WebXR
 
     void OnEnable()
     {
-      WebXRManager.OnXRChange += onXRChange;
-      WebXRManager.OnHeadsetUpdate += onHeadsetUpdate;
+      WebXRManager.OnXRChange += OnXRChange;
+      WebXRManager.OnHeadsetUpdate += OnHeadsetUpdate;
     }
 
     void Update()
@@ -82,7 +82,7 @@ namespace WebXR
       return cameraMain;
     }
 
-    private void onXRChange(WebXRState state, int viewsCount, Rect leftRect, Rect rightRect)
+    private void OnXRChange(WebXRState state, int viewsCount, Rect leftRect, Rect rightRect)
     {
       xrState = state;
       this.viewsCount = viewsCount;
@@ -91,25 +91,30 @@ namespace WebXR
       switched = false;
     }
 
-    private void onHeadsetUpdate(
+    private void OnHeadsetUpdate(
         Matrix4x4 leftProjectionMatrix,
         Matrix4x4 rightProjectionMatrix,
-        Matrix4x4 leftViewMatrix,
-        Matrix4x4 rightViewMatrix,
-        Matrix4x4 sitStandMatrix)
+        Quaternion leftRotation,
+        Quaternion rightRotation,
+        Vector3 leftPosition,
+        Vector3 rightPosition)
     {
       if (xrState == WebXRState.VR)
       {
-        WebXRMatrixUtil.SetTransformFromViewMatrix(cameraL.transform, leftViewMatrix * sitStandMatrix.inverse);
+        cameraL.transform.localPosition = leftPosition;
+        cameraL.transform.localRotation = leftRotation;
         cameraL.projectionMatrix = leftProjectionMatrix;
-        WebXRMatrixUtil.SetTransformFromViewMatrix(cameraR.transform, rightViewMatrix * sitStandMatrix.inverse);
+        cameraR.transform.localPosition = rightPosition;
+        cameraR.transform.localRotation = rightRotation;
         cameraR.projectionMatrix = rightProjectionMatrix;
       }
       else if (xrState == WebXRState.AR)
       {
-        WebXRMatrixUtil.SetTransformFromViewMatrix(cameraARL.transform, leftViewMatrix * sitStandMatrix.inverse);
+        cameraARL.transform.localPosition = leftPosition;
+        cameraARL.transform.localRotation = leftRotation;
         cameraARL.projectionMatrix = leftProjectionMatrix;
-        WebXRMatrixUtil.SetTransformFromViewMatrix(cameraARR.transform, rightViewMatrix * sitStandMatrix.inverse);
+        cameraARR.transform.localPosition = rightPosition;
+        cameraARR.transform.localRotation = rightRotation;
         cameraARR.projectionMatrix = rightProjectionMatrix;
       }
     }

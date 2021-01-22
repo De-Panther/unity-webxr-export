@@ -2,11 +2,22 @@
   'use strict';
 
   function XRData() {
-    this.leftProjectionMatrix = mat4.create();
-    this.rightProjectionMatrix = mat4.create();
-    this.leftViewMatrix = mat4.create();
-    this.rightViewMatrix = mat4.create();
-    this.sitStandMatrix = mat4.create();
+    this.leftProjectionMatrix =  [1, 0, 0, 0,
+                                  0, 1, 0, 0,
+                                  0, 0, 1, 0,
+                                  0, 0, 0, 1];
+    this.rightProjectionMatrix =  [1, 0, 0, 0,
+                                  0, 1, 0, 0,
+                                  0, 0, 1, 0,
+                                  0, 0, 0, 1];
+    this.leftViewMatrix =  [1, 0, 0, 0,
+                            0, 1, 0, 0,
+                            0, 0, 1, 0,
+                            0, 0, 0, 1];
+    this.rightViewMatrix = [1, 0, 0, 0,
+                            0, 1, 0, 0,
+                            0, 0, 1, 0,
+                            0, 0, 0, 1];
     this.gamepads = [];
     this.controllerA = new XRControllerData();
     this.controllerB = new XRControllerData();
@@ -542,7 +553,6 @@
       JSON.stringify({
         canPresentAR: this.isARSupported,
         canPresentVR: this.isVRSupported,
-        hasPosition: true, // TODO: check this
         hasExternalDisplay: false // TODO: check this
       })
     );
@@ -715,39 +725,6 @@
     }
   }
 
-  // Convert WebGL to Unity compatible Vector3
-  XRManager.prototype.GLVec3ToUnity = function(v) {
-    v[2] *= -1;
-    return v;
-  }
-
-  // Convert WebGL to Unity compatible Quaternion
-  XRManager.prototype.GLQuaternionToUnity = function(q) {
-    q[0] *= -1;
-    q[1] *= -1;
-    return q;
-  }
-
-  // Convert WebGL to Unity Projection Matrix4
-  XRManager.prototype.GLProjectionToUnity = function(m) {
-    var out = mat4.create();
-    mat4.copy(out, m)
-    mat4.transpose(out, out);
-    return out;
-  }
-
-  // Convert WebGL to Unity View Matrix4
-  XRManager.prototype.GLViewToUnity = function(m) {
-    var out = mat4.create();
-    mat4.copy(out, m);
-    mat4.transpose(out, out);
-    out[2] *= -1;
-    out[6] *= -1;
-    out[10] *= -1;
-    out[14] *= -1;
-    return out;
-  }
-
   XRManager.prototype.onSessionStarted = function (session) {
     let glLayer = new XRWebGLLayer(session, this.ctx);
     session.updateRenderState({ baseLayer: glLayer });
@@ -825,11 +802,19 @@
 
     for (let view of pose.views) {
       if (view.eye === 'left') {
-        xrData.leftProjectionMatrix = this.GLProjectionToUnity(view.projectionMatrix);
-        xrData.leftViewMatrix = this.GLViewToUnity(view.transform.inverse.matrix);
+        xrData.leftProjectionMatrix = view.projectionMatrix;
+        xrData.leftViewMatrix = view.transform.matrix;
+        xrData.leftViewMatrix[6] *= -1;
+        xrData.leftViewMatrix[8] *= -1;
+        xrData.leftViewMatrix[9] *= -1;
+        xrData.leftViewMatrix[14] *= -1;
       } else if (view.eye === 'right') {
-        xrData.rightProjectionMatrix = this.GLProjectionToUnity(view.projectionMatrix);
-        xrData.rightViewMatrix = this.GLViewToUnity(view.transform.inverse.matrix);
+        xrData.rightProjectionMatrix = view.projectionMatrix;
+        xrData.rightViewMatrix = view.transform.matrix;
+        xrData.rightViewMatrix[6] *= -1;
+        xrData.rightViewMatrix[8] *= -1;
+        xrData.rightViewMatrix[9] *= -1;
+        xrData.rightViewMatrix[14] *= -1;
       }
     }
 
@@ -878,8 +863,7 @@
       leftProjectionMatrix: xrData.leftProjectionMatrix,
       rightProjectionMatrix: xrData.rightProjectionMatrix,
       leftViewMatrix: xrData.leftViewMatrix,
-      rightViewMatrix: xrData.rightViewMatrix,
-      sitStandMatrix: xrData.sitStandMatrix
+      rightViewMatrix: xrData.rightViewMatrix
     }}));
 
     document.dispatchEvent(new CustomEvent('XRControllersData', { detail: {
