@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Using `frame.fillPoses` and `frame.fillJointRadii` instead of `frame.getJointPose` for XRHand.
 - Camera matrices handling.
+- WebGLTemplates webxr.js merged into Plugins webxr.jspre.
 
 ### Removed
 - Matrix utilities files.
