@@ -215,6 +215,10 @@ namespace WebXR.Interactions
           {
             handJoints[i].localPosition = rotationOffset * (handData.joints[i].position - handData.joints[0].position);
             handJoints[i].localRotation = rotationOffset * handData.joints[i].rotation;
+            if (handData.joints[i].radius != handJoints[i].localScale.x && handData.joints[i].radius > 0)
+            {
+              handJoints[i].localScale = new Vector3(handData.joints[i].radius, handData.joints[i].radius, handData.joints[i].radius);
+            }
           }
           else
           {
