@@ -57,6 +57,22 @@ namespace WebXR
 
     private string[] profiles = null;
 
+    public bool isControllerActive
+    {
+      get
+      {
+        return controllerActive;
+      }
+    }
+
+    public bool isHandActive
+    {
+      get
+      {
+        return handActive;
+      }
+    }
+
 #if UNITY_EDITOR || !UNITY_WEBGL
     private InputDeviceCharacteristics xrHand = InputDeviceCharacteristics.Controller;
     private InputDevice? inputDevice;
