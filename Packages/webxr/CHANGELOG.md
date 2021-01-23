@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - GetLocalRotation and GetLocalPosition to WebXRCamera.
 - Support for the new/updated WebXR Hands API.
+- isControllerActive and isHandActive to WebXRController.
 
 ### Changed
 - Using `frame.fillPoses` and `frame.fillJointRadii` instead of `frame.getJointPose` for XRHand.

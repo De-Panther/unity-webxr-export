@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Check if hand joints radius changed on hand update in ControllerInteraction.
+- Check if isControllerActive and isHandActive on enable in ControllerInteraction.
 
 ## [0.5.2] - 2020-01-16
 ### Fixed

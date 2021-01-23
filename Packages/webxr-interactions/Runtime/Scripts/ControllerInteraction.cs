@@ -69,6 +69,14 @@ namespace WebXR.Interactions
 
     private void OnEnable()
     {
+      if (controller.isHandActive)
+      {
+        SetHandJointsVisible(true);
+      }
+      else if (controller.isControllerActive)
+      {
+        SetControllerVisible(true);
+      }
       controller.OnControllerActive += SetControllerVisible;
       controller.OnHandActive += SetHandJointsVisible;
       controller.OnHandUpdate += OnHandUpdate;
