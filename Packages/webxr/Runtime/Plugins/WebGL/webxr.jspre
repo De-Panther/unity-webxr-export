@@ -31,14 +31,10 @@ setTimeout(function () {
                                       0, 1, 0, 0,
                                       0, 0, 1, 0,
                                       0, 0, 0, 1];
-        this.leftViewMatrix =  [1, 0, 0, 0,
-                                0, 1, 0, 0,
-                                0, 0, 1, 0,
-                                0, 0, 0, 1];
-        this.rightViewMatrix = [1, 0, 0, 0,
-                                0, 1, 0, 0,
-                                0, 0, 1, 0,
-                                0, 0, 0, 1];
+        this.leftViewRotation =  [0, 0, 0, 1];
+        this.rightViewRotation = [0, 0, 0, 1];
+        this.leftViewPosition =  [0, 0, 0];
+        this.rightViewPosition = [0, 0, 0];
         this.gamepads = [];
         this.controllerA = new XRControllerData();
         this.controllerB = new XRControllerData();
@@ -829,20 +825,24 @@ setTimeout(function () {
     
         for (var i = 0; i < pose.views.length; i++) {
           var view = pose.views[i];
-          if (view.eye === 'left') {
+          if (view.eye === "left" || view.eye === "none") {
             xrData.leftProjectionMatrix = view.projectionMatrix;
-            xrData.leftViewMatrix = view.transform.matrix;
-            xrData.leftViewMatrix[6] *= -1;
-            xrData.leftViewMatrix[8] *= -1;
-            xrData.leftViewMatrix[9] *= -1;
-            xrData.leftViewMatrix[14] *= -1;
+            xrData.leftViewRotation[0] = -view.transform.orientation.x;
+            xrData.leftViewRotation[1] = -view.transform.orientation.y;
+            xrData.leftViewRotation[2] = view.transform.orientation.z;
+            xrData.leftViewRotation[3] = view.transform.orientation.w;
+            xrData.leftViewPosition[0] = view.transform.position.x;
+            xrData.leftViewPosition[1] = view.transform.position.y;
+            xrData.leftViewPosition[2] = -view.transform.position.z;
           } else if (view.eye === 'right') {
             xrData.rightProjectionMatrix = view.projectionMatrix;
-            xrData.rightViewMatrix = view.transform.matrix;
-            xrData.rightViewMatrix[6] *= -1;
-            xrData.rightViewMatrix[8] *= -1;
-            xrData.rightViewMatrix[9] *= -1;
-            xrData.rightViewMatrix[14] *= -1;
+            xrData.rightViewRotation[0] = -view.transform.orientation.x;
+            xrData.rightViewRotation[1] = -view.transform.orientation.y;
+            xrData.rightViewRotation[2] = view.transform.orientation.z;
+            xrData.rightViewRotation[3] = view.transform.orientation.w;
+            xrData.rightViewPosition[0] = view.transform.position.x;
+            xrData.rightViewPosition[1] = view.transform.position.y;
+            xrData.rightViewPosition[2] = -view.transform.position.z;
           }
         }
     
@@ -890,8 +890,10 @@ setTimeout(function () {
         document.dispatchEvent(new CustomEvent('XRData', { detail: {
           leftProjectionMatrix: xrData.leftProjectionMatrix,
           rightProjectionMatrix: xrData.rightProjectionMatrix,
-          leftViewMatrix: xrData.leftViewMatrix,
-          rightViewMatrix: xrData.rightViewMatrix
+          leftViewRotation: xrData.leftViewRotation,
+          rightViewRotation: xrData.rightViewRotation,
+          leftViewPosition: xrData.leftViewPosition,
+          rightViewPosition: xrData.rightViewPosition
         }}));
     
         document.dispatchEvent(new CustomEvent('XRControllersData', { detail: {

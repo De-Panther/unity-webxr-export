@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Camera matrices handling.
 - WebGLTemplates webxr.js merged into Plugins webxr.jspre.
 
+### Fixed
+- Bug related to pose view eye can be `none`.
+
 ### Removed
 - Matrix utilities files.
 
