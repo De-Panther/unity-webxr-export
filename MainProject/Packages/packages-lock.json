@@ -35,7 +35,7 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "com.de-panther.webxr": "0.5.2-preview"
+        "com.de-panther.webxr": "0.6.0-preview"
       }
     },
     "com.unity.ext.nunit": {
