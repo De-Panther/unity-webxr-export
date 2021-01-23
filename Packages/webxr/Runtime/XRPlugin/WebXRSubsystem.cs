@@ -135,13 +135,11 @@ namespace WebXR
       if (OnHeadsetUpdate != null && this.xrState != WebXRState.NORMAL)
       {
         GetMatrixFromSharedArray(0, ref leftProjectionMatrix);
-        GetMatrixFromSharedArray(1, ref rightProjectionMatrix);
-        GetMatrixFromSharedArray(2, ref leftViewMatrix);
-        GetMatrixFromSharedArray(3, ref rightViewMatrix);
-        leftPosition = leftViewMatrix.GetColumn(3);
-        rightPosition = rightViewMatrix.GetColumn(3);
-        leftRotation = Quaternion.LookRotation(leftViewMatrix.GetColumn(2), leftViewMatrix.GetColumn(1));
-        rightRotation = Quaternion.LookRotation(rightViewMatrix.GetColumn(2), rightViewMatrix.GetColumn(1));
+        GetMatrixFromSharedArray(16, ref rightProjectionMatrix);
+        GetQuaternionFromSharedArray(32, ref leftRotation);
+        GetQuaternionFromSharedArray(36, ref rightRotation);
+        GetVector3FromSharedArray(40, ref leftPosition);
+        GetVector3FromSharedArray(43, ref rightPosition);
 
         OnHeadsetUpdate?.Invoke(
             leftProjectionMatrix,
@@ -234,16 +232,14 @@ namespace WebXR
     // Cameras calculations helpers
     private Matrix4x4 leftProjectionMatrix = new Matrix4x4();
     private Matrix4x4 rightProjectionMatrix = new Matrix4x4();
-    private Matrix4x4 leftViewMatrix = new Matrix4x4();
-    private Matrix4x4 rightViewMatrix = new Matrix4x4();
     private Vector3 leftPosition = new Vector3();
     private Vector3 rightPosition = new Vector3();
     private Quaternion leftRotation = Quaternion.identity;
     private Quaternion rightRotation = Quaternion.identity;
 
     // Shared array which we will load headset data in from webxr.jslib
-    // Array stores  5 matrices, each 16 values, stored linearly.
-    float[] sharedArray = new float[4 * 16];
+    // Array stores 2 matrices, each 16 values, 2 Quaternions and 2 Vector3, stored linearly.
+    float[] sharedArray = new float[(2 * 16) + (2 * 7)];
 
     // Shared array for controllers data
     float[] controllersArray = new float[2 * 20];
@@ -357,11 +353,25 @@ namespace WebXR
 
     void GetMatrixFromSharedArray(int index, ref Matrix4x4 matrix)
     {
-      index = index * 16;
       for (int i = 0; i < 16; i++)
       {
         matrix[i] = sharedArray[index + i];
       }
+    }
+
+    void GetQuaternionFromSharedArray(int index, ref Quaternion quaternion)
+    {
+      quaternion.x = sharedArray[index];
+      quaternion.y = sharedArray[index + 1];
+      quaternion.z = sharedArray[index + 2];
+      quaternion.w = sharedArray[index + 3];
+    }
+
+    void GetVector3FromSharedArray(int index, ref Vector3 vec3)
+    {
+      vec3.x = sharedArray[index];
+      vec3.y = sharedArray[index + 1];
+      vec3.z = sharedArray[index + 2];
     }
 
     bool GetGamepadFromControllersArray(int controllerIndex, ref WebXRControllerData newControllerData)
