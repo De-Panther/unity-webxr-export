@@ -73,6 +73,8 @@ Helio on Magic Leap One (Has a bug related to eye views).
 
 [WebXR Hand Input](https://github.com/immersive-web/webxr-hand-input)
 
+[WebXR Input Profiles](https://github.com/immersive-web/webxr-input-profiles) using [WebXR Input Profiles Loader](https://github.com/De-Panther/webxr-input-profiles-loader)
+
 ### Polyfilled WebXR / WebVR
 
 If the user does not have supported headset, browser or device, the content will still work through the use of the [WebXR Polyfill](https://github.com/immersive-web/webxr-polyfill).
