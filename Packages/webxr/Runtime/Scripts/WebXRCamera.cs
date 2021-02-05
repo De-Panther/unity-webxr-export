@@ -28,6 +28,12 @@ namespace WebXR
       WebXRManager.OnXRChange += OnXRChange;
       WebXRManager.OnHeadsetUpdate += OnHeadsetUpdate;
     }
+    
+    void OnDisable()
+    {
+      WebXRManager.OnXRChange -= OnXRChange;
+      WebXRManager.OnHeadsetUpdate -= OnHeadsetUpdate;
+    }
 
     void Update()
     {
