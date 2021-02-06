@@ -82,6 +82,13 @@ setTimeout(function () {
         this.rotationY = 0;
         this.rotationZ = 0;
         this.rotationW = 0;
+        this.gripPositionX = 0;
+        this.gripPositionY = 0;
+        this.gripPositionZ = 0;
+        this.gripRotationX = 0;
+        this.gripRotationY = 0;
+        this.gripRotationZ = 0;
+        this.gripRotationW = 0;
         this.trigger = 0;
         this.squeeze = 0;
         this.thumbstick = 0;
@@ -95,6 +102,7 @@ setTimeout(function () {
         this.gamepad = null;
         this.profiles = [];
         this.updatedProfiles = 0;
+        this.updatedGrip = 0;
       }
     
       function XRHandData() {
@@ -637,10 +645,10 @@ setTimeout(function () {
               }
             }
           } else if (inputSource.gripSpace) {
-            var inputPose = frame.getPose(inputSource.gripSpace, refSpace);
-            if (inputPose) {
-              var position = inputPose.transform.position;
-              var orientation = inputPose.transform.orientation;
+            var inputRayPose = frame.getPose(inputSource.targetRaySpace, refSpace);
+            if (inputRayPose) {
+              var position = inputRayPose.transform.position;
+              var orientation = inputRayPose.transform.orientation;
               var hand = 0;
               var controller = xrData.controllerA;
               if (inputSource.handedness == 'left') {
@@ -652,9 +660,8 @@ setTimeout(function () {
               
               controller.enabled = 1;
               controller.hand = hand;
-    
-              if (controller.updatedProfiles == 0)
-              {
+
+              if (controller.updatedProfiles == 0) {
                 controller.profiles = inputSource.profiles;
                 controller.updatedProfiles = 1;
               }
@@ -667,9 +674,27 @@ setTimeout(function () {
               controller.rotationY = -orientation.y;
               controller.rotationZ = orientation.z;
               controller.rotationW = orientation.w;
+
+              if (controller.updatedGrip == 0) {
+                var inputPose = frame.getPose(inputSource.gripSpace, refSpace);
+                if (inputPose) {
+                  var gripPosition = inputPose.transform.position;
+                  var gripOrientation = inputPose.transform.orientation;
+
+                  controller.gripPositionX = gripPosition.x;
+                  controller.gripPositionY = gripPosition.y;
+                  controller.gripPositionZ = - gripPosition.z;
+
+                  controller.gripRotationX = -gripOrientation.x;
+                  controller.gripRotationY = -gripOrientation.y;
+                  controller.gripRotationZ = gripOrientation.z;
+                  controller.gripRotationW = gripOrientation.w;
+
+                  controller.updatedGrip = 1;
+                }
+              }
               
               // if there's gamepad, use the xr-standard mapping
-              // TODO: check for profiles
               if (inputSource.gamepad) {
                 for (var j = 0; j < inputSource.gamepad.buttons.length; j++) {
                   switch (j) {
@@ -900,6 +925,12 @@ setTimeout(function () {
           controllerA: xrData.controllerA,
           controllerB: xrData.controllerB
         }}));
+        if (xrData.controllerA.updatedGrip == 1) {
+          xrData.controllerA.updatedGrip = 2;
+        }
+        if (xrData.controllerB.updatedGrip == 1) {
+          xrData.controllerB.updatedGrip = 2;
+        }
     
         document.dispatchEvent(new CustomEvent('XRHandsData', { detail: {
           handLeft: xrData.handLeft,

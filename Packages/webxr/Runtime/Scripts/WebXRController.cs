@@ -35,6 +35,7 @@ namespace WebXR
     public Action<bool> OnControllerActive;
     public Action<bool> OnHandActive;
     public Action<WebXRHandData> OnHandUpdate;
+    public Action<bool> OnAlwaysUseGripChanged;
 
     [Tooltip("Controller hand to use.")]
     public WebXRControllerHand hand = WebXRControllerHand.NONE;
@@ -56,6 +57,10 @@ namespace WebXR
     private bool handActive = false;
 
     private string[] profiles = null;
+
+    [SerializeField] private bool alwaysUseGrip = false;
+    public Vector3 gripPosition { get; private set;} = Vector3.zero;
+    public Quaternion gripRotation { get; private set;} = Quaternion.identity;
 
     public bool isControllerActive
     {
@@ -270,6 +275,17 @@ namespace WebXR
       return 0;
     }
 
+    public void SetAlwaysUseGrip(bool value)
+    {
+      alwaysUseGrip = value;
+      OnAlwaysUseGripChanged?.Invoke(alwaysUseGrip);
+    }
+
+    public bool GetAlwaysUseGrip()
+    {
+      return alwaysUseGrip;
+    }
+
     public string[] GetProfiles()
     {
       return profiles;
@@ -287,8 +303,10 @@ namespace WebXR
 
         profiles = controllerData.profiles;
 
-        transform.localRotation = controllerData.rotation;
-        transform.localPosition = controllerData.position;
+        gripRotation = controllerData.gripRotation;
+        gripPosition = controllerData.gripPosition;
+        transform.localRotation = alwaysUseGrip ? gripRotation : controllerData.rotation;
+        transform.localPosition = alwaysUseGrip ? gripPosition : controllerData.position;
 
         trigger = controllerData.trigger;
         squeeze = controllerData.squeeze;

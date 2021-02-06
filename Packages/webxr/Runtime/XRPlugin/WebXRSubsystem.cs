@@ -242,7 +242,7 @@ namespace WebXR
     float[] sharedArray = new float[(2 * 16) + (2 * 7)];
 
     // Shared array for controllers data
-    float[] controllersArray = new float[2 * 20];
+    float[] controllersArray = new float[2 * 28];
 
     // Shared array for hands data
     float[] handsArray = new float[2 * (25 * 9 + 5)];
@@ -376,7 +376,7 @@ namespace WebXR
 
     bool GetGamepadFromControllersArray(int controllerIndex, ref WebXRControllerData newControllerData)
     {
-      int arrayPosition = controllerIndex * 20;
+      int arrayPosition = controllerIndex * 28;
       int frameNumber = (int)controllersArray[arrayPosition++];
       if (newControllerData.frame == frameNumber)
       {
@@ -403,7 +403,16 @@ namespace WebXR
       newControllerData.touchpadX = controllersArray[arrayPosition++];
       newControllerData.touchpadY = controllersArray[arrayPosition++];
       newControllerData.buttonA = controllersArray[arrayPosition++];
-      newControllerData.buttonB = controllersArray[arrayPosition];
+      newControllerData.buttonB = controllersArray[arrayPosition++];
+      if (controllersArray[arrayPosition++] == 1)
+      {
+        newControllerData.gripPosition = new Vector3(controllersArray[arrayPosition++], controllersArray[arrayPosition++], controllersArray[arrayPosition++]);
+        newControllerData.gripRotation = new Quaternion(controllersArray[arrayPosition++], controllersArray[arrayPosition++], controllersArray[arrayPosition++],
+            controllersArray[arrayPosition++]);
+        Quaternion rotationOffset = Quaternion.Inverse(newControllerData.rotation);
+        newControllerData.gripRotation = rotationOffset * newControllerData.gripRotation;
+        newControllerData.gripPosition = rotationOffset * (newControllerData.gripPosition - newControllerData.position);
+      }
       return true;
     }
 

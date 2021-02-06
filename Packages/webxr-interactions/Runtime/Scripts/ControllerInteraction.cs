@@ -80,6 +80,7 @@ namespace WebXR.Interactions
       controller.OnControllerActive += SetControllerVisible;
       controller.OnHandActive += SetHandJointsVisible;
       controller.OnHandUpdate += OnHandUpdate;
+      controller.OnAlwaysUseGripChanged += SetInputProfileModelPose;
     }
 
     private void OnDisable()
@@ -87,6 +88,7 @@ namespace WebXR.Interactions
       controller.OnControllerActive -= SetControllerVisible;
       controller.OnHandActive -= SetHandJointsVisible;
       controller.OnHandUpdate -= OnHandUpdate;
+      controller.OnAlwaysUseGripChanged -= SetInputProfileModelPose;
     }
 
     private void Update()
@@ -165,6 +167,7 @@ namespace WebXR.Interactions
       // We want to use WebXR Input Profiles
       if (visible && useInputProfile)
       {
+        SetInputProfileModelPose(controller.GetAlwaysUseGrip());
         if (inputProfileModel != null && loadedModel)
         {
           // There's a loaded Input Profile Model
@@ -191,6 +194,12 @@ namespace WebXR.Interactions
       {
         contactRigidBodies.Clear();
       }
+    }
+
+    private void SetInputProfileModelPose(bool alwaysUseGrip)
+    {
+      inputProfileModelParent.transform.localPosition = alwaysUseGrip ? Vector3.zero : controller.gripPosition;
+      inputProfileModelParent.transform.localRotation = alwaysUseGrip ? Quaternion.identity : controller.gripRotation;
     }
 
     private void SetHandJointsVisible(bool visible)

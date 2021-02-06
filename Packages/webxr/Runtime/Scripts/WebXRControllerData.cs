@@ -10,6 +10,8 @@ namespace WebXR
     public int hand;
     public Vector3 position;
     public Quaternion rotation;
+    public Vector3 gripPosition;
+    public Quaternion gripRotation;
     public float trigger;
     public float squeeze;
     public float thumbstick;
