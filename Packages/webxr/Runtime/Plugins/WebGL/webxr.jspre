@@ -692,6 +692,8 @@ setTimeout(function () {
 
                   controller.updatedGrip = 1;
                 }
+              } else if (controller.updatedGrip == 1) {
+                controller.updatedGrip = 2;
               }
               
               // if there's gamepad, use the xr-standard mapping
@@ -803,6 +805,8 @@ setTimeout(function () {
           this.xrData.controllerB.updatedProfiles = 0;
           this.xrData.controllerA.profiles = [];
           this.xrData.controllerB.profiles = [];
+          this.xrData.controllerA.updatedGrip = 0;
+          this.xrData.controllerB.updatedGrip = 0;
         }
         var thisXRMananger = this;
         session.requestReferenceSpace(refSpaceType).then(function (refSpace) {
@@ -925,12 +929,6 @@ setTimeout(function () {
           controllerA: xrData.controllerA,
           controllerB: xrData.controllerB
         }}));
-        if (xrData.controllerA.updatedGrip == 1) {
-          xrData.controllerA.updatedGrip = 2;
-        }
-        if (xrData.controllerB.updatedGrip == 1) {
-          xrData.controllerB.updatedGrip = 2;
-        }
     
         document.dispatchEvent(new CustomEvent('XRHandsData', { detail: {
           handLeft: xrData.handLeft,

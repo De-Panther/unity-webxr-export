@@ -384,6 +384,7 @@ namespace WebXR
       }
 
       newControllerData.frame = frameNumber;
+      bool wasDisabled = !newControllerData.enabled;
       newControllerData.enabled = controllersArray[arrayPosition++] != 0;
       newControllerData.hand = (int)controllersArray[arrayPosition++];
       if (!newControllerData.enabled)
@@ -404,14 +405,14 @@ namespace WebXR
       newControllerData.touchpadY = controllersArray[arrayPosition++];
       newControllerData.buttonA = controllersArray[arrayPosition++];
       newControllerData.buttonB = controllersArray[arrayPosition++];
-      if (controllersArray[arrayPosition++] == 1)
+      if (controllersArray[arrayPosition++] == 1 || wasDisabled)
       {
         newControllerData.gripPosition = new Vector3(controllersArray[arrayPosition++], controllersArray[arrayPosition++], controllersArray[arrayPosition++]);
         newControllerData.gripRotation = new Quaternion(controllersArray[arrayPosition++], controllersArray[arrayPosition++], controllersArray[arrayPosition++],
             controllersArray[arrayPosition++]);
         Quaternion rotationOffset = Quaternion.Inverse(newControllerData.rotation);
-        newControllerData.gripRotation = rotationOffset * newControllerData.gripRotation;
         newControllerData.gripPosition = rotationOffset * (newControllerData.gripPosition - newControllerData.position);
+        newControllerData.gripRotation = rotationOffset * newControllerData.gripRotation;
       }
       return true;
     }
