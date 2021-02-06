@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Use `targetRaySpace` as the default controller pose instead of `gripSpace`.
+- Use generic Input Profile in editor for all controllers types.
 
 ## [0.6.0] - 2020-01-23
 ### Added
