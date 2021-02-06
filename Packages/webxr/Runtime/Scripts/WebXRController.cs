@@ -452,42 +452,35 @@ namespace WebXR
         }
         profiles = null;
         // TODO: Find a better way to get device profile
-        if (device.manufacturer == "Oculus")
+        string profileName = "generic";
+        bool addedFeatures = false;
+        float tempFloat = 0;
+        Vector2 tempVec2 = Vector2.zero;
+        if (device.TryGetFeatureValue(CommonUsages.trigger, out tempFloat))
         {
-          profiles = new string[]{"oculus-touch-v2"};
+          profileName += "-trigger";
+          addedFeatures = true;
         }
-        else
+        if (device.TryGetFeatureValue(CommonUsages.grip, out tempFloat))
         {
-          string profileName = "generic";
-          bool addedFeatures = false;
-          float tempFloat = 0;
-          Vector2 tempVec2 = Vector2.zero;
-          if (device.TryGetFeatureValue(CommonUsages.trigger, out tempFloat))
-          {
-            profileName += "-trigger";
-            addedFeatures = true;
-          }
-          if (device.TryGetFeatureValue(CommonUsages.grip, out tempFloat))
-          {
-            profileName += "-squeeze";
-            addedFeatures = true;
-          }
-          if (device.TryGetFeatureValue(CommonUsages.secondary2DAxis, out tempVec2))
-          {
-            profileName += "-touchpad";
-            addedFeatures = true;
-          }
-          if (device.TryGetFeatureValue(CommonUsages.primary2DAxis, out tempVec2))
-          {
-            profileName += "-thumbstick";
-            addedFeatures = true;
-          }
-          if (!addedFeatures)
-          {
-            profileName += "-button";
-          }
-          profiles = new string[]{profileName};
+          profileName += "-squeeze";
+          addedFeatures = true;
         }
+        if (device.TryGetFeatureValue(CommonUsages.secondary2DAxis, out tempVec2))
+        {
+          profileName += "-touchpad";
+          addedFeatures = true;
+        }
+        if (device.TryGetFeatureValue(CommonUsages.primary2DAxis, out tempVec2))
+        {
+          profileName += "-thumbstick";
+          addedFeatures = true;
+        }
+        if (!addedFeatures)
+        {
+          profileName += "-button";
+        }
+        profiles = new string[]{profileName};
         TryUpdateButtons();
         SetControllerActive(true);
       }
