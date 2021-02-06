@@ -58,6 +58,10 @@ namespace WebXR
 
     private string[] profiles = null;
 
+    private int oculusLinkBugTest = 0;
+    private Quaternion oculusOffsetRay = Quaternion.Euler(90f, 0, 0);
+    private Quaternion oculusOffsetGrip = Quaternion.Euler(-90f, 0, 0);
+
     [SerializeField] private bool alwaysUseGrip = false;
     public Vector3 gripPosition { get; private set;} = Vector3.zero;
     public Quaternion gripRotation { get; private set;} = Quaternion.identity;
@@ -303,10 +307,37 @@ namespace WebXR
 
         profiles = controllerData.profiles;
 
-        gripRotation = controllerData.gripRotation;
-        gripPosition = controllerData.gripPosition;
-        transform.localRotation = alwaysUseGrip ? gripRotation : controllerData.rotation;
-        transform.localPosition = alwaysUseGrip ? gripPosition : controllerData.position;
+        if (oculusLinkBugTest != 1)
+        {
+          gripRotation = controllerData.gripRotation;
+          gripPosition = controllerData.gripPosition;
+          if (alwaysUseGrip)
+          {
+            transform.localRotation = controllerData.rotation * controllerData.gripRotation;
+            transform.localPosition = controllerData.rotation * (controllerData.position + controllerData.gripPosition);
+          }
+          else
+          {
+            transform.localRotation = controllerData.rotation;
+            transform.localPosition = controllerData.position;
+          }
+          CheckOculusLinkBug();
+        }
+        else
+        { // Oculus on desktop returns wrong rotation for targetRaySpace, this is an ugly hack to fix it
+          gripRotation = controllerData.gripRotation * oculusOffsetGrip;
+          gripPosition = controllerData.gripPosition;
+          if (alwaysUseGrip)
+          {
+            transform.localRotation = controllerData.rotation * controllerData.gripRotation;
+            transform.localPosition = controllerData.rotation * (controllerData.position + controllerData.gripPosition);
+          }
+          else
+          {
+            transform.localRotation = controllerData.rotation * oculusOffsetRay;
+            transform.localPosition = controllerData.position;
+          }
+        }
 
         trigger = controllerData.trigger;
         squeeze = controllerData.squeeze;
@@ -329,6 +360,23 @@ namespace WebXR
         UpdateButtons(buttons);
 
         SetControllerActive(true);
+      }
+    }
+
+    // Oculus on desktop returns wrong rotation for targetRaySpace, this is an ugly hack to fix it
+    private void CheckOculusLinkBug()
+    {
+      if (oculusLinkBugTest == 0
+          && profiles != null && profiles.Length > 0)
+      {
+        if (profiles[0] == "oculus-touch" && gripRotation.x > 0)
+        {
+          oculusLinkBugTest = 1;
+        }
+        else
+        {
+          oculusLinkBugTest = 2;
+        }
       }
     }
 
