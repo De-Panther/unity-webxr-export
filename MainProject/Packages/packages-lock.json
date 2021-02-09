@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.atteneder.gltfast": {
-      "version": "2.5.0",
+      "version": "3.0.1",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -21,12 +21,12 @@
       }
     },
     "com.de-panther.webxr-input-profiles-loader": {
-      "version": "0.3.1",
+      "version": "0.3.3",
       "depth": 0,
       "source": "registry",
       "dependencies": {
         "com.unity.nuget.newtonsoft-json": "2.0.0",
-        "com.atteneder.gltfast": "2.5.0"
+        "com.atteneder.gltfast": "3.0.1"
       },
       "url": "https://package.openupm.com"
     },
