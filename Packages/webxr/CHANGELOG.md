@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use `targetRaySpace` as the default controller pose instead of `gripSpace`.
 - Use generic Input Profile in editor for all controllers types.
 
+### Fixed
+- Hack for Oculus on Chrome Desktop wrong `targetRaySpace` bug.
+
 ## [0.6.0] - 2020-01-23
 ### Added
 - GetLocalRotation and GetLocalPosition to WebXRCamera.
