@@ -82,6 +82,18 @@ mergeInto(LibraryManager.library, {
         Module.ControllersArray[index++] = data[key].touchpadY;
         Module.ControllersArray[index++] = data[key].buttonA;
         Module.ControllersArray[index++] = data[key].buttonB;
+        Module.ControllersArray[index++] = data[key].updatedGrip;
+        if (data[key].updatedGrip == 1) {
+          Module.ControllersArray[index++] = data[key].gripPositionX;
+          Module.ControllersArray[index++] = data[key].gripPositionY;
+          Module.ControllersArray[index++] = data[key].gripPositionZ;
+          Module.ControllersArray[index++] = data[key].gripRotationX;
+          Module.ControllersArray[index++] = data[key].gripRotationY;
+          Module.ControllersArray[index++] = data[key].gripRotationZ;
+          Module.ControllersArray[index++] = data[key].gripRotationW;
+        } else {
+          index += 7;
+        }
       });
     });
     document.addEventListener('XRHandsData', function(evt) {

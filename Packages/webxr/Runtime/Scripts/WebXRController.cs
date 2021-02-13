@@ -35,6 +35,7 @@ namespace WebXR
     public Action<bool> OnControllerActive;
     public Action<bool> OnHandActive;
     public Action<WebXRHandData> OnHandUpdate;
+    public Action<bool> OnAlwaysUseGripChanged;
 
     [Tooltip("Controller hand to use.")]
     public WebXRControllerHand hand = WebXRControllerHand.NONE;
@@ -56,6 +57,14 @@ namespace WebXR
     private bool handActive = false;
 
     private string[] profiles = null;
+
+    private int oculusLinkBugTest = 0;
+    private Quaternion oculusOffsetRay = Quaternion.Euler(90f, 0, 0);
+    private Quaternion oculusOffsetGrip = Quaternion.Euler(-90f, 0, 0);
+
+    [SerializeField] private bool alwaysUseGrip = false;
+    public Vector3 gripPosition { get; private set; } = Vector3.zero;
+    public Quaternion gripRotation { get; private set; } = Quaternion.identity;
 
     public bool isControllerActive
     {
@@ -270,6 +279,17 @@ namespace WebXR
       return 0;
     }
 
+    public void SetAlwaysUseGrip(bool value)
+    {
+      alwaysUseGrip = value;
+      OnAlwaysUseGripChanged?.Invoke(alwaysUseGrip);
+    }
+
+    public bool GetAlwaysUseGrip()
+    {
+      return alwaysUseGrip;
+    }
+
     public string[] GetProfiles()
     {
       return profiles;
@@ -287,8 +307,31 @@ namespace WebXR
 
         profiles = controllerData.profiles;
 
-        transform.localRotation = controllerData.rotation;
-        transform.localPosition = controllerData.position;
+        if (oculusLinkBugTest != 1)
+        {
+          gripRotation = controllerData.gripRotation;
+          gripPosition = controllerData.gripPosition;
+          if (alwaysUseGrip)
+          {
+            transform.localRotation = controllerData.rotation * controllerData.gripRotation;
+            transform.localPosition = controllerData.rotation * (controllerData.position + controllerData.gripPosition);
+          }
+          else
+          {
+            transform.localRotation = controllerData.rotation;
+            transform.localPosition = controllerData.position;
+          }
+          // Oculus on desktop returns wrong rotation for targetRaySpace, this is an ugly hack to fix it
+          if (CheckOculusLinkBug())
+          {
+            HandleOculusLinkBug(controllerData);
+          }
+        }
+        else
+        { 
+          // Oculus on desktop returns wrong rotation for targetRaySpace, this is an ugly hack to fix it
+          HandleOculusLinkBug(controllerData);
+        }
 
         trigger = controllerData.trigger;
         squeeze = controllerData.squeeze;
@@ -312,6 +355,42 @@ namespace WebXR
 
         SetControllerActive(true);
       }
+    }
+
+    // Oculus on desktop returns wrong rotation for targetRaySpace, this is an ugly hack to fix it
+    private void HandleOculusLinkBug(WebXRControllerData controllerData)
+    {
+      gripRotation = controllerData.gripRotation * oculusOffsetGrip;
+      gripPosition = controllerData.gripPosition;
+      if (alwaysUseGrip)
+      {
+        transform.localRotation = controllerData.rotation * controllerData.gripRotation;
+        transform.localPosition = controllerData.rotation * (controllerData.position + controllerData.gripPosition);
+      }
+      else
+      {
+        transform.localRotation = controllerData.rotation * oculusOffsetRay;
+        transform.localPosition = controllerData.position;
+      }
+    }
+
+    // Oculus on desktop returns wrong rotation for targetRaySpace, this is an ugly hack to fix it
+    private bool CheckOculusLinkBug()
+    {
+      if (oculusLinkBugTest == 0
+          && profiles != null && profiles.Length > 0)
+      {
+        if (profiles[0] == "oculus-touch" && gripRotation.x > 0)
+        {
+          oculusLinkBugTest = 1;
+          return true;
+        }
+        else
+        {
+          oculusLinkBugTest = 2;
+        }
+      }
+      return false;
     }
 
     private void OnHandUpdateInternal(WebXRHandData handData)
@@ -434,42 +513,35 @@ namespace WebXR
         }
         profiles = null;
         // TODO: Find a better way to get device profile
-        if (device.manufacturer == "Oculus")
+        string profileName = "generic";
+        bool addedFeatures = false;
+        float tempFloat = 0;
+        Vector2 tempVec2 = Vector2.zero;
+        if (device.TryGetFeatureValue(CommonUsages.trigger, out tempFloat))
         {
-          profiles = new string[]{"oculus-touch-v2"};
+          profileName += "-trigger";
+          addedFeatures = true;
         }
-        else
+        if (device.TryGetFeatureValue(CommonUsages.grip, out tempFloat))
         {
-          string profileName = "generic";
-          bool addedFeatures = false;
-          float tempFloat = 0;
-          Vector2 tempVec2 = Vector2.zero;
-          if (device.TryGetFeatureValue(CommonUsages.trigger, out tempFloat))
-          {
-            profileName += "-trigger";
-            addedFeatures = true;
-          }
-          if (device.TryGetFeatureValue(CommonUsages.grip, out tempFloat))
-          {
-            profileName += "-squeeze";
-            addedFeatures = true;
-          }
-          if (device.TryGetFeatureValue(CommonUsages.secondary2DAxis, out tempVec2))
-          {
-            profileName += "-touchpad";
-            addedFeatures = true;
-          }
-          if (device.TryGetFeatureValue(CommonUsages.primary2DAxis, out tempVec2))
-          {
-            profileName += "-thumbstick";
-            addedFeatures = true;
-          }
-          if (!addedFeatures)
-          {
-            profileName += "-button";
-          }
-          profiles = new string[]{profileName};
+          profileName += "-squeeze";
+          addedFeatures = true;
         }
+        if (device.TryGetFeatureValue(CommonUsages.secondary2DAxis, out tempVec2))
+        {
+          profileName += "-touchpad";
+          addedFeatures = true;
+        }
+        if (device.TryGetFeatureValue(CommonUsages.primary2DAxis, out tempVec2))
+        {
+          profileName += "-thumbstick";
+          addedFeatures = true;
+        }
+        if (!addedFeatures)
+        {
+          profileName += "-button";
+        }
+        profiles = new string[] { profileName };
         TryUpdateButtons();
         SetControllerActive(true);
       }

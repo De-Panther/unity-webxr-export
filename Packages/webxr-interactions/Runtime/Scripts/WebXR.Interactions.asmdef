@@ -14,7 +14,7 @@
     "versionDefines": [
         {
             "name": "com.de-panther.webxr-input-profiles-loader",
-            "expression": "0.3.1",
+            "expression": "0.3.5",
             "define": "WEBXR_INPUT_PROFILES"
         }
     ],
