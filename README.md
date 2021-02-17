@@ -39,7 +39,9 @@ Or just use this as a Unity Package (UPM), more info [here](Packages/webxr/READM
 
 This is a list of browsers and platforms that the WebXR Export demo was tested on.
 
-Google Chrome on Widnwos.
+Google Chrome on Windows.
+
+Microsoft Edge on Windows.
 
 Mozilla Firefox on Windows.
 
@@ -48,6 +50,8 @@ Oculus Browser on Oculus Quest (Supports WebXR Hand Input).
 Firefox Reality on Oculus Quest.
 
 Firefox Reality on Hololens 2 (Supports WebXR Hand Input).
+
+Microsoft Edge on Hololens 2 ([Currently in Insider preview](https://docs.microsoft.com/en-us/hololens/hololens-insider#how-to-use-webxr)).
 
 Google Chrome on Android (Supports both AR and VR sessions).
 
