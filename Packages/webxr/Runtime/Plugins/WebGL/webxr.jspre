@@ -578,8 +578,7 @@ setTimeout(function () {
         this.gameModule.WebXR.OnXRCapabilities(
           JSON.stringify({
             canPresentAR: this.isARSupported,
-            canPresentVR: this.isVRSupported,
-            hasExternalDisplay: false // TODO: check this
+            canPresentVR: this.isVRSupported
           })
         );
       }
