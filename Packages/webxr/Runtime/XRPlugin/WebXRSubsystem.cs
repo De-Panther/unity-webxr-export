@@ -181,6 +181,12 @@ namespace WebXR
       public static extern void InitViewerHitTestPoseArray(float[] array, int length);
 
       [DllImport("__Internal")]
+      public static extern void ToggleAR();
+
+      [DllImport("__Internal")]
+      public static extern void ToggleVR();
+
+      [DllImport("__Internal")]
       public static extern void ToggleViewerHitTest();
 
       [DllImport("__Internal")]
@@ -262,7 +268,7 @@ namespace WebXR
 
     private WebXRHitPoseData viewerHitTestPose = new WebXRHitPoseData();
 
-    private WebXRDisplayCapabilities capabilities = new WebXRDisplayCapabilities();
+    internal WebXRDisplayCapabilities capabilities = new WebXRDisplayCapabilities();
 
     // Handles WebXR capabilities from browser
     [MonoPInvokeCallback(typeof(Action<string>))]
@@ -326,6 +332,22 @@ namespace WebXR
     {
       Instance.switchToEnd = true;
       Instance.setXrState(WebXRState.NORMAL, 1, new Rect(), new Rect());
+    }
+
+    public void ToggleAR()
+    {
+      if (capabilities.canPresentAR)
+      {
+        Native.ToggleAR();
+      }
+    }
+
+    public void ToggleVR()
+    {
+      if (capabilities.canPresentVR)
+      {
+        Native.ToggleVR();
+      }
     }
 
     public void StartViewerHitTest()

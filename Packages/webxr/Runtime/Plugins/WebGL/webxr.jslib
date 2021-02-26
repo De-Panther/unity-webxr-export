@@ -30,6 +30,14 @@ mergeInto(LibraryManager.library, {
     Module.ViewerHitTestPoseArray = new Float32Array(buffer, byteOffset, length);
   },
 
+  ToggleAR: function() {
+    document.dispatchEvent(new CustomEvent('toggleAR', {}));
+  },
+
+  ToggleVR: function() {
+    document.dispatchEvent(new CustomEvent('toggleVR', {}));
+  },
+
   ToggleViewerHitTest: function() {
     document.dispatchEvent(new CustomEvent('toggleHitTest', {}));
   },

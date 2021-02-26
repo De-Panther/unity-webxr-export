@@ -43,7 +43,33 @@ namespace WebXR
           add => WebXRSubsystem.OnViewerHitTestUpdate += value;
           remove => WebXRSubsystem.OnViewerHitTestUpdate -= value;
       }
-      
+
+      public bool isSupportedAR
+      {
+        get
+        {
+          return subsystem.capabilities.canPresentAR;
+        }
+      }
+
+      public bool isSupportedVR
+      {
+        get
+        {
+          return subsystem.capabilities.canPresentVR;
+        }
+      }
+
+      public void ToggleAR()
+      {
+          subsystem.ToggleAR();
+      }
+
+      public void ToggleVR()
+      {
+          subsystem.ToggleVR();
+      }
+
       public void HapticPulse(WebXRControllerHand hand, float intensity, float duration)
       {
           subsystem.HapticPulse(hand, intensity, duration);
