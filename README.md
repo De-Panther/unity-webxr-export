@@ -8,6 +8,8 @@ WebXR Export supports both Augmented Reality and Virtual Reality [WebXR API](htt
 
 It integrates the WebXR JavaScript API to [Unity WebGL](https://docs.unity3d.com/Manual/webgl.html) and lets you develop experiences in the familiar editor using C#.
 
+![Demo](/Documentation/webxr-input-profiles.gif)
+
 <hr>
 
 ## Downloads
@@ -78,6 +80,8 @@ Helio on Magic Leap One (Has a bug related to eye views).
 [WebXR Hand Input](https://github.com/immersive-web/webxr-hand-input)
 
 [WebXR Input Profiles](https://github.com/immersive-web/webxr-input-profiles) using [WebXR Input Profiles Loader](https://github.com/De-Panther/webxr-input-profiles-loader)
+
+![Hands](/Documentation/webxr-hands-api.gif)
 
 ### Polyfilled WebXR / WebVR
 
