@@ -833,7 +833,10 @@ setTimeout(function () {
         this.ctx.bindFramebuffer(this.ctx.FRAMEBUFFER, glLayer.framebuffer);
         if (session.isAR) {
           this.ctx.dontClearOnFrameStart = true;
-          this.ctx.clear(this.ctx.STENCIL_BUFFER_BIT | this.ctx.DEPTH_BUFFER_BIT);
+          // Workaround for Chromium depth bug https://bugs.chromium.org/p/chromium/issues/detail?id=1167450#c21
+          this.ctx.depthMask(false);
+          this.ctx.clear(this.ctx.DEPTH_BUFFER_BIT);
+          this.ctx.depthMask(true);
         } else {
           this.ctx.clear(this.ctx.COLOR_BUFFER_BIT | this.ctx.DEPTH_BUFFER_BIT);
         }

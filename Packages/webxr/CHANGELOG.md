@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Workaround for Chromium depth bug (Chromium issue 1167450).
+
 ## [0.8.0] - 2020-02-26
 ### Added
 - ToggleAR, ToggleVR, isSupportedAR and isSupportedVR to WebXRManager.
