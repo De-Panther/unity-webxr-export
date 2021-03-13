@@ -8,6 +8,8 @@ WebXR Export supports both Augmented Reality and Virtual Reality [WebXR API](htt
 
 It integrates the WebXR JavaScript API to [Unity WebGL](https://docs.unity3d.com/Manual/webgl.html) and lets you develop experiences in the familiar editor using C#.
 
+[⭐Star to show interest⭐](https://github.com/De-Panther/unity-webxr-export/stargazers)
+
 ![Demo](/Documentation/webxr-input-profiles.gif)
 
 <hr>
