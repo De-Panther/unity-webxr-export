@@ -8,6 +8,7 @@ This folder contains some docs and manuals, to help you use WebXR Export and Web
 - [WebXR Export for Unity - Controllers update in v0.4.0](https://www.youtube.com/watch?v=tASwwuMPtF8) by De-Panther
 - [BUG 1/27/2021 WebXR for Game Jams](https://www.youtube.com/watch?v=2Qnii0SlAtM) De-Panther at Boston Unity Group
 - [How To Setup WebXR with Oculus Quest](https://www.youtube.com/watch?v=nPAHZ9Rm8d4) by FusedVR
+- [How To Use VRTK & Tillia with WebXR Export](https://www.youtube.com/watch?v=RKpa2tDvNiQ) by FusedVR
 
 ## Written tutorials
 
