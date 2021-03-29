@@ -1,4 +1,4 @@
-# WebXR Export
+# ⭐ WebXR Export
 
 You can [check the live demo here](https://de-panther.github.io/unity-webxr-export).
 
@@ -14,7 +14,7 @@ It integrates the WebXR JavaScript API to [Unity WebGL](https://docs.unity3d.com
 
 <hr>
 
-## Downloads
+## 💾 Downloads
 
 Better option: Import WebXR Export and WebXR Interactions packages from OpenUPM.
 - [WebXR Export ![openupm](https://img.shields.io/npm/v/com.de-panther.webxr?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.de-panther.webxr/)
@@ -22,11 +22,11 @@ Better option: Import WebXR Export and WebXR Interactions packages from OpenUPM.
 
 Or import the packages from git, more info at [WebXR Export](Packages/webxr/README.md) and [WebXR Interactions](Packages/webxr-interactions/README.md).
 
-## Documentation
+## 📄 Documentation
 
 For more info on getting started and how to use WebXR Export, you can check the [Documentation](Documentation) folder.
 
-## Compatibility
+## 🧩 Compatibility
 
 **Important notice** regarding this Git repository - This repository use Symlinks. make sure that Symlinks are enabled when you clone.
 
@@ -34,12 +34,12 @@ For more info on getting started and how to use WebXR Export, you can check the 
 
 Or just use this as a Unity Package (UPM), more info [here](Packages/webxr/README.md)
 
-### Unity Editor version
+### 📝 Unity Editor version
 
 * `2019.4.7` and up.
 * `2020.1` and up.
 
-### Browser Compatibility
+### 🗺️ Browser Compatibility
 
 This is a list of browsers and platforms that the WebXR Export demo was tested on.
 
@@ -63,13 +63,13 @@ Samsung Internet Browser on Android (Supports both AR and VR sessions).
 
 Firefox Reality on Vive Focus Plus.
 
-#### Has bugs/issues
+#### 🐞 Has bugs/issues
 
 Mozilla WebXR Viewer on iOS (Has a bug related to touch input).
 
 Helio on Magic Leap One (Has a bug related to eye views).
 
-### WebXR APIs support
+### ⚙️ WebXR APIs support
 
 [WebXR Device API](https://immersive-web.github.io/webxr/)
 
@@ -85,23 +85,23 @@ Helio on Magic Leap One (Has a bug related to eye views).
 
 ![Hands](/Documentation/webxr-hands-api.gif)
 
-### Polyfilled WebXR / WebVR
+### 📊 Polyfilled WebXR / WebVR
 
 If the user does not have supported headset, browser or device, the content will still work through the use of the [WebXR Polyfill](https://github.com/immersive-web/webxr-polyfill).
 
-### Mobile support
+### 📱 Mobile support
 
 This asset works by utilizing Unity's WebGL platform support and therefore shares the same limitations. Because of this, mobile support is limited and may not work. We did made sure to make it light, so mobile devices would be able to handle it, and it is able to run on high end mobile devices with some optimizations. See [Unity's WebGL browser compatibility](https://docs.unity3d.com/2019.3/Documentation/Manual/webgl-browsercompatibility.html).
 
-### Version History and Notes
+### 📜 Version History and Notes
 
 You can check the changelogs of [WebXR Export](Packages/webxr/CHANGELOG.md) and [WebXR Interactions](Packages/webxr-interactions/CHANGELOG.md) for version history.
 
-## Contributing
+## 🤝 Contributing
 
 You're encouraged to [open an issue](https://github.com/De-Panther/unity-webxr-export/issues/new), report a problem, contribute with code, open a feature request, share your work or ask a question. But remember that it's an experimental project.
 
-## Useful links and info
+## 🔗 Useful links and info
 
 Much of the WebXR upgrades and API usage made possible thanks to these resources.
 
@@ -121,7 +121,7 @@ Much of the WebXR upgrades and API usage made possible thanks to these resources
 
 [WebXR Discord](https://discord.gg/Jt5tfaM)
 
-## Credits
+## 🎞️ Credits
 
 Special thanks to [needle.tools](https://needle.tools/) for the help in making this a proper package.
 
@@ -133,7 +133,7 @@ This project was heavily influenced by early explorations in using Unity to buil
 
 Also, thanks to [Arturo Paracuellos (@arturitu)](https://github.com/arturitu) for creating the [3D-hand models](https://github.com/aframevr/assets/tree/gh-pages/controllers/hands) used for controllers in these examples.
 
-## License
+## ⚖️ License
 
 As the base project used the Apache License, Version 2.0, we will continue with it.
 
