@@ -73,7 +73,7 @@ Helio on Magic Leap One (Has a bug related to eye views).
 
 [WebXR Device API](https://immersive-web.github.io/webxr/)
 
-[WebXR Gamepads Module](https://immersive-web.github.io/webxr-gamepads-module/) (Include [hapticActuators](https://w3c.github.io/gamepad/extensions.html) on supported devices)
+[WebXR Gamepads Module](https://immersive-web.github.io/webxr-gamepads-module/) (Including [hapticActuators](https://w3c.github.io/gamepad/extensions.html) on supported devices)
 
 [WebXR Augmented Reality Module](https://immersive-web.github.io/webxr-ar-module/)
 
