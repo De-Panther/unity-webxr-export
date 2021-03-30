@@ -1,4 +1,4 @@
-# ⭐ WebXR Export
+# WebXR Export
 
 You can [check the live demo here](https://de-panther.github.io/unity-webxr-export).
 
