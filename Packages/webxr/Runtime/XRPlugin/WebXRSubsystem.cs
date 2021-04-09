@@ -163,7 +163,6 @@ namespace WebXR
       Native.InitHandsArray(handsArray, handsArray.Length);
       Native.InitViewerHitTestPoseArray(viewerHitTestPoseArray, viewerHitTestPoseArray.Length);
       Native.InitXRSharedArray(sharedArray, sharedArray.Length);
-      Native.ListenWebXRData();
     }
 
     private static class Native
@@ -191,9 +190,6 @@ namespace WebXR
 
       [DllImport("__Internal")]
       public static extern void ControllerPulse(int controller, float intensity, float duration);
-
-      [DllImport("__Internal")]
-      public static extern void ListenWebXRData();
 
       [DllImport("__Internal")]
       public static extern void set_webxr_events(Action<int, float, float, float, float, float, float, float, float> on_start_ar,

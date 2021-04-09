@@ -1,3 +1,5 @@
+Module['WebXR'] = Module['WebXR'] || {};
+
 setTimeout(function () {
     if (GL && GL.createContext)
     {
@@ -228,7 +230,7 @@ setTimeout(function () {
         var thisXRMananger = this;
         navigator.xr.isSessionSupported('immersive-vr').then(function (supported) {
           thisXRMananger.isVRSupported = supported;
-          if (document.body.dataset.unityLoaded)
+          if (Module.WebXR.unityLoaded)
           {
             document.dispatchEvent(new CustomEvent('onVRSupportedCheck', { detail:{supported:thisXRMananger.isVRSupported} }));
             thisXRMananger.UpdateXRCapabilities();
@@ -237,7 +239,7 @@ setTimeout(function () {
     
         navigator.xr.isSessionSupported('immersive-ar').then(function (supported) {
           thisXRMananger.isARSupported = supported;
-          if (document.body.dataset.unityLoaded)
+          if (Module.WebXR.unityLoaded)
           {
             document.dispatchEvent(new CustomEvent('onARSupportedCheck', { detail:{supported:thisXRMananger.isARSupported} }));
             thisXRMananger.UpdateXRCapabilities();
@@ -350,15 +352,15 @@ setTimeout(function () {
         this.xrData.handLeft.frame = -1;
         this.xrData.handRight.frame = -1;
     
-        document.dispatchEvent(new CustomEvent('XRControllersData', { detail: {
+        this.updateUnityXRControllersData({
           controllerA: this.xrData.controllerA,
           controllerB: this.xrData.controllerB
-        }}));
+        });
     
-        document.dispatchEvent(new CustomEvent('XRHandsData', { detail: {
+        this.updateUnityXRHandsData({
           handLeft: this.xrData.handLeft,
           handRight: this.xrData.handRight
-        }}));
+        });
         
         this.gameModule.WebXR.OnEndXR();
         this.didNotifyUnity = false;
@@ -561,7 +563,7 @@ setTimeout(function () {
       }
     
       XRManager.prototype.unityLoaded = function (event) {
-        document.body.dataset.unityLoaded = 'true';
+        Module.WebXR.unityLoaded = 'true';
     
         this.setGameModule(event.detail.module);
     
@@ -896,9 +898,9 @@ setTimeout(function () {
           } else {
             xrData.viewerHitTestPose.available = 0;
           }
-          document.dispatchEvent(new CustomEvent('XRViewerHitTestPose', { detail: {
+          this.updateUnityXRViewerHitTestPose({
             viewerHitTestPose: xrData.viewerHitTestPose
-          }}));
+          });
         }
     
         if (xrData.controllerA.updatedProfiles == 1 || xrData.controllerB.updatedProfiles == 1)
@@ -918,24 +920,24 @@ setTimeout(function () {
         }
         
         // Dispatch event with headset data to be handled in webxr.jslib
-        document.dispatchEvent(new CustomEvent('XRData', { detail: {
+        this.updateUnityXRData({
           leftProjectionMatrix: xrData.leftProjectionMatrix,
           rightProjectionMatrix: xrData.rightProjectionMatrix,
           leftViewRotation: xrData.leftViewRotation,
           rightViewRotation: xrData.rightViewRotation,
           leftViewPosition: xrData.leftViewPosition,
           rightViewPosition: xrData.rightViewPosition
-        }}));
+        });
     
-        document.dispatchEvent(new CustomEvent('XRControllersData', { detail: {
+        this.updateUnityXRControllersData({
           controllerA: xrData.controllerA,
           controllerB: xrData.controllerB
-        }}));
+        });
     
-        document.dispatchEvent(new CustomEvent('XRHandsData', { detail: {
+        this.updateUnityXRHandsData({
           handLeft: xrData.handLeft,
           handRight: xrData.handRight
-        }}));
+        });
         
         if (!this.didNotifyUnity)
         {
@@ -981,6 +983,103 @@ setTimeout(function () {
           this.didNotifyUnity = true;
         }
       }
+
+      XRManager.prototype.updateUnityXRData = function (data) {
+        var index = 0;
+        if (Module.XRSharedArray.byteLength == 0) {
+          Module.XRSharedArray = new Float32Array(buffer, Module.XRSharedArrayOffset, Module.XRSharedArrayLength);
+        }
+        Object.keys(data).forEach(function (key, i) {
+          var dataLength = data[key].length;
+          if (dataLength) {
+            for (var x = 0; x < dataLength; x++) {
+              Module.XRSharedArray[index++] = data[key][x];
+            }
+          }
+        });
+      }
+
+      XRManager.prototype.updateUnityXRControllersData = function (data) {
+        var index = 0;
+        if (Module.ControllersArray.byteLength == 0) {
+          Module.ControllersArray = new Float32Array(buffer, Module.ControllersArrayOffset, Module.ControllersArrayLength);
+        }
+        Object.keys(data).forEach(function (key, i) {
+          Module.ControllersArray[index++] = data[key].frame;
+          Module.ControllersArray[index++] = data[key].enabled;
+          Module.ControllersArray[index++] = data[key].hand;
+          Module.ControllersArray[index++] = data[key].positionX;
+          Module.ControllersArray[index++] = data[key].positionY;
+          Module.ControllersArray[index++] = data[key].positionZ;
+          Module.ControllersArray[index++] = data[key].rotationX;
+          Module.ControllersArray[index++] = data[key].rotationY;
+          Module.ControllersArray[index++] = data[key].rotationZ;
+          Module.ControllersArray[index++] = data[key].rotationW;
+          Module.ControllersArray[index++] = data[key].trigger;
+          Module.ControllersArray[index++] = data[key].squeeze;
+          Module.ControllersArray[index++] = data[key].thumbstick;
+          Module.ControllersArray[index++] = data[key].thumbstickX;
+          Module.ControllersArray[index++] = data[key].thumbstickY;
+          Module.ControllersArray[index++] = data[key].touchpad;
+          Module.ControllersArray[index++] = data[key].touchpadX;
+          Module.ControllersArray[index++] = data[key].touchpadY;
+          Module.ControllersArray[index++] = data[key].buttonA;
+          Module.ControllersArray[index++] = data[key].buttonB;
+          Module.ControllersArray[index++] = data[key].updatedGrip;
+          if (data[key].updatedGrip == 1) {
+            Module.ControllersArray[index++] = data[key].gripPositionX;
+            Module.ControllersArray[index++] = data[key].gripPositionY;
+            Module.ControllersArray[index++] = data[key].gripPositionZ;
+            Module.ControllersArray[index++] = data[key].gripRotationX;
+            Module.ControllersArray[index++] = data[key].gripRotationY;
+            Module.ControllersArray[index++] = data[key].gripRotationZ;
+            Module.ControllersArray[index++] = data[key].gripRotationW;
+          } else {
+            index += 7;
+          }
+        });
+      }
+
+      XRManager.prototype.updateUnityXRHandsData = function (data) {
+        var index = 0;
+        if (Module.HandsArray.byteLength == 0) {
+          Module.HandsArray = new Float32Array(buffer, Module.HandsArrayOffset, Module.HandsArrayLength);
+        }
+        Object.keys(data).forEach(function (key, i) {
+          Module.HandsArray[index++] = data[key].frame;
+          Module.HandsArray[index++] = data[key].enabled;
+          Module.HandsArray[index++] = data[key].hand;
+          Module.HandsArray[index++] = data[key].trigger;
+          Module.HandsArray[index++] = data[key].squeeze;
+          for (var j = 0; j < 25; j++) {
+            Module.HandsArray[index++] = data[key].joints[j].enabled;
+            Module.HandsArray[index++] = data[key].joints[j].position[0];
+            Module.HandsArray[index++] = data[key].joints[j].position[1];
+            Module.HandsArray[index++] = data[key].joints[j].position[2];
+            Module.HandsArray[index++] = data[key].joints[j].rotation[0];
+            Module.HandsArray[index++] = data[key].joints[j].rotation[1];
+            Module.HandsArray[index++] = data[key].joints[j].rotation[2];
+            Module.HandsArray[index++] = data[key].joints[j].rotation[3];
+            Module.HandsArray[index++] = data[key].joints[j].radius;
+          }
+        });
+      }
+
+      XRManager.prototype.updateUnityXRViewerHitTestPose = function (data) {
+        var index = 0;
+        if (Module.ViewerHitTestPoseArray.byteLength == 0) {
+          Module.ViewerHitTestPoseArray = new Float32Array(buffer, Module.ViewerHitTestPoseArrayOffset, Module.ViewerHitTestPoseArrayLength);
+        }
+        Module.ViewerHitTestPoseArray[index++] = data.viewerHitTestPose.frame;
+        Module.ViewerHitTestPoseArray[index++] = data.viewerHitTestPose.available;
+        Module.ViewerHitTestPoseArray[index++] = data.viewerHitTestPose.position[0];
+        Module.ViewerHitTestPoseArray[index++] = data.viewerHitTestPose.position[1];
+        Module.ViewerHitTestPoseArray[index++] = data.viewerHitTestPose.position[2];
+        Module.ViewerHitTestPoseArray[index++] = data.viewerHitTestPose.rotation[0];
+        Module.ViewerHitTestPoseArray[index++] = data.viewerHitTestPose.rotation[1];
+        Module.ViewerHitTestPoseArray[index++] = data.viewerHitTestPose.rotation[2];
+        Module.ViewerHitTestPoseArray[index++] = data.viewerHitTestPose.rotation[3];
+      }
     
       function initWebXRManager () {
         var xrManager = window.xrManager = new XRManager();
@@ -1020,8 +1119,6 @@ setTimeout(function () {
     })();
 
 }, 0);
-
-Module['WebXR'] = Module['WebXR'] || {};
 
 Module['WebXR'].GetBrowserObject = function () {
   return Browser;
