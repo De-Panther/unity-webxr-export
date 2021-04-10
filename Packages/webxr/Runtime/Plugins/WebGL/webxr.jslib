@@ -9,7 +9,7 @@ mergeInto(LibraryManager.library, {
     Module.XRSharedArrayOffset = byteOffset;
     Module.XRSharedArrayLength= length;
     Module.XRSharedArray = new Float32Array(buffer, byteOffset, length);
-    document.dispatchEvent(new CustomEvent('UnityLoaded', {detail: {state: 'Ready', module: Module}}));
+    Module.WebXR.onUnityLoaded({detail: {state: 'Ready', module: Module}});
   },
 
   InitControllersArray: function(byteOffset, length) {
@@ -31,18 +31,18 @@ mergeInto(LibraryManager.library, {
   },
 
   ToggleAR: function() {
-    document.dispatchEvent(new CustomEvent('toggleAR', {}));
+    Module.WebXR.toggleAR();
   },
 
   ToggleVR: function() {
-    document.dispatchEvent(new CustomEvent('toggleVR', {}));
+    Module.WebXR.toggleVR();
   },
 
   ToggleViewerHitTest: function() {
-    document.dispatchEvent(new CustomEvent('toggleHitTest', {}));
+    Module.WebXR.toggleHitTest();
   },
 
   ControllerPulse: function(controller, intensity, duration) {
-    document.dispatchEvent(new CustomEvent('callHapticPulse', {detail: {'controller' : controller, 'intensity' : intensity, 'duration': duration}}));
+    Module.WebXR.callHapticPulse({detail: {'controller' : controller, 'intensity' : intensity, 'duration': duration}});
   },
 });

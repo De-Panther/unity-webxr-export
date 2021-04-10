@@ -254,15 +254,12 @@ setTimeout(function () {
         var onUnityLoaded = this.unityLoaded.bind(this);
         var onToggleHitTest = this.toggleHitTest.bind(this);
         var onCallHapticPulse = this.hapticPulse.bind(this);
-    
-        // dispatched by index.html
-        document.addEventListener('UnityLoaded', onUnityLoaded, false);
-    
-        document.addEventListener('toggleAR', onToggleAr, false);
-        document.addEventListener('toggleVR', onToggleVr, false);
-    
-        document.addEventListener('toggleHitTest', onToggleHitTest, false);
-        document.addEventListener('callHapticPulse', onCallHapticPulse, false);
+
+        Module.WebXR.onUnityLoaded = onUnityLoaded;
+        Module.WebXR.toggleAR = onToggleAr;
+        Module.WebXR.toggleVR = onToggleVr;
+        Module.WebXR.toggleHitTest = onToggleHitTest;
+        Module.WebXR.callHapticPulse = onCallHapticPulse;
       }
     
       XRManager.prototype.onRequestARSession = function () {

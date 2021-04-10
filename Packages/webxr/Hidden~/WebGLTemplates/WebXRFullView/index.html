@@ -45,10 +45,10 @@
       }, false);
       
       enterARButton.addEventListener('click', function (event) {
-        document.dispatchEvent(new CustomEvent('toggleAR', {}));
+        unityInstance.Module.WebXR.toggleAR();
       }, false);
       enterVRButton.addEventListener('click', function (event) {
-        document.dispatchEvent(new CustomEvent('toggleVR', {}));
+        unityInstance.Module.WebXR.toggleVR();
       }, false);
     </script>
   </body>
