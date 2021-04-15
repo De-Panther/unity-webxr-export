@@ -15,6 +15,8 @@ namespace WebXR
 
     [SerializeField]
     private Camera cameraMain = null, cameraL = null, cameraR = null, cameraARL = null, cameraARR = null;
+    [SerializeField]
+    private Transform cameraFollower = null;
 
     private WebXRState xrState = WebXRState.NORMAL;
     private Rect leftRect, rightRect;
@@ -23,10 +25,13 @@ namespace WebXR
 
     private bool switched = false;
 
+    private bool hasFollower = false;
+
     void OnEnable()
     {
       WebXRManager.OnXRChange += OnXRChange;
       WebXRManager.OnHeadsetUpdate += OnHeadsetUpdate;
+      hasFollower = cameraFollower != null;
     }
     
     void OnDisable()
@@ -37,39 +42,65 @@ namespace WebXR
 
     void Update()
     {
-      if (switched)
+      if (!switched)
+      {
+        switched = true;
+        switch (xrState)
+        {
+          case WebXRState.AR:
+            cameraMain.enabled = false;
+            cameraL.enabled = false;
+            cameraR.enabled = false;
+            cameraARL.enabled = viewsCount > 0;
+            cameraARL.rect = leftRect;
+            cameraARR.enabled = viewsCount > 1;
+            cameraARR.rect = rightRect;
+            break;
+          case WebXRState.VR:
+            cameraMain.enabled = false;
+            cameraL.enabled = viewsCount > 0;
+            cameraL.rect = leftRect;
+            cameraR.enabled = viewsCount > 1;
+            cameraR.rect = rightRect;
+            cameraARL.enabled = false;
+            cameraARR.enabled = false;
+            break;
+          case WebXRState.NORMAL:
+            cameraMain.enabled = true;
+            cameraL.enabled = false;
+            cameraR.enabled = false;
+            cameraARL.enabled = false;
+            cameraARR.enabled = false;
+            break;
+        }
+      }
+      UpdateFollower();
+    }
+
+    private void UpdateFollower()
+    {
+      if (!hasFollower)
       {
         return;
       }
-      switched = true;
       switch (xrState)
       {
         case WebXRState.AR:
-          cameraMain.enabled = false;
-          cameraL.enabled = false;
-          cameraR.enabled = false;
-          cameraARL.enabled = viewsCount > 0;
-          cameraARL.rect = leftRect;
-          cameraARR.enabled = viewsCount > 1;
-          cameraARR.rect = rightRect;
-          break;
+          cameraFollower.localRotation = cameraARL.transform.localRotation;
+          if (viewsCount > 1)
+          {
+            cameraFollower.localPosition = (cameraARL.transform.localPosition + cameraARR.transform.localPosition) * 0.5f;
+            return;
+          }
+          cameraFollower.localPosition = cameraARL.transform.localPosition;
+          return;
         case WebXRState.VR:
-          cameraMain.enabled = false;
-          cameraL.enabled = viewsCount > 0;
-          cameraL.rect = leftRect;
-          cameraR.enabled = viewsCount > 1;
-          cameraR.rect = rightRect;
-          cameraARL.enabled = false;
-          cameraARR.enabled = false;
-          break;
-        case WebXRState.NORMAL:
-          cameraMain.enabled = true;
-          cameraL.enabled = false;
-          cameraR.enabled = false;
-          cameraARL.enabled = false;
-          cameraARR.enabled = false;
-          break;
+          cameraFollower.localRotation = cameraL.transform.localRotation;
+          cameraFollower.localPosition = (cameraL.transform.localPosition + cameraR.transform.localPosition) * 0.5f;
+          return;
       }
+      cameraFollower.localRotation = cameraMain.transform.localRotation;
+      cameraFollower.localPosition = cameraMain.transform.localPosition;
     }
 
     public Quaternion GetLocalRotation()
