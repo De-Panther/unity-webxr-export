@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.9.0] - 2020-04-16
+## [0.9.0] - 2021-04-16
 ### Added
 - CameraFollower to WebXRCamera, for AudioListener to follow active cameras poses.
 
@@ -19,11 +19,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - Custom JavaScript dispatch events from the WebGLTemplates.
 
-## [0.8.1] - 2020-03-06
+## [0.8.1] - 2021-03-06
 ### Fixed
 - Workaround for Chromium depth bug (Chromium issue 1167450).
 
-## [0.8.0] - 2020-02-26
+## [0.8.0] - 2021-02-26
 ### Added
 - ToggleAR, ToggleVR, isSupportedAR and isSupportedVR to WebXRManager.
 
@@ -33,7 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - hasExternalDisplay from WebXRDisplayCapabilities.
 
-## [0.7.0] - 2020-02-13
+## [0.7.0] - 2021-02-13
 ### Added
 - Support for `targetRaySpace` for controllers poses.
 
@@ -45,7 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Hack for Oculus on Chrome Desktop wrong `targetRaySpace` bug.
 - WebXRCamera now removes event listeners OnDisable.
 
-## [0.6.0] - 2020-01-23
+## [0.6.0] - 2021-01-23
 ### Added
 - GetLocalRotation and GetLocalPosition to WebXRCamera.
 - Support for the new/updated WebXR Hands API.
