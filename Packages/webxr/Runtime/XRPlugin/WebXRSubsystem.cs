@@ -158,13 +158,16 @@ namespace WebXR
 
     private void InternalStart()
     {
+#if UNITY_WEBGL
       Native.set_webxr_events(OnStartAR, OnStartVR, OnEndXR, OnXRCapabilities, OnInputProfiles);
       Native.InitControllersArray(controllersArray, controllersArray.Length);
       Native.InitHandsArray(handsArray, handsArray.Length);
       Native.InitViewerHitTestPoseArray(viewerHitTestPoseArray, viewerHitTestPoseArray.Length);
       Native.InitXRSharedArray(sharedArray, sharedArray.Length);
+#endif
     }
 
+#if UNITY_WEBGL
     private static class Native
     {
       [DllImport("__Internal")]
@@ -198,6 +201,7 @@ namespace WebXR
           Action<string> on_xr_capabilities,
           Action<string> on_input_profiles);
     }
+#endif
 
     internal WebXRState xrState = WebXRState.NORMAL;
 
@@ -332,41 +336,51 @@ namespace WebXR
 
     public void ToggleAR()
     {
+#if UNITY_WEBGL
       if (capabilities.canPresentAR)
       {
         Native.ToggleAR();
       }
+#endif
     }
 
     public void ToggleVR()
     {
+#if UNITY_WEBGL
       if (capabilities.canPresentVR)
       {
         Native.ToggleVR();
       }
+#endif
     }
 
     public void StartViewerHitTest()
     {
+#if UNITY_WEBGL
       if (xrState == WebXRState.AR && !viewerHitTestOn)
       {
         viewerHitTestOn = true;
         Native.ToggleViewerHitTest();
       }
+#endif
     }
 
     public void StopViewerHitTest()
     {
+#if UNITY_WEBGL
       if (xrState == WebXRState.AR && viewerHitTestOn)
       {
         viewerHitTestOn = false;
         Native.ToggleViewerHitTest();
       }
+#endif
     }
 
     public void HapticPulse(WebXRControllerHand hand, float intensity, float duration)
     {
+#if UNITY_WEBGL
       Native.ControllerPulse((int)hand, intensity, duration);
+#endif
     }
 
     void GetMatrixFromSharedArray(int index, ref Matrix4x4 matrix)
