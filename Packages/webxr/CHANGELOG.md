@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Optimization for JavaScript to C# communication.
 
+### Fixed
+- Errors when building for other platforms using IL2CPP.
+
 ### Removed
 - Custom JavaScript dispatch events from the WebGLTemplates.
 
