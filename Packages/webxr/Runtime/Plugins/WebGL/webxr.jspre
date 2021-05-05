@@ -619,13 +619,18 @@ setTimeout(function () {
             }
             xrHand.enabled = 1;
             if (inputSource.hand.values) {
-              frame.fillPoses(inputSource.hand.values(), refSpace, xrHand.poses);
+              if (!frame.fillPoses(inputSource.hand.values(), refSpace, xrHand.poses)) {
+                xrHand.enabled = 0;
+                continue;
+              }
               frame.fillJointRadii(inputSource.hand.values(), xrHand.radii);
             } else {
-              frame.fillPoses(inputSource.hand, refSpace, xrHand.poses);
+              if (!frame.fillPoses(inputSource.hand, refSpace, xrHand.poses)) {
+                xrHand.enabled = 0;
+                continue;
+              }
               frame.fillJointRadii(inputSource.hand, xrHand.radii);
             }
-            var jointsCount = 0;
             for (var j = 0; j < 25; j++) {
               xrHand.jointIndex = j*16;
               if (!isNaN(xrHand.poses[xrHand.jointIndex])) {
@@ -641,19 +646,6 @@ setTimeout(function () {
                 if (!isNaN(xrHand.radii[j])) {
                   xrHand.joints[j].radius = xrHand.radii[j];
                 }
-                // Ugly hack(?) to disable hand when not tracking
-                if (jointsCount == 0
-                    && xrHand.joints[j].position[0] == 0
-                    && xrHand.joints[j].position[1] == 0
-                    && xrHand.joints[j].position[2] == 0
-                    && xrHand.joints[j].rotation[0] == 0
-                    && xrHand.joints[j].rotation[1] == 0
-                    && xrHand.joints[j].rotation[2] == 0
-                    && xrHand.joints[j].rotation[3] == 0.5) {
-                  xrHand.enabled = 0;
-                  break;
-                }
-                jointsCount++;
               }
             }
           } else if (inputSource.gripSpace) {
