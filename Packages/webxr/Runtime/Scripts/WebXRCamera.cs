@@ -2,6 +2,7 @@
 
 namespace WebXR
 {
+  [DefaultExecutionOrder(-2019)]
   public class WebXRCamera : MonoBehaviour
   {
     public enum CameraID
@@ -23,58 +24,61 @@ namespace WebXR
 
     private int viewsCount = 1;
 
-    private bool switched = false;
-
     private bool hasFollower = false;
 
-    void OnEnable()
+    private void Awake()
+    {
+      SwitchXRState();
+    }
+
+    private void OnEnable()
     {
       WebXRManager.OnXRChange += OnXRChange;
       WebXRManager.OnHeadsetUpdate += OnHeadsetUpdate;
       hasFollower = cameraFollower != null;
     }
-    
-    void OnDisable()
+
+    private void OnDisable()
     {
       WebXRManager.OnXRChange -= OnXRChange;
       WebXRManager.OnHeadsetUpdate -= OnHeadsetUpdate;
     }
 
-    void Update()
+    private void Update()
     {
-      if (!switched)
-      {
-        switched = true;
-        switch (xrState)
-        {
-          case WebXRState.AR:
-            cameraMain.enabled = false;
-            cameraL.enabled = false;
-            cameraR.enabled = false;
-            cameraARL.enabled = viewsCount > 0;
-            cameraARL.rect = leftRect;
-            cameraARR.enabled = viewsCount > 1;
-            cameraARR.rect = rightRect;
-            break;
-          case WebXRState.VR:
-            cameraMain.enabled = false;
-            cameraL.enabled = viewsCount > 0;
-            cameraL.rect = leftRect;
-            cameraR.enabled = viewsCount > 1;
-            cameraR.rect = rightRect;
-            cameraARL.enabled = false;
-            cameraARR.enabled = false;
-            break;
-          case WebXRState.NORMAL:
-            cameraMain.enabled = true;
-            cameraL.enabled = false;
-            cameraR.enabled = false;
-            cameraARL.enabled = false;
-            cameraARR.enabled = false;
-            break;
-        }
-      }
       UpdateFollower();
+    }
+
+    private void SwitchXRState()
+    {
+      switch (xrState)
+      {
+        case WebXRState.AR:
+          cameraMain.enabled = false;
+          cameraL.enabled = false;
+          cameraR.enabled = false;
+          cameraARL.enabled = viewsCount > 0;
+          cameraARL.rect = leftRect;
+          cameraARR.enabled = viewsCount > 1;
+          cameraARR.rect = rightRect;
+          break;
+        case WebXRState.VR:
+          cameraMain.enabled = false;
+          cameraL.enabled = viewsCount > 0;
+          cameraL.rect = leftRect;
+          cameraR.enabled = viewsCount > 1;
+          cameraR.rect = rightRect;
+          cameraARL.enabled = false;
+          cameraARR.enabled = false;
+          break;
+        case WebXRState.NORMAL:
+          cameraMain.enabled = true;
+          cameraL.enabled = false;
+          cameraR.enabled = false;
+          cameraARL.enabled = false;
+          cameraARR.enabled = false;
+          break;
+      }
     }
 
     private void UpdateFollower()
@@ -153,7 +157,7 @@ namespace WebXR
       this.viewsCount = viewsCount;
       this.leftRect = leftRect;
       this.rightRect = rightRect;
-      switched = false;
+      SwitchXRState();
     }
 
     private void OnHeadsetUpdate(

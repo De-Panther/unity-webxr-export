@@ -1,7 +1,10 @@
+using UnityEngine;
+
 namespace WebXR
 {
   public enum WebXRState { VR, AR, NORMAL }
 
+  [DefaultExecutionOrder(-2020)]
   public class WebXRManager : SubsystemLifecycleManager<WebXRSubsystem, WebXRSubsystemDescriptor>
   {
       public static WebXRManager Instance { get; private set; }

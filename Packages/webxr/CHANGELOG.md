@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Scripts execution order.
+- How XR session switch is handled.
+- OnXRChange is called from the Update loop.
+
 ### Fixed
 - User scaling issue in FullView WebGLTemplates
 

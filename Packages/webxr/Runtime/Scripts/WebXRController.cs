@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace WebXR
 {
-
+  [DefaultExecutionOrder(-2018)]
   public class WebXRController : MonoBehaviour
   {
     public enum ButtonTypes
