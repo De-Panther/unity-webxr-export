@@ -619,10 +619,16 @@ setTimeout(function () {
             }
             xrHand.enabled = 1;
             if (inputSource.hand.values) {
-              frame.fillPoses(inputSource.hand.values(), refSpace, xrHand.poses);
+              if (!frame.fillPoses(inputSource.hand.values(), refSpace, xrHand.poses)) {
+                xrHand.enabled = 0;
+                continue;
+              }
               frame.fillJointRadii(inputSource.hand.values(), xrHand.radii);
             } else {
-              frame.fillPoses(inputSource.hand, refSpace, xrHand.poses);
+              if (!frame.fillPoses(inputSource.hand, refSpace, xrHand.poses)) {
+                xrHand.enabled = 0;
+                continue;
+              }
               frame.fillJointRadii(inputSource.hand, xrHand.radii);
             }
             for (var j = 0; j < 25; j++) {
