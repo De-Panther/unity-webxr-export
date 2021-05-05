@@ -82,6 +82,11 @@ namespace WebXR
 
     internal void OnUpdate()
     {
+      if (!reportedXRStateSwitch)
+      {
+        reportedXRStateSwitch = true;
+        OnXRChange?.Invoke(xrState, viewsCount, leftRect, rightRect);
+      }
       if (switchToEnd)
       {
         switchToEnd = false;
@@ -204,6 +209,10 @@ namespace WebXR
 #endif
 
     internal WebXRState xrState = WebXRState.NORMAL;
+    private int viewsCount = 1;
+    private Rect leftRect;
+    private Rect rightRect;
+    private bool reportedXRStateSwitch = true;
 
     public delegate void XRCapabilitiesUpdate(WebXRDisplayCapabilities capabilities);
 
@@ -300,8 +309,11 @@ namespace WebXR
     public void setXrState(WebXRState state, int viewsCount, Rect leftRect, Rect rightRect)
     {
       this.xrState = state;
+      this.viewsCount = viewsCount;
+      this.leftRect = leftRect;
+      this.rightRect = rightRect;
       viewerHitTestOn = false;
-      OnXRChange?.Invoke(state, viewsCount, leftRect, rightRect);
+      reportedXRStateSwitch = false;
     }
 
     // received start AR from WebXR browser

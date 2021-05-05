@@ -809,15 +809,24 @@ setTimeout(function () {
         var thisXRMananger = this;
         session.requestReferenceSpace(refSpaceType).then(function (refSpace) {
           session.refSpace = refSpace;
-          thisXRMananger.BrowserObject.resumeAsyncCallbacks();
-          thisXRMananger.BrowserObject.mainLoop.resume();
+          var tempRaf = function (time, xrFrame) {
+            if (thisXRMananger.animate(xrFrame))
+            {
+              thisXRMananger.BrowserObject.resumeAsyncCallbacks();
+              thisXRMananger.BrowserObject.mainLoop.resume();
+            } else {
+              // No XR session yet
+              session.requestAnimationFrame(tempRaf);
+            }
+          }
+          session.requestAnimationFrame(tempRaf);
         });
       }
     
       XRManager.prototype.animate = function (frame) {
         var session = frame.session;
         if (!session) {
-          return;
+          return this.didNotifyUnity;
         }
         
         var glLayer = session.renderState.baseLayer;
@@ -842,12 +851,12 @@ setTimeout(function () {
         
         var pose = frame.getViewerPose(session.refSpace);
         if (!pose) {
-          return;
+          return this.didNotifyUnity;
         }
     
         if (!session.isImmersive)
         {
-          return;
+          return this.didNotifyUnity;
         }
     
         var xrData = this.xrData;
@@ -979,6 +988,7 @@ setTimeout(function () {
           }
           this.didNotifyUnity = true;
         }
+        return this.didNotifyUnity;
       }
 
       XRManager.prototype.updateUnityXRData = function (data) {
