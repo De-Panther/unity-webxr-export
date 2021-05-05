@@ -11,7 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - OnXRChange is called from the Update loop.
 
 ### Fixed
-- User scaling issue in FullView WebGLTemplates
+- User scaling issue in FullView WebGLTemplates.
+- Issue with disabling hand when not tracking.
 
 ## [0.9.0] - 2021-04-16
 ### Added
