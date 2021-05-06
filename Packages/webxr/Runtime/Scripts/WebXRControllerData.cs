@@ -75,7 +75,6 @@ namespace WebXR
   [System.Serializable]
   public struct WebXRJointData
   {
-    public bool enabled;
     public Vector3 position;
     public Quaternion rotation;
     public float radius;

@@ -256,13 +256,10 @@ namespace WebXR.Interactions
       {
         for (int i = 0; i <= (int)WebXRHandJoint.pinky_finger_tip; i++)
         {
-          if (handData.joints[i].enabled)
+          if (handModelJoints.ContainsKey(i))
           {
-            if (handModelJoints.ContainsKey(i))
-            {
-              handModelJoints[i].localPosition = rotationOffset * (handData.joints[i].position - handData.joints[0].position);
-              handModelJoints[i].localRotation = rotationOffset * handData.joints[i].rotation;
-            }
+            handModelJoints[i].localPosition = rotationOffset * (handData.joints[i].position - handData.joints[0].position);
+            handModelJoints[i].localRotation = rotationOffset * handData.joints[i].rotation;
           }
         }
         return;
@@ -271,34 +268,31 @@ namespace WebXR.Interactions
 
       for (int i = 0; i <= (int)WebXRHandJoint.pinky_finger_tip; i++)
       {
-        if (handData.joints[i].enabled)
+        if (handJoints.ContainsKey(i))
         {
-          if (handJoints.ContainsKey(i))
+          handJoints[i].localPosition = rotationOffset * (handData.joints[i].position - handData.joints[0].position);
+          handJoints[i].localRotation = rotationOffset * handData.joints[i].rotation;
+          if (handData.joints[i].radius != handJoints[i].localScale.x && handData.joints[i].radius > 0)
           {
-            handJoints[i].localPosition = rotationOffset * (handData.joints[i].position - handData.joints[0].position);
-            handJoints[i].localRotation = rotationOffset * handData.joints[i].rotation;
-            if (handData.joints[i].radius != handJoints[i].localScale.x && handData.joints[i].radius > 0)
-            {
-              handJoints[i].localScale = new Vector3(handData.joints[i].radius, handData.joints[i].radius, handData.joints[i].radius);
-            }
+            handJoints[i].localScale = new Vector3(handData.joints[i].radius, handData.joints[i].radius, handData.joints[i].radius);
+          }
+        }
+        else
+        {
+          var clone = Instantiate(handJointPrefab,
+                                  rotationOffset * (handData.joints[i].position - handData.joints[0].position),
+                                  rotationOffset * handData.joints[i].rotation,
+                                  transform);
+          if (handData.joints[i].radius > 0f)
+          {
+            clone.localScale = new Vector3(handData.joints[i].radius, handData.joints[i].radius, handData.joints[i].radius);
           }
           else
           {
-            var clone = Instantiate(handJointPrefab,
-                                    rotationOffset * (handData.joints[i].position - handData.joints[0].position),
-                                    rotationOffset * handData.joints[i].rotation,
-                                    transform);
-            if (handData.joints[i].radius > 0f)
-            {
-              clone.localScale = new Vector3(handData.joints[i].radius, handData.joints[i].radius, handData.joints[i].radius);
-            }
-            else
-            {
-              clone.localScale = new Vector3(0.005f, 0.005f, 0.005f);
-            }
-            handJoints.Add(i, clone);
-            handJointsVisuals[i] = clone.gameObject;
+            clone.localScale = new Vector3(0.005f, 0.005f, 0.005f);
           }
+          handJoints.Add(i, clone);
+          handJointsVisuals[i] = clone.gameObject;
         }
       }
     }

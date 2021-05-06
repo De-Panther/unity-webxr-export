@@ -87,9 +87,9 @@ namespace WebXR
         reportedXRStateSwitch = true;
         OnXRChange?.Invoke(xrState, viewsCount, leftRect, rightRect);
       }
-      if (switchToEnd)
+      if (!updatedControllersOnEnd)
       {
-        switchToEnd = false;
+        updatedControllersOnEnd = true;
         UpdateControllersOnEnd();
       }
       if (this.xrState == WebXRState.NORMAL)
@@ -260,14 +260,14 @@ namespace WebXR
     float[] controllersArray = new float[2 * 28];
 
     // Shared array for hands data
-    float[] handsArray = new float[2 * (25 * 9 + 5)];
+    float[] handsArray = new float[2 * (25 * 8 + 5)];
 
     // Shared array for hit-test pose data
     float[] viewerHitTestPoseArray = new float[9];
 
     bool viewerHitTestOn = false;
 
-    private bool switchToEnd = false;
+    private bool updatedControllersOnEnd = true;
 
     private WebXRHandData leftHand = new WebXRHandData();
     private WebXRHandData rightHand = new WebXRHandData();
@@ -342,7 +342,7 @@ namespace WebXR
     [MonoPInvokeCallback(typeof(Action))]
     public static void OnEndXR()
     {
-      Instance.switchToEnd = true;
+      Instance.updatedControllersOnEnd = false;
       Instance.setXrState(WebXRState.NORMAL, 1, new Rect(), new Rect());
     }
 
@@ -462,7 +462,7 @@ namespace WebXR
 
     bool GetHandFromHandsArray(int handIndex, ref WebXRHandData handObject)
     {
-      int arrayPosition = handIndex * 230;
+      int arrayPosition = handIndex * 205;
       int frameNumber = (int)handsArray[arrayPosition++];
       if (handObject.frame == frameNumber)
       {
@@ -481,7 +481,6 @@ namespace WebXR
 
       for (int i = 0; i <= (int)WebXRHandJoint.pinky_finger_tip; i++)
       {
-        handObject.joints[i].enabled = handsArray[arrayPosition++] != 0;
         handObject.joints[i].position = new Vector3(handsArray[arrayPosition++], handsArray[arrayPosition++], handsArray[arrayPosition++]);
         handObject.joints[i].rotation = new Quaternion(handsArray[arrayPosition++], handsArray[arrayPosition++], handsArray[arrayPosition++],
             handsArray[arrayPosition++]);
