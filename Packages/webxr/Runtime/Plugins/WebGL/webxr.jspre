@@ -122,10 +122,11 @@ setTimeout(function () {
         this.radii = new Float32Array(25);
         this.jointQuaternion = new Float32Array(4);
         this.jointIndex = 0;
+        this.handValues = null;
+        this.handValuesType = 0;
       }
     
       function XRJointData() {
-        this.enabled = 0;
         this.position = [0, 0, 0];
         this.rotation = [0, 0, 0, 1];
         this.radius = 0;
@@ -618,23 +619,32 @@ setTimeout(function () {
               xrHand.hand = 2;
             }
             xrHand.enabled = 1;
-            if (inputSource.hand.values) {
-              if (!frame.fillPoses(inputSource.hand.values(), refSpace, xrHand.poses)) {
-                xrHand.enabled = 0;
-                continue;
-              }
-              frame.fillJointRadii(inputSource.hand.values(), xrHand.radii);
-            } else {
-              if (!frame.fillPoses(inputSource.hand, refSpace, xrHand.poses)) {
-                xrHand.enabled = 0;
-                continue;
-              }
-              frame.fillJointRadii(inputSource.hand, xrHand.radii);
+
+            switch (xrHand.handValuesType) {
+              case 0:
+                if (inputSource.hand.values) {
+                  xrHand.handValues = inputSource.hand.values();
+                  xrHand.handValuesType = 1
+                } else {
+                  xrHand.handValues = inputSource.hand;
+                  xrHand.handValuesType = 2
+                }
+                break;
+              case 1:
+                xrHand.handValues = inputSource.hand.values();
+                break;
+              case 2:
+                xrHand.handValues = inputSource.hand;
+                break;
             }
+            if (!frame.fillPoses(xrHand.handValues, refSpace, xrHand.poses)) {
+              xrHand.enabled = 0;
+              continue;
+            }
+            frame.fillJointRadii(xrHand.handValues, xrHand.radii);
             for (var j = 0; j < 25; j++) {
               xrHand.jointIndex = j*16;
               if (!isNaN(xrHand.poses[xrHand.jointIndex])) {
-                xrHand.joints[j].enabled = 1;
                 xrHand.joints[j].position[0] = xrHand.poses[xrHand.jointIndex+12];
                 xrHand.joints[j].position[1] = xrHand.poses[xrHand.jointIndex+13];
                 xrHand.joints[j].position[2] = -xrHand.poses[xrHand.jointIndex+14];
@@ -1065,7 +1075,6 @@ setTimeout(function () {
           Module.HandsArray[index++] = data[key].trigger;
           Module.HandsArray[index++] = data[key].squeeze;
           for (var j = 0; j < 25; j++) {
-            Module.HandsArray[index++] = data[key].joints[j].enabled;
             Module.HandsArray[index++] = data[key].joints[j].position[0];
             Module.HandsArray[index++] = data[key].joints[j].position[1];
             Module.HandsArray[index++] = data[key].joints[j].position[2];

@@ -30,6 +30,7 @@ namespace WebXR.Interactions
 
     private GameObject[] handJointsVisuals = new GameObject[25];
     private Dictionary<int, Transform> handJoints = new Dictionary<int, Transform>();
+    public GameObject inputProfileHandModelParent;
 
 #if WEBXR_INPUT_PROFILES
     private InputProfileLoader inputProfileLoader;
@@ -37,6 +38,11 @@ namespace WebXR.Interactions
     private bool hasProfileList = false;
     private bool loadedModel = false;
     private string loadedProfile = null;
+
+    private InputProfileModel inputProfileHandModel;
+    private bool loadedHandModel = false;
+    private string loadedHandProfile = null;
+    private Dictionary<int, Transform> handModelJoints = new Dictionary<int, Transform>();
 #endif
 
     private void Awake()
@@ -206,6 +212,27 @@ namespace WebXR.Interactions
     {
       handJointsVisible = visible;
       Drop();
+#if WEBXR_INPUT_PROFILES
+      // We want to use WebXR Input Profiles
+      if (visible && useInputProfile)
+      {
+        if (inputProfileHandModel != null && loadedHandModel)
+        {
+          // There's a loaded Input Profile Model
+          inputProfileHandModelParent.SetActive(true);
+          return;
+        }
+        else if (inputProfileHandModel == null)
+        {
+          // There's no loaded Input Profile Model and it's not in loading process
+          LoadHandInputProfile();
+        }
+      }
+      else
+      {
+        inputProfileHandModelParent.SetActive(false);
+      }
+#endif
       foreach (var visual in handJointsVisuals)
       {
         visual?.SetActive(visible);
@@ -224,36 +251,48 @@ namespace WebXR.Interactions
       }
       Quaternion rotationOffset = Quaternion.Inverse(handData.joints[0].rotation);
 
-      for (int i = 0; i <= WebXRHandData.LITTLE_PHALANX_TIP; i++)
+#if WEBXR_INPUT_PROFILES
+      if (useInputProfile && loadedHandModel)
       {
-        if (handData.joints[i].enabled)
+        for (int i = 0; i <= (int)WebXRHandJoint.pinky_finger_tip; i++)
         {
-          if (handJoints.ContainsKey(i))
+          if (handModelJoints.ContainsKey(i))
           {
-            handJoints[i].localPosition = rotationOffset * (handData.joints[i].position - handData.joints[0].position);
-            handJoints[i].localRotation = rotationOffset * handData.joints[i].rotation;
-            if (handData.joints[i].radius != handJoints[i].localScale.x && handData.joints[i].radius > 0)
-            {
-              handJoints[i].localScale = new Vector3(handData.joints[i].radius, handData.joints[i].radius, handData.joints[i].radius);
-            }
+            handModelJoints[i].localPosition = rotationOffset * (handData.joints[i].position - handData.joints[0].position);
+            handModelJoints[i].localRotation = rotationOffset * handData.joints[i].rotation;
+          }
+        }
+        return;
+      }
+#endif
+
+      for (int i = 0; i <= (int)WebXRHandJoint.pinky_finger_tip; i++)
+      {
+        if (handJoints.ContainsKey(i))
+        {
+          handJoints[i].localPosition = rotationOffset * (handData.joints[i].position - handData.joints[0].position);
+          handJoints[i].localRotation = rotationOffset * handData.joints[i].rotation;
+          if (handData.joints[i].radius != handJoints[i].localScale.x && handData.joints[i].radius > 0)
+          {
+            handJoints[i].localScale = new Vector3(handData.joints[i].radius, handData.joints[i].radius, handData.joints[i].radius);
+          }
+        }
+        else
+        {
+          var clone = Instantiate(handJointPrefab,
+                                  rotationOffset * (handData.joints[i].position - handData.joints[0].position),
+                                  rotationOffset * handData.joints[i].rotation,
+                                  transform);
+          if (handData.joints[i].radius > 0f)
+          {
+            clone.localScale = new Vector3(handData.joints[i].radius, handData.joints[i].radius, handData.joints[i].radius);
           }
           else
           {
-            var clone = Instantiate(handJointPrefab,
-                                    rotationOffset * (handData.joints[i].position - handData.joints[0].position),
-                                    rotationOffset * handData.joints[i].rotation,
-                                    transform);
-            if (handData.joints[i].radius > 0f)
-            {
-              clone.localScale = new Vector3(handData.joints[i].radius, handData.joints[i].radius, handData.joints[i].radius);
-            }
-            else
-            {
-              clone.localScale = new Vector3(0.005f, 0.005f, 0.005f);
-            }
-            handJoints.Add(i, clone);
-            handJointsVisuals[i] = clone.gameObject;
+            clone.localScale = new Vector3(0.005f, 0.005f, 0.005f);
           }
+          handJoints.Add(i, clone);
+          handJointsVisuals[i] = clone.gameObject;
         }
       }
     }
@@ -284,11 +323,27 @@ namespace WebXR.Interactions
       }
     }
 
+    private void LoadHandInputProfile()
+    {
+      // Start loading the generic hand profile
+      loadedHandProfile = "generic-hand";
+      inputProfileLoader.LoadProfile(new string[] {loadedHandProfile}, OnHandProfileLoaded);
+    }
+
     private void OnProfileLoaded(bool success)
     {
       if (success)
       {
         LoadInputModel();
+      }
+      // Nothing to do if profile didn't load
+    }
+
+    private void OnHandProfileLoaded(bool success)
+    {
+      if (success)
+      {
+        LoadHandInputModel();
       }
       // Nothing to do if profile didn't load
     }
@@ -304,6 +359,14 @@ namespace WebXR.Interactions
         // Update input state while still loading the model
         UpdateModelInput();
       }
+    }
+
+    private void LoadHandInputModel()
+    {
+      inputProfileHandModel = inputProfileLoader.LoadModelForHand(
+                              loadedHandProfile,
+                              (InputProfileLoader.Handedness)controller.hand,
+                              HandleHandModelLoaded);
     }
 
     private void HandleModelLoaded(bool success)
@@ -330,6 +393,44 @@ namespace WebXR.Interactions
       else
       {
         Destroy(inputProfileModel.gameObject);
+      }
+    }
+
+    private void HandleHandModelLoaded(bool success)
+    {
+      loadedHandModel = success;
+      if (loadedHandModel)
+      {
+        // Set parent only after successful loading, to not interupt loading in case of disabled object
+        var inputProfileModelTransform = inputProfileHandModel.transform;
+        inputProfileModelTransform.SetParent(inputProfileHandModelParent.transform);
+        inputProfileModelTransform.localPosition = Vector3.zero;
+        inputProfileModelTransform.localRotation = Quaternion.identity;
+        inputProfileModelTransform.localScale = Vector3.one;
+        for (int i = 0; i <= (int)WebXRHandJoint.pinky_finger_tip; i++)
+        {
+          handModelJoints.Add(i, inputProfileHandModel.GetChildTransform(((WebXRHandJoint)i).ToString().Replace('_','-')));
+          // It took at least one frame with hand data, there should be hand joint transform
+          if (handJoints.ContainsKey(i))
+          {
+            handModelJoints[i].SetPositionAndRotation(handJoints[i].position, handJoints[i].rotation);
+            var collider = handModelJoints[i].gameObject.AddComponent<SphereCollider>();
+            collider.radius = handJoints[i].localScale.x;
+            collider.isTrigger = true;
+          }
+        }
+        if (handJointsVisible)
+        {
+          inputProfileHandModelParent.SetActive(true);
+          foreach (var visual in handJointsVisuals)
+          {
+            visual?.SetActive(false);
+          }
+        }
+      }
+      else
+      {
+        Destroy(inputProfileHandModel.gameObject);
       }
     }
 
