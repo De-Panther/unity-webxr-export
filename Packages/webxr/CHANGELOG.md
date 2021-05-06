@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- WebXRHandJoint enum instead of const values.
+
 ### Changed
 - Scripts execution order.
 - How XR session switch is handled.
@@ -13,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - User scaling issue in FullView WebGLTemplates.
 - Issue with disabling hand when not tracking.
+
+### Removed
+- Const hand joints index values from WebXRHandData.
 
 ## [0.9.0] - 2021-04-16
 ### Added

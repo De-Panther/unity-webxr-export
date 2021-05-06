@@ -479,7 +479,7 @@ namespace WebXR
         return true;
       }
 
-      for (int i = 0; i <= WebXRHandData.LITTLE_PHALANX_TIP; i++)
+      for (int i = 0; i <= (int)WebXRHandJoint.pinky_finger_tip; i++)
       {
         handObject.joints[i].enabled = handsArray[arrayPosition++] != 0;
         handObject.joints[i].position = new Vector3(handsArray[arrayPosition++], handsArray[arrayPosition++], handsArray[arrayPosition++]);
