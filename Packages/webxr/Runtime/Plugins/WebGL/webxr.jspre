@@ -122,8 +122,8 @@ setTimeout(function () {
         this.radii = new Float32Array(25);
         this.jointQuaternion = new Float32Array(4);
         this.jointIndex = 0;
-        this.handValues = null;
         this.handValuesType = 0;
+        this.hasRadii = false;
       }
     
       function XRJointData() {
@@ -620,28 +620,26 @@ setTimeout(function () {
             }
             xrHand.enabled = 1;
 
-            switch (xrHand.handValuesType) {
-              case 0:
-                if (inputSource.hand.values) {
-                  xrHand.handValues = inputSource.hand.values();
-                  xrHand.handValuesType = 1
-                } else {
-                  xrHand.handValues = inputSource.hand;
-                  xrHand.handValuesType = 2
-                }
-                break;
-              case 1:
-                xrHand.handValues = inputSource.hand.values();
-                break;
-              case 2:
-                xrHand.handValues = inputSource.hand;
-                break;
+            if (xrHand.handValuesType == 0) {
+              if (inputSource.hand.values) {
+                xrHand.handValuesType = 1
+              } else {
+                xrHand.handValuesType = 2
+              }
             }
-            if (!frame.fillPoses(xrHand.handValues, refSpace, xrHand.poses)) {
+            if (!frame.fillPoses(
+                xrHand.handValuesType == 1 ? inputSource.hand.values() : inputSource.hand,
+                refSpace,
+                xrHand.poses)) {
               xrHand.enabled = 0;
               continue;
             }
-            frame.fillJointRadii(xrHand.handValues, xrHand.radii);
+            if (!xrHand.hasRadii)
+            {
+              xrHand.hasRadii = frame.fillJointRadii(
+                xrHand.handValuesType == 1 ? inputSource.hand.values() : inputSource.hand,
+                xrHand.radii);
+            }
             for (var j = 0; j < 25; j++) {
               xrHand.jointIndex = j*16;
               if (!isNaN(xrHand.poses[xrHand.jointIndex])) {

@@ -279,10 +279,9 @@ namespace WebXR.Interactions
         }
         else
         {
-          var clone = Instantiate(handJointPrefab,
-                                  rotationOffset * (handData.joints[i].position - handData.joints[0].position),
-                                  rotationOffset * handData.joints[i].rotation,
-                                  transform);
+          var clone = Instantiate(handJointPrefab, transform);
+          clone.localPosition = rotationOffset * (handData.joints[i].position - handData.joints[0].position);
+          clone.localRotation = rotationOffset * handData.joints[i].rotation;
           if (handData.joints[i].radius > 0f)
           {
             clone.localScale = new Vector3(handData.joints[i].radius, handData.joints[i].radius, handData.joints[i].radius);
