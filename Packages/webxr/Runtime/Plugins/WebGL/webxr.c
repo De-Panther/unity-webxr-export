@@ -8,6 +8,7 @@ typedef void (*webxr_void_string)(const char *ptr);
 
 webxr_void_int_float4_float4 on_start_ar_ref;
 webxr_void_int_float4_float4 on_start_vr_ref;
+webxr_void_int on_visibility_change_ref;
 webxr_void on_end_xr_ref;
 webxr_void_string on_xr_capabilities_ref;
 webxr_void_string on_input_profiles_ref;
@@ -15,12 +16,14 @@ webxr_void_string on_input_profiles_ref;
 void set_webxr_events(
   webxr_void_int_float4_float4 _on_start_ar,
   webxr_void_int_float4_float4 _on_start_vr,
+  webxr_void_int _on_visibility_change,
   webxr_void _on_end_xr,
   webxr_void_string _on_xr_capabilities,
   webxr_void_string _on_input_profiles
 ) {
   on_start_ar_ref = _on_start_ar;
   on_start_vr_ref = _on_start_vr;
+  on_visibility_change_ref = _on_visibility_change;
   on_end_xr_ref = _on_end_xr;
   on_xr_capabilities_ref = _on_xr_capabilities;
   on_input_profiles_ref = _on_input_profiles;
@@ -42,6 +45,11 @@ void EMSCRIPTEN_KEEPALIVE on_start_vr(int views_count,
   on_start_vr_ref(views_count,
                   left_x, left_y, left_w, left_h,
                   right_x, right_y, right_w, right_h);
+}
+
+void EMSCRIPTEN_KEEPALIVE on_visibility_change(int visibility_state)
+{
+  on_visibility_change_ref(visibility_state);
 }
 
 void EMSCRIPTEN_KEEPALIVE on_end_xr()

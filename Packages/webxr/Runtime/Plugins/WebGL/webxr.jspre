@@ -217,6 +217,7 @@ setTimeout(function () {
         this.isARSupported = false;
         this.isVRSupported = false;
         this.onInputEvent = null;
+        this.onSessionVisibilityEvent = null;
         this.BrowserObject = null;
         this.JSEventsObject = null;
         this.init();
@@ -331,6 +332,7 @@ setTimeout(function () {
           xrSessionEvent.session.removeEventListener('squeeze', this.onInputEvent);
           xrSessionEvent.session.removeEventListener('squeezestart', this.onInputEvent);
           xrSessionEvent.session.removeEventListener('squeezeend', this.onInputEvent);
+          xrSessionEvent.session.removeEventListener('visibilitychange', this.onSessionVisibilityEvent);
         }
     
         if (this.viewerHitTestSource) {
@@ -458,7 +460,11 @@ setTimeout(function () {
           }
         }
       }
-    
+
+      XRManager.prototype.onVisibilityChange = function (event) {
+        this.gameModule.WebXR.OnVisibilityChange(this.xrSession.visibilityState);
+      }
+
       XRManager.prototype.toggleAr = function () {
         if (!this.gameModule)
         {
@@ -571,6 +577,7 @@ setTimeout(function () {
         this.UpdateXRCapabilities();
         
         this.onInputEvent = this.onInputSourceEvent.bind(this);
+        this.onSessionVisibilityEvent = this.onVisibilityChange.bind(this);
       }
     
       XRManager.prototype.UpdateXRCapabilities = function() {
@@ -812,6 +819,7 @@ setTimeout(function () {
           session.addEventListener('squeeze', this.onInputEvent);
           session.addEventListener('squeezestart', this.onInputEvent);
           session.addEventListener('squeezeend', this.onInputEvent);
+          session.addEventListener('visibilitychange', this.onSessionVisibilityEvent);
     
           this.xrData.controllerA.updatedProfiles = 0;
           this.xrData.controllerB.updatedProfiles = 0;
@@ -999,6 +1007,7 @@ setTimeout(function () {
           } else {
             this.gameModule.WebXR.OnStartVR(eyeCount, leftRect, rightRect);
           }
+          this.gameModule.WebXR.OnVisibilityChange(session.visibilityState);
           this.didNotifyUnity = true;
         }
         return this.didNotifyUnity;
@@ -1165,6 +1174,17 @@ Module['WebXR'].OnStartVR = function (views_count, left_rect, right_rect) {
   this.OnStartVRInternal(views_count,
                           left_rect.x, left_rect.y, left_rect.w, left_rect.h,
                           right_rect.x, right_rect.y, right_rect.w, right_rect.h);
+}
+
+Module['WebXR'].OnVisibilityChange = function (visibility_state) {
+  this.OnVisibilityChangeInternal = this.OnVisibilityChangeInternal || Module.cwrap("on_visibility_change", null, ["number"]);
+  var visibility_state_int = 0;
+  if (visibility_state == "visible-blurred") {
+    visibility_state_int = 1;
+  } else if (visibility_state == "hidden") {
+    visibility_state_int = 2;
+  }
+  this.OnVisibilityChangeInternal(visibility_state_int);
 }
 
 Module['WebXR'].OnEndXR = function () {
