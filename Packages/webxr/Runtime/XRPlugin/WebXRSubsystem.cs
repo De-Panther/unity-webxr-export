@@ -92,6 +92,11 @@ namespace WebXR
         updatedControllersOnEnd = true;
         UpdateControllersOnEnd();
       }
+      if (visibilityStateChanged)
+      {
+        visibilityStateChanged = false;
+        OnVisibilityChange?.Invoke(visibilityState);
+      }
       if (this.xrState == WebXRState.NORMAL)
       {
         return;
@@ -164,7 +169,7 @@ namespace WebXR
     private void InternalStart()
     {
 #if UNITY_WEBGL
-      Native.set_webxr_events(OnStartAR, OnStartVR, OnEndXR, OnXRCapabilities, OnInputProfiles);
+      Native.set_webxr_events(OnStartAR, OnStartVR, UpdateVisibilityState, OnEndXR, OnXRCapabilities, OnInputProfiles);
       Native.InitControllersArray(controllersArray, controllersArray.Length);
       Native.InitHandsArray(handsArray, handsArray.Length);
       Native.InitViewerHitTestPoseArray(viewerHitTestPoseArray, viewerHitTestPoseArray.Length);
@@ -202,6 +207,7 @@ namespace WebXR
       [DllImport("__Internal")]
       public static extern void set_webxr_events(Action<int, float, float, float, float, float, float, float, float> on_start_ar,
           Action<int, float, float, float, float, float, float, float, float> on_start_vr,
+          Action<int> on_visibility_change,
           Action on_end_xr,
           Action<string> on_xr_capabilities,
           Action<string> on_input_profiles);
@@ -213,14 +219,20 @@ namespace WebXR
     private Rect leftRect;
     private Rect rightRect;
     private bool reportedXRStateSwitch = true;
+    internal WebXRVisibilityState visibilityState = WebXRVisibilityState.VISIBLE;
+    private bool visibilityStateChanged = false;
 
     public delegate void XRCapabilitiesUpdate(WebXRDisplayCapabilities capabilities);
 
-    public static event XRCapabilitiesUpdate OnXRCapabilitiesUpdate;
+    internal static event XRCapabilitiesUpdate OnXRCapabilitiesUpdate;
 
     public delegate void XRChange(WebXRState state, int viewsCount, Rect leftRect, Rect rightRect);
 
-    public static event XRChange OnXRChange;
+    internal static event XRChange OnXRChange;
+
+    public delegate void VisibilityChange(WebXRVisibilityState visibilityState);
+
+    internal static event VisibilityChange OnVisibilityChange;
 
     public delegate void HeadsetUpdate(
         Matrix4x4 leftProjectionMatrix,
@@ -230,19 +242,19 @@ namespace WebXR
         Vector3 leftPosition,
         Vector3 rightPosition);
 
-    public static event HeadsetUpdate OnHeadsetUpdate;
+    internal static event HeadsetUpdate OnHeadsetUpdate;
 
     public delegate void ControllerUpdate(WebXRControllerData controllerData);
 
-    public static event ControllerUpdate OnControllerUpdate;
+    internal static event ControllerUpdate OnControllerUpdate;
 
     public delegate void HandUpdate(WebXRHandData handData);
 
-    public static event HandUpdate OnHandUpdate;
+    internal static event HandUpdate OnHandUpdate;
 
     public delegate void HitTestUpdate(WebXRHitPoseData hitPoseData);
 
-    public static event HitTestUpdate OnViewerHitTestUpdate;
+    internal static event HitTestUpdate OnViewerHitTestUpdate;
 
     // Cameras calculations helpers
     private Matrix4x4 leftProjectionMatrix = new Matrix4x4();
@@ -308,12 +320,17 @@ namespace WebXR
 
     public void setXrState(WebXRState state, int viewsCount, Rect leftRect, Rect rightRect)
     {
+      visibilityState = WebXRVisibilityState.VISIBLE;
       this.xrState = state;
       this.viewsCount = viewsCount;
       this.leftRect = leftRect;
       this.rightRect = rightRect;
       viewerHitTestOn = false;
       reportedXRStateSwitch = false;
+      if (state != WebXRState.NORMAL)
+      {
+        visibilityStateChanged = true;
+      }
     }
 
     // received start AR from WebXR browser
@@ -336,6 +353,16 @@ namespace WebXR
       Instance.setXrState(WebXRState.VR, viewsCount,
           new Rect(left_x, left_y, left_w, left_h),
           new Rect(right_x, right_y, right_w, right_h));
+    }
+
+    [MonoPInvokeCallback(typeof(Action<int>))]
+    public static void UpdateVisibilityState(int visibilityState)
+    {
+      if (Instance.visibilityState != (WebXRVisibilityState)visibilityState)
+      {
+        Instance.visibilityState = (WebXRVisibilityState)visibilityState;
+        Instance.visibilityStateChanged = true;
+      }
     }
 
     // receive end VR from WebVR browser
