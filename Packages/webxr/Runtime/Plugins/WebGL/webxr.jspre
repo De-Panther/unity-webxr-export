@@ -878,24 +878,23 @@ setTimeout(function () {
     
         for (var i = 0; i < pose.views.length; i++) {
           var view = pose.views[i];
+          var transformMatrix = view.transform.matrix;
           if (view.eye === "left" || view.eye === "none") {
             xrData.leftProjectionMatrix = view.projectionMatrix;
-            xrData.leftViewRotation[0] = -view.transform.orientation.x;
-            xrData.leftViewRotation[1] = -view.transform.orientation.y;
-            xrData.leftViewRotation[2] = view.transform.orientation.z;
-            xrData.leftViewRotation[3] = view.transform.orientation.w;
-            xrData.leftViewPosition[0] = view.transform.position.x;
-            xrData.leftViewPosition[1] = view.transform.position.y;
-            xrData.leftViewPosition[2] = -view.transform.position.z;
+            this.quaternionFromMatrix(0, transformMatrix, xrData.leftViewRotation);
+            xrData.leftViewRotation[0] = -xrData.leftViewRotation[0];
+            xrData.leftViewRotation[1] = -xrData.leftViewRotation[1];
+            xrData.leftViewPosition[0] = transformMatrix[12];
+            xrData.leftViewPosition[1] = transformMatrix[13];
+            xrData.leftViewPosition[2] = -transformMatrix[14];
           } else if (view.eye === 'right') {
             xrData.rightProjectionMatrix = view.projectionMatrix;
-            xrData.rightViewRotation[0] = -view.transform.orientation.x;
-            xrData.rightViewRotation[1] = -view.transform.orientation.y;
-            xrData.rightViewRotation[2] = view.transform.orientation.z;
-            xrData.rightViewRotation[3] = view.transform.orientation.w;
-            xrData.rightViewPosition[0] = view.transform.position.x;
-            xrData.rightViewPosition[1] = view.transform.position.y;
-            xrData.rightViewPosition[2] = -view.transform.position.z;
+            this.quaternionFromMatrix(0, transformMatrix, xrData.rightViewRotation);
+            xrData.rightViewRotation[0] = -xrData.rightViewRotation[0];
+            xrData.rightViewRotation[1] = -xrData.rightViewRotation[1];
+            xrData.rightViewPosition[0] = transformMatrix[12];
+            xrData.rightViewPosition[1] = transformMatrix[13];
+            xrData.rightViewPosition[2] = -transformMatrix[14];
           }
         }
     
