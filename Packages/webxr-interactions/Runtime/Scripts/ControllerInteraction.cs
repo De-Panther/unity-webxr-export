@@ -22,6 +22,7 @@ namespace WebXR.Interactions
 
     public Transform handJointPrefab;
     private bool handJointsVisible = false;
+    [SerializeField] private bool useCollidersForHandJoints = true;
 
     [SerializeField] private bool useInputProfile = true;
 
@@ -153,6 +154,37 @@ namespace WebXR.Interactions
         return;
 
       contactRigidBodies.Remove(other.gameObject.GetComponent<Rigidbody>());
+    }
+
+    public void SetUseCollidersForHandJoints(bool value)
+    {
+      useCollidersForHandJoints = value;
+      for (int i = 0; i <= (int)WebXRHandJoint.pinky_finger_tip; i++)
+      {
+        if (handJoints.ContainsKey(i))
+        {
+          var collider = handJoints[i].GetComponent<Collider>();
+          if (collider != null)
+          {
+            collider.enabled = useCollidersForHandJoints;
+          }
+        }
+#if WEBXR_INPUT_PROFILES
+        if (handModelJoints.ContainsKey(i))
+        {
+          var collider = handModelJoints[i].GetComponent<Collider>();
+          if (collider != null)
+          {
+            collider.enabled = useCollidersForHandJoints;
+          }
+        }
+#endif
+      }
+    }
+
+    public bool GetUseCollidersForHandJoints()
+    {
+      return useCollidersForHandJoints;
     }
 
     public void SetUseInputProfile(bool value)
@@ -290,6 +322,11 @@ namespace WebXR.Interactions
           {
             clone.localScale = new Vector3(0.005f, 0.005f, 0.005f);
           }
+          var collider = clone.GetComponent<Collider>();
+          if (collider != null)
+          {
+            collider.enabled = useCollidersForHandJoints;
+          }
           handJoints.Add(i, clone);
           handJointsVisuals[i] = clone.gameObject;
         }
@@ -413,9 +450,12 @@ namespace WebXR.Interactions
           if (handJoints.ContainsKey(i))
           {
             handModelJoints[i].SetPositionAndRotation(handJoints[i].position, handJoints[i].rotation);
-            var collider = handModelJoints[i].gameObject.AddComponent<SphereCollider>();
-            collider.radius = handJoints[i].localScale.x;
-            collider.isTrigger = true;
+            if (useCollidersForHandJoints)
+            {
+              var collider = handModelJoints[i].gameObject.AddComponent<SphereCollider>();
+              collider.radius = handJoints[i].localScale.x;
+              collider.isTrigger = true;
+            }
           }
         }
         if (handJointsVisible)
