@@ -108,28 +108,14 @@ setTimeout(function () {
       }
     
       function XRHandData() {
-        this.frame = 0;
-        // TODO: set enabled 0 if hand was enable and then disable
-        this.enabled = 0;
-        this.hand = 0;
-        this.trigger = 0;
-        this.squeeze = 0;
-        this.joints = [];
-        for (var i = 0; i < 25; i++) {
-          this.joints.push(new XRJointData());
-        }
+        this.bufferIndex = 0;
         this.poses = new Float32Array(16 * 25);
         this.radii = new Float32Array(25);
         this.jointQuaternion = new Float32Array(4);
         this.jointIndex = 0;
+        this.unityJointIndex = 0;
         this.handValuesType = 0;
         this.hasRadii = false;
-      }
-    
-      function XRJointData() {
-        this.position = [0, 0, 0];
-        this.rotation = [0, 0, 0, 1];
-        this.radius = 0;
       }
     
       function XRHitPoseData() {
@@ -344,22 +330,20 @@ setTimeout(function () {
     
         this.xrData.controllerA.enabled = 0;
         this.xrData.controllerB.enabled = 0;
-        this.xrData.handLeft.enabled = 0;
-        this.xrData.handRight.enabled = 0;
     
         this.xrData.controllerA.frame = -1;
         this.xrData.controllerB.frame = -1;
-        this.xrData.handLeft.frame = -1;
-        this.xrData.handRight.frame = -1;
+
+        this.xrData.handLeft.bufferIndex = Module.HandsArrayOffset;
+        this.xrData.handRight.bufferIndex = Module.HandsArrayOffset + 205;
+        Module.HEAPF32[this.xrData.handLeft.bufferIndex] = -1; // XRHandData.frame
+        Module.HEAPF32[this.xrData.handRight.bufferIndex] = -1; // XRHandData.frame
+        Module.HEAPF32[this.xrData.handLeft.bufferIndex + 1] = 0; // XRHandData.enabled
+        Module.HEAPF32[this.xrData.handRight.bufferIndex + 1] = 0; // XRHandData.enabled
     
         this.updateUnityXRControllersData({
           controllerA: this.xrData.controllerA,
           controllerB: this.xrData.controllerB
-        });
-    
-        this.updateUnityXRHandsData({
-          handLeft: this.xrData.handLeft,
-          handRight: this.xrData.handRight
         });
         
         this.gameModule.WebXR.OnEndXR();
@@ -426,12 +410,14 @@ setTimeout(function () {
           
           if (hand == 0 || hand == 2) {
             xrData.controllerA = controller;
-            xrData.handRight.trigger = controller.trigger;
-            xrData.handRight.squeeze = controller.squeeze;
+            xrData.handRight.bufferIndex = Module.HandsArrayOffset + 205;
+            Module.HEAPF32[xrData.handRight.bufferIndex + 3] = controller.trigger; // XRHandData.trigger
+            Module.HEAPF32[xrData.handRight.bufferIndex + 4] = controller.squeeze; // XRHandData.squeeze
           } else {
             xrData.controllerB = controller;
-            xrData.handLeft.trigger = controller.trigger;
-            xrData.handLeft.squeeze = controller.squeeze;
+            xrData.handLeft.bufferIndex = Module.HandsArrayOffset;
+            Module.HEAPF32[xrData.handLeft.bufferIndex + 3] = controller.trigger; // XRHandData.trigger
+            Module.HEAPF32[xrData.handLeft.bufferIndex + 4] = controller.squeeze; // XRHandData.squeeze
           }
         } else {
           var xPercentage = 0.5;
@@ -602,12 +588,14 @@ setTimeout(function () {
       }
       
       XRManager.prototype.getXRControllersData = function(frame, inputSources, refSpace, xrData) {
-        xrData.handLeft.enabled = 0;
-        xrData.handRight.enabled = 0;
+        xrData.handLeft.bufferIndex = Module.HandsArrayOffset;
+        xrData.handRight.bufferIndex = Module.HandsArrayOffset + 205;
+        Module.HEAPF32[xrData.handLeft.bufferIndex] = xrData.frameNumber; // XRHandData.frame
+        Module.HEAPF32[xrData.handRight.bufferIndex] = xrData.frameNumber; // XRHandData.frame
+        Module.HEAPF32[xrData.handLeft.bufferIndex + 1] = 0; // XRHandData.enabled
+        Module.HEAPF32[xrData.handRight.bufferIndex + 1] = 0; // XRHandData.enabled
         xrData.controllerA.enabled = 0;
         xrData.controllerB.enabled = 0;
-        xrData.handLeft.frame = xrData.frameNumber;
-        xrData.handRight.frame = xrData.frameNumber;
         xrData.controllerA.frame = xrData.frameNumber;
         xrData.controllerB.frame = xrData.frameNumber;
         if (!inputSources || !inputSources.length || inputSources.length == 0) {
@@ -620,12 +608,12 @@ setTimeout(function () {
           // Show the input source if it has a grip space
           if (inputSource.hand) {
             var xrHand = xrData.handLeft;
-            xrHand.hand = 1;
+            Module.HEAPF32[xrHand.bufferIndex + 2] = 1; // XRHandData.hand
             if (inputSource.handedness == 'right') {
               xrHand = xrData.handRight;
-              xrHand.hand = 2;
+              Module.HEAPF32[xrHand.bufferIndex + 2] = 2; // XRHandData.hand
             }
-            xrHand.enabled = 1;
+            Module.HEAPF32[xrHand.bufferIndex + 1] = 1; // XRHandData.enabled
 
             if (xrHand.handValuesType == 0) {
               if (inputSource.hand.values) {
@@ -638,7 +626,7 @@ setTimeout(function () {
                 xrHand.handValuesType == 1 ? inputSource.hand.values() : inputSource.hand,
                 refSpace,
                 xrHand.poses)) {
-              xrHand.enabled = 0;
+              Module.HEAPF32[xrHand.bufferIndex + 1] = 0; // XRHandData.enabled
               continue;
             }
             if (!xrHand.hasRadii)
@@ -649,17 +637,18 @@ setTimeout(function () {
             }
             for (var j = 0; j < 25; j++) {
               xrHand.jointIndex = j*16;
+              xrHand.unityJointIndex = xrHand.bufferIndex + 5 + (j*8);
               if (!isNaN(xrHand.poses[xrHand.jointIndex])) {
-                xrHand.joints[j].position[0] = xrHand.poses[xrHand.jointIndex+12];
-                xrHand.joints[j].position[1] = xrHand.poses[xrHand.jointIndex+13];
-                xrHand.joints[j].position[2] = -xrHand.poses[xrHand.jointIndex+14];
+                Module.HEAPF32[xrHand.unityJointIndex] = xrHand.poses[xrHand.jointIndex+12]; // XRJointData.position.x
+                Module.HEAPF32[xrHand.unityJointIndex + 1] = xrHand.poses[xrHand.jointIndex+13]; // XRJointData.position.y
+                Module.HEAPF32[xrHand.unityJointIndex + 2] = -xrHand.poses[xrHand.jointIndex+14]; // XRJointData.position.z
                 this.quaternionFromMatrix(xrHand.jointIndex, xrHand.poses, xrHand.jointQuaternion);
-                xrHand.joints[j].rotation[0] = -xrHand.jointQuaternion[0];
-                xrHand.joints[j].rotation[1] = -xrHand.jointQuaternion[1];
-                xrHand.joints[j].rotation[2] = xrHand.jointQuaternion[2];
-                xrHand.joints[j].rotation[3] = xrHand.jointQuaternion[3];
+                Module.HEAPF32[xrHand.unityJointIndex + 3] = -xrHand.jointQuaternion[0]; // XRJointData.rotation.x
+                Module.HEAPF32[xrHand.unityJointIndex + 4] = -xrHand.jointQuaternion[1]; // XRJointData.rotation.y
+                Module.HEAPF32[xrHand.unityJointIndex + 5] = xrHand.jointQuaternion[2]; // XRJointData.rotation.z
+                Module.HEAPF32[xrHand.unityJointIndex + 6] = xrHand.jointQuaternion[3]; // XRJointData.rotation.w
                 if (!isNaN(xrHand.radii[j])) {
-                  xrHand.joints[j].radius = xrHand.radii[j];
+                  Module.HEAPF32[xrHand.unityJointIndex + 7] = xrHand.radii[j]; // XRJointData.radius
                 }
               }
             }
@@ -960,11 +949,6 @@ setTimeout(function () {
           controllerA: xrData.controllerA,
           controllerB: xrData.controllerB
         });
-    
-        this.updateUnityXRHandsData({
-          handLeft: xrData.handLeft,
-          handRight: xrData.handRight
-        });
         
         if (!this.didNotifyUnity)
         {
@@ -1065,30 +1049,6 @@ setTimeout(function () {
             Module.ControllersArray[index++] = data[key].gripRotationW;
           } else {
             index += 7;
-          }
-        });
-      }
-
-      XRManager.prototype.updateUnityXRHandsData = function (data) {
-        var index = 0;
-        if (Module.HandsArray.byteLength == 0) {
-          Module.HandsArray = new Float32Array(buffer, Module.HandsArrayOffset, Module.HandsArrayLength);
-        }
-        Object.keys(data).forEach(function (key, i) {
-          Module.HandsArray[index++] = data[key].frame;
-          Module.HandsArray[index++] = data[key].enabled;
-          Module.HandsArray[index++] = data[key].hand;
-          Module.HandsArray[index++] = data[key].trigger;
-          Module.HandsArray[index++] = data[key].squeeze;
-          for (var j = 0; j < 25; j++) {
-            Module.HandsArray[index++] = data[key].joints[j].position[0];
-            Module.HandsArray[index++] = data[key].joints[j].position[1];
-            Module.HandsArray[index++] = data[key].joints[j].position[2];
-            Module.HandsArray[index++] = data[key].joints[j].rotation[0];
-            Module.HandsArray[index++] = data[key].joints[j].rotation[1];
-            Module.HandsArray[index++] = data[key].joints[j].rotation[2];
-            Module.HandsArray[index++] = data[key].joints[j].rotation[3];
-            Module.HandsArray[index++] = data[key].joints[j].radius;
           }
         });
       }

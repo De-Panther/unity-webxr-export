@@ -171,7 +171,7 @@ namespace WebXR
 #if UNITY_WEBGL
       Native.set_webxr_events(OnStartAR, OnStartVR, UpdateVisibilityState, OnEndXR, OnXRCapabilities, OnInputProfiles);
       Native.InitControllersArray(controllersArray, controllersArray.Length);
-      Native.InitHandsArray(handsArray, handsArray.Length);
+      Native.InitHandsArray(handsArray);
       Native.InitViewerHitTestPoseArray(viewerHitTestPoseArray, viewerHitTestPoseArray.Length);
       Native.InitXRSharedArray(sharedArray, sharedArray.Length);
 #endif
@@ -187,7 +187,7 @@ namespace WebXR
       public static extern void InitControllersArray(float[] array, int length);
 
       [DllImport("__Internal")]
-      public static extern void InitHandsArray(float[] array, int length);
+      public static extern void InitHandsArray(float[] array);
 
       [DllImport("__Internal")]
       public static extern void InitViewerHitTestPoseArray(float[] array, int length);

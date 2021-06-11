@@ -18,10 +18,8 @@ mergeInto(LibraryManager.library, {
     Module.ControllersArray = new Float32Array(buffer, byteOffset, length);
   },
 
-  InitHandsArray: function(byteOffset, length) {
-    Module.HandsArrayOffset = byteOffset;
-    Module.HandsArrayLength= length;
-    Module.HandsArray = new Float32Array(buffer, byteOffset, length);
+  InitHandsArray: function(byteOffset) {
+    Module.HandsArrayOffset = byteOffset / 4;
   },
 
   InitViewerHitTestPoseArray: function(byteOffset, length) {
