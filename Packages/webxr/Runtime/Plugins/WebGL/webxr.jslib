@@ -12,10 +12,8 @@ mergeInto(LibraryManager.library, {
     Module.WebXR.onUnityLoaded({detail: {state: 'Ready', module: Module}});
   },
 
-  InitControllersArray: function(byteOffset, length) {
-    Module.ControllersArrayOffset = byteOffset;
-    Module.ControllersArrayLength= length;
-    Module.ControllersArray = new Float32Array(buffer, byteOffset, length);
+  InitControllersArray: function(byteOffset) {
+    Module.ControllersArrayOffset = byteOffset / 4;
   },
 
   InitHandsArray: function(byteOffset) {

@@ -170,7 +170,7 @@ namespace WebXR
     {
 #if UNITY_WEBGL
       Native.set_webxr_events(OnStartAR, OnStartVR, UpdateVisibilityState, OnEndXR, OnXRCapabilities, OnInputProfiles);
-      Native.InitControllersArray(controllersArray, controllersArray.Length);
+      Native.InitControllersArray(controllersArray);
       Native.InitHandsArray(handsArray);
       Native.InitViewerHitTestPoseArray(viewerHitTestPoseArray, viewerHitTestPoseArray.Length);
       Native.InitXRSharedArray(sharedArray, sharedArray.Length);
@@ -184,7 +184,7 @@ namespace WebXR
       public static extern void InitXRSharedArray(float[] array, int length);
 
       [DllImport("__Internal")]
-      public static extern void InitControllersArray(float[] array, int length);
+      public static extern void InitControllersArray(float[] array);
 
       [DllImport("__Internal")]
       public static extern void InitHandsArray(float[] array);
@@ -475,8 +475,9 @@ namespace WebXR
       newControllerData.touchpadY = controllersArray[arrayPosition++];
       newControllerData.buttonA = controllersArray[arrayPosition++];
       newControllerData.buttonB = controllersArray[arrayPosition++];
-      if (controllersArray[arrayPosition++] == 1)
+      if (controllersArray[arrayPosition] == 1)
       {
+        controllersArray[arrayPosition++] = 2;
         newControllerData.gripPosition = new Vector3(controllersArray[arrayPosition++], controllersArray[arrayPosition++], controllersArray[arrayPosition++]);
         newControllerData.gripRotation = new Quaternion(controllersArray[arrayPosition++], controllersArray[arrayPosition++], controllersArray[arrayPosition++],
             controllersArray[arrayPosition++]);

@@ -73,38 +73,10 @@ setTimeout(function () {
       }
       
       function XRControllerData() {
-        this.frame = 0;
-        // TODO: set enabled 0 if controller was enable and then disable
-        this.enabled = 0;
-        this.hand = 0;
-        this.positionX = 0;
-        this.positionY = 0;
-        this.positionZ = 0;
-        this.rotationX = 0;
-        this.rotationY = 0;
-        this.rotationZ = 0;
-        this.rotationW = 0;
-        this.gripPositionX = 0;
-        this.gripPositionY = 0;
-        this.gripPositionZ = 0;
-        this.gripRotationX = 0;
-        this.gripRotationY = 0;
-        this.gripRotationZ = 0;
-        this.gripRotationW = 0;
-        this.trigger = 0;
-        this.squeeze = 0;
-        this.thumbstick = 0;
-        this.thumbstickX = 0;
-        this.thumbstickY = 0;
-        this.touchpad = 0;
-        this.touchpadX = 0;
-        this.touchpadY = 0;
-        this.buttonA = 0;
-        this.buttonB = 0;
+        this.bufferIndex = 0;
         this.gamepad = null;
         this.profiles = [];
         this.updatedProfiles = 0;
-        this.updatedGrip = 0;
       }
     
       function XRHandData() {
@@ -327,25 +299,17 @@ setTimeout(function () {
         }
         
         this.removeRemainingTouches();
-    
-        this.xrData.controllerA.enabled = 0;
-        this.xrData.controllerB.enabled = 0;
-    
-        this.xrData.controllerA.frame = -1;
-        this.xrData.controllerB.frame = -1;
 
-        this.xrData.handLeft.bufferIndex = Module.HandsArrayOffset;
-        this.xrData.handRight.bufferIndex = Module.HandsArrayOffset + 205;
+        Module.HEAPF32[this.xrData.controllerA.bufferIndex] = -1; // XRControllerData.frame
+        Module.HEAPF32[this.xrData.controllerB.bufferIndex] = -1; // XRControllerData.frame
+        Module.HEAPF32[this.xrData.controllerA.bufferIndex + 1] = 0; // XRControllerData.enabled
+        Module.HEAPF32[this.xrData.controllerB.bufferIndex + 1] = 0; // XRControllerData.enabled
+
         Module.HEAPF32[this.xrData.handLeft.bufferIndex] = -1; // XRHandData.frame
         Module.HEAPF32[this.xrData.handRight.bufferIndex] = -1; // XRHandData.frame
         Module.HEAPF32[this.xrData.handLeft.bufferIndex + 1] = 0; // XRHandData.enabled
         Module.HEAPF32[this.xrData.handRight.bufferIndex + 1] = 0; // XRHandData.enabled
-    
-        this.updateUnityXRControllersData({
-          controllerA: this.xrData.controllerA,
-          controllerB: this.xrData.controllerB
-        });
-        
+
         this.gameModule.WebXR.OnEndXR();
         this.didNotifyUnity = false;
         this.canvas.width = this.canvas.parentElement.clientWidth * this.gameModule.asmLibraryArg._JS_SystemInfo_GetPreferredDevicePixelRatio();
@@ -384,40 +348,36 @@ setTimeout(function () {
               hand = 2;
           }
           
-          controller.enabled = 1;
-          controller.hand = hand;
+          Module.HEAPF32[controller.bufferIndex + 1] = 1; // XRControllerData.enabled
+          Module.HEAPF32[controller.bufferIndex + 2] = hand; // XRControllerData.hand
           
           switch (xrInputSourceEvent.type) {
             case "select":
-              controller.trigger = 1;
+              Module.HEAPF32[controller.bufferIndex + 10] = 1; // XRControllerData.trigger
               break;
             case "selectstart":
-              controller.trigger = 1;
+              Module.HEAPF32[controller.bufferIndex + 10] = 1; // XRControllerData.trigger
               break;
             case "selectend":
-              controller.trigger = 0;
+              Module.HEAPF32[controller.bufferIndex + 10] = 0; // XRControllerData.trigger
               break;
             case "squeeze":
-              controller.squeeze = 1;
+              Module.HEAPF32[controller.bufferIndex + 11] = 1; // XRControllerData.squeeze
               break;
             case "squeezestart":
-              controller.squeeze = 1;
+              Module.HEAPF32[controller.bufferIndex + 11] = 1; // XRControllerData.squeeze
               break;
             case "squeezeend":
-              controller.squeeze = 0;
+              Module.HEAPF32[controller.bufferIndex + 11] = 0; // XRControllerData.squeeze
               break;
           }
           
           if (hand == 0 || hand == 2) {
-            xrData.controllerA = controller;
-            xrData.handRight.bufferIndex = Module.HandsArrayOffset + 205;
-            Module.HEAPF32[xrData.handRight.bufferIndex + 3] = controller.trigger; // XRHandData.trigger
-            Module.HEAPF32[xrData.handRight.bufferIndex + 4] = controller.squeeze; // XRHandData.squeeze
+            Module.HEAPF32[xrData.handRight.bufferIndex + 3] = Module.HEAPF32[controller.bufferIndex + 10]; // XRHandData.trigger
+            Module.HEAPF32[xrData.handRight.bufferIndex + 4] = Module.HEAPF32[controller.bufferIndex + 11]; // XRHandData.squeeze
           } else {
-            xrData.controllerB = controller;
-            xrData.handLeft.bufferIndex = Module.HandsArrayOffset;
-            Module.HEAPF32[xrData.handLeft.bufferIndex + 3] = controller.trigger; // XRHandData.trigger
-            Module.HEAPF32[xrData.handLeft.bufferIndex + 4] = controller.squeeze; // XRHandData.squeeze
+            Module.HEAPF32[xrData.handLeft.bufferIndex + 3] = Module.HEAPF32[controller.bufferIndex + 10]; // XRHandData.trigger
+            Module.HEAPF32[xrData.handLeft.bufferIndex + 4] = Module.HEAPF32[controller.bufferIndex + 11]; // XRHandData.squeeze
           }
         } else {
           var xPercentage = 0.5;
@@ -588,16 +548,14 @@ setTimeout(function () {
       }
       
       XRManager.prototype.getXRControllersData = function(frame, inputSources, refSpace, xrData) {
-        xrData.handLeft.bufferIndex = Module.HandsArrayOffset;
-        xrData.handRight.bufferIndex = Module.HandsArrayOffset + 205;
         Module.HEAPF32[xrData.handLeft.bufferIndex] = xrData.frameNumber; // XRHandData.frame
         Module.HEAPF32[xrData.handRight.bufferIndex] = xrData.frameNumber; // XRHandData.frame
         Module.HEAPF32[xrData.handLeft.bufferIndex + 1] = 0; // XRHandData.enabled
         Module.HEAPF32[xrData.handRight.bufferIndex + 1] = 0; // XRHandData.enabled
-        xrData.controllerA.enabled = 0;
-        xrData.controllerB.enabled = 0;
-        xrData.controllerA.frame = xrData.frameNumber;
-        xrData.controllerB.frame = xrData.frameNumber;
+        Module.HEAPF32[xrData.controllerA.bufferIndex] = xrData.frameNumber; // XRControllerData.frame
+        Module.HEAPF32[xrData.controllerB.bufferIndex] = xrData.frameNumber; // XRControllerData.frame
+        Module.HEAPF32[xrData.controllerA.bufferIndex + 1] = 0; // XRControllerData.enabled
+        Module.HEAPF32[xrData.controllerB.bufferIndex + 1] = 0; // XRControllerData.enabled
         if (!inputSources || !inputSources.length || inputSources.length == 0) {
           this.removeRemainingTouches();
           return;
@@ -666,105 +624,99 @@ setTimeout(function () {
                 hand = 2;
               }
               
-              controller.enabled = 1;
-              controller.hand = hand;
+              Module.HEAPF32[controller.bufferIndex + 1] = 1; // XRControllerData.enabled
+              Module.HEAPF32[controller.bufferIndex + 2] = hand; // XRControllerData.hand
 
               if (controller.updatedProfiles == 0) {
                 controller.profiles = inputSource.profiles;
                 controller.updatedProfiles = 1;
               }
               
-              controller.positionX = position.x;
-              controller.positionY = position.y;
-              controller.positionZ = -position.z;
+              Module.HEAPF32[controller.bufferIndex + 3] = position.x; // XRControllerData.positionX
+              Module.HEAPF32[controller.bufferIndex + 4] = position.y; // XRControllerData.positionY
+              Module.HEAPF32[controller.bufferIndex + 5] = -position.z; // XRControllerData.positionZ
               
-              controller.rotationX = -orientation.x;
-              controller.rotationY = -orientation.y;
-              controller.rotationZ = orientation.z;
-              controller.rotationW = orientation.w;
+              Module.HEAPF32[controller.bufferIndex + 6] = -orientation.x; // XRControllerData.rotationX
+              Module.HEAPF32[controller.bufferIndex + 7] = -orientation.y; // XRControllerData.rotationY
+              Module.HEAPF32[controller.bufferIndex + 8] = orientation.z; // XRControllerData.rotationZ
+              Module.HEAPF32[controller.bufferIndex + 9] = orientation.w; // XRControllerData.rotationW
 
-              if (controller.updatedGrip == 0) {
+              if (Module.HEAPF32[controller.bufferIndex + 20] == 0 && inputSource.gripSpace) { // XRControllerData.updatedGrip
                 var inputPose = frame.getPose(inputSource.gripSpace, refSpace);
                 if (inputPose) {
                   var gripPosition = inputPose.transform.position;
                   var gripOrientation = inputPose.transform.orientation;
 
-                  controller.gripPositionX = gripPosition.x;
-                  controller.gripPositionY = gripPosition.y;
-                  controller.gripPositionZ = - gripPosition.z;
+                  Module.HEAPF32[controller.bufferIndex + 21] = gripPosition.x; // XRControllerData.gripPositionX
+                  Module.HEAPF32[controller.bufferIndex + 22] = gripPosition.y; // XRControllerData.gripPositionY
+                  Module.HEAPF32[controller.bufferIndex + 23] = -gripPosition.z; // XRControllerData.gripPositionZ
 
-                  controller.gripRotationX = -gripOrientation.x;
-                  controller.gripRotationY = -gripOrientation.y;
-                  controller.gripRotationZ = gripOrientation.z;
-                  controller.gripRotationW = gripOrientation.w;
+                  Module.HEAPF32[controller.bufferIndex + 24] = -gripOrientation.x; // XRControllerData.gripRotationX
+                  Module.HEAPF32[controller.bufferIndex + 25] = -gripOrientation.y; // XRControllerData.gripRotationY
+                  Module.HEAPF32[controller.bufferIndex + 26] = gripOrientation.z; // XRControllerData.gripRotationZ
+                  Module.HEAPF32[controller.bufferIndex + 27] = gripOrientation.w; // XRControllerData.gripRotationW
 
-                  controller.updatedGrip = 1;
+                  Module.HEAPF32[controller.bufferIndex + 20] = 1; // XRControllerData.updatedGrip
                 }
-              } else if (controller.updatedGrip == 1) {
-                controller.updatedGrip = 2;
               }
               
+              var triggerIndex = controller.bufferIndex + 10;
+              var squeezeIndex = controller.bufferIndex + 11;
               // if there's gamepad, use the xr-standard mapping
               if (inputSource.gamepad) {
                 for (var j = 0; j < inputSource.gamepad.buttons.length; j++) {
                   switch (j) {
                     case 0:
-                      controller.trigger = inputSource.gamepad.buttons[j].value;
+                      Module.HEAPF32[triggerIndex] = inputSource.gamepad.buttons[j].value; // XRControllerData.trigger
                       break;
                     case 1:
-                      controller.squeeze = inputSource.gamepad.buttons[j].value;
+                      Module.HEAPF32[squeezeIndex] = inputSource.gamepad.buttons[j].value; // XRControllerData.squeeze
                       break;
                     case 2:
-                      controller.touchpad = inputSource.gamepad.buttons[j].value;
+                      Module.HEAPF32[controller.bufferIndex + 15] = inputSource.gamepad.buttons[j].value; // XRControllerData.touchpad
                       break;
                     case 3:
-                      controller.thumbstick = inputSource.gamepad.buttons[j].value;
+                      Module.HEAPF32[controller.bufferIndex + 12] = inputSource.gamepad.buttons[j].value; // XRControllerData.thumbstick
                       break;
                     case 4:
-                      controller.buttonA = inputSource.gamepad.buttons[j].value;
+                      Module.HEAPF32[controller.bufferIndex + 18] = inputSource.gamepad.buttons[j].value; // XRControllerData.buttonA
                       break;
                     case 5:
-                      controller.buttonB = inputSource.gamepad.buttons[j].value;
+                      Module.HEAPF32[controller.bufferIndex + 19] = inputSource.gamepad.buttons[j].value; // XRControllerData.buttonB
                       break;
                   }
                 }
                 
-                if (controller.trigger <= 0.02) {
-                  controller.trigger = 0;
-                } else if (controller.trigger >= 0.98) {
-                  controller.trigger = 1;
+                if (Module.HEAPF32[triggerIndex] <= 0.02) {
+                  Module.HEAPF32[triggerIndex] = 0;
+                } else if (Module.HEAPF32[triggerIndex] >= 0.98) {
+                  Module.HEAPF32[triggerIndex] = 1;
                 }
                 
-                if (controller.squeeze <= 0.02) {
-                  controller.squeeze = 0;
-                } else if (controller.squeeze >= 0.98) {
-                  controller.squeeze = 1;
+                if (Module.HEAPF32[squeezeIndex] <= 0.02) {
+                  Module.HEAPF32[squeezeIndex] = 0;
+                } else if (Module.HEAPF32[squeezeIndex] >= 0.98) {
+                  Module.HEAPF32[squeezeIndex] = 1;
                 }
                 
                 for (var j = 0; j < inputSource.gamepad.axes.length; j++) {
                   switch (j) {
                     case 0:
-                      controller.touchpadX = inputSource.gamepad.axes[j];
+                      Module.HEAPF32[controller.bufferIndex + 16] = inputSource.gamepad.axes[j]; // XRControllerData.touchpadX
                       break;
                     case 1:
-                      controller.touchpadY = -inputSource.gamepad.axes[j];
+                      Module.HEAPF32[controller.bufferIndex + 17] = -inputSource.gamepad.axes[j]; // XRControllerData.touchpadY
                       break;
                     case 2:
-                      controller.thumbstickX = inputSource.gamepad.axes[j];
+                      Module.HEAPF32[controller.bufferIndex + 13] = inputSource.gamepad.axes[j]; // XRControllerData.thumbstickX
                       break;
                     case 3:
-                      controller.thumbstickY = -inputSource.gamepad.axes[j];
+                      Module.HEAPF32[controller.bufferIndex + 14] = -inputSource.gamepad.axes[j]; // XRControllerData.thumbstickY
                       break;
                   }
                 }
               }
               controller.gamepad = inputSource.gamepad;
-              
-              if (hand == 0 || hand == 2) {
-                xrData.controllerA = controller;
-              } else {
-                xrData.controllerB = controller;
-              }
             }
           } else if (inputSource.xrTouchObject && !inputSource.xrTouchObject.ended && inputSource.gamepad && inputSource.gamepad.axes) {
             inputSource.xrTouchObject.UpdateTouch( this.canvas,
@@ -787,8 +739,6 @@ setTimeout(function () {
         var glLayer = new XRWebGLLayer(session, this.ctx);
         session.updateRenderState({ baseLayer: glLayer });
         
-        
-        
         var refSpaceType = 'viewer';
         if (session.isImmersive) {
           refSpaceType = this.gameModule.WebXR.Settings.VRRequiredReferenceSpace[0];
@@ -810,12 +760,16 @@ setTimeout(function () {
           session.addEventListener('squeezeend', this.onInputEvent);
           session.addEventListener('visibilitychange', this.onSessionVisibilityEvent);
     
+          this.xrData.controllerA.bufferIndex = Module.ControllersArrayOffset;
+          this.xrData.controllerB.bufferIndex = Module.ControllersArrayOffset + 28;
+          this.xrData.handLeft.bufferIndex = Module.HandsArrayOffset;
+          this.xrData.handRight.bufferIndex = Module.HandsArrayOffset + 205;
           this.xrData.controllerA.updatedProfiles = 0;
           this.xrData.controllerB.updatedProfiles = 0;
           this.xrData.controllerA.profiles = [];
           this.xrData.controllerB.profiles = [];
-          this.xrData.controllerA.updatedGrip = 0;
-          this.xrData.controllerB.updatedGrip = 0;
+          Module.HEAPF32[this.xrData.controllerA.bufferIndex + 20] = 0; // XRControllerData.updatedGrip
+          Module.HEAPF32[this.xrData.controllerB.bufferIndex + 20] = 0; // XRControllerData.updatedGrip
         }
         var thisXRMananger = this;
         session.requestReferenceSpace(refSpaceType).then(function (refSpace) {
@@ -944,11 +898,6 @@ setTimeout(function () {
           leftViewPosition: xrData.leftViewPosition,
           rightViewPosition: xrData.rightViewPosition
         });
-    
-        this.updateUnityXRControllersData({
-          controllerA: xrData.controllerA,
-          controllerB: xrData.controllerB
-        });
         
         if (!this.didNotifyUnity)
         {
@@ -1008,47 +957,6 @@ setTimeout(function () {
             for (var x = 0; x < dataLength; x++) {
               Module.XRSharedArray[index++] = data[key][x];
             }
-          }
-        });
-      }
-
-      XRManager.prototype.updateUnityXRControllersData = function (data) {
-        var index = 0;
-        if (Module.ControllersArray.byteLength == 0) {
-          Module.ControllersArray = new Float32Array(buffer, Module.ControllersArrayOffset, Module.ControllersArrayLength);
-        }
-        Object.keys(data).forEach(function (key, i) {
-          Module.ControllersArray[index++] = data[key].frame;
-          Module.ControllersArray[index++] = data[key].enabled;
-          Module.ControllersArray[index++] = data[key].hand;
-          Module.ControllersArray[index++] = data[key].positionX;
-          Module.ControllersArray[index++] = data[key].positionY;
-          Module.ControllersArray[index++] = data[key].positionZ;
-          Module.ControllersArray[index++] = data[key].rotationX;
-          Module.ControllersArray[index++] = data[key].rotationY;
-          Module.ControllersArray[index++] = data[key].rotationZ;
-          Module.ControllersArray[index++] = data[key].rotationW;
-          Module.ControllersArray[index++] = data[key].trigger;
-          Module.ControllersArray[index++] = data[key].squeeze;
-          Module.ControllersArray[index++] = data[key].thumbstick;
-          Module.ControllersArray[index++] = data[key].thumbstickX;
-          Module.ControllersArray[index++] = data[key].thumbstickY;
-          Module.ControllersArray[index++] = data[key].touchpad;
-          Module.ControllersArray[index++] = data[key].touchpadX;
-          Module.ControllersArray[index++] = data[key].touchpadY;
-          Module.ControllersArray[index++] = data[key].buttonA;
-          Module.ControllersArray[index++] = data[key].buttonB;
-          Module.ControllersArray[index++] = data[key].updatedGrip;
-          if (data[key].updatedGrip == 1) {
-            Module.ControllersArray[index++] = data[key].gripPositionX;
-            Module.ControllersArray[index++] = data[key].gripPositionY;
-            Module.ControllersArray[index++] = data[key].gripPositionZ;
-            Module.ControllersArray[index++] = data[key].gripRotationX;
-            Module.ControllersArray[index++] = data[key].gripRotationY;
-            Module.ControllersArray[index++] = data[key].gripRotationZ;
-            Module.ControllersArray[index++] = data[key].gripRotationW;
-          } else {
-            index += 7;
           }
         });
       }
