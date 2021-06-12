@@ -586,16 +586,16 @@ setTimeout(function () {
               xrHand.jointIndex = j*16;
               xrHand.unityJointIndex = xrHand.bufferIndex + 5 + (j*8);
               if (!isNaN(xrHand.poses[xrHand.jointIndex])) {
-                Module.HEAPF32[xrHand.unityJointIndex] = xrHand.poses[xrHand.jointIndex+12]; // XRJointData.position.x
-                Module.HEAPF32[xrHand.unityJointIndex + 1] = xrHand.poses[xrHand.jointIndex+13]; // XRJointData.position.y
-                Module.HEAPF32[xrHand.unityJointIndex + 2] = -xrHand.poses[xrHand.jointIndex+14]; // XRJointData.position.z
+                Module.HEAPF32[xrHand.unityJointIndex++] = xrHand.poses[xrHand.jointIndex+12]; // XRJointData.position.x
+                Module.HEAPF32[xrHand.unityJointIndex++] = xrHand.poses[xrHand.jointIndex+13]; // XRJointData.position.y
+                Module.HEAPF32[xrHand.unityJointIndex++] = -xrHand.poses[xrHand.jointIndex+14]; // XRJointData.position.z
                 this.quaternionFromMatrix(xrHand.jointIndex, xrHand.poses, xrHand.jointQuaternion);
-                Module.HEAPF32[xrHand.unityJointIndex + 3] = -xrHand.jointQuaternion[0]; // XRJointData.rotation.x
-                Module.HEAPF32[xrHand.unityJointIndex + 4] = -xrHand.jointQuaternion[1]; // XRJointData.rotation.y
-                Module.HEAPF32[xrHand.unityJointIndex + 5] = xrHand.jointQuaternion[2]; // XRJointData.rotation.z
-                Module.HEAPF32[xrHand.unityJointIndex + 6] = xrHand.jointQuaternion[3]; // XRJointData.rotation.w
+                Module.HEAPF32[xrHand.unityJointIndex++] = -xrHand.jointQuaternion[0]; // XRJointData.rotation.x
+                Module.HEAPF32[xrHand.unityJointIndex++] = -xrHand.jointQuaternion[1]; // XRJointData.rotation.y
+                Module.HEAPF32[xrHand.unityJointIndex++] = xrHand.jointQuaternion[2]; // XRJointData.rotation.z
+                Module.HEAPF32[xrHand.unityJointIndex++] = xrHand.jointQuaternion[3]; // XRJointData.rotation.w
                 if (!isNaN(xrHand.radii[j])) {
-                  Module.HEAPF32[xrHand.unityJointIndex + 7] = xrHand.radii[j]; // XRJointData.radius
+                  Module.HEAPF32[xrHand.unityJointIndex] = xrHand.radii[j]; // XRJointData.radius
                 }
               }
             }
