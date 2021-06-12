@@ -25,14 +25,6 @@ setTimeout(function () {
       'use strict';
     
       function XRData() {
-        this.leftProjectionMatrix =  [1, 0, 0, 0,
-                                      0, 1, 0, 0,
-                                      0, 0, 1, 0,
-                                      0, 0, 0, 1];
-        this.rightProjectionMatrix =  [1, 0, 0, 0,
-                                      0, 1, 0, 0,
-                                      0, 0, 1, 0,
-                                      0, 0, 0, 1];
         this.leftViewRotation =  [0, 0, 0, 1];
         this.rightViewRotation = [0, 0, 0, 1];
         this.leftViewPosition =  [0, 0, 0];
@@ -831,21 +823,25 @@ setTimeout(function () {
           var view = pose.views[i];
           var transformMatrix = view.transform.matrix;
           if (view.eye === "left" || view.eye === "none") {
-            xrData.leftProjectionMatrix = view.projectionMatrix;
+            Module.HEAPF32.set(view.projectionMatrix, Module.XRSharedArrayOffset); // leftProjectionMatrix
             this.quaternionFromMatrix(0, transformMatrix, xrData.leftViewRotation);
             xrData.leftViewRotation[0] = -xrData.leftViewRotation[0];
             xrData.leftViewRotation[1] = -xrData.leftViewRotation[1];
             xrData.leftViewPosition[0] = transformMatrix[12];
             xrData.leftViewPosition[1] = transformMatrix[13];
             xrData.leftViewPosition[2] = -transformMatrix[14];
+            Module.HEAPF32.set(xrData.leftViewRotation, Module.XRSharedArrayOffset + 32); // leftViewRotation
+            Module.HEAPF32.set(xrData.leftViewPosition, Module.XRSharedArrayOffset + 40); // leftViewPosition
           } else if (view.eye === 'right') {
-            xrData.rightProjectionMatrix = view.projectionMatrix;
+            Module.HEAPF32.set(view.projectionMatrix, Module.XRSharedArrayOffset + 16); // rightProjectionMatrix
             this.quaternionFromMatrix(0, transformMatrix, xrData.rightViewRotation);
             xrData.rightViewRotation[0] = -xrData.rightViewRotation[0];
             xrData.rightViewRotation[1] = -xrData.rightViewRotation[1];
             xrData.rightViewPosition[0] = transformMatrix[12];
             xrData.rightViewPosition[1] = transformMatrix[13];
             xrData.rightViewPosition[2] = -transformMatrix[14];
+            Module.HEAPF32.set(xrData.rightViewRotation, Module.XRSharedArrayOffset + 36); // rightViewRotation
+            Module.HEAPF32.set(xrData.rightViewPosition, Module.XRSharedArrayOffset + 43); // rightViewPosition
           }
         }
     
@@ -885,16 +881,6 @@ setTimeout(function () {
           }
           this.gameModule.WebXR.OnInputProfiles(JSON.stringify(inputProfiles));
         }
-        
-        // Dispatch event with headset data to be handled in webxr.jslib
-        this.updateUnityXRData({
-          leftProjectionMatrix: xrData.leftProjectionMatrix,
-          rightProjectionMatrix: xrData.rightProjectionMatrix,
-          leftViewRotation: xrData.leftViewRotation,
-          rightViewRotation: xrData.rightViewRotation,
-          leftViewPosition: xrData.leftViewPosition,
-          rightViewPosition: xrData.rightViewPosition
-        });
         
         if (!this.didNotifyUnity)
         {
@@ -941,21 +927,6 @@ setTimeout(function () {
           this.didNotifyUnity = true;
         }
         return this.didNotifyUnity;
-      }
-
-      XRManager.prototype.updateUnityXRData = function (data) {
-        var index = 0;
-        if (Module.XRSharedArray.byteLength == 0) {
-          Module.XRSharedArray = new Float32Array(buffer, Module.XRSharedArrayOffset, Module.XRSharedArrayLength);
-        }
-        Object.keys(data).forEach(function (key, i) {
-          var dataLength = data[key].length;
-          if (dataLength) {
-            for (var x = 0; x < dataLength; x++) {
-              Module.XRSharedArray[index++] = data[key][x];
-            }
-          }
-        });
       }
 
       function initWebXRManager () {

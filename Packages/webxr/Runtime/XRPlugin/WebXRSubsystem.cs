@@ -173,7 +173,7 @@ namespace WebXR
       Native.InitControllersArray(controllersArray);
       Native.InitHandsArray(handsArray);
       Native.InitViewerHitTestPoseArray(viewerHitTestPoseArray);
-      Native.InitXRSharedArray(sharedArray, sharedArray.Length);
+      Native.InitXRSharedArray(sharedArray);
 #endif
     }
 
@@ -181,7 +181,7 @@ namespace WebXR
     private static class Native
     {
       [DllImport("__Internal")]
-      public static extern void InitXRSharedArray(float[] array, int length);
+      public static extern void InitXRSharedArray(float[] array);
 
       [DllImport("__Internal")]
       public static extern void InitControllersArray(float[] array);

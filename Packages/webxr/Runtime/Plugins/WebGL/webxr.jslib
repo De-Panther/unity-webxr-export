@@ -5,10 +5,8 @@ mergeInto(LibraryManager.library, {
     console.log(Module.WebXR.Settings);
   },
 
-  InitXRSharedArray: function(byteOffset, length) {
-    Module.XRSharedArrayOffset = byteOffset;
-    Module.XRSharedArrayLength= length;
-    Module.XRSharedArray = new Float32Array(buffer, byteOffset, length);
+  InitXRSharedArray: function(byteOffset) {
+    Module.XRSharedArrayOffset = byteOffset / 4;
     Module.WebXR.onUnityLoaded({detail: {state: 'Ready', module: Module}});
   },
 
