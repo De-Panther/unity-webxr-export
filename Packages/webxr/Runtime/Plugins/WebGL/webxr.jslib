@@ -20,10 +20,8 @@ mergeInto(LibraryManager.library, {
     Module.HandsArrayOffset = byteOffset / 4;
   },
 
-  InitViewerHitTestPoseArray: function(byteOffset, length) {
-    Module.ViewerHitTestPoseArrayOffset = byteOffset;
-    Module.ViewerHitTestPoseArrayLength= length;
-    Module.ViewerHitTestPoseArray = new Float32Array(buffer, byteOffset, length);
+  InitViewerHitTestPoseArray: function(byteOffset) {
+    Module.ViewerHitTestPoseArrayOffset = byteOffset / 4;
   },
 
   ToggleAR: function() {

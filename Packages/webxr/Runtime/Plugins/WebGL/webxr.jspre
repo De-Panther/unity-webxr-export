@@ -91,10 +91,7 @@ setTimeout(function () {
       }
     
       function XRHitPoseData() {
-        this.frame = 0;
-        this.available = 0;
-        this.position = [0, 0, 0];
-        this.rotation = [0, 0, 0, 1];
+        this.bufferIndex = 0;
       }
     
       function lerp(start, end, percentage)
@@ -764,12 +761,15 @@ setTimeout(function () {
           this.xrData.controllerB.bufferIndex = Module.ControllersArrayOffset + 28;
           this.xrData.handLeft.bufferIndex = Module.HandsArrayOffset;
           this.xrData.handRight.bufferIndex = Module.HandsArrayOffset + 205;
+          this.xrData.viewerHitTestPose.bufferIndex = Module.ViewerHitTestPoseArrayOffset;
           this.xrData.controllerA.updatedProfiles = 0;
           this.xrData.controllerB.updatedProfiles = 0;
           this.xrData.controllerA.profiles = [];
           this.xrData.controllerB.profiles = [];
           Module.HEAPF32[this.xrData.controllerA.bufferIndex + 20] = 0; // XRControllerData.updatedGrip
           Module.HEAPF32[this.xrData.controllerB.bufferIndex + 20] = 0; // XRControllerData.updatedGrip
+          Module.HEAPF32[this.xrData.viewerHitTestPose.bufferIndex] = -1; // XRHitPoseData.frame
+          Module.HEAPF32[this.xrData.viewerHitTestPose.bufferIndex + 1] = 0; // XRHitPoseData.available
         }
         var thisXRMananger = this;
         session.requestReferenceSpace(refSpaceType).then(function (refSpace) {
@@ -852,25 +852,22 @@ setTimeout(function () {
         this.getXRControllersData(frame, session.inputSources, session.refSpace, xrData);
     
         if (session.isAR && this.viewerHitTestSource) {
-          xrData.viewerHitTestPose.frame = xrData.frameNumber;
+          Module.HEAPF32[xrData.viewerHitTestPose.bufferIndex] = xrData.frameNumber; // XRHitPoseData.frame
           var viewerHitTestResults = frame.getHitTestResults(this.viewerHitTestSource);
           if (viewerHitTestResults.length > 0) {
             var hitTestPose = viewerHitTestResults[0].getPose(session.localRefSpace);
-            xrData.viewerHitTestPose.available = 1;
-            xrData.viewerHitTestPose.position[0] = hitTestPose.transform.position.x;
+            Module.HEAPF32[xrData.viewerHitTestPose.bufferIndex + 1] = 1; // XRHitPoseData.available
+            Module.HEAPF32[xrData.viewerHitTestPose.bufferIndex + 2] = hitTestPose.transform.position.x; // XRHitPoseData.position[0]
             var hitTestPoseBase = viewerHitTestResults[0].getPose(session.refSpace); // Ugly hack for y position on Samsung Internet
-            xrData.viewerHitTestPose.position[1] = hitTestPose.transform.position.y + Math.abs(hitTestPose.transform.position.y - hitTestPoseBase.transform.position.y);
-            xrData.viewerHitTestPose.position[2] = -hitTestPose.transform.position.z;
-            xrData.viewerHitTestPose.rotation[0] = -hitTestPose.transform.orientation.x;
-            xrData.viewerHitTestPose.rotation[1] = -hitTestPose.transform.orientation.y;
-            xrData.viewerHitTestPose.rotation[2] = hitTestPose.transform.orientation.z;
-            xrData.viewerHitTestPose.rotation[3] = hitTestPose.transform.orientation.w;
+            Module.HEAPF32[xrData.viewerHitTestPose.bufferIndex + 3] = hitTestPose.transform.position.y + Math.abs(hitTestPose.transform.position.y - hitTestPoseBase.transform.position.y); // XRHitPoseData.position[1]
+            Module.HEAPF32[xrData.viewerHitTestPose.bufferIndex + 4] = -hitTestPose.transform.position.z; // XRHitPoseData.position[2]
+            Module.HEAPF32[xrData.viewerHitTestPose.bufferIndex + 5] = -hitTestPose.transform.orientation.x; // XRHitPoseData.rotation[0]
+            Module.HEAPF32[xrData.viewerHitTestPose.bufferIndex + 6] = -hitTestPose.transform.orientation.y; // XRHitPoseData.rotation[1]
+            Module.HEAPF32[xrData.viewerHitTestPose.bufferIndex + 7] = hitTestPose.transform.orientation.z; // XRHitPoseData.rotation[2]
+            Module.HEAPF32[xrData.viewerHitTestPose.bufferIndex + 8] = hitTestPose.transform.orientation.w; // XRHitPoseData.rotation[3]
           } else {
-            xrData.viewerHitTestPose.available = 0;
+            Module.HEAPF32[xrData.viewerHitTestPose.bufferIndex + 1] = 0; // XRHitPoseData.available
           }
-          this.updateUnityXRViewerHitTestPose({
-            viewerHitTestPose: xrData.viewerHitTestPose
-          });
         }
     
         if (xrData.controllerA.updatedProfiles == 1 || xrData.controllerB.updatedProfiles == 1)
@@ -961,22 +958,6 @@ setTimeout(function () {
         });
       }
 
-      XRManager.prototype.updateUnityXRViewerHitTestPose = function (data) {
-        var index = 0;
-        if (Module.ViewerHitTestPoseArray.byteLength == 0) {
-          Module.ViewerHitTestPoseArray = new Float32Array(buffer, Module.ViewerHitTestPoseArrayOffset, Module.ViewerHitTestPoseArrayLength);
-        }
-        Module.ViewerHitTestPoseArray[index++] = data.viewerHitTestPose.frame;
-        Module.ViewerHitTestPoseArray[index++] = data.viewerHitTestPose.available;
-        Module.ViewerHitTestPoseArray[index++] = data.viewerHitTestPose.position[0];
-        Module.ViewerHitTestPoseArray[index++] = data.viewerHitTestPose.position[1];
-        Module.ViewerHitTestPoseArray[index++] = data.viewerHitTestPose.position[2];
-        Module.ViewerHitTestPoseArray[index++] = data.viewerHitTestPose.rotation[0];
-        Module.ViewerHitTestPoseArray[index++] = data.viewerHitTestPose.rotation[1];
-        Module.ViewerHitTestPoseArray[index++] = data.viewerHitTestPose.rotation[2];
-        Module.ViewerHitTestPoseArray[index++] = data.viewerHitTestPose.rotation[3];
-      }
-    
       function initWebXRManager () {
         var xrManager = window.xrManager = new XRManager();
         return xrManager;

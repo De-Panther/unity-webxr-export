@@ -172,7 +172,7 @@ namespace WebXR
       Native.set_webxr_events(OnStartAR, OnStartVR, UpdateVisibilityState, OnEndXR, OnXRCapabilities, OnInputProfiles);
       Native.InitControllersArray(controllersArray);
       Native.InitHandsArray(handsArray);
-      Native.InitViewerHitTestPoseArray(viewerHitTestPoseArray, viewerHitTestPoseArray.Length);
+      Native.InitViewerHitTestPoseArray(viewerHitTestPoseArray);
       Native.InitXRSharedArray(sharedArray, sharedArray.Length);
 #endif
     }
@@ -190,7 +190,7 @@ namespace WebXR
       public static extern void InitHandsArray(float[] array);
 
       [DllImport("__Internal")]
-      public static extern void InitViewerHitTestPoseArray(float[] array, int length);
+      public static extern void InitViewerHitTestPoseArray(float[] array);
 
       [DllImport("__Internal")]
       public static extern void ToggleAR();
