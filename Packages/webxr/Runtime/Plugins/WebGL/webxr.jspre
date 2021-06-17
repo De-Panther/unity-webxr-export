@@ -130,14 +130,28 @@ setTimeout(function () {
       }
     
       function XRHandData() {
-        this.bufferIndex = 0;
+        this.frameIndex = 0;
+        this.enabledIndex = 0;
+        this.handIndex = 0;
+        this.triggerIndex = 0;
+        this.squeezeIndex = 0;
+        this.jointsStartIndex = 0;
         this.poses = new Float32Array(16 * 25);
         this.radii = new Float32Array(25);
         this.jointQuaternion = new Float32Array(4);
         this.jointIndex = 0;
-        this.unityJointIndex = 0;
+        this.bufferJointIndex = 0;
         this.handValuesType = 0;
         this.hasRadii = false;
+
+        this.setIndices = function(index) {
+          this.frameIndex = index++;
+          this.enabledIndex = index++;
+          this.handIndex = index++;
+          this.triggerIndex = index++;
+          this.squeezeIndex = index++;
+          this.jointsStartIndex = index;
+        }
       }
     
       function XRHitPoseData() {
@@ -367,10 +381,10 @@ setTimeout(function () {
         Module.HEAPF32[this.xrData.controllerA.enabledIndex] = 0; // XRControllerData.enabled
         Module.HEAPF32[this.xrData.controllerB.enabledIndex] = 0; // XRControllerData.enabled
 
-        Module.HEAPF32[this.xrData.handLeft.bufferIndex] = -1; // XRHandData.frame
-        Module.HEAPF32[this.xrData.handRight.bufferIndex] = -1; // XRHandData.frame
-        Module.HEAPF32[this.xrData.handLeft.bufferIndex + 1] = 0; // XRHandData.enabled
-        Module.HEAPF32[this.xrData.handRight.bufferIndex + 1] = 0; // XRHandData.enabled
+        Module.HEAPF32[this.xrData.handLeft.frameIndex] = -1; // XRHandData.frame
+        Module.HEAPF32[this.xrData.handRight.frameIndex] = -1; // XRHandData.frame
+        Module.HEAPF32[this.xrData.handLeft.enabledIndex] = 0; // XRHandData.enabled
+        Module.HEAPF32[this.xrData.handRight.enabledIndex] = 0; // XRHandData.enabled
 
         this.gameModule.WebXR.OnEndXR();
         this.didNotifyUnity = false;
@@ -435,11 +449,11 @@ setTimeout(function () {
           }
           
           if (hand == 0 || hand == 2) {
-            Module.HEAPF32[xrData.handRight.bufferIndex + 3] = Module.HEAPF32[controller.triggerIndex]; // XRHandData.trigger
-            Module.HEAPF32[xrData.handRight.bufferIndex + 4] = Module.HEAPF32[controller.squeezeIndex]; // XRHandData.squeeze
+            Module.HEAPF32[xrData.handRight.triggerIndex] = Module.HEAPF32[controller.triggerIndex]; // XRHandData.trigger
+            Module.HEAPF32[xrData.handRight.squeezeIndex] = Module.HEAPF32[controller.squeezeIndex]; // XRHandData.squeeze
           } else {
-            Module.HEAPF32[xrData.handLeft.bufferIndex + 3] = Module.HEAPF32[controller.triggerIndex]; // XRHandData.trigger
-            Module.HEAPF32[xrData.handLeft.bufferIndex + 4] = Module.HEAPF32[controller.squeezeIndex]; // XRHandData.squeeze
+            Module.HEAPF32[xrData.handLeft.triggerIndex] = Module.HEAPF32[controller.triggerIndex]; // XRHandData.trigger
+            Module.HEAPF32[xrData.handLeft.squeezeIndex] = Module.HEAPF32[controller.squeezeIndex]; // XRHandData.squeeze
           }
         } else {
           var xPercentage = 0.5;
@@ -610,10 +624,10 @@ setTimeout(function () {
       }
       
       XRManager.prototype.getXRControllersData = function(frame, inputSources, refSpace, xrData) {
-        Module.HEAPF32[xrData.handLeft.bufferIndex] = xrData.frameNumber; // XRHandData.frame
-        Module.HEAPF32[xrData.handRight.bufferIndex] = xrData.frameNumber; // XRHandData.frame
-        Module.HEAPF32[xrData.handLeft.bufferIndex + 1] = 0; // XRHandData.enabled
-        Module.HEAPF32[xrData.handRight.bufferIndex + 1] = 0; // XRHandData.enabled
+        Module.HEAPF32[xrData.handLeft.frameIndex] = xrData.frameNumber; // XRHandData.frame
+        Module.HEAPF32[xrData.handRight.frameIndex] = xrData.frameNumber; // XRHandData.frame
+        Module.HEAPF32[xrData.handLeft.enabledIndex] = 0; // XRHandData.enabled
+        Module.HEAPF32[xrData.handRight.enabledIndex] = 0; // XRHandData.enabled
         Module.HEAPF32[xrData.controllerA.frameIndex] = xrData.frameNumber; // XRControllerData.frame
         Module.HEAPF32[xrData.controllerB.frameIndex] = xrData.frameNumber; // XRControllerData.frame
         Module.HEAPF32[xrData.controllerA.enabledIndex] = 0; // XRControllerData.enabled
@@ -628,12 +642,12 @@ setTimeout(function () {
           // Show the input source if it has a grip space
           if (inputSource.hand) {
             var xrHand = xrData.handLeft;
-            Module.HEAPF32[xrHand.bufferIndex + 2] = 1; // XRHandData.hand
+            Module.HEAPF32[xrHand.handIndex] = 1; // XRHandData.hand
             if (inputSource.handedness == 'right') {
               xrHand = xrData.handRight;
-              Module.HEAPF32[xrHand.bufferIndex + 2] = 2; // XRHandData.hand
+              Module.HEAPF32[xrHand.handIndex] = 2; // XRHandData.hand
             }
-            Module.HEAPF32[xrHand.bufferIndex + 1] = 1; // XRHandData.enabled
+            Module.HEAPF32[xrHand.enabledIndex] = 1; // XRHandData.enabled
 
             if (xrHand.handValuesType == 0) {
               if (inputSource.hand.values) {
@@ -646,7 +660,7 @@ setTimeout(function () {
                 xrHand.handValuesType == 1 ? inputSource.hand.values() : inputSource.hand,
                 refSpace,
                 xrHand.poses)) {
-              Module.HEAPF32[xrHand.bufferIndex + 1] = 0; // XRHandData.enabled
+              Module.HEAPF32[xrHand.enabledIndex] = 0; // XRHandData.enabled
               continue;
             }
             if (!xrHand.hasRadii)
@@ -655,21 +669,22 @@ setTimeout(function () {
                 xrHand.handValuesType == 1 ? inputSource.hand.values() : inputSource.hand,
                 xrHand.radii);
             }
+            xrHand.bufferJointIndex = xrHand.jointsStartIndex;
             for (var j = 0; j < 25; j++) {
               xrHand.jointIndex = j*16;
-              xrHand.unityJointIndex = xrHand.bufferIndex + 5 + (j*8);
               if (!isNaN(xrHand.poses[xrHand.jointIndex])) {
-                Module.HEAPF32[xrHand.unityJointIndex++] = xrHand.poses[xrHand.jointIndex+12]; // XRJointData.position.x
-                Module.HEAPF32[xrHand.unityJointIndex++] = xrHand.poses[xrHand.jointIndex+13]; // XRJointData.position.y
-                Module.HEAPF32[xrHand.unityJointIndex++] = -xrHand.poses[xrHand.jointIndex+14]; // XRJointData.position.z
+                Module.HEAPF32[xrHand.bufferJointIndex++] = xrHand.poses[xrHand.jointIndex+12]; // XRJointData.position.x
+                Module.HEAPF32[xrHand.bufferJointIndex++] = xrHand.poses[xrHand.jointIndex+13]; // XRJointData.position.y
+                Module.HEAPF32[xrHand.bufferJointIndex++] = -xrHand.poses[xrHand.jointIndex+14]; // XRJointData.position.z
                 this.quaternionFromMatrix(xrHand.jointIndex, xrHand.poses, xrHand.jointQuaternion);
-                Module.HEAPF32[xrHand.unityJointIndex++] = -xrHand.jointQuaternion[0]; // XRJointData.rotation.x
-                Module.HEAPF32[xrHand.unityJointIndex++] = -xrHand.jointQuaternion[1]; // XRJointData.rotation.y
-                Module.HEAPF32[xrHand.unityJointIndex++] = xrHand.jointQuaternion[2]; // XRJointData.rotation.z
-                Module.HEAPF32[xrHand.unityJointIndex++] = xrHand.jointQuaternion[3]; // XRJointData.rotation.w
+                Module.HEAPF32[xrHand.bufferJointIndex++] = -xrHand.jointQuaternion[0]; // XRJointData.rotation.x
+                Module.HEAPF32[xrHand.bufferJointIndex++] = -xrHand.jointQuaternion[1]; // XRJointData.rotation.y
+                Module.HEAPF32[xrHand.bufferJointIndex++] = xrHand.jointQuaternion[2]; // XRJointData.rotation.z
+                Module.HEAPF32[xrHand.bufferJointIndex++] = xrHand.jointQuaternion[3]; // XRJointData.rotation.w
                 if (!isNaN(xrHand.radii[j])) {
-                  Module.HEAPF32[xrHand.unityJointIndex] = xrHand.radii[j]; // XRJointData.radius
+                  Module.HEAPF32[xrHand.bufferJointIndex] = xrHand.radii[j]; // XRJointData.radius
                 }
+                xrHand.bufferJointIndex++;
               }
             }
           } else if (inputSource.gripSpace) {
@@ -822,8 +837,8 @@ setTimeout(function () {
     
           this.xrData.controllerA.setIndices(Module.ControllersArrayOffset);
           this.xrData.controllerB.setIndices(Module.ControllersArrayOffset + 28);
-          this.xrData.handLeft.bufferIndex = Module.HandsArrayOffset;
-          this.xrData.handRight.bufferIndex = Module.HandsArrayOffset + 205;
+          this.xrData.handLeft.setIndices(Module.HandsArrayOffset);
+          this.xrData.handRight.setIndices(Module.HandsArrayOffset + 205);
           this.xrData.viewerHitTestPose.setIndices(Module.ViewerHitTestPoseArrayOffset);
           this.xrData.controllerA.updatedProfiles = 0;
           this.xrData.controllerB.updatedProfiles = 0;
