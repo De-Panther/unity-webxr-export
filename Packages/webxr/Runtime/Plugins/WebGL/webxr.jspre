@@ -65,7 +65,6 @@ setTimeout(function () {
       }
       
       function XRControllerData() {
-        this.bufferIndex = 0;
         this.frameIndex = 0;
         this.enabledIndex = 0;
         this.handIndex = 0;
@@ -99,7 +98,6 @@ setTimeout(function () {
         this.updatedProfiles = 0;
 
         this.setIndices = function(index) {
-          this.bufferIndex = index;
           this.frameIndex = index++;
           this.enabledIndex = index++;
           this.handIndex = index++;
@@ -127,7 +125,7 @@ setTimeout(function () {
           this.gripRotationXIndex = index++;
           this.gripRotationYIndex = index++;
           this.gripRotationZIndex = index++;
-          this.gripRotationWIndex = index++;
+          this.gripRotationWIndex = index;
         }
       }
     
@@ -143,7 +141,22 @@ setTimeout(function () {
       }
     
       function XRHitPoseData() {
-        this.bufferIndex = 0;
+        this.frameIndex = 0;
+        this.availableIndex = 0;
+        this.positionIndices = [0, 0, 0];
+        this.rotationIndices = [0, 0, 0, 0];
+
+        this.setIndices = function(index) {
+          this.frameIndex = index++;
+          this.availableIndex = index++;
+          this.positionIndices[0] = index++;
+          this.positionIndices[1] = index++;
+          this.positionIndices[2] = index++;
+          this.rotationIndices[0] = index++;
+          this.rotationIndices[1] = index++;
+          this.rotationIndices[2] = index++;
+          this.rotationIndices[3] = index;
+        }
       }
     
       function lerp(start, end, percentage)
@@ -811,15 +824,15 @@ setTimeout(function () {
           this.xrData.controllerB.setIndices(Module.ControllersArrayOffset + 28);
           this.xrData.handLeft.bufferIndex = Module.HandsArrayOffset;
           this.xrData.handRight.bufferIndex = Module.HandsArrayOffset + 205;
-          this.xrData.viewerHitTestPose.bufferIndex = Module.ViewerHitTestPoseArrayOffset;
+          this.xrData.viewerHitTestPose.setIndices(Module.ViewerHitTestPoseArrayOffset);
           this.xrData.controllerA.updatedProfiles = 0;
           this.xrData.controllerB.updatedProfiles = 0;
           this.xrData.controllerA.profiles = [];
           this.xrData.controllerB.profiles = [];
           Module.HEAPF32[this.xrData.controllerA.updatedGripIndex] = 0; // XRControllerData.updatedGrip
           Module.HEAPF32[this.xrData.controllerB.updatedGripIndex] = 0; // XRControllerData.updatedGrip
-          Module.HEAPF32[this.xrData.viewerHitTestPose.bufferIndex] = -1; // XRHitPoseData.frame
-          Module.HEAPF32[this.xrData.viewerHitTestPose.bufferIndex + 1] = 0; // XRHitPoseData.available
+          Module.HEAPF32[this.xrData.viewerHitTestPose.frameIndex] = -1; // XRHitPoseData.frame
+          Module.HEAPF32[this.xrData.viewerHitTestPose.availableIndex] = 0; // XRHitPoseData.available
         }
         var thisXRMananger = this;
         session.requestReferenceSpace(refSpaceType).then(function (refSpace) {
@@ -906,21 +919,21 @@ setTimeout(function () {
         this.getXRControllersData(frame, session.inputSources, session.refSpace, xrData);
     
         if (session.isAR && this.viewerHitTestSource) {
-          Module.HEAPF32[xrData.viewerHitTestPose.bufferIndex] = xrData.frameNumber; // XRHitPoseData.frame
+          Module.HEAPF32[xrData.viewerHitTestPose.frameIndex] = xrData.frameNumber; // XRHitPoseData.frame
           var viewerHitTestResults = frame.getHitTestResults(this.viewerHitTestSource);
           if (viewerHitTestResults.length > 0) {
             var hitTestPose = viewerHitTestResults[0].getPose(session.localRefSpace);
-            Module.HEAPF32[xrData.viewerHitTestPose.bufferIndex + 1] = 1; // XRHitPoseData.available
-            Module.HEAPF32[xrData.viewerHitTestPose.bufferIndex + 2] = hitTestPose.transform.position.x; // XRHitPoseData.position[0]
+            Module.HEAPF32[xrData.viewerHitTestPose.availableIndex] = 1; // XRHitPoseData.available
+            Module.HEAPF32[xrData.viewerHitTestPose.positionIndices[0]] = hitTestPose.transform.position.x; // XRHitPoseData.position[0]
             var hitTestPoseBase = viewerHitTestResults[0].getPose(session.refSpace); // Ugly hack for y position on Samsung Internet
-            Module.HEAPF32[xrData.viewerHitTestPose.bufferIndex + 3] = hitTestPose.transform.position.y + Math.abs(hitTestPose.transform.position.y - hitTestPoseBase.transform.position.y); // XRHitPoseData.position[1]
-            Module.HEAPF32[xrData.viewerHitTestPose.bufferIndex + 4] = -hitTestPose.transform.position.z; // XRHitPoseData.position[2]
-            Module.HEAPF32[xrData.viewerHitTestPose.bufferIndex + 5] = -hitTestPose.transform.orientation.x; // XRHitPoseData.rotation[0]
-            Module.HEAPF32[xrData.viewerHitTestPose.bufferIndex + 6] = -hitTestPose.transform.orientation.y; // XRHitPoseData.rotation[1]
-            Module.HEAPF32[xrData.viewerHitTestPose.bufferIndex + 7] = hitTestPose.transform.orientation.z; // XRHitPoseData.rotation[2]
-            Module.HEAPF32[xrData.viewerHitTestPose.bufferIndex + 8] = hitTestPose.transform.orientation.w; // XRHitPoseData.rotation[3]
+            Module.HEAPF32[xrData.viewerHitTestPose.positionIndices[1]] = hitTestPose.transform.position.y + Math.abs(hitTestPose.transform.position.y - hitTestPoseBase.transform.position.y); // XRHitPoseData.position[1]
+            Module.HEAPF32[xrData.viewerHitTestPose.positionIndices[2]] = -hitTestPose.transform.position.z; // XRHitPoseData.position[2]
+            Module.HEAPF32[xrData.viewerHitTestPose.rotationIndices[0]] = -hitTestPose.transform.orientation.x; // XRHitPoseData.rotation[0]
+            Module.HEAPF32[xrData.viewerHitTestPose.rotationIndices[1]] = -hitTestPose.transform.orientation.y; // XRHitPoseData.rotation[1]
+            Module.HEAPF32[xrData.viewerHitTestPose.rotationIndices[2]] = hitTestPose.transform.orientation.z; // XRHitPoseData.rotation[2]
+            Module.HEAPF32[xrData.viewerHitTestPose.rotationIndices[3]] = hitTestPose.transform.orientation.w; // XRHitPoseData.rotation[3]
           } else {
-            Module.HEAPF32[xrData.viewerHitTestPose.bufferIndex + 1] = 0; // XRHitPoseData.available
+            Module.HEAPF32[xrData.viewerHitTestPose.availableIndex] = 0; // XRHitPoseData.available
           }
         }
     
