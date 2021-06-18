@@ -5,29 +5,32 @@ mergeInto(LibraryManager.library, {
     console.log(Module.WebXR.Settings);
   },
 
-  InitXRSharedArray: function(byteOffset, length) {
-    Module.XRSharedArrayOffset = byteOffset;
-    Module.XRSharedArrayLength= length;
-    Module.XRSharedArray = new Float32Array(buffer, byteOffset, length);
+  SetWebXREvents: function(onStartARPtr,
+      onStartVRPtr, onVisibilityChangePtr, onEndXRPtr,
+      onXRCapabilitiesPtr, onInputProfilesPtr) {
+    Module.WebXR.onStartARPtr = onStartARPtr;
+    Module.WebXR.onStartVRPtr = onStartVRPtr;
+    Module.WebXR.onVisibilityChangePtr = onVisibilityChangePtr;
+    Module.WebXR.onEndXRPtr = onEndXRPtr;
+    Module.WebXR.onXRCapabilitiesPtr = onXRCapabilitiesPtr;
+    Module.WebXR.onInputProfilesPtr = onInputProfilesPtr;
+  },
+
+  InitXRSharedArray: function(byteOffset) {
+    Module.XRSharedArrayOffset = byteOffset / 4;
     Module.WebXR.onUnityLoaded({detail: {state: 'Ready', module: Module}});
   },
 
-  InitControllersArray: function(byteOffset, length) {
-    Module.ControllersArrayOffset = byteOffset;
-    Module.ControllersArrayLength= length;
-    Module.ControllersArray = new Float32Array(buffer, byteOffset, length);
+  InitControllersArray: function(byteOffset) {
+    Module.ControllersArrayOffset = byteOffset / 4;
   },
 
-  InitHandsArray: function(byteOffset, length) {
-    Module.HandsArrayOffset = byteOffset;
-    Module.HandsArrayLength= length;
-    Module.HandsArray = new Float32Array(buffer, byteOffset, length);
+  InitHandsArray: function(byteOffset) {
+    Module.HandsArrayOffset = byteOffset / 4;
   },
 
-  InitViewerHitTestPoseArray: function(byteOffset, length) {
-    Module.ViewerHitTestPoseArrayOffset = byteOffset;
-    Module.ViewerHitTestPoseArrayLength= length;
-    Module.ViewerHitTestPoseArray = new Float32Array(buffer, byteOffset, length);
+  InitViewerHitTestPoseArray: function(byteOffset) {
+    Module.ViewerHitTestPoseArrayOffset = byteOffset / 4;
   },
 
   ToggleAR: function() {
