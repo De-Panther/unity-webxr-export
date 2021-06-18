@@ -575,8 +575,10 @@ PlayerSettings:
   scriptingDefineSymbols: {}
   platformArchitecture: {}
   scriptingBackend: {}
-  il2cppCompilerConfiguration: {}
-  managedStrippingLevel: {}
+  il2cppCompilerConfiguration:
+    WebGL: 2
+  managedStrippingLevel:
+    WebGL: 3
   incrementalIl2cppBuild: {}
   allowUnsafeCode: 0
   additionalIl2CppArgs: 
