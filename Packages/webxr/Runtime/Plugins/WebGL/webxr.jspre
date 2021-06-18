@@ -604,12 +604,7 @@ setTimeout(function () {
     
       XRManager.prototype.UpdateXRCapabilities = function() {
         // Send browser capabilities to Unity.
-        this.gameModule.WebXR.OnXRCapabilities(
-          JSON.stringify({
-            canPresentAR: this.isARSupported,
-            canPresentVR: this.isVRSupported
-          })
-        );
+        this.gameModule.WebXR.OnXRCapabilities(this.isARSupported, this.isVRSupported);
       }
       
       // http://answers.unity.com/answers/11372/view.html
@@ -1064,47 +1059,41 @@ Module['WebXR'].GetJSEventsObject = function () {
 
 Module['WebXR'].OnStartAR = function (views_count, left_rect, right_rect) {
   Module.WebXR.isInXR = true;
-  this.OnStartARInternal = this.OnStartARInternal || Module.cwrap("on_start_ar", null, ["number",
-                                                                  "number", "number", "number", "number",
-                                                                  "number", "number", "number", "number"]);
-  this.OnStartARInternal(views_count,
+  Module.dynCall_viffffffff(Module.WebXR.onStartARPtr, views_count,
                           left_rect.x, left_rect.y, left_rect.w, left_rect.h,
                           right_rect.x, right_rect.y, right_rect.w, right_rect.h);
 }
 
 Module['WebXR'].OnStartVR = function (views_count, left_rect, right_rect) {
   Module.WebXR.isInXR = true;
-  this.OnStartVRInternal = this.OnStartVRInternal || Module.cwrap("on_start_vr", null, ["number",
-                                                                  "number", "number", "number", "number",
-                                                                  "number", "number", "number", "number"]);
-  this.OnStartVRInternal(views_count,
+  Module.dynCall_viffffffff(Module.WebXR.onStartVRPtr, views_count,
                           left_rect.x, left_rect.y, left_rect.w, left_rect.h,
                           right_rect.x, right_rect.y, right_rect.w, right_rect.h);
 }
 
 Module['WebXR'].OnVisibilityChange = function (visibility_state) {
-  this.OnVisibilityChangeInternal = this.OnVisibilityChangeInternal || Module.cwrap("on_visibility_change", null, ["number"]);
   var visibility_state_int = 0;
   if (visibility_state == "visible-blurred") {
     visibility_state_int = 1;
   } else if (visibility_state == "hidden") {
     visibility_state_int = 2;
   }
-  this.OnVisibilityChangeInternal(visibility_state_int);
+  Module.dynCall_vi(Module.WebXR.onVisibilityChangePtr, visibility_state_int);
 }
 
 Module['WebXR'].OnEndXR = function () {
   Module.WebXR.isInXR = false;
-  this.OnEndXRInternal = this.OnEndXRInternal || Module.cwrap("on_end_xr", null, []);
-  this.OnEndXRInternal();
+  Module.dynCall_v(Module.WebXR.onEndXRPtr);
 }
 
-Module['WebXR'].OnXRCapabilities = function (display_capabilities) {
-  this.OnXRCapabilitiesInternal = this.OnXRCapabilitiesInternal || Module.cwrap("on_xr_capabilities", null, ["string"]);
-  this.OnXRCapabilitiesInternal(display_capabilities);
+Module['WebXR'].OnXRCapabilities = function (isARSupported, isVRSupported) {
+  Module.dynCall_vii(Module.WebXR.onXRCapabilitiesPtr, isARSupported, isVRSupported);
 }
 
 Module['WebXR'].OnInputProfiles = function (input_profiles) {
-  this.OnInputProfilesInternal = this.OnInputProfilesInternal || Module.cwrap("on_input_profiles", null, ["string"]);
-  this.OnInputProfilesInternal(input_profiles);
+  var strBufferSize = lengthBytesUTF8(input_profiles) + 1;
+  var strBuffer = Module._malloc(strBufferSize);
+  stringToUTF8(input_profiles, strBuffer, strBufferSize);
+  Module.dynCall_vi(Module.WebXR.onInputProfilesPtr, strBuffer);
+  Module._free(strBuffer);
 }

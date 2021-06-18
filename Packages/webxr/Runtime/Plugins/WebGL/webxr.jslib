@@ -5,6 +5,17 @@ mergeInto(LibraryManager.library, {
     console.log(Module.WebXR.Settings);
   },
 
+  SetWebXREvents: function(onStartARPtr,
+      onStartVRPtr, onVisibilityChangePtr, onEndXRPtr,
+      onXRCapabilitiesPtr, onInputProfilesPtr) {
+    Module.WebXR.onStartARPtr = onStartARPtr;
+    Module.WebXR.onStartVRPtr = onStartVRPtr;
+    Module.WebXR.onVisibilityChangePtr = onVisibilityChangePtr;
+    Module.WebXR.onEndXRPtr = onEndXRPtr;
+    Module.WebXR.onXRCapabilitiesPtr = onXRCapabilitiesPtr;
+    Module.WebXR.onInputProfilesPtr = onInputProfilesPtr;
+  },
+
   InitXRSharedArray: function(byteOffset) {
     Module.XRSharedArrayOffset = byteOffset / 4;
     Module.WebXR.onUnityLoaded({detail: {state: 'Ready', module: Module}});

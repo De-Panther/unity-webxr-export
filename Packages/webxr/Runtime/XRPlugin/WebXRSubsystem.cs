@@ -169,7 +169,7 @@ namespace WebXR
     private void InternalStart()
     {
 #if UNITY_WEBGL
-      Native.set_webxr_events(OnStartAR, OnStartVR, UpdateVisibilityState, OnEndXR, OnXRCapabilities, OnInputProfiles);
+      Native.SetWebXREvents(OnStartAR, OnStartVR, UpdateVisibilityState, OnEndXR, OnXRCapabilities, OnInputProfiles);
       Native.InitControllersArray(controllersArray);
       Native.InitHandsArray(handsArray);
       Native.InitViewerHitTestPoseArray(viewerHitTestPoseArray);
@@ -205,11 +205,11 @@ namespace WebXR
       public static extern void ControllerPulse(int controller, float intensity, float duration);
 
       [DllImport("__Internal")]
-      public static extern void set_webxr_events(Action<int, float, float, float, float, float, float, float, float> on_start_ar,
+      public static extern void SetWebXREvents(Action<int, float, float, float, float, float, float, float, float> on_start_ar,
           Action<int, float, float, float, float, float, float, float, float> on_start_vr,
           Action<int> on_visibility_change,
           Action on_end_xr,
-          Action<string> on_xr_capabilities,
+          Action<bool, bool> on_xr_capabilities,
           Action<string> on_input_profiles);
     }
 #endif
@@ -292,11 +292,12 @@ namespace WebXR
     internal WebXRDisplayCapabilities capabilities = new WebXRDisplayCapabilities();
 
     // Handles WebXR capabilities from browser
-    [MonoPInvokeCallback(typeof(Action<string>))]
-    public static void OnXRCapabilities(string json)
+    [MonoPInvokeCallback(typeof(Action<bool, bool>))]
+    public static void OnXRCapabilities(bool isARSupported, bool isVRSupported)
     {
-      WebXRDisplayCapabilities capabilities = JsonUtility.FromJson<WebXRDisplayCapabilities>(json);
-      Instance.OnXRCapabilities(capabilities);
+      Instance.capabilities.canPresentAR = isARSupported;
+      Instance.capabilities.canPresentVR = isVRSupported;
+      Instance.OnXRCapabilities(Instance.capabilities);
     }
 
     [MonoPInvokeCallback(typeof(Action<string>))]

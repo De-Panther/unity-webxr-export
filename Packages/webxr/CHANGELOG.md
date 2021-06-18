@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
-- How hands, controllers, hit-test and views data sent from JavaScript to C#.
+- How the interoperability between JavaScript and C# works.
 
 ## [0.11.0] - 2021-06-06
 ### Added
