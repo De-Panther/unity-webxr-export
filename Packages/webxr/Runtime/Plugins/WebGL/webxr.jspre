@@ -259,7 +259,14 @@ setTimeout(function () {
     
       XRManager.prototype.init = function () {
         if (window.WebXRPolyfill) {
-          this.polyfill = new WebXRPolyfill();
+          if (window.WebXRPolyfillConfig) {
+            // Configuration options can be found at https://github.com/immersive-web/webxr-polyfill#new-webxrpolyfillconfig
+            // Added WebXR Polyfill Config option in the WebGLTemplates setting.
+            // Can add there "window.WebXRPolyfillConfig = {...}" with the desired configuration.
+            this.polyfill = new WebXRPolyfill(window.WebXRPolyfillConfig);
+          } else {
+            this.polyfill = new WebXRPolyfill();
+          }
         }
         
         this.attachEventListeners();

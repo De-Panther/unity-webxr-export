@@ -54,6 +54,7 @@
       var progressBarFull = document.querySelector("#unity-progress-bar-full");
       var fullscreenButton = document.querySelector("#unity-fullscreen-button");
       var unityInstance = null;
+      {{{ WEBXR_POLYFILL_CONFIG }}}
 
 #if BACKGROUND_FILENAME
       canvas.style.background = "url('" + buildUrl + "/{{{ BACKGROUND_FILENAME.replace(/'/g, '%27') }}}') center / cover";
