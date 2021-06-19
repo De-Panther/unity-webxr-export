@@ -12,6 +12,22 @@ There are two options to import the package to a Unity project.
 
 * Use Git. It can let you use versions that are yet uploaded to OpenUPM - Mostly happens between releases.
 
+### Using OpenUPM
+
+One way is to set a new `Scoped Registry` in `Project Settings > Package Manager` for OpenUPM.
+
+```
+Name: OpenUPM
+URL: https://package.openupm.com
+Scope(s): com.de-panther
+```
+
+Then in `Window > Package Manager` selecting `Packages: My Registries` and the WebXR Interactions package would be available for install.
+
+The WebXR Interactions package supports the [WebXR Input Profiles Loader](https://github.com/De-Panther/webxr-input-profiles-loader) package and depends on [glTFast](https://github.com/atteneder/glTFast) for that.
+
+Add `com.atteneder` to the scopes list of the OpenUPM registry for Unity to locate the glTFast package.
+
 ### Using Git
 
 To add the package to your Unity project using Git, open the Package Manager window, click on the + icon, "Add package from git URL..." and add the path URL

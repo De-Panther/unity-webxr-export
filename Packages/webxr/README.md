@@ -10,6 +10,18 @@ There are two options to import the package to a Unity project.
 
 * Use Git. It can let you use versions that are yet uploaded to OpenUPM - Mostly happens between releases.
 
+### Using OpenUPM
+
+One way is to set a new `Scoped Registry` in `Project Settings > Package Manager` for OpenUPM.
+
+```
+Name: OpenUPM
+URL: https://package.openupm.com
+Scope(s): com.de-panther
+```
+
+Then in `Window > Package Manager` selecting `Packages: My Registries` and the WebXR Export package would be available for install.
+
 ### Using Git
 
 To add the package to your Unity project using Git, open the Package Manager window, click on the + icon, "Add package from git URL..." and add the path URL
