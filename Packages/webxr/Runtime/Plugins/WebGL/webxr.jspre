@@ -1034,16 +1034,7 @@ setTimeout(function () {
           initWebXRManager();
         }
       }
-      
-      // A workaround to make it work under Firefox Reality that does not implement isContextLost()
-      // Thanks Rufus31415
-      // https://github.com/Rufus31415/Simple-WebXR-Unity/blob/28331fc890e316e13401618a8e0da1e84bad7a39/Assets/SimpleWebXR.jspre#L6
-      if(!WebGLRenderingContext.prototype.isContextLost) {
-        WebGLRenderingContext.prototype.isContextLost = function() {
-          return false;
-        }
-      }
-    
+
       init();
     })();
 
