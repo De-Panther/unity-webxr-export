@@ -259,7 +259,11 @@ setTimeout(function () {
     
       XRManager.prototype.init = function () {
         if (window.WebXRPolyfill) {
-          this.polyfill = new WebXRPolyfill();
+          if (window.WebXRPolyfillConfig) {
+            this.polyfill = new WebXRPolyfill(window.WebXRPolyfillConfig);
+          } else {
+            this.polyfill = new WebXRPolyfill();
+          }
         }
         
         this.attachEventListeners();

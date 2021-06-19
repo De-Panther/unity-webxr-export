@@ -337,6 +337,7 @@ PlayerSettings:
   m_TemplateCustomTags:
     DESCRIPTION: Complete interactive 3D scene demo made in Unity and exported to
       WebXR with the WebXR template of the Unity WebXR Export
+    WEBXR_POLYFILL_CONFIG: 
   mobileMTRendering:
     Android: 1
     iPhone: 1
