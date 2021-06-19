@@ -576,9 +576,9 @@ PlayerSettings:
   platformArchitecture: {}
   scriptingBackend: {}
   il2cppCompilerConfiguration:
-    WebGL: 2
+    WebGL: 1
   managedStrippingLevel:
-    WebGL: 3
+    WebGL: 1
   incrementalIl2cppBuild: {}
   allowUnsafeCode: 0
   additionalIl2CppArgs: 
