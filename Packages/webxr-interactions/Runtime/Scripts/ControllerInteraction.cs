@@ -44,6 +44,7 @@ namespace WebXR.Interactions
     private bool loadedHandModel = false;
     private string loadedHandProfile = null;
     private Dictionary<int, Transform> handModelJoints = new Dictionary<int, Transform>();
+    private static Quaternion quat180 = Quaternion.Euler(0, 180, 0);
 #endif
 
     private void Awake()
@@ -291,7 +292,7 @@ namespace WebXR.Interactions
           if (handModelJoints.ContainsKey(i))
           {
             handModelJoints[i].localPosition = rotationOffset * (handData.joints[i].position - handData.joints[0].position);
-            handModelJoints[i].localRotation = rotationOffset * handData.joints[i].rotation;
+            handModelJoints[i].localRotation = rotationOffset * handData.joints[i].rotation * quat180;
           }
         }
         return;
@@ -441,7 +442,7 @@ namespace WebXR.Interactions
         var inputProfileModelTransform = inputProfileHandModel.transform;
         inputProfileModelTransform.SetParent(inputProfileHandModelParent.transform);
         inputProfileModelTransform.localPosition = Vector3.zero;
-        inputProfileModelTransform.localRotation = Quaternion.identity;
+        inputProfileModelTransform.localRotation = quat180;
         inputProfileModelTransform.localScale = Vector3.one;
         for (int i = 0; i <= (int)WebXRHandJoint.pinky_finger_tip; i++)
         {
@@ -449,7 +450,7 @@ namespace WebXR.Interactions
           // It took at least one frame with hand data, there should be hand joint transform
           if (handJoints.ContainsKey(i))
           {
-            handModelJoints[i].SetPositionAndRotation(handJoints[i].position, handJoints[i].rotation);
+            handModelJoints[i].SetPositionAndRotation(handJoints[i].position, handJoints[i].rotation * quat180);
             if (useCollidersForHandJoints)
             {
               var collider = handModelJoints[i].gameObject.AddComponent<SphereCollider>();

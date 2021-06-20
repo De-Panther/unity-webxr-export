@@ -408,8 +408,6 @@ namespace WebXR
         transform.localPosition = handData.joints[0].position;
         transform.localRotation = handData.joints[0].rotation;
 
-        Quaternion rotationOffset = Quaternion.Inverse(handData.joints[0].rotation);
-
         trigger = handData.trigger;
         squeeze = handData.squeeze;
 
