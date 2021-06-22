@@ -400,6 +400,7 @@ setTimeout(function () {
         
         this.BrowserObject.pauseAsyncCallbacks();
         this.BrowserObject.mainLoop.pause();
+        this.ctx.dontClearAlphaOnly = false;
         this.ctx.bindFramebuffer(this.ctx.FRAMEBUFFER);
         var thisXRMananger = this;
         window.setTimeout(function () {
@@ -821,6 +822,7 @@ setTimeout(function () {
           refSpaceType = this.gameModule.WebXR.Settings.VRRequiredReferenceSpace[0];
           if (session.isAR) {
             refSpaceType = this.gameModule.WebXR.Settings.ARRequiredReferenceSpace[0];
+            this.ctx.dontClearAlphaOnly = true;
           }
     
           var onSessionEnded = this.onEndSession.bind(this);
@@ -885,7 +887,6 @@ setTimeout(function () {
         
         this.ctx.bindFramebuffer(this.ctx.FRAMEBUFFER, glLayer.framebuffer);
         if (session.isAR) {
-          this.ctx.dontClearOnFrameStart = true;
           // Workaround for Chromium depth bug https://bugs.chromium.org/p/chromium/issues/detail?id=1167450#c21
           this.ctx.depthMask(false);
           this.ctx.clear(this.ctx.DEPTH_BUFFER_BIT);
