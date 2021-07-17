@@ -573,7 +573,7 @@ PlayerSettings:
   webGLNameFilesAsHashes: 0
   webGLDataCaching: 1
   webGLDebugSymbols: 0
-  webGLEmscriptenArgs: 
+  webGLEmscriptenArgs: -std=c++11 --profiling-funcs
   webGLModulesDirectory: 
   webGLTemplate: PROJECT:WebXR2020
   webGLAnalyzeBuildSize: 0

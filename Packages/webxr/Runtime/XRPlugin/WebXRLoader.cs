@@ -20,6 +20,9 @@ namespace WebXR
 #if UNITY_WEBGL && !UNITY_EDITOR
     [DllImport("__Internal")]
     public static extern void SetWebXRSettings(string settingsJson);
+    
+    [DllImport("__Internal")]
+    private static extern void RegisterWebXRPlugin();
 #endif
 
     WebXRSettings GetSettings()
@@ -37,6 +40,11 @@ namespace WebXR
 
     public override bool Initialize()
     {
+#if UNITY_WEBGL && !UNITY_EDITOR
+      Debug.Log("Call RegisterWebXRPlugin");
+      RegisterWebXRPlugin();
+      Debug.Log("Called RegisterWebXRPlugin");
+#endif
       WebXRSettings settings = GetSettings();
       if (settings != null)
       {
@@ -48,6 +56,11 @@ namespace WebXR
       }
 
       CreateSubsystem<WebXRSubsystemDescriptor, WebXRSubsystem>(sampleSubsystemDescriptors, typeof(WebXRSubsystem).FullName);
+      CreateSubsystem<XRDisplaySubsystemDescriptor, XRDisplaySubsystem>(displaySubsystemDescriptors, "WebXR VR Display");
+      CreateSubsystem<XRInputSubsystemDescriptor, XRInputSubsystem>(inputSubsystemDescriptors, "WebXR Inputs");
+      Debug.Log($"Got XRDisplaySubsystem? {XRDisplaySubsystem != null}");
+      Debug.Log($"Got XRInputSubsystem? {XRInputSubsystem != null}");
+      XRSettings.useOcclusionMesh = false;
       return WebXRSubsystem != null;
     }
 
@@ -55,18 +68,25 @@ namespace WebXR
     public override bool Start()
     {
       WebXRSubsystem.Start();
+      XRDisplaySubsystem.Start();
+      XRInputSubsystem.Start();
+      XRSettings.useOcclusionMesh = false;
       return true;
     }
 
     public override bool Stop()
     {
       WebXRSubsystem.Stop();
+      XRDisplaySubsystem.Stop();
+      XRInputSubsystem.Stop();
       return base.Stop();
     }
 
     public override bool Deinitialize()
     {
       WebXRSubsystem.Destroy();
+      XRDisplaySubsystem.Destroy();
+      XRInputSubsystem.Destroy();
       return base.Deinitialize();
     }
   }
