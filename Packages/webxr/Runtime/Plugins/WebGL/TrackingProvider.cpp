@@ -1,5 +1,5 @@
-#include "Headers/XR/IUnityXRInput.h"
-#include "Headers/XR/IUnityXRTrace.h"
+#include "../../../../../../../UnityHeaders/Headers/XR/IUnityXRInput.h"
+#include "../../../../../../../UnityHeaders/Headers/XR/IUnityXRTrace.h"
 
 #include "ProviderContext.h"
 
