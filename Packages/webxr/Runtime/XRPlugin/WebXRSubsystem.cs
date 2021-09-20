@@ -205,12 +205,12 @@ namespace WebXR
       public static extern void ControllerPulse(int controller, float intensity, float duration);
 
       [DllImport("__Internal")]
-      public static extern void SetWebXREvents(Action<int, float, float, float, float, float, float, float, float> on_start_ar,
-          Action<int, float, float, float, float, float, float, float, float> on_start_vr,
-          Action<int> on_visibility_change,
-          Action on_end_xr,
-          Action<bool, bool> on_xr_capabilities,
-          Action<string> on_input_profiles);
+      public static extern void SetWebXREvents(StartXREvent on_start_ar,
+          StartXREvent on_start_vr,
+          VisibilityChangeEvent on_visibility_change,
+          EndXREvent on_end_xr,
+          XRCapabilitiesEvent on_xr_capabilities,
+          InputProfilesEvent on_input_profiles);
     }
 #endif
 
@@ -256,6 +256,18 @@ namespace WebXR
 
     internal static event HitTestUpdate OnViewerHitTestUpdate;
 
+    internal delegate void StartXREvent(int viewsCount,
+        float left_x, float left_y, float left_w, float left_h,
+        float right_x, float right_y, float right_w, float right_h);
+
+    internal delegate void VisibilityChangeEvent(int visibilityState);
+
+    internal delegate void EndXREvent();
+
+    internal delegate void XRCapabilitiesEvent(bool isARSupported, bool isVRSupported);
+
+    internal delegate void InputProfilesEvent(string json);
+
     // Cameras calculations helpers
     private Matrix4x4 leftProjectionMatrix = new Matrix4x4();
     private Matrix4x4 rightProjectionMatrix = new Matrix4x4();
@@ -292,7 +304,7 @@ namespace WebXR
     internal WebXRDisplayCapabilities capabilities = new WebXRDisplayCapabilities();
 
     // Handles WebXR capabilities from browser
-    [MonoPInvokeCallback(typeof(Action<bool, bool>))]
+    [MonoPInvokeCallback(typeof(XRCapabilitiesEvent))]
     public static void OnXRCapabilities(bool isARSupported, bool isVRSupported)
     {
       Instance.capabilities.canPresentAR = isARSupported;
@@ -300,7 +312,7 @@ namespace WebXR
       Instance.OnXRCapabilities(Instance.capabilities);
     }
 
-    [MonoPInvokeCallback(typeof(Action<string>))]
+    [MonoPInvokeCallback(typeof(InputProfilesEvent))]
     public static void OnInputProfiles(string json)
     {
       WebXRControllersProfiles controllersProfiles = JsonUtility.FromJson<WebXRControllersProfiles>(json);
@@ -335,7 +347,7 @@ namespace WebXR
     }
 
     // received start AR from WebXR browser
-    [MonoPInvokeCallback(typeof(Action<int, float, float, float, float, float, float, float, float>))]
+    [MonoPInvokeCallback(typeof(StartXREvent))]
     public static void OnStartAR(int viewsCount,
         float left_x, float left_y, float left_w, float left_h,
         float right_x, float right_y, float right_w, float right_h)
@@ -346,7 +358,7 @@ namespace WebXR
     }
 
     // received start VR from WebXR browser
-    [MonoPInvokeCallback(typeof(Action<int, float, float, float, float, float, float, float, float>))]
+    [MonoPInvokeCallback(typeof(StartXREvent))]
     public static void OnStartVR(int viewsCount,
         float left_x, float left_y, float left_w, float left_h,
         float right_x, float right_y, float right_w, float right_h)
@@ -356,7 +368,7 @@ namespace WebXR
           new Rect(right_x, right_y, right_w, right_h));
     }
 
-    [MonoPInvokeCallback(typeof(Action<int>))]
+    [MonoPInvokeCallback(typeof(VisibilityChangeEvent))]
     public static void UpdateVisibilityState(int visibilityState)
     {
       if (Instance.visibilityState != (WebXRVisibilityState)visibilityState)
@@ -367,7 +379,7 @@ namespace WebXR
     }
 
     // receive end VR from WebVR browser
-    [MonoPInvokeCallback(typeof(Action))]
+    [MonoPInvokeCallback(typeof(EndXREvent))]
     public static void OnEndXR()
     {
       Instance.updatedControllersOnEnd = false;
