@@ -1,6 +1,6 @@
 # WebXR Export
 
-You can [check the live demo here](https://de-panther.github.io/unity-webxr-export).
+You can [check the live demo here](https://de-panther.github.io/unity-webxr-export/Build).
 
 Develop and export WebXR experiences using the [Unity Engine](https://unity.com/).
 
