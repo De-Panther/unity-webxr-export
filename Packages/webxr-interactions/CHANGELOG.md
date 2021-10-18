@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.13.0] - 2021-10-18
+### Changed
+- Requires WebXR Export 0.13.0.
+
 ## [0.12.0] - 2021-06-20
 ### Changed
 - Minimum WebXR Input Profiles Loader version 0.3.7.
