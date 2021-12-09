@@ -45,6 +45,9 @@ namespace WebXR.Interactions
     private string loadedHandProfile = null;
     private Dictionary<int, Transform> handModelJoints = new Dictionary<int, Transform>();
     private static Quaternion quat180 = Quaternion.Euler(0, 180, 0);
+    
+    private Vector3 currentVelocity;
+    private Vector3 previousPos;
 #endif
 
     private void Awake()
@@ -283,7 +286,9 @@ namespace WebXR.Interactions
         return;
       }
       Quaternion rotationOffset = Quaternion.Inverse(handData.joints[0].rotation);
-
+      currentVelocity = (transform.position - previousPos) / Time.deltaTime;
+      previousPos = transform.position;
+      
 #if WEBXR_INPUT_PROFILES
       if (useInputProfile && loadedHandModel)
       {
@@ -512,7 +517,7 @@ namespace WebXR.Interactions
     {
       if (!currentRigidBody)
         return;
-
+      currentRigidBody.velocity = currentVelocity;
       attachJoint.connectedBody = null;
       currentRigidBody = null;
     }
