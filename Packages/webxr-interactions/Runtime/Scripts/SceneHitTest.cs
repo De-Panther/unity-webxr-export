@@ -6,6 +6,8 @@ namespace WebXR.Interactions
   {
     public Transform originTransform;
     public GameObject visual;
+    private WebXRController leftController;
+    private WebXRController rightController;
 
     private bool isFollowing = false;
 
@@ -30,9 +32,16 @@ namespace WebXR.Interactions
       WebXRManager.OnViewerHitTestUpdate -= HandleOnViewerHitTestUpdate;
     }
 
+    bool GetControllersButtonDown()
+    {
+      bool leftDown = (leftController.isHandActive || leftController.isControllerActive) && leftController.GetButtonDown(WebXRController.ButtonTypes.Trigger);
+      bool rightDown = (rightController.isHandActive || rightController.isControllerActive) && rightController.GetButtonDown(WebXRController.ButtonTypes.Trigger);
+      return leftDown || rightDown;
+    }
+
     void Update()
     {
-      if (isFollowing && Input.GetMouseButtonDown(0))
+      if (isFollowing && (Input.GetMouseButtonDown(0) || GetControllersButtonDown()))
       {
         isFollowing = false;
         visual.SetActive(false);
