@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Support for AR headsets in SceneHitTest.
+- Velocity for interactables when dropped.
 
 ## [0.13.0] - 2021-10-18
 ### Changed

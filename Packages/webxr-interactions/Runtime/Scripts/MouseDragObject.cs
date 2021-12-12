@@ -9,8 +9,8 @@ namespace WebXR.Interactions
     private Rigidbody m_rigidbody;
     private Vector3 m_screenPoint;
     private Vector3 m_offset;
-    private Vector3 currentVelocity;
-    private Vector3 previousPos;
+    private Vector3 m_currentVelocity;
+    private Vector3 m_previousPos;
 
     void Awake()
     {
@@ -29,7 +29,7 @@ namespace WebXR.Interactions
 
     void OnMouseUp()
     {
-      m_rigidbody.velocity = currentVelocity;
+      m_rigidbody.velocity = m_currentVelocity;
       m_currentCamera = null;
     }
 
@@ -40,9 +40,8 @@ namespace WebXR.Interactions
         Vector3 currentScreenPoint = GetMousePosWithScreenZ(m_screenPoint.z);
         m_rigidbody.velocity = Vector3.zero;
         m_rigidbody.MovePosition(m_currentCamera.ScreenToWorldPoint(currentScreenPoint) + m_offset);
-        
-        currentVelocity = (transform.position - previousPos) / Time.deltaTime;
-        previousPos = transform.position;
+        m_currentVelocity = (transform.position - m_previousPos) / Time.deltaTime;
+        m_previousPos = transform.position;
       }
     }
 
