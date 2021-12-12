@@ -33,6 +33,9 @@ namespace WebXR.Interactions
     private Dictionary<int, Transform> handJoints = new Dictionary<int, Transform>();
     public GameObject inputProfileHandModelParent;
 
+    private Vector3 currentVelocity;
+    private Vector3 previousPos;
+
 #if WEBXR_INPUT_PROFILES
     private InputProfileLoader inputProfileLoader;
     private InputProfileModel inputProfileModel;
@@ -124,6 +127,9 @@ namespace WebXR.Interactions
       {
         Drop();
       }
+
+      currentVelocity = (transform.position - previousPos) / Time.deltaTime;
+      previousPos = transform.position;
 
 #if WEBXR_INPUT_PROFILES
       if (loadedModel && useInputProfile)
@@ -512,7 +518,7 @@ namespace WebXR.Interactions
     {
       if (!currentRigidBody)
         return;
-
+      currentRigidBody.velocity = currentVelocity;
       attachJoint.connectedBody = null;
       currentRigidBody = null;
     }
