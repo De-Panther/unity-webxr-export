@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Fixed
 - hapticActuators didn't work.
+- Error on XR session end in Unity 2021.2 builds.
+- Issues with Touch events on AR session in Unity 2021 builds.
 
 ## [0.13.0] - 2021-10-18
 ### Added

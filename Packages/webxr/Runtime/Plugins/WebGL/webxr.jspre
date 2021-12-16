@@ -38,6 +38,7 @@ setTimeout(function () {
         this.frameNumber = 0;
         this.touchIDs = [];
         this.touches = [];
+        this.eventsNamesToIDs = {};
         this.CreateTouch = function (pageElement, xPercentage, yPercentage) {
           var touchID = 0;
           while (this.touchIDs.includes(touchID))
@@ -58,9 +59,9 @@ setTimeout(function () {
             return item !== touch
           });
         }
-        this.SendTouchEvent = function(JSEventsObject, eventID, eventName, target, changedTouches) {
+        this.SendTouchEvent = function(JSEventsObject, eventName, target, changedTouches) {
           var touchEvent = new XRTouchEvent(eventName, target, this.touches, this.touches, changedTouches);
-          JSEventsObject.eventHandlers[eventID].eventListenerFunc(touchEvent);
+          JSEventsObject.eventHandlers[this.eventsNamesToIDs[eventName]].eventListenerFunc(touchEvent);
         }
       }
       
@@ -403,8 +404,9 @@ setTimeout(function () {
 
         this.gameModule.WebXR.OnEndXR();
         this.didNotifyUnity = false;
-        this.canvas.width = this.canvas.parentElement.clientWidth * this.gameModule.asmLibraryArg._JS_SystemInfo_GetPreferredDevicePixelRatio();
-        this.canvas.height = this.canvas.parentElement.clientHeight * this.gameModule.asmLibraryArg._JS_SystemInfo_GetPreferredDevicePixelRatio();
+        var pixelRatio = Module.devicePixelRatio || window.devicePixelRatio || 1;
+        this.canvas.width = this.canvas.parentElement.clientWidth * pixelRatio;
+        this.canvas.height = this.canvas.parentElement.clientHeight * pixelRatio;
 
         if (this.BrowserObject.pauseAsyncCallbacks) {
           this.BrowserObject.pauseAsyncCallbacks();
@@ -426,7 +428,7 @@ setTimeout(function () {
         {
           var touch = this.xrData.touches[0];
           this.xrData.RemoveTouch(touch);
-          this.xrData.SendTouchEvent(this.JSEventsObject, 8, "touchend", this.canvas, [touch]);
+          this.xrData.SendTouchEvent(this.JSEventsObject, "touchend", this.canvas, [touch]);
         }
       }
       
@@ -491,11 +493,11 @@ setTimeout(function () {
                 break;
               case "selectstart": // 7 touchstart
                 inputSource.xrTouchObject = this.xrData.CreateTouch(this.canvas, xPercentage, yPercentage);
-                this.xrData.SendTouchEvent(this.JSEventsObject, 7, "touchstart", this.canvas, [inputSource.xrTouchObject])
+                this.xrData.SendTouchEvent(this.JSEventsObject, "touchstart", this.canvas, [inputSource.xrTouchObject])
                 break;
               case "selectend": // 8 touchend
                 this.xrData.RemoveTouch(inputSource.xrTouchObject);
-                this.xrData.SendTouchEvent(this.JSEventsObject, 8, "touchend", this.canvas, [inputSource.xrTouchObject]);
+                this.xrData.SendTouchEvent(this.JSEventsObject, "touchend", this.canvas, [inputSource.xrTouchObject]);
                 inputSource.xrTouchObject = null;
                 break;
             }
@@ -581,6 +583,9 @@ setTimeout(function () {
     
           var thisXRMananger = this;
           this.JSEventsObject = this.gameModule.WebXR.GetJSEventsObject();
+          for (var i = 0; i < this.JSEventsObject.eventHandlers.length; i++) {
+            this.xrData.eventsNamesToIDs[this.JSEventsObject.eventHandlers[i].eventTypeString] = i;
+          }
           this.BrowserObject = this.gameModule.WebXR.GetBrowserObject();
           this.BrowserObject.requestAnimationFrame = function (func) {
             if (thisXRMananger.xrSession && thisXRMananger.xrSession.isInSession) {
@@ -818,7 +823,7 @@ setTimeout(function () {
           }
         }
         if (touchesToSend.length > 0) {
-          this.xrData.SendTouchEvent(this.JSEventsObject, 9, "touchmove", this.canvas, touchesToSend);
+          this.xrData.SendTouchEvent(this.JSEventsObject, "touchmove", this.canvas, touchesToSend);
           for (var i = 0; i < touchesToSend.length; i++) {
             touchesToSend[i].ResetMovement();
           }
