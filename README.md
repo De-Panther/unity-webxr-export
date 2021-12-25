@@ -36,7 +36,7 @@ Or just use this as a Unity Package (UPM), more info [here](Packages/webxr/READM
 
 ### 📝 Unity Editor version
 
-* `2019.4.7` and up.
+* `2019.4.33` and up.
 * `2020.1` and up.
 
 ### 🗺️ Browser Compatibility
