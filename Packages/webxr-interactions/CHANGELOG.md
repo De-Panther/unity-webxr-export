@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for AR headsets in SceneHitTest.
 - Velocity for interactables when dropped.
 
+### Changed
+- Minimum WebXR Input Profiles Loader version 0.4.0.
+- Minimum Unity Editor version 2019.4.33.
+
 ## [0.13.0] - 2021-10-18
 ### Changed
 - Requires WebXR Export 0.13.0.

@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Error on XR session end in Unity 2021.2 builds.
 - Issues with Touch events on AR session in Unity 2021 builds.
 
+### Changed
+- Minimum Unity Editor version 2019.4.33.
+
 ## [0.13.0] - 2021-10-18
 ### Added
 - Support for Unity 2021.2 (currently beta) and up.
