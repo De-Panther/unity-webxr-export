@@ -38,6 +38,7 @@ Or just use this as a Unity Package (UPM), more info [here](Packages/webxr/READM
 
 * `2019.4.33` and up.
 * `2020.1` and up.
+* `2021.1` and up.
 
 ### 🗺️ Browser Compatibility
 
