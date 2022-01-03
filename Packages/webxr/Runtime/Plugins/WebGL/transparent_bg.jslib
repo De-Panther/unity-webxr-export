@@ -1,3 +1,5 @@
+// Modified version of https://forum.unity.com/threads/webgl-transparent-background.284699/#post-1880667
+// More details at https://support.unity.com/hc/en-us/articles/208892946-How-can-I-make-the-canvas-transparent-on-WebGL-
 var LibraryGLClear = {
   glClear: function (mask) {
     if (mask == 0x00004000 && GLctx.dontClearAlphaOnly) {
