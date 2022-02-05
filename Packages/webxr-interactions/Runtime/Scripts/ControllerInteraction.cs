@@ -528,9 +528,15 @@ namespace WebXR.Interactions
       Rigidbody nearestRigidBody = null;
       float minDistance = float.MaxValue;
       float distance = 0.0f;
+      bool removeNulls = false;
 
       foreach (Rigidbody contactBody in contactRigidBodies)
       {
+        if (contactBody == null)
+        {
+          removeNulls = true;
+          continue;
+        }
         distance = (contactBody.gameObject.transform.position - transform.position).sqrMagnitude;
 
         if (distance < minDistance)
@@ -538,6 +544,11 @@ namespace WebXR.Interactions
           minDistance = distance;
           nearestRigidBody = contactBody;
         }
+      }
+
+      if (removeNulls)
+      {
+        contactRigidBodies.RemoveAll(x => x == null);
       }
 
       return nearestRigidBody;
