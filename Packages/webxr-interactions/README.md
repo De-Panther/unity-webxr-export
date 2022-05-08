@@ -28,7 +28,7 @@ The WebXR Interactions package supports the [WebXR Input Profiles Loader](https:
 
 Add `com.atteneder` to the scopes list of the OpenUPM registry for Unity to locate the glTFast package.
 
-### Using Git
+### Using Git (DON'T! OpenUPM is better)
 
 To add the package to your Unity project using Git, open the Package Manager window, click on the + icon, "Add package from git URL..." and add the path URL
 
