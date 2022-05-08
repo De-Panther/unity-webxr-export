@@ -22,7 +22,7 @@ Scope(s): com.de-panther
 
 Then in `Window > Package Manager` selecting `Packages: My Registries` and the WebXR Export package would be available for install.
 
-### Using Git
+### Using Git (DON'T! OpenUPM is better)
 
 To add the package to your Unity project using Git, open the Package Manager window, click on the + icon, "Add package from git URL..." and add the path URL
 
