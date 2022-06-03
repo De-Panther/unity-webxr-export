@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Fixed
 - Another ugly hack to fix WebXR Viewer viewports on iOS.
+- Issue of a delay on controller buttons press.
 
 ## [0.14.0] - 2021-12-26
 ### Fixed
