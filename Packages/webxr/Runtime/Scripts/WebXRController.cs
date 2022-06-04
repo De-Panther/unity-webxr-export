@@ -41,15 +41,21 @@ namespace WebXR
     public WebXRControllerHand hand = WebXRControllerHand.NONE;
 
     private float trigger;
+    private bool triggerTouched;
     private float squeeze;
+    private bool squeezeTouched;
     private float thumbstick;
+    private bool thumbstickTouched;
     private float thumbstickX;
     private float thumbstickY;
     private float touchpad;
+    private bool touchpadTouched;
     private float touchpadX;
     private float touchpadY;
     private float buttonA;
+    private bool buttonATouched;
     private float buttonB;
+    private bool buttonBTouched;
 
     private WebXRControllerButton[] buttons;
 
@@ -102,42 +108,48 @@ namespace WebXR
     private void InitButtons()
     {
       buttons = new WebXRControllerButton[6];
-      buttons[(int)ButtonTypes.Trigger] = new WebXRControllerButton(trigger == 1, trigger);
-      buttons[(int)ButtonTypes.Grip] = new WebXRControllerButton(squeeze == 1, squeeze);
-      buttons[(int)ButtonTypes.Thumbstick] = new WebXRControllerButton(thumbstick == 1, thumbstick);
-      buttons[(int)ButtonTypes.Touchpad] = new WebXRControllerButton(touchpad == 1, touchpad);
-      buttons[(int)ButtonTypes.ButtonA] = new WebXRControllerButton(buttonA == 1, buttonA);
-      buttons[(int)ButtonTypes.ButtonB] = new WebXRControllerButton(buttonB == 1, buttonB);
+      buttons[(int)ButtonTypes.Trigger] = new WebXRControllerButton(trigger == 1, triggerTouched, trigger);
+      buttons[(int)ButtonTypes.Grip] = new WebXRControllerButton(squeeze == 1, squeezeTouched, squeeze);
+      buttons[(int)ButtonTypes.Thumbstick] = new WebXRControllerButton(thumbstick == 1, thumbstickTouched, thumbstick);
+      buttons[(int)ButtonTypes.Touchpad] = new WebXRControllerButton(touchpad == 1, touchpadTouched, touchpad);
+      buttons[(int)ButtonTypes.ButtonA] = new WebXRControllerButton(buttonA == 1, buttonATouched, buttonA);
+      buttons[(int)ButtonTypes.ButtonB] = new WebXRControllerButton(buttonB == 1, buttonBTouched, buttonB);
     }
 
     private void UpdateAllButtons()
     {
-      buttons[(int)ButtonTypes.Trigger].UpdateState(trigger == 1, trigger);
-      buttons[(int)ButtonTypes.Grip].UpdateState(squeeze == 1, squeeze);
-      buttons[(int)ButtonTypes.Thumbstick].UpdateState(thumbstick == 1, thumbstick);
-      buttons[(int)ButtonTypes.Touchpad].UpdateState(touchpad == 1, touchpad);
-      buttons[(int)ButtonTypes.ButtonA].UpdateState(buttonA == 1, buttonA);
-      buttons[(int)ButtonTypes.ButtonB].UpdateState(buttonB == 1, buttonB);
+      buttons[(int)ButtonTypes.Trigger].UpdateState(trigger == 1, triggerTouched, trigger);
+      buttons[(int)ButtonTypes.Grip].UpdateState(squeeze == 1, squeezeTouched, squeeze);
+      buttons[(int)ButtonTypes.Thumbstick].UpdateState(thumbstick == 1, thumbstickTouched, thumbstick);
+      buttons[(int)ButtonTypes.Touchpad].UpdateState(touchpad == 1, touchpadTouched, touchpad);
+      buttons[(int)ButtonTypes.ButtonA].UpdateState(buttonA == 1, buttonATouched, buttonA);
+      buttons[(int)ButtonTypes.ButtonB].UpdateState(buttonB == 1, buttonBTouched, buttonB);
     }
 
     private void UpdateHandButtons()
     {
-      buttons[(int)ButtonTypes.Trigger].UpdateState(trigger == 1, trigger);
-      buttons[(int)ButtonTypes.Grip].UpdateState(squeeze == 1, squeeze);
+      buttons[(int)ButtonTypes.Trigger].UpdateState(trigger == 1, trigger == 1, trigger);
+      buttons[(int)ButtonTypes.Grip].UpdateState(squeeze == 1, squeeze == 1, squeeze);
     }
 
     private void ResetAllButtons()
     {
       trigger = 0;
+      triggerTouched = false;
       squeeze = 0;
+      squeezeTouched = false;
       thumbstick = 0;
+      thumbstickTouched = false;
       thumbstickX = 0;
       thumbstickY = 0;
       touchpad = 0;
+      touchpadTouched = false;
       touchpadX = 0;
       touchpadY = 0;
       buttonA = 0;
+      buttonATouched = false;
       buttonB = 0;
+      buttonBTouched = false;
       if (buttons?.Length == 6)
       {
         UpdateAllButtons();
@@ -203,6 +215,23 @@ namespace WebXR
           buttonB = buttonPressed ? 1 : 0;
         }
 
+        if (!inputDevice.Value.TryGetFeatureValue(CommonUsages.primaryTouch, out buttonATouched))
+        {
+          buttonATouched = buttonA > 0;
+        }
+        if (!inputDevice.Value.TryGetFeatureValue(CommonUsages.secondaryTouch, out buttonBTouched))
+        {
+          buttonBTouched = buttonB > 0;
+        }
+        if (!inputDevice.Value.TryGetFeatureValue(CommonUsages.primary2DAxisTouch, out thumbstickTouched))
+        {
+          thumbstickTouched = thumbstick > 0;
+        }
+        if (!inputDevice.Value.TryGetFeatureValue(CommonUsages.secondary2DAxisTouch, out touchpadTouched))
+        {
+          touchpadTouched = touchpad > 0;
+        }
+
         if (buttons?.Length != 6)
         {
           InitButtons();
@@ -257,6 +286,12 @@ namespace WebXR
     {
       TryUpdateButtons();
       return buttons[(int)buttonType].up;
+    }
+
+    public bool GetButtonTouched(ButtonTypes buttonType)
+    {
+      TryUpdateButtons();
+      return buttons[(int)buttonType].touched;
     }
 
     public float GetButtonIndexValue(int index)
@@ -352,15 +387,21 @@ namespace WebXR
         }
 
         trigger = controllerData.trigger;
+        triggerTouched = controllerData.triggerTouched;
         squeeze = controllerData.squeeze;
+        squeezeTouched = controllerData.squeezeTouched;
         thumbstick = controllerData.thumbstick;
+        thumbstickTouched = controllerData.thumbstickTouched;
         thumbstickX = controllerData.thumbstickX;
         thumbstickY = controllerData.thumbstickY;
         touchpad = controllerData.touchpad;
+        touchpadTouched = controllerData.touchpadTouched;
         touchpadX = controllerData.touchpadX;
         touchpadY = controllerData.touchpadY;
         buttonA = controllerData.buttonA;
+        buttonATouched = controllerData.buttonATouched;
         buttonB = controllerData.buttonB;
+        buttonBTouched = controllerData.buttonBTouched;
 
         if (buttons?.Length != 6)
         {
