@@ -13,15 +13,21 @@ namespace WebXR
     public Vector3 gripPosition;
     public Quaternion gripRotation;
     public float trigger;
+    public bool triggerTouched;
     public float squeeze;
+    public bool squeezeTouched;
     public float thumbstick;
+    public bool thumbstickTouched;
     public float thumbstickX;
     public float thumbstickY;
     public float touchpad;
+    public bool touchpadTouched;
     public float touchpadX;
     public float touchpadY;
     public float buttonA;
+    public bool buttonATouched;
     public float buttonB;
+    public bool buttonBTouched;
     public string[] profiles;
   }
 
@@ -100,19 +106,21 @@ namespace WebXR
   public class WebXRControllerButton
   {
     public bool pressed;
+    public bool touched;
     public bool down;
     public bool up;
     public float value;
 
-    public WebXRControllerButton(bool isPressed, float buttonValue)
+    public WebXRControllerButton(bool isPressed, bool isTouched, float buttonValue)
     {
       down = false;
       up = false;
       pressed = isPressed;
+      touched = isTouched;
       value = buttonValue;
     }
 
-    public void UpdateState(bool isPressed, float buttonValue)
+    public void UpdateState(bool isPressed, bool isTouched, float buttonValue)
     {
       if (isPressed && pressed) // nothing
       {
@@ -135,6 +143,7 @@ namespace WebXR
         up = true;
       }
       pressed = isPressed;
+      touched = isTouched;
       value = buttonValue;
     }
   }

@@ -110,15 +110,21 @@ setTimeout(function () {
           this.rotationZIndex = index++;
           this.rotationWIndex = index++;
           this.triggerIndex = index++;
+          this.triggerTouchedIndex = index++;
           this.squeezeIndex = index++;
+          this.squeezeTouchedIndex = index++;
           this.thumbstickIndex = index++;
+          this.thumbstickTouchedIndex = index++;
           this.thumbstickXIndex = index++;
           this.thumbstickYIndex = index++;
           this.touchpadIndex = index++;
+          this.touchpadTouchedIndex = index++;
           this.touchpadXIndex = index++;
           this.touchpadYIndex = index++;
           this.buttonAIndex = index++;
+          this.buttonATouchedIndex = index++;
           this.buttonBIndex = index++;
+          this.buttonBTouchedIndex = index++;
           this.updatedGripIndex = index++;
           this.gripPositionXIndex = index++;
           this.gripPositionYIndex = index++;
@@ -763,21 +769,27 @@ setTimeout(function () {
                   switch (j) {
                     case 0:
                       Module.HEAPF32[controller.triggerIndex] = inputSource.gamepad.buttons[j].value; // XRControllerData.trigger
+                      Module.HEAPF32[controller.triggerTouchedIndex] = inputSource.gamepad.buttons[j].touched; // XRControllerData.triggerTouched
                       break;
                     case 1:
                       Module.HEAPF32[controller.squeezeIndex] = inputSource.gamepad.buttons[j].value; // XRControllerData.squeeze
+                      Module.HEAPF32[controller.squeezeTouchedIndex] = inputSource.gamepad.buttons[j].touched; // XRControllerData.squeezeTouched
                       break;
                     case 2:
                       Module.HEAPF32[controller.touchpadIndex] = inputSource.gamepad.buttons[j].value; // XRControllerData.touchpad
+                      Module.HEAPF32[controller.touchpadTouchedIndex] = inputSource.gamepad.buttons[j].touched; // XRControllerData.touchpadTouched
                       break;
                     case 3:
                       Module.HEAPF32[controller.thumbstickIndex] = inputSource.gamepad.buttons[j].value; // XRControllerData.thumbstick
+                      Module.HEAPF32[controller.thumbstickTouchedIndex] = inputSource.gamepad.buttons[j].touched; // XRControllerData.thumbstickTouched
                       break;
                     case 4:
                       Module.HEAPF32[controller.buttonAIndex] = inputSource.gamepad.buttons[j].value; // XRControllerData.buttonA
+                      Module.HEAPF32[controller.buttonATouchedIndex] = inputSource.gamepad.buttons[j].touched; // XRControllerData.buttonATouched
                       break;
                     case 5:
                       Module.HEAPF32[controller.buttonBIndex] = inputSource.gamepad.buttons[j].value; // XRControllerData.buttonB
+                      Module.HEAPF32[controller.buttonBTouchedIndex] = inputSource.gamepad.buttons[j].touched; // XRControllerData.buttonBTouched
                       break;
                   }
                 }
@@ -857,7 +869,7 @@ setTimeout(function () {
           session.addEventListener('visibilitychange', this.onSessionVisibilityEvent);
     
           this.xrData.controllerA.setIndices(Module.ControllersArrayOffset);
-          this.xrData.controllerB.setIndices(Module.ControllersArrayOffset + 28);
+          this.xrData.controllerB.setIndices(Module.ControllersArrayOffset + 34);
           this.xrData.handLeft.setIndices(Module.HandsArrayOffset);
           this.xrData.handRight.setIndices(Module.HandsArrayOffset + 205);
           this.xrData.viewerHitTestPose.setIndices(Module.ViewerHitTestPoseArrayOffset);

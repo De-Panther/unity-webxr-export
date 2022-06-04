@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+### Added
+- GetButtonTouched to WebXRController, to support buttons touched values.
+
 ### Fixed
 - Another ugly hack to fix WebXR Viewer viewports on iOS.
 - Issue of a delay on controller buttons press.

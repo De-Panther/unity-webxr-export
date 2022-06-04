@@ -281,7 +281,7 @@ namespace WebXR
     float[] sharedArray = new float[(2 * 16) + (2 * 7)];
 
     // Shared array for controllers data
-    float[] controllersArray = new float[2 * 28];
+    float[] controllersArray = new float[2 * 34];
 
     // Shared array for hands data
     float[] handsArray = new float[2 * (25 * 8 + 5)];
@@ -460,7 +460,7 @@ namespace WebXR
 
     bool GetGamepadFromControllersArray(int controllerIndex, ref WebXRControllerData newControllerData)
     {
-      int arrayPosition = controllerIndex * 28;
+      int arrayPosition = controllerIndex * 34;
       int frameNumber = (int)controllersArray[arrayPosition++];
       if (newControllerData.frame == frameNumber)
       {
@@ -479,15 +479,21 @@ namespace WebXR
       newControllerData.rotation = new Quaternion(controllersArray[arrayPosition++], controllersArray[arrayPosition++], controllersArray[arrayPosition++],
           controllersArray[arrayPosition++]);
       newControllerData.trigger = controllersArray[arrayPosition++];
+      newControllerData.triggerTouched = controllersArray[arrayPosition++] != 0;
       newControllerData.squeeze = controllersArray[arrayPosition++];
+      newControllerData.squeezeTouched = controllersArray[arrayPosition++] != 0;
       newControllerData.thumbstick = controllersArray[arrayPosition++];
+      newControllerData.thumbstickTouched = controllersArray[arrayPosition++] != 0;
       newControllerData.thumbstickX = controllersArray[arrayPosition++];
       newControllerData.thumbstickY = controllersArray[arrayPosition++];
       newControllerData.touchpad = controllersArray[arrayPosition++];
+      newControllerData.touchpadTouched = controllersArray[arrayPosition++] != 0;
       newControllerData.touchpadX = controllersArray[arrayPosition++];
       newControllerData.touchpadY = controllersArray[arrayPosition++];
       newControllerData.buttonA = controllersArray[arrayPosition++];
+      newControllerData.buttonATouched = controllersArray[arrayPosition++] != 0;
       newControllerData.buttonB = controllersArray[arrayPosition++];
+      newControllerData.buttonBTouched = controllersArray[arrayPosition++] != 0;
       if (controllersArray[arrayPosition] == 1)
       {
         controllersArray[arrayPosition++] = 2;
