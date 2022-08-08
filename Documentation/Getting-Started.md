@@ -30,7 +30,20 @@ Now you can build the project.
 
 ![Build](unity-webxr-export-build.png)
 
-Make sure to build it from `Build Settings > Build`. Unity's `Build And Run` server use HTTP. Run the build on your own HTTPS server.
+Make sure to build it from `Build Settings > Build`. Unity's `Build And Run` server use HTTP.
+Run the build on your own HTTPS server. A quick script to run it locally (from this [gist comment](https://gist.github.com/dergachev/7028596?permalink_comment_id=3720350#gistcomment-3720350))
+```python
+from http.server import HTTPServer, SimpleHTTPRequestHandler
+import ssl, os
+
+os.system("openssl req -nodes -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -subj '/CN=mylocalhost'")
+port = 4443
+httpd = HTTPServer(('0.0.0.0', port), SimpleHTTPRequestHandler)
+httpd.socket = ssl.wrap_socket(httpd.socket, keyfile='key.pem', certfile="cert.pem", server_side=True)
+print(f"Server running on https://0.0.0.0:{port}")
+httpd.serve_forever()
+```
+Go to the path where the built game is located and just run the script.
 
 ![Result](unity-webxr-export-result.png)
 
