@@ -603,11 +603,16 @@ setTimeout(function () {
               window.requestAnimationFrame(func);
             }
           };
-    
+
+          Module.WebXR.startRenderSpectatorCamera = function () {
+            Module.WebXR.isSpectatorCameraRendering = true;
+            thisXRMananger.ctx.bindFramebuffer(thisXRMananger.ctx.FRAMEBUFFER);
+          }
+
           // bindFramebuffer frameBufferObject null in XRSession should use XRWebGLLayer FBO instead
           thisXRMananger.ctx.oldBindFramebuffer = thisXRMananger.ctx.bindFramebuffer;
           thisXRMananger.ctx.bindFramebuffer = function (target, fbo) {
-            if (!fbo) {
+            if (!fbo && !Module.WebXR.isSpectatorCameraRendering) {
               if (thisXRMananger.xrSession && thisXRMananger.xrSession.isInSession) {
                 if (thisXRMananger.xrSession.renderState.baseLayer) {
                   fbo = thisXRMananger.xrSession.renderState.baseLayer.framebuffer
@@ -915,7 +920,8 @@ setTimeout(function () {
           this.canvas.width = glLayer.framebufferWidth;
           this.canvas.height = glLayer.framebufferHeight;
         }
-        
+
+        Module.WebXR.isSpectatorCameraRendering = false;
         this.ctx.bindFramebuffer(this.ctx.FRAMEBUFFER, glLayer.framebuffer);
         if (session.isAR) {
           // Workaround for Chromium depth bug https://bugs.chromium.org/p/chromium/issues/detail?id=1167450#c21

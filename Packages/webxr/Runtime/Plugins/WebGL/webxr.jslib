@@ -48,4 +48,8 @@ mergeInto(LibraryManager.library, {
   ControllerPulse: function(controller, intensity, duration) {
     Module.WebXR.callHapticPulse({detail: {'controller' : controller, 'intensity' : intensity, 'duration': duration}});
   },
+
+  PreRenderSpectatorCamera: function() {
+    Module.WebXR.startRenderSpectatorCamera();
+  },
 });

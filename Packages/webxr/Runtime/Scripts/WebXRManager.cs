@@ -15,7 +15,7 @@ namespace WebXR
   {
     public static WebXRManager Instance { get; private set; }
 
-    public WebXRState XRState => subsystem.xrState;
+    public WebXRState XRState => subsystem == null ? WebXRState.NORMAL : subsystem.xrState;
 
     public static event WebXRSubsystem.XRCapabilitiesUpdate OnXRCapabilitiesUpdate
     {
@@ -63,7 +63,7 @@ namespace WebXR
     {
       get
       {
-        return subsystem.capabilities.canPresentAR;
+        return subsystem == null ? false : subsystem.capabilities.canPresentAR;
       }
     }
 
@@ -71,7 +71,7 @@ namespace WebXR
     {
       get
       {
-        return subsystem.capabilities.canPresentVR;
+        return subsystem == null ? false : subsystem.capabilities.canPresentVR;
       }
     }
 
@@ -100,6 +100,11 @@ namespace WebXR
     public void HapticPulse(WebXRControllerHand hand, float intensity, float duration)
     {
       subsystem?.HapticPulse(hand, intensity, duration);
+    }
+
+    public void PreRenderSpectatorCamera()
+    {
+      subsystem?.PreRenderSpectatorCamera();
     }
 
     public void StartViewerHitTest()

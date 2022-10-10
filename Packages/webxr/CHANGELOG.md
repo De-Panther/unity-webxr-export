@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Support for Spectator Camera.
+
 ## [0.15.0] - 2022-06-04
 ### Added
 - GetButtonTouched to WebXRController, to support buttons touched values.
