@@ -205,6 +205,9 @@ namespace WebXR
       public static extern void ControllerPulse(int controller, float intensity, float duration);
 
       [DllImport("__Internal")]
+      public static extern void PreRenderSpectatorCamera();
+
+      [DllImport("__Internal")]
       public static extern void SetWebXREvents(StartXREvent on_start_ar,
           StartXREvent on_start_vr,
           VisibilityChangeEvent on_visibility_change,
@@ -432,6 +435,13 @@ namespace WebXR
     {
 #if UNITY_WEBGL
       Native.ControllerPulse((int)hand, intensity, duration);
+#endif
+    }
+
+    public void PreRenderSpectatorCamera()
+    {
+#if UNITY_WEBGL
+      Native.PreRenderSpectatorCamera();
 #endif
     }
 
