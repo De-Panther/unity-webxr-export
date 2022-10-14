@@ -56,7 +56,7 @@ Firefox Reality on Oculus Quest.
 
 Firefox Reality on Hololens 2 (Supports WebXR Hand Input).
 
-Microsoft Edge on Hololens 2 ([Currently in Insider preview](https://docs.microsoft.com/en-us/hololens/hololens-insider#how-to-use-webxr)).
+Microsoft Edge on Hololens 2.
 
 Google Chrome on Android (Supports both AR and VR sessions).
 
