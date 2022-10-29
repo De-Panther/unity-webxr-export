@@ -1,8 +1,20 @@
+using System;
 using System.Collections;
+#if UNITY_WEBGL && !UNITY_EDITOR
+using System.Runtime.InteropServices;
+#endif
 using UnityEngine;
 
 public class PlayWebcam : MonoBehaviour
 {
+  #if UNITY_WEBGL && !UNITY_EDITOR
+  [DllImport("__Internal")]
+  public static extern void JS_WebCamVideo_SetLatestTextureId(System.IntPtr textureId);
+
+  [DllImport("__Internal")]
+  public static extern void JS_WebCamVideo_RemoveWhereTextureId(System.IntPtr textureId);
+  #endif
+
   [SerializeField]
   private string thresholdMinName = "_ThresholdMin";
   [SerializeField]
@@ -14,10 +26,11 @@ public class PlayWebcam : MonoBehaviour
 
   private Material material;
   private bool hasThresholdProperties = false;
-  private int thresholdMinID = 0;
-  private int thresholdMaxID = 0;
+  private int thresholdMinID = -1;
+  private int thresholdMaxID = -1;
   private Color thresholdMinColor;
   private Color thresholdMaxColor;
+  private IntPtr latestWebcamPtr = IntPtr.Zero;
 
   private int defaultWidth = 1280;
   private int defaultHeight = 720;
@@ -36,15 +49,17 @@ public class PlayWebcam : MonoBehaviour
       _renderer.sharedMaterial = material;
       hasThresholdProperties = false;
       thresholdMinID = material.shader.FindPropertyIndex(thresholdMinName);
-      if (thresholdMinID > -1)
+      if (thresholdMinID == -1)
       {
-        thresholdMinID = material.shader.GetPropertyNameId(thresholdMinID);
+        return;
       }
+      thresholdMinID = material.shader.GetPropertyNameId(thresholdMinID);
       thresholdMaxID = material.shader.FindPropertyIndex(thresholdMaxName);
-      if (thresholdMaxID > -1)
+      if (thresholdMaxID == -1)
       {
-        thresholdMaxID = material.shader.GetPropertyNameId(thresholdMaxID);
+        return;
       }
+      thresholdMaxID = material.shader.GetPropertyNameId(thresholdMaxID);
       thresholdMinColor = material.GetColor(thresholdMinID);
       thresholdMaxColor = material.GetColor(thresholdMaxID);
       hasThresholdProperties = true;
@@ -76,16 +91,23 @@ public class PlayWebcam : MonoBehaviour
       transform.localScale = new Vector3(ratio, 1f, 1f);
       material.mainTexture = webcamTexture;
     }
+    latestWebcamPtr = webcamTexture.GetNativeTexturePtr();
+    #if UNITY_WEBGL && !UNITY_EDITOR
+    JS_WebCamVideo_RemoveWhereTextureId(latestWebcamPtr);
+    #endif
     webcamTexture.Play();
     StartCoroutine(SetScale());
   }
 
   IEnumerator SetScale()
   {
-    while (!webcamTexture.isPlaying || webcamTexture.height == 16)
+    while (webcamTexture.GetNativeTexturePtr() == latestWebcamPtr)
     {
       yield return null;
     }
+    #if UNITY_WEBGL && !UNITY_EDITOR
+    JS_WebCamVideo_SetLatestTextureId(webcamTexture.GetNativeTexturePtr());
+    #endif
     float ratio = (float)webcamTexture.width / (float)webcamTexture.height;
     transform.localScale = new Vector3(ratio, 1f, 1f);
   }
