@@ -27,9 +27,13 @@ namespace WebXR.Interactions
     private WebXRState currentXRState = WebXRState.NORMAL;
 
     [SerializeField]
+    private LayerMask webcamLayer;
+    [SerializeField]
     private Transform camerasBase;
     [SerializeField]
     private Transform cameraFollower;
+    [SerializeField]
+    private Camera[] xrCameras;
     [SerializeField]
     private Camera spectatorCamera;
     [SerializeField]
@@ -51,7 +55,9 @@ namespace WebXR.Interactions
     [SerializeField]
     private GameObject calibrationHintBottom;
     [SerializeField]
-    private WebXRController webxrController;
+    private WebXRController leftController;
+    [SerializeField]
+    private WebXRController rightController;
 
     private ControllerState state = ControllerState.None;
     private float webcamBaseSize = 1f;
@@ -111,6 +117,7 @@ namespace WebXR.Interactions
       calibrationHintBottom.SetActive(false);
       webcamParent.localScale = Vector3.one * WEBCAM_SIZE_CALIBRATION;
       webcamParent.gameObject.SetActive(true);
+      AddWebcamLayer();
       spectatorCameraParent.SetPositionAndRotation(camerasBase.position, camerasBase.rotation);
       state = ControllerState.SetCameraPoint;
       while (state != ControllerState.Ended)
@@ -135,6 +142,7 @@ namespace WebXR.Interactions
             break;
           case ControllerState.CalcAndSet:
             CalcAndSet();
+            RemoveWebcamLayer();
             state = ControllerState.Playing;
             break;
           case ControllerState.Playing:
@@ -156,9 +164,9 @@ namespace WebXR.Interactions
 
     private void SetPoint(Transform point, GameObject hint, ControllerState nextState, GameObject nextHint)
     {
-      if (GetControllersButtonDown())
+      if (GetControllersButtonDown(out Vector3 position))
       {
-        point.position = webxrController.transform.position;
+        point.position = position;
         point.gameObject.SetActive(true);
         hint.SetActive(false);
         nextHint.SetActive(true);
@@ -168,10 +176,10 @@ namespace WebXR.Interactions
 
     private void SetBottomPoint()
     {
-      if (GetControllersButtonDown())
+      if (GetControllersButtonDown(out Vector3 position))
       {
         float cameraToTopDistance = Vector3.Distance(calibrationPointCamera.position, calibrationPointTop.position);
-        Vector3 cameraToBottomDirection = (webxrController.transform.position - calibrationPointCamera.position).normalized;
+        Vector3 cameraToBottomDirection = (position - calibrationPointCamera.position).normalized;
         calibrationPointBottom.position = calibrationPointCamera.position + cameraToBottomDirection * cameraToTopDistance;
         calibrationPointBottom.gameObject.SetActive(true);
         calibrationHintBottom.SetActive(false);
@@ -181,7 +189,7 @@ namespace WebXR.Interactions
 
     private void Confirm()
     {
-      if (GetControllersButtonDown())
+      if (GetControllersButtonDown(out Vector3 position))
       {
         calibrationPointCamera.gameObject.SetActive(false);
         calibrationPointTop.gameObject.SetActive(false);
@@ -228,10 +236,40 @@ namespace WebXR.Interactions
       spectatorCameraTransform.SetPositionAndRotation(calibrationPointCamera.position, Quaternion.LookRotation(plane.normal, up) * LEFT_STEP_ROTATION);
     }
 
-    bool GetControllersButtonDown()
+    private bool GetControllersButtonDown(out Vector3 position)
     {
-      return (webxrController.isHandActive || webxrController.isControllerActive)
-            && (webxrController.GetButtonDown(WebXRController.ButtonTypes.Trigger));
+      bool leftDown = (leftController.isHandActive || leftController.isControllerActive)
+                      && leftController.GetButtonDown(WebXRController.ButtonTypes.Trigger);
+      if (leftDown)
+      {
+        position = leftController.transform.position;
+        return true;
+      }
+      bool rightDown = (rightController.isHandActive || rightController.isControllerActive)
+                      && rightController.GetButtonDown(WebXRController.ButtonTypes.Trigger);
+      if (rightDown)
+      {
+        position = rightController.transform.position;
+        return true;
+      }
+      position = Vector3.zero;
+      return false;
+    }
+
+    private void AddWebcamLayer()
+    {
+      for (int i = 0; i < xrCameras.Length; i++)
+      {
+        xrCameras[i].cullingMask |= webcamLayer;
+      }
+    }
+
+    private void RemoveWebcamLayer()
+    {
+      for (int i = 0; i < xrCameras.Length; i++)
+      {
+        xrCameras[i].cullingMask &= ~webcamLayer;
+      }
     }
   }
 }
