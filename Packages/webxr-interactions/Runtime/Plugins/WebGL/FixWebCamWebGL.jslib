@@ -64,18 +64,9 @@ var LibraryFixWebCamWebGL = {
         return;
       }
       webcamBufferToTextureTable[buffer] = webcamLatestTextureId;
-      GLctx.deleteTexture(GL.textures[webcamBufferToTextureTable[buffer]]);
-      var t = GLctx.createTexture();
-      t.name = webcamBufferToTextureTable[buffer];
-      GL.textures[webcamBufferToTextureTable[buffer]] = t;
-      GLctx.bindTexture(GLctx.TEXTURE_2D, t);
-      GLctx.texParameteri(GLctx.TEXTURE_2D, GLctx.TEXTURE_WRAP_S, GLctx.CLAMP_TO_EDGE);
-      GLctx.texParameteri(GLctx.TEXTURE_2D, GLctx.TEXTURE_WRAP_T, GLctx.CLAMP_TO_EDGE);
-      GLctx.texParameteri(GLctx.TEXTURE_2D, GLctx.TEXTURE_MIN_FILTER, GLctx.LINEAR);
       webcamLatestTextureId = 0
-    } else {
-      GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[webcamBufferToTextureTable[buffer]])
     }
+    GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[webcamBufferToTextureTable[buffer]]);
     GLctx.pixelStorei(GLctx.UNPACK_FLIP_Y_WEBGL, true);
     GLctx.texImage2D(GLctx.TEXTURE_2D, 0, GLctx.RGBA, GLctx.RGBA, GLctx.UNSIGNED_BYTE, videoElement);
     GLctx.pixelStorei(GLctx.UNPACK_FLIP_Y_WEBGL, false);
