@@ -22,7 +22,7 @@ Now you can import the `Sample Scene` from `Window > Package Manager > WebXR Int
 
 ![Import Sample Scene](unity-webxr-export-import-sample-scene.png)
 
-In `Project Settings > Player > Resolution and Presentation`, select `WebXR` as the `WebGL Template`. (If you are using Unity 2020.x you should use the 2020 templates)
+In `Project Settings > Player > Resolution and Presentation`, select `WebXR` as the `WebGL Template`. (If you are using Unity 2020.x and up you should use the 2020 templates)
 
 ![Resolution and Presentation](unity-webxr-export-resolution-and-presentation.png)
 
