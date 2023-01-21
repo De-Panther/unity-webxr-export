@@ -30,7 +30,7 @@ Now you can build the project.
 
 ![Build](unity-webxr-export-build.png)
 
-Make sure to build it from `Build Settings > Build`. Unity's `Build And Run` server use HTTP. Run the build on your own HTTPS server.
+WebXR requires a secure context (HTTPS server or localhost URL). Make sure to build the project from `Build Settings > Build`. Unity's `Build And Run` server use HTTP. Run the build on your own HTTPS server.
 
 ![Result](unity-webxr-export-result.png)
 
