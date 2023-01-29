@@ -19,6 +19,8 @@ public class PlayWebcam : MonoBehaviour
   private string thresholdMinName = "_ThresholdMin";
   [SerializeField]
   private string thresholdMaxName = "_ThresholdMax";
+  [SerializeField]
+  private string lightingTexName = "_LightingTex";
 
   private WebCamTexture webcamTexture;
   private Renderer _renderer;
@@ -31,6 +33,7 @@ public class PlayWebcam : MonoBehaviour
   private Color thresholdMinColor;
   private Color thresholdMaxColor;
   private IntPtr latestWebcamPtr = IntPtr.Zero;
+  private int lightingTexID = -1;
 
   private int defaultWidth = 1280;
   private int defaultHeight = 720;
@@ -63,6 +66,12 @@ public class PlayWebcam : MonoBehaviour
       thresholdMinColor = material.GetColor(thresholdMinID);
       thresholdMaxColor = material.GetColor(thresholdMaxID);
       hasThresholdProperties = true;
+      lightingTexID = material.shader.FindPropertyIndex(lightingTexName);
+      if (lightingTexID == -1)
+      {
+        return;
+      }
+      lightingTexID = material.shader.GetPropertyNameId(lightingTexID);
     }
   }
 
@@ -180,5 +189,14 @@ public class PlayWebcam : MonoBehaviour
   {
     TrySetupRenderer();
     TrySetColor(value, ref thresholdMaxColor, thresholdMaxID, 2);
+  }
+
+  public void TrySetLightingTexture(Texture texture)
+  {
+    if (lightingTexID == -1)
+    {
+      return;
+    }
+    material.SetTexture(lightingTexID, texture);
   }
 }

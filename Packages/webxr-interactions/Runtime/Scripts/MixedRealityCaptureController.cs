@@ -1,3 +1,24 @@
+/*
+Expected Hierarchy
+- SpectatorCameraHolder
+  - SpectatorCamera (Camera, SpectatorCamera)
+    - StackCameras
+      - SpectatorBackgroundCamera (Camera)
+      - SpectatorWebcamCamera (Camera)
+      - SpectatorForegroundCamera (Camera)
+      - Background (Quad MeshFilter, MeshRenderer, UnlitTransparent Material)
+      - Foreground (Quad MeshFilter, MeshRenderer, UnlitTransparent Material)
+  - MixedRealityCaptureController (MixedRealityCaptureController)
+    - CameraPoint (Visual reference for moving point)
+    - TopPoint (Visual reference for moving point)
+    - BottomPoint (Visual reference for moving point)
+  - WebcamHolder
+    - WebcamQuad (Quad MeshFilter, MeshRenderer, ChromaKeyUnlit Material)
+      - WebcamLightingQuad (Quad MeshFilter, MeshRenderer, White Legacy Diffuse Material)
+    - CameraHint
+    - TopHint
+    - BottomHint
+*/
 using System.Collections;
 using UnityEngine;
 
@@ -29,6 +50,8 @@ namespace WebXR.Interactions
     [SerializeField]
     private LayerMask webcamLayer;
     [SerializeField]
+    private LayerMask mixedRealityOnLayers;
+    [SerializeField]
     private Transform camerasBase;
     [SerializeField]
     private Transform cameraFollower;
@@ -37,11 +60,31 @@ namespace WebXR.Interactions
     [SerializeField]
     private Camera spectatorCamera;
     [SerializeField]
+    private GameObject stackCameras;
+    [SerializeField]
+    private Camera spectatorBackgroundCamera;
+    [SerializeField]
+    private Camera spectatorForegroundCamera;
+    [SerializeField]
+    private Camera spectatorWebcamLightingCamera;
+    [SerializeField]
     private Transform spectatorCameraTransform;
     [SerializeField]
     private Transform spectatorCameraParent;
     [SerializeField]
+    private Renderer backgroundPlaneRenderer;
+    [SerializeField]
+    private Renderer foregroundPlaneRenderer;
+    [SerializeField]
+    private Transform backgroundPlaneTransform;
+    [SerializeField]
+    private Transform foregroundPlaneTransform;
+    [SerializeField]
+    private Material defaultPlaneMaterial;
+    [SerializeField]
     private Transform webcamParent;
+    [SerializeField]
+    private PlayWebcam webcam;
     [SerializeField]
     private Transform calibrationPointCamera;
     [SerializeField]
@@ -58,9 +101,34 @@ namespace WebXR.Interactions
     private WebXRController leftController;
     [SerializeField]
     private WebXRController rightController;
+    [SerializeField]
+    private int webcamFramesDelaySize = 0;
 
     private ControllerState state = ControllerState.None;
     private float webcamBaseSize = 1f;
+
+    private RenderTexture[] backgroundStack;
+    private RenderTexture[] foregroundStack;
+    private RenderTexture[] webcamStack;
+    private int currentRenderFrame = 0;
+    private Material backgroundDisplay;
+    private Material foregroundDisplay;
+
+    private Vector3 storedSpectatorParentPosition;
+    private Quaternion storedSpectatorParentRotation;
+    private Vector3 storedSpectatorPosition;
+    private Quaternion storedSpectatorRotation;
+    private Vector3 storedWebcamParentPosition;
+    private Quaternion storedWebcamParentRotation;
+    private Vector3 storedWebcamParentScale;
+    private int storedSpectatorCullingMask;
+    private CameraClearFlags storedSpectatorClearFlags;
+    private float storedSpectatorFieldOfView;
+    private float sotredSpectatorNearClipPlane;
+    private float sotredSpectatorFarClipPlane;
+    private bool storedSpectatorOrthographic;
+    private float storedSpectatorOrthographicSize;
+    private bool storedWebcamParentActive;
 
     private void OnEnable()
     {
@@ -88,6 +156,15 @@ namespace WebXR.Interactions
       TryUpdateControllerState();
     }
 
+    public void TrySetFramesDelay(string value)
+    {
+      if ((state == ControllerState.None || state == ControllerState.Ended)
+          && int.TryParse(value, out int intValue))
+      {
+        webcamFramesDelaySize = Mathf.Clamp(intValue + 1, 0, 100);
+      }
+    }
+
     private void TryUpdateControllerState()
     {
       bool enableState = enableInXR && currentXRState != WebXRState.NORMAL;
@@ -108,29 +185,18 @@ namespace WebXR.Interactions
 
     private IEnumerator ControllerProcess()
     {
-      state = ControllerState.None;
-      calibrationPointCamera.gameObject.SetActive(false);
-      calibrationPointTop.gameObject.SetActive(false);
-      calibrationPointBottom.gameObject.SetActive(false);
-      calibrationHintCamera.SetActive(true);
-      calibrationHintTop.SetActive(false);
-      calibrationHintBottom.SetActive(false);
-      webcamParent.localScale = Vector3.one * WEBCAM_SIZE_CALIBRATION;
-      webcamParent.gameObject.SetActive(true);
-      AddWebcamLayer();
-      spectatorCameraParent.SetPositionAndRotation(camerasBase.position, camerasBase.rotation);
-      state = ControllerState.SetCameraPoint;
+      Prepare();
       while (state != ControllerState.Ended)
       {
         switch (state)
         {
           case ControllerState.SetCameraPoint:
             WhileCalibrating();
-            SetPoint(calibrationPointCamera, calibrationHintCamera, ControllerState.SetTopPoint, calibrationHintTop);
+            SetPoint(calibrationPointCamera, calibrationHintCamera, ControllerState.SetTopPoint, calibrationHintTop, calibrationPointTop);
             break;
           case ControllerState.SetTopPoint:
             WhileCalibrating();
-            SetPoint(calibrationPointTop, calibrationHintTop, ControllerState.SetBottomPoint, calibrationHintBottom);
+            SetPoint(calibrationPointTop, calibrationHintTop, ControllerState.SetBottomPoint, calibrationHintBottom, calibrationPointBottom);
             break;
           case ControllerState.SetBottomPoint:
             WhileCalibrating();
@@ -154,34 +220,87 @@ namespace WebXR.Interactions
       Ended();
     }
 
+    private void Prepare()
+    {
+      state = ControllerState.None;
+
+      storedSpectatorParentPosition = spectatorCameraParent.position;
+      storedSpectatorParentRotation = spectatorCameraParent.rotation;
+      storedSpectatorPosition = spectatorCameraTransform.position;
+      storedSpectatorRotation = spectatorCameraTransform.rotation;
+      storedSpectatorCullingMask = spectatorCamera.cullingMask;
+      storedSpectatorClearFlags = spectatorCamera.clearFlags;
+      storedSpectatorFieldOfView = spectatorCamera.fieldOfView;
+      sotredSpectatorNearClipPlane = spectatorCamera.nearClipPlane;
+      sotredSpectatorFarClipPlane = spectatorCamera.farClipPlane;
+      storedSpectatorOrthographic = spectatorCamera.orthographic;
+      storedSpectatorOrthographicSize = spectatorCamera.orthographicSize;
+      storedWebcamParentPosition = webcamParent.position;
+      storedWebcamParentRotation = webcamParent.rotation;
+      storedWebcamParentScale = webcamParent.localScale;
+      storedWebcamParentActive = webcamParent.gameObject.activeSelf;
+
+      calibrationPointCamera.gameObject.SetActive(false);
+      calibrationPointTop.gameObject.SetActive(false);
+      calibrationPointBottom.gameObject.SetActive(false);
+      calibrationHintCamera.SetActive(true);
+      calibrationHintTop.SetActive(false);
+      calibrationHintBottom.SetActive(false);
+      webcamParent.localScale = Vector3.one * WEBCAM_SIZE_CALIBRATION;
+      webcamParent.gameObject.SetActive(true);
+      AddWebcamLayer();
+      spectatorCameraParent.SetPositionAndRotation(camerasBase.position, camerasBase.rotation);
+      state = ControllerState.SetCameraPoint;
+      calibrationPointCamera.gameObject.SetActive(true);
+    }
+
     private void Ended()
     {
       calibrationPointCamera.gameObject.SetActive(false);
       calibrationPointTop.gameObject.SetActive(false);
       calibrationPointBottom.gameObject.SetActive(false);
-      webcamParent.gameObject.SetActive(false);
+      calibrationHintCamera.SetActive(false);
+      calibrationHintTop.SetActive(false);
+      calibrationHintBottom.SetActive(false);
+      webcamParent.gameObject.SetActive(storedWebcamParentActive);
+      stackCameras.SetActive(false);
+      ClearRenderTextures();
+      spectatorCameraParent.position = storedSpectatorParentPosition;
+      spectatorCameraParent.rotation = storedSpectatorParentRotation;
+      spectatorCameraTransform.position = storedSpectatorPosition;
+      spectatorCameraTransform.rotation = storedSpectatorRotation;
+      spectatorCamera.cullingMask = storedSpectatorCullingMask;
+      spectatorCamera.clearFlags = storedSpectatorClearFlags;
+      spectatorCamera.fieldOfView = storedSpectatorFieldOfView;
+      spectatorCamera.nearClipPlane = sotredSpectatorNearClipPlane;
+      spectatorCamera.farClipPlane = sotredSpectatorFarClipPlane;
+      spectatorCamera.orthographic = storedSpectatorOrthographic;
+      spectatorCamera.orthographicSize = storedSpectatorOrthographicSize;
+      webcamParent.position = storedWebcamParentPosition;
+      webcamParent.rotation = storedWebcamParentRotation;
+      webcamParent.localScale = storedWebcamParentScale;
+      webcam.TrySetLightingTexture(null);
     }
 
-    private void SetPoint(Transform point, GameObject hint, ControllerState nextState, GameObject nextHint)
+    private void SetPoint(Transform point, GameObject hint, ControllerState nextState, GameObject nextHint, Transform nextPoint)
     {
-      if (GetControllersButtonDown(out Vector3 position))
+      point.position = rightController.transform.position;
+      if (GetControllersButtonDown())
       {
-        point.position = position;
-        point.gameObject.SetActive(true);
         hint.SetActive(false);
         nextHint.SetActive(true);
+        nextPoint.gameObject.SetActive(true);
         state = nextState;
       }
     }
 
     private void SetBottomPoint()
     {
-      if (GetControllersButtonDown(out Vector3 position))
+      float cameraToTopDistance = Vector3.Distance(calibrationPointCamera.position, calibrationPointTop.position);
+      Vector3 cameraToBottomDirection = (rightController.transform.position - calibrationPointCamera.position).normalized;
+      calibrationPointBottom.position = calibrationPointCamera.position + cameraToBottomDirection * cameraToTopDistance;
+      if (GetControllersButtonDown())
       {
-        float cameraToTopDistance = Vector3.Distance(calibrationPointCamera.position, calibrationPointTop.position);
-        Vector3 cameraToBottomDirection = (position - calibrationPointCamera.position).normalized;
-        calibrationPointBottom.position = calibrationPointCamera.position + cameraToBottomDirection * cameraToTopDistance;
-        calibrationPointBottom.gameObject.SetActive(true);
         calibrationHintBottom.SetActive(false);
         state = ControllerState.Confirm;
       }
@@ -189,7 +308,7 @@ namespace WebXR.Interactions
 
     private void Confirm()
     {
-      if (GetControllersButtonDown(out Vector3 position))
+      if (GetControllersButtonDown())
       {
         calibrationPointCamera.gameObject.SetActive(false);
         calibrationPointTop.gameObject.SetActive(false);
@@ -202,6 +321,7 @@ namespace WebXR.Interactions
     {
       SetCameraVerticalFOV();
       SetCameraPositionRotation();
+      SetupRenders();
     }
 
     private void WhileCalibrating()
@@ -215,8 +335,13 @@ namespace WebXR.Interactions
       var headPosition = spectatorCameraTransform.InverseTransformPoint(cameraFollower.position);
       var newWebcamPosition = spectatorCameraTransform.TransformPoint(new Vector3(0, 0, headPosition.z));
       webcamParent.SetPositionAndRotation(newWebcamPosition, spectatorCameraTransform.rotation);
-      float webcamSize = Mathf.Max(Mathf.LerpUnclamped(0f, webcamBaseSize, headPosition.z), WEBCAM_MIN_SIZE);
-      webcamParent.localScale = Vector3.one * webcamSize;
+      if (webcamFramesDelaySize < 2)
+      {
+        float webcamSize = Mathf.Max(Mathf.LerpUnclamped(0f, webcamBaseSize, headPosition.z), WEBCAM_MIN_SIZE);
+        webcamParent.localScale = Vector3.one * webcamSize;
+        return;
+      }
+      PlayUsingRenders(headPosition.z);
     }
 
     private void SetCameraVerticalFOV()
@@ -236,23 +361,20 @@ namespace WebXR.Interactions
       spectatorCameraTransform.SetPositionAndRotation(calibrationPointCamera.position, Quaternion.LookRotation(plane.normal, up) * LEFT_STEP_ROTATION);
     }
 
-    private bool GetControllersButtonDown(out Vector3 position)
+    private bool GetControllersButtonDown()
     {
       bool leftDown = (leftController.isHandActive || leftController.isControllerActive)
                       && leftController.GetButtonDown(WebXRController.ButtonTypes.Trigger);
       if (leftDown)
       {
-        position = leftController.transform.position;
         return true;
       }
       bool rightDown = (rightController.isHandActive || rightController.isControllerActive)
                       && rightController.GetButtonDown(WebXRController.ButtonTypes.Trigger);
       if (rightDown)
       {
-        position = rightController.transform.position;
         return true;
       }
-      position = Vector3.zero;
       return false;
     }
 
@@ -269,6 +391,88 @@ namespace WebXR.Interactions
       for (int i = 0; i < xrCameras.Length; i++)
       {
         xrCameras[i].cullingMask &= ~webcamLayer;
+      }
+    }
+
+    private void SetupRenders()
+    {
+      if (webcamFramesDelaySize < 2)
+      {
+        return;
+      }
+      spectatorBackgroundCamera.fieldOfView = spectatorCamera.fieldOfView;
+      spectatorForegroundCamera.fieldOfView = spectatorCamera.fieldOfView;
+      spectatorWebcamLightingCamera.fieldOfView = spectatorCamera.fieldOfView;
+      spectatorBackgroundCamera.nearClipPlane = sotredSpectatorNearClipPlane;
+      spectatorForegroundCamera.nearClipPlane = sotredSpectatorNearClipPlane;
+      spectatorWebcamLightingCamera.nearClipPlane = sotredSpectatorNearClipPlane;
+      spectatorBackgroundCamera.farClipPlane = sotredSpectatorFarClipPlane;
+      spectatorForegroundCamera.farClipPlane = sotredSpectatorFarClipPlane;
+      spectatorWebcamLightingCamera.farClipPlane = sotredSpectatorFarClipPlane;
+      CreateRenderTextures();
+      backgroundPlaneRenderer.sharedMaterial = Instantiate(defaultPlaneMaterial);
+      foregroundPlaneRenderer.sharedMaterial = Instantiate(defaultPlaneMaterial);
+      spectatorCamera.orthographic = true;
+      spectatorCamera.orthographicSize = 0.5f;
+      spectatorCamera.cullingMask = mixedRealityOnLayers;
+      spectatorCamera.clearFlags = CameraClearFlags.Color;
+      stackCameras.SetActive(true);
+      webcamParent.localScale = Vector3.one;
+      float ratio = (float)Screen.width / (float)Screen.height;
+      backgroundPlaneTransform.localScale = new Vector3(ratio, 1, 1);
+      foregroundPlaneTransform.localScale = new Vector3(ratio, 1, 1);
+    }
+
+    private void PlayUsingRenders(float headDistance)
+    {
+      headDistance = Mathf.Clamp(headDistance, sotredSpectatorNearClipPlane + 0.01f, sotredSpectatorFarClipPlane - 0.01f);
+      spectatorBackgroundCamera.nearClipPlane = headDistance;
+      spectatorForegroundCamera.farClipPlane = headDistance;
+      spectatorBackgroundCamera.targetTexture = backgroundStack[currentRenderFrame];
+      spectatorForegroundCamera.targetTexture = foregroundStack[currentRenderFrame];
+      spectatorWebcamLightingCamera.targetTexture = webcamStack[currentRenderFrame];
+      currentRenderFrame = (currentRenderFrame + 1) % webcamFramesDelaySize;
+      backgroundPlaneRenderer.sharedMaterial.mainTexture = backgroundStack[currentRenderFrame];
+      foregroundPlaneRenderer.sharedMaterial.mainTexture = foregroundStack[currentRenderFrame];
+      webcam.TrySetLightingTexture(webcamStack[currentRenderFrame]);
+      backgroundPlaneTransform.localPosition = new Vector3(0, 0, headDistance + 0.005f);
+      foregroundPlaneTransform.localPosition = new Vector3(0, 0, headDistance - 0.005f);
+    }
+
+    private void ClearRenderTextures()
+    {
+      if (backgroundStack == null)
+      {
+        return;
+      }
+      for (int i = 0; i < backgroundStack.Length; i++)
+      {
+        backgroundStack[i].Release();
+        foregroundStack[i].Release();
+        webcamStack[i].Release();
+        Destroy(backgroundStack[i]);
+        Destroy(foregroundStack[i]);
+        Destroy(webcamStack[i]);
+      }
+      backgroundStack = null;
+      foregroundStack = null;
+      webcamStack = null;
+      Destroy(backgroundPlaneRenderer.sharedMaterial);
+      Destroy(foregroundPlaneRenderer.sharedMaterial);
+    }
+
+    private void CreateRenderTextures()
+    {
+      backgroundStack = new RenderTexture[webcamFramesDelaySize];
+      foregroundStack = new RenderTexture[webcamFramesDelaySize];
+      webcamStack = new RenderTexture[webcamFramesDelaySize];
+      RenderTextureDescriptor envDesc = new RenderTextureDescriptor(Screen.width, Screen.height, RenderTextureFormat.Default);
+      RenderTextureDescriptor webcamDesc = new RenderTextureDescriptor(Mathf.RoundToInt(100 * webcam.transform.localScale.x), 100, RenderTextureFormat.Default);
+      for (int i = 0; i < webcamFramesDelaySize; i++)
+      {
+        backgroundStack[i] = new RenderTexture(envDesc);
+        foregroundStack[i] = new RenderTexture(envDesc);
+        webcamStack[i] = new RenderTexture(webcamDesc);
       }
     }
   }
