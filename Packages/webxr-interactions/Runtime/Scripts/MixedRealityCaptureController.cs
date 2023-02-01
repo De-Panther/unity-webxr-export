@@ -1,5 +1,10 @@
 /*
-Expected Hierarchy
+Default layers:
+16 Webcam
+17 WebcamLighting
+18 Spectator
+
+Expected Hierarchy:
 - SpectatorCameraHolder
   - SpectatorCamera (Camera, SpectatorCamera)
     - StackCameras
@@ -15,9 +20,9 @@ Expected Hierarchy
   - WebcamHolder
     - WebcamQuad (Quad MeshFilter, MeshRenderer, ChromaKeyUnlit Material)
       - WebcamLightingQuad (Quad MeshFilter, MeshRenderer, White Legacy Diffuse Material)
-    - CameraHint
-    - TopHint
-    - BottomHint
+    - CameraHint (Visual reference for point on webcam)
+    - TopHint (Visual reference for point on webcam)
+    - BottomHint (Visual reference for point on webcam)
 */
 using System.Collections;
 using UnityEngine;
