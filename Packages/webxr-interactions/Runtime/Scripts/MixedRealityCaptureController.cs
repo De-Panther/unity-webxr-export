@@ -387,7 +387,14 @@ namespace WebXR.Interactions
     {
       for (int i = 0; i < xrCameras.Length; i++)
       {
-        xrCameras[i].cullingMask |= webcamLayer;
+        if (xrCameras[i] == null)
+        {
+          Debug.LogError("Missing reference to XR Camera");
+        }
+        else
+        {
+          xrCameras[i].cullingMask |= webcamLayer;
+        }
       }
     }
 
@@ -395,7 +402,14 @@ namespace WebXR.Interactions
     {
       for (int i = 0; i < xrCameras.Length; i++)
       {
-        xrCameras[i].cullingMask &= ~webcamLayer;
+        if (xrCameras[i] == null)
+        {
+          Debug.LogError("Missing reference to XR Camera");
+        }
+        else
+        {
+          xrCameras[i].cullingMask &= ~webcamLayer;
+        }
       }
     }
 
