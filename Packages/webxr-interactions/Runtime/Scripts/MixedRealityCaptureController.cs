@@ -170,6 +170,14 @@ namespace WebXR.Interactions
       }
     }
 
+    public void TrySetFramesDelay(int value)
+    {
+      if ((state == ControllerState.None || state == ControllerState.Ended))
+      {
+        webcamFramesDelaySize = Mathf.Clamp(value + 1, 0, 100);
+      }
+    }
+
     private void TryUpdateControllerState()
     {
       bool enableState = enableInXR && currentXRState != WebXRState.NORMAL;

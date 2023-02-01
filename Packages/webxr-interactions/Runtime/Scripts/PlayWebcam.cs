@@ -191,6 +191,28 @@ public class PlayWebcam : MonoBehaviour
     TrySetColor(value, ref thresholdMaxColor, thresholdMaxID, 2);
   }
 
+  public void TrySetThresholdMinColor(Color color)
+  {
+    TrySetupRenderer();
+    if (hasThresholdProperties)
+    {
+      color.a = thresholdMinColor.a;
+      thresholdMinColor = color;
+      material.SetColor(thresholdMinID, thresholdMinColor);
+    }
+  }
+
+  public void TrySetThresholdMaxColor(Color color)
+  {
+    TrySetupRenderer();
+    if (hasThresholdProperties)
+    {
+      color.a = thresholdMaxColor.a;
+      thresholdMaxColor = color;
+      material.SetColor(thresholdMaxID, thresholdMaxColor);
+    }
+  }
+
   public void TrySetLightingTexture(Texture texture)
   {
     if (lightingTexID == -1)
