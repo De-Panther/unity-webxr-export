@@ -206,8 +206,11 @@ namespace WebXR.Interactions
 
     private void SetControllerVisible(bool visible)
     {
-      controllerVisible = visible;
-      Drop();
+      if (controllerVisible != visible)
+      {
+        controllerVisible = visible;
+        Drop();
+      }
 #if WEBXR_INPUT_PROFILES
       // We want to use WebXR Input Profiles
       if (visible && useInputProfile)
@@ -249,8 +252,11 @@ namespace WebXR.Interactions
 
     private void SetHandJointsVisible(bool visible)
     {
-      handJointsVisible = visible;
-      Drop();
+      if (handJointsVisible != visible)
+      {
+        handJointsVisible = visible;
+        Drop();
+      }
 #if WEBXR_INPUT_PROFILES
       // We want to use WebXR Input Profiles
       if (visible && useInputProfile)
@@ -357,6 +363,10 @@ namespace WebXR.Interactions
 
     private void LoadInputProfile()
     {
+      if (!string.IsNullOrEmpty(loadedProfile))
+      {
+        return;
+      }
       // Start loading possible profiles for the controller
       var profiles = controller.GetProfiles();
       if (hasProfileList && profiles != null && profiles.Length > 0)

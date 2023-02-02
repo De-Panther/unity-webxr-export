@@ -735,7 +735,7 @@ setTimeout(function () {
               Module.HEAPF32[controller.enabledIndex] = 1; // XRControllerData.enabled
               Module.HEAPF32[controller.handIndex] = hand; // XRControllerData.hand
 
-              if (controller.updatedProfiles == 0) {
+              if (controller.updatedProfiles == 0 && inputSource.profiles.length > 0) {
                 controller.profiles = inputSource.profiles;
                 controller.updatedProfiles = 1;
               }

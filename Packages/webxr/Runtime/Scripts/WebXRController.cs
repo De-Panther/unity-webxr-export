@@ -358,7 +358,12 @@ namespace WebXR
           return;
         }
 
-        profiles = controllerData.profiles;
+        bool profilesUpdated = false;
+        if (profiles != controllerData.profiles)
+        {
+          profiles = controllerData.profiles;
+          profilesUpdated = true;
+        }
 
         if (oculusLinkBugTest != 1)
         {
@@ -412,7 +417,7 @@ namespace WebXR
           UpdateAllButtons();
         }
 
-        SetControllerActive(true);
+        SetControllerActive(true, profilesUpdated);
       }
     }
 
@@ -483,10 +488,14 @@ namespace WebXR
       }
     }
 
-    private void SetControllerActive(bool active)
+    private void SetControllerActive(bool active, bool forceReport = false)
     {
       if (controllerActive == active)
       {
+        if (forceReport)
+        {
+          OnControllerActive?.Invoke(controllerActive);
+        }
         return;
       }
       if (!active)
