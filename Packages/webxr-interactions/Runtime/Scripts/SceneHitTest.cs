@@ -6,7 +6,9 @@ namespace WebXR.Interactions
   {
     public Transform originTransform;
     public GameObject visual;
+    [SerializeField]
     private WebXRController leftController;
+    [SerializeField]
     private WebXRController rightController;
 
     private bool isFollowing = false;
@@ -15,6 +17,29 @@ namespace WebXR.Interactions
     private Quaternion originRotation;
 
     private Transform arCameraTransform;
+
+    void Start()
+    {
+      if (leftController == null || rightController == null)
+      {
+        var controllers = FindObjectsOfType<WebXRController>();
+        for (int i = 0; i < controllers.Length; i++)
+        {
+          if (controllers[i].hand == WebXRControllerHand.LEFT)
+          {
+            leftController ??= controllers[i];
+          }
+          else if (controllers[i].hand == WebXRControllerHand.RIGHT)
+          {
+            rightController ??= controllers[i];
+          }
+          if (leftController != null && rightController != null)
+          {
+            return;
+          }
+        }
+      }
+    }
 
     void OnEnable()
     {
