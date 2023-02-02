@@ -6,9 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.16.0] - 2023-02-02
 ### Added
 - Spectator Camera.
 - Mixed Reality Capture.
+
+### Changed
+- Requires WebXR Export 0.16.0.
 
 ### Fixed
 - WebXR input profiles loading on SteamVR.
