@@ -35,9 +35,6 @@ public class PlayWebcam : MonoBehaviour
   private IntPtr latestWebcamPtr = IntPtr.Zero;
   private int lightingTexID = -1;
 
-  private int defaultWidth = 1280;
-  private int defaultHeight = 720;
-
   void Awake()
   {
     TrySetupRenderer();
@@ -86,18 +83,11 @@ public class PlayWebcam : MonoBehaviour
     if (webcamTexture == null)
     {
       var devices = WebCamTexture.devices;
-      var device = devices[0];
-      var resolutions = device.availableResolutions;
-      if (resolutions?.Length > 0)
+      if (devices == null || devices.Length == 0)
       {
-        webcamTexture = new WebCamTexture(device.name, resolutions[0].width, resolutions[0].height, resolutions[0].refreshRate);
+        return;
       }
-      else
-      {
-        webcamTexture = new WebCamTexture(device.name, defaultWidth, defaultHeight);
-      }
-      float ratio = (float)defaultWidth / (float)defaultHeight;
-      transform.localScale = new Vector3(ratio, 1f, 1f);
+      webcamTexture = new WebCamTexture(devices[0].name);
       material.mainTexture = webcamTexture;
     }
     latestWebcamPtr = webcamTexture.GetNativeTexturePtr();

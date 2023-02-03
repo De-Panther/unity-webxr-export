@@ -68,7 +68,7 @@ var LibraryFixWebCamWebGL = {
     }
     GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[webcamBufferToTextureTable[buffer]]);
     GLctx.pixelStorei(GLctx.UNPACK_FLIP_Y_WEBGL, true);
-    GLctx.texImage2D(GLctx.TEXTURE_2D, 0, GLctx.RGBA, GLctx.RGBA, GLctx.UNSIGNED_BYTE, videoElement);
+    GLctx.texSubImage2D(GLctx.TEXTURE_2D, 0, 0, 0, GLctx.RGBA, GLctx.UNSIGNED_BYTE, videoElement);
     GLctx.pixelStorei(GLctx.UNPACK_FLIP_Y_WEBGL, false);
     disableNextSubImage = true;
     return 1;
