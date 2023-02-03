@@ -35,6 +35,8 @@ public class PlayWebcam : MonoBehaviour
   private IntPtr latestWebcamPtr = IntPtr.Zero;
   private int lightingTexID = -1;
 
+  private int webcamIndex = 0;
+
   void Awake()
   {
     TrySetupRenderer();
@@ -80,15 +82,19 @@ public class PlayWebcam : MonoBehaviour
 
   void Play()
   {
+    var devices = WebCamTexture.devices;
+    if (devices == null || devices.Length == 0)
+    {
+      return;
+    }
     if (webcamTexture == null)
     {
-      var devices = WebCamTexture.devices;
-      if (devices == null || devices.Length == 0)
-      {
-        return;
-      }
-      webcamTexture = new WebCamTexture(devices[0].name);
+      webcamTexture = new WebCamTexture(devices[Mathf.Clamp(webcamIndex, 0, devices.Length-1)].name);
       material.mainTexture = webcamTexture;
+    }
+    else
+    {
+      webcamTexture.deviceName = devices[Mathf.Clamp(webcamIndex, 0, devices.Length - 1)].name;
     }
     latestWebcamPtr = webcamTexture.GetNativeTexturePtr();
     #if UNITY_WEBGL && !UNITY_EDITOR
@@ -96,6 +102,16 @@ public class PlayWebcam : MonoBehaviour
     #endif
     webcamTexture.Play();
     StartCoroutine(SetScale());
+  }
+
+  void Stop()
+  {
+    if (webcamTexture == null)
+    {
+      return;
+    }
+    StopAllCoroutines();
+    webcamTexture.Stop();
   }
 
   IEnumerator SetScale()
@@ -121,8 +137,7 @@ public class PlayWebcam : MonoBehaviour
 
   void OnDisable()
   {
-    StopAllCoroutines();
-    webcamTexture.Stop();
+    Stop();
   }
 
   private void TrySetColor(string value, ref Color color, int propertyID, int colorLetter)
@@ -210,5 +225,15 @@ public class PlayWebcam : MonoBehaviour
       return;
     }
     material.SetTexture(lightingTexID, texture);
+  }
+
+  public void TrySetWebcamIndex(string value)
+  {
+    if (int.TryParse(value, out webcamIndex) 
+        && isActiveAndEnabled && started)
+    {
+      Stop();
+      Play();
+    }
   }
 }

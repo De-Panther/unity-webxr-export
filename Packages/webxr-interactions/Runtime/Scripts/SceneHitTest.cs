@@ -27,11 +27,11 @@ namespace WebXR.Interactions
         {
           if (controllers[i].hand == WebXRControllerHand.LEFT)
           {
-            leftController ??= controllers[i];
+            leftController = leftController ?? controllers[i];
           }
           else if (controllers[i].hand == WebXRControllerHand.RIGHT)
           {
-            rightController ??= controllers[i];
+            rightController = leftController ?? controllers[i];
           }
           if (leftController != null && rightController != null)
           {
