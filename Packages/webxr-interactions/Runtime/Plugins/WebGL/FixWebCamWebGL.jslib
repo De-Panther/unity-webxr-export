@@ -51,8 +51,7 @@ var LibraryFixWebCamWebGL = {
         webcamDevice.nextFrameAvailableTime = timeNow + webcamDevice.frameLengthInMsecs
       }
       videoElement = webcamDevice.video;
-    }
-    if (typeof MediaDevices !== "undefined") {
+    } else if (!typeof MediaDevices !== "undefined") {
       if (!MediaDevices[deviceId].video) {
         console.error("WebCam not initialized.");
         return;
