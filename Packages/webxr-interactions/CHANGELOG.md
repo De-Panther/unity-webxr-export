@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - No reference to controllers in SceneHitTest.
+- Errors when trying to play webcam stream.
 
 ## [0.16.0] - 2023-02-02
 ### Added
