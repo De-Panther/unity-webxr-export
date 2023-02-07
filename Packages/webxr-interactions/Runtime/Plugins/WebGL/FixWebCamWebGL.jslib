@@ -26,6 +26,14 @@ var LibraryFixWebCamWebGL = {
 
   JS_WebCamVideo_SetLatestTextureId: function(textureId) {
     webcamLatestTextureId = textureId;
+    // Webcam texture is created with texStorage2D so we have to recreate it
+    GLctx.deleteTexture(GL.textures[textureId]);
+    GL.textures[textureId] = GLctx.createTexture();
+    GL.textures[textureId].name = textureId;
+    GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[textureId]);
+    GLctx.texParameteri(GLctx.TEXTURE_2D, GLctx.TEXTURE_WRAP_S, GLctx.CLAMP_TO_EDGE);
+    GLctx.texParameteri(GLctx.TEXTURE_2D, GLctx.TEXTURE_WRAP_T, GLctx.CLAMP_TO_EDGE);
+    GLctx.texParameteri(GLctx.TEXTURE_2D, GLctx.TEXTURE_MIN_FILTER, GLctx.LINEAR);
   },
 
   JS_WebCamVideo_RemoveWhereTextureId: function(textureId) {
@@ -67,7 +75,7 @@ var LibraryFixWebCamWebGL = {
     }
     GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[webcamBufferToTextureTable[buffer]]);
     GLctx.pixelStorei(GLctx.UNPACK_FLIP_Y_WEBGL, true);
-    GLctx.texSubImage2D(GLctx.TEXTURE_2D, 0, 0, 0, GLctx.RGBA, GLctx.UNSIGNED_BYTE, videoElement);
+    GLctx.texImage2D(GLctx.TEXTURE_2D, 0, GLctx.RGBA, GLctx.RGBA, GLctx.UNSIGNED_BYTE, videoElement);
     GLctx.pixelStorei(GLctx.UNPACK_FLIP_Y_WEBGL, false);
     disableNextSubImage = true;
     return 1;
