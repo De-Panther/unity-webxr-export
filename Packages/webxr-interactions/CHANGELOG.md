@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.16.3] - 2023-02-08
 ### Fixed
 - SceneHitTest right controller issue.
 - Webcam performance.
