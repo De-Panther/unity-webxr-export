@@ -86,6 +86,12 @@ Helio on Magic Leap One (Has a bug related to eye views).
 
 ![Hands](/Documentation/webxr-hands-api.gif)
 
+#### More features
+
+Spectator Camera
+
+WebXR Mixed Reality Capture
+
 ### 📊 Polyfilled WebXR / WebVR
 
 If the user does not have supported headset, browser or device, the content will still work through the use of the [WebXR Polyfill](https://github.com/immersive-web/webxr-polyfill).
