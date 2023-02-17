@@ -90,7 +90,7 @@ Helio on Magic Leap One (Has a bug related to eye views).
 
 Spectator Camera
 
-WebXR Mixed Reality Capture
+[WebXR Mixed Reality Capture](Documentation/WebXR-Mixed-Reality-Capture.md)
 
 ### 📊 Polyfilled WebXR / WebVR
 
