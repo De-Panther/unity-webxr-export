@@ -13,3 +13,4 @@ This folder contains some docs and manuals, to help you use WebXR Export and Web
 ## Written tutorials
 
 - [Getting Started](Getting-Started.md)
+- [WebXR Mixed Reality Capture](WebXR-Mixed-Reality-Capture.md)
