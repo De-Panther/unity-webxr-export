@@ -33,6 +33,13 @@ namespace WebXR.Interactions
     private Dictionary<int, Transform> handJoints = new Dictionary<int, Transform>();
     public GameObject inputProfileHandModelParent;
 
+    [Header("Input Bindings")]
+    [SerializeField] private List<WebXRController.ButtonTypes> pickupButtons = new List<WebXRController.ButtonTypes> {
+      WebXRController.ButtonTypes.Trigger,
+      WebXRController.ButtonTypes.Grip,
+      WebXRController.ButtonTypes.ButtonA
+    };
+
     private Vector3 currentVelocity;
     private Vector3 previousPos;
 
@@ -76,6 +83,8 @@ namespace WebXR.Interactions
 #endif
       SetControllerVisible(false);
       SetHandJointsVisible(false);
+
+
     }
 
     private void OnEnable()
@@ -113,17 +122,17 @@ namespace WebXR.Interactions
       float normalizedTime = controller.GetButton(WebXRController.ButtonTypes.ButtonA) ? 1 :
                               Mathf.Max(controller.GetAxis(WebXRController.AxisTypes.Trigger),
                               controller.GetAxis(WebXRController.AxisTypes.Grip));
-
-      if (controller.GetButtonDown(WebXRController.ButtonTypes.Trigger)
-          || controller.GetButtonDown(WebXRController.ButtonTypes.Grip)
-          || controller.GetButtonDown(WebXRController.ButtonTypes.ButtonA))
+      
+      bool pickup = false;
+      pickupButtons.ForEach(button => pickup = pickup || controller.GetButtonDown(button));
+      if (pickup)
       {
         Pickup();
       }
 
-      if (controller.GetButtonUp(WebXRController.ButtonTypes.Trigger)
-          || controller.GetButtonUp(WebXRController.ButtonTypes.Grip)
-          || controller.GetButtonUp(WebXRController.ButtonTypes.ButtonA))
+      bool drop = false;
+      pickupButtons.ForEach(button => drop = drop || controller.GetButtonUp(button));
+      if (drop)
       {
         Drop();
       }
