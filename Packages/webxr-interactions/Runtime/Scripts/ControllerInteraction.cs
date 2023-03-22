@@ -83,8 +83,6 @@ namespace WebXR.Interactions
 #endif
       SetControllerVisible(false);
       SetHandJointsVisible(false);
-
-
     }
 
     private void OnEnable()
