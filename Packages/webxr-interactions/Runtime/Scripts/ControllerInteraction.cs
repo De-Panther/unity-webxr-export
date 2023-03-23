@@ -34,11 +34,12 @@ namespace WebXR.Interactions
     public GameObject inputProfileHandModelParent;
 
     [Header("Input Bindings")]
-    [SerializeField] private WebXRController.ButtonTypes[] pickupButtons = new WebXRController.ButtonTypes[] {
+    [SerializeField] private WebXRController.ButtonTypes[] defaultPickupButtons = new WebXRController.ButtonTypes[] {
       WebXRController.ButtonTypes.Trigger,
       WebXRController.ButtonTypes.Grip,
       WebXRController.ButtonTypes.ButtonA
     };
+    private WebXRController.ButtonTypes[] pickupButtons;
 
     private Vector3 currentVelocity;
     private Vector3 previousPos;
@@ -62,6 +63,7 @@ namespace WebXR.Interactions
       attachJoint = GetComponent<FixedJoint>();
       hasAnimator = animator != null;
       controller = gameObject.GetComponent<WebXRController>();
+      pickupButtons = defaultPickupButtons;
 #if WEBXR_INPUT_PROFILES
       if (inputProfileObject != null)
       {
@@ -573,6 +575,11 @@ namespace WebXR.Interactions
       }
 
       return nearestRigidBody;
+    }
+
+    public void SetPickupButtons(params WebXRController.ButtonTypes[] pickupButtons)
+    {
+      this.pickupButtons = pickupButtons != null ? pickupButtons : defaultPickupButtons;
     }
   }
 }
