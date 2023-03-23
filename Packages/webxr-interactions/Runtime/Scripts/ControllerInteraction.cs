@@ -34,7 +34,7 @@ namespace WebXR.Interactions
     public GameObject inputProfileHandModelParent;
 
     [Header("Input Bindings")]
-    [SerializeField] private List<WebXRController.ButtonTypes> pickupButtons = new List<WebXRController.ButtonTypes> {
+    [SerializeField] private WebXRController.ButtonTypes[] pickupButtons = new WebXRController.ButtonTypes[] {
       WebXRController.ButtonTypes.Trigger,
       WebXRController.ButtonTypes.Grip,
       WebXRController.ButtonTypes.ButtonA
@@ -122,14 +122,18 @@ namespace WebXR.Interactions
                               controller.GetAxis(WebXRController.AxisTypes.Grip));
       
       bool pickup = false;
-      pickupButtons.ForEach(button => pickup = pickup || controller.GetButtonDown(button));
+      for (int i = 0; i < pickupButtons.Length; i++) {
+        pickup = pickup || controller.GetButtonDown(pickupButtons[i]);
+      }
       if (pickup)
       {
         Pickup();
       }
 
       bool drop = false;
-      pickupButtons.ForEach(button => drop = drop || controller.GetButtonUp(button));
+      for (int i = 0; i < pickupButtons.Length; i++) {
+        drop = drop || controller.GetButtonUp(pickupButtons[i]);
+      }
       if (drop)
       {
         Drop();
