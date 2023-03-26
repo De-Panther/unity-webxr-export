@@ -33,6 +33,14 @@ namespace WebXR.Interactions
     private Dictionary<int, Transform> handJoints = new Dictionary<int, Transform>();
     public GameObject inputProfileHandModelParent;
 
+    [Header("Input Bindings")]
+    [SerializeField] private WebXRController.ButtonTypes[] defaultPickupButtons = new WebXRController.ButtonTypes[] {
+      WebXRController.ButtonTypes.Trigger,
+      WebXRController.ButtonTypes.Grip,
+      WebXRController.ButtonTypes.ButtonA
+    };
+    private WebXRController.ButtonTypes[] pickupButtons;
+
     private Vector3 currentVelocity;
     private Vector3 previousPos;
 
@@ -55,6 +63,7 @@ namespace WebXR.Interactions
       attachJoint = GetComponent<FixedJoint>();
       hasAnimator = animator != null;
       controller = gameObject.GetComponent<WebXRController>();
+      pickupButtons = defaultPickupButtons;
 #if WEBXR_INPUT_PROFILES
       if (inputProfileObject != null)
       {
@@ -113,17 +122,21 @@ namespace WebXR.Interactions
       float normalizedTime = controller.GetButton(WebXRController.ButtonTypes.ButtonA) ? 1 :
                               Mathf.Max(controller.GetAxis(WebXRController.AxisTypes.Trigger),
                               controller.GetAxis(WebXRController.AxisTypes.Grip));
-
-      if (controller.GetButtonDown(WebXRController.ButtonTypes.Trigger)
-          || controller.GetButtonDown(WebXRController.ButtonTypes.Grip)
-          || controller.GetButtonDown(WebXRController.ButtonTypes.ButtonA))
+      
+      bool pickup = false;
+      for (int i = 0; i < pickupButtons.Length; i++) {
+        pickup = pickup || controller.GetButtonDown(pickupButtons[i]);
+      }
+      if (pickup)
       {
         Pickup();
       }
 
-      if (controller.GetButtonUp(WebXRController.ButtonTypes.Trigger)
-          || controller.GetButtonUp(WebXRController.ButtonTypes.Grip)
-          || controller.GetButtonUp(WebXRController.ButtonTypes.ButtonA))
+      bool drop = false;
+      for (int i = 0; i < pickupButtons.Length; i++) {
+        drop = drop || controller.GetButtonUp(pickupButtons[i]);
+      }
+      if (drop)
       {
         Drop();
       }
@@ -562,6 +575,11 @@ namespace WebXR.Interactions
       }
 
       return nearestRigidBody;
+    }
+
+    public void SetPickupButtons(params WebXRController.ButtonTypes[] pickupButtons)
+    {
+      this.pickupButtons = pickupButtons != null ? pickupButtons : defaultPickupButtons;
     }
   }
 }
