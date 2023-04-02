@@ -58,13 +58,14 @@ Shader "WebXR Mixed Reality Capture/Chroma Key Unlit" {
       fixed4 frag (v2f i) : SV_Target
       {
         fixed4 ligthing = tex2D(_LightingTex, i.texcoord2);
-        fixed4 color = tex2D(_MainTex, i.texcoord) * ligthing * _Color;
+        fixed4 color = tex2D(_MainTex, i.texcoord) * _Color;
         if (_ThresholdMin.r <= color.r && color.r <= _ThresholdMax.r
         &&_ThresholdMin.g <= color.g && color.g <= _ThresholdMax.g
         &&_ThresholdMin.b <= color.b && color.b <= _ThresholdMax.b)
         {
           color.a = 0;
         }
+        color = color * ligthing;
         UNITY_APPLY_FOG(i.fogCoord, color);
         return color;
       }
