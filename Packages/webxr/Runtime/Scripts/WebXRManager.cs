@@ -13,9 +13,14 @@ namespace WebXR
   [DefaultExecutionOrder(-2020)]
   public class WebXRManager : SubsystemLifecycleManager<WebXRSubsystem, WebXRSubsystemDescriptor>
   {
+    private static readonly Rect defaultRect = new Rect(0, 0, 1, 1);
+
     public static WebXRManager Instance { get; private set; }
 
     public WebXRState XRState => subsystem == null ? WebXRState.NORMAL : subsystem.xrState;
+    public int ViewsCount => subsystem == null ? 1 : subsystem.viewsCount;
+    public Rect ViewsLeftRect => subsystem == null ? defaultRect : subsystem.leftRect;
+    public Rect ViewsRightRect => subsystem == null ? defaultRect : subsystem.rightRect;
 
     public static event WebXRSubsystem.XRCapabilitiesUpdate OnXRCapabilitiesUpdate
     {
@@ -120,6 +125,11 @@ namespace WebXR
     protected override void Awake()
     {
       base.Awake();
+      if (Instance != null)
+      {
+        Debug.LogError("More than one WebXRManager components in scene. Disabling previous one.");
+        Instance.enabled = false;
+      }
       Instance = this;
       enabled = subsystem != null;
     }
