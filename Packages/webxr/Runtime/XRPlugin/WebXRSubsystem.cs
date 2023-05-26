@@ -271,9 +271,9 @@ namespace WebXR
 #endif
 
     internal WebXRState xrState = WebXRState.NORMAL;
-    private int viewsCount = 1;
-    private Rect leftRect;
-    private Rect rightRect;
+    internal int viewsCount = 1;
+    internal Rect leftRect;
+    internal Rect rightRect;
     private bool reportedXRStateSwitch = true;
     internal WebXRVisibilityState visibilityState = WebXRVisibilityState.VISIBLE;
     private bool visibilityStateChanged = false;

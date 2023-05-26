@@ -26,16 +26,15 @@ namespace WebXR
 
     private bool hasFollower = false;
 
-    private void Awake()
-    {
-      SwitchXRState();
-    }
-
     private void OnEnable()
     {
       WebXRManager.OnXRChange += OnXRChange;
       WebXRManager.OnHeadsetUpdate += OnHeadsetUpdate;
       hasFollower = cameraFollower != null;
+      OnXRChange(WebXRManager.Instance.XRState,
+                  WebXRManager.Instance.ViewsCount,
+                  WebXRManager.Instance.ViewsLeftRect,
+                  WebXRManager.Instance.ViewsRightRect);
     }
 
     private void OnDisable()
