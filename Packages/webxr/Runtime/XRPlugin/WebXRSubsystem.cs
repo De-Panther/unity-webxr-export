@@ -1,4 +1,3 @@
-using System;
 using System.Runtime.InteropServices;
 using AOT;
 using UnityEngine;
@@ -39,19 +38,17 @@ namespace WebXR
       public override void Stop() { }
       public override void Destroy() { }
     }
+#endif
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void RegisterDescriptor()
     {
+#if UNITY_XR_MANAGEMENT_4_3_1_OR_NEWER
       SubsystemDescriptorStore.RegisterDescriptor(new WebXRSubsystemDescriptor()
       {
         id = typeof(WebXRSubsystem).FullName
       });
-    }
 #else
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-    private static void RegisterDescriptor()
-    {
       var res = SubsystemRegistration.CreateDescriptor(new WebXRSubsystemDescriptor()
       {
         id = typeof(WebXRSubsystem).FullName,
@@ -60,8 +57,8 @@ namespace WebXR
       if (res)
         Debug.Log("Registered " + nameof(WebXRSubsystemDescriptor));
       else Debug.Log("Failed registering " + nameof(WebXRSubsystemDescriptor));
-    }
 #endif
+    }
 
 #if UNITY_XR_MANAGEMENT_4_3_1_OR_NEWER
     protected override void OnStart()
