@@ -3,25 +3,25 @@ using System.Runtime.InteropServices;
 using AOT;
 using UnityEngine;
 
-#if UNITY_2022_2_OR_NEWER || UNITY_2023_1_OR_NEWER
+#if UNITY_XR_MANAGEMENT_4_3_1_OR_NEWER
 using UnityEngine.SubsystemsImplementation;
 #endif
 
 namespace WebXR
 {
-#if UNITY_2022_2_OR_NEWER || UNITY_2023_1_OR_NEWER
-	public class WebXRSubsystemDescriptor : SubsystemDescriptorWithProvider<WebXRSubsystem,WebXRSubsystemProvider>
-	{
+#if UNITY_XR_MANAGEMENT_4_3_1_OR_NEWER
+  public class WebXRSubsystemDescriptor : SubsystemDescriptorWithProvider<WebXRSubsystem, WebXRSubsystemProvider>
+  {
     public WebXRSubsystemDescriptor()
     {
       providerType = typeof(WebXRSubsystem.Provider);
     }
-	}
+  }
 
   public abstract class WebXRSubsystemProvider : SubsystemProvider<WebXRSubsystem> { }
-  
-	public class WebXRSubsystem : SubsystemWithProvider<WebXRSubsystem,WebXRSubsystemDescriptor,WebXRSubsystemProvider>
-	{
+
+  public class WebXRSubsystem : SubsystemWithProvider<WebXRSubsystem, WebXRSubsystemDescriptor, WebXRSubsystemProvider>
+  {
     public class Provider : WebXRSubsystemProvider
     {
       public override void Start() { }
@@ -32,7 +32,8 @@ namespace WebXR
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void RegisterDescriptor()
     {
-      SubsystemDescriptorStore.RegisterDescriptor(new WebXRSubsystemDescriptor() {
+      SubsystemDescriptorStore.RegisterDescriptor(new WebXRSubsystemDescriptor()
+      {
         id = typeof(WebXRSubsystem).FullName
       });
     }

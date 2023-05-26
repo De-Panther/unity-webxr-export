@@ -11,7 +11,7 @@ namespace WebXR
   }
 
   [DefaultExecutionOrder(-2020)]
-  #if UNITY_2022_2_OR_NEWER || UNITY_2023_1_OR_NEWER
+  #if UNITY_XR_MANAGEMENT_4_3_1_OR_NEWER
   public class WebXRManager : SubsystemLifecycleManager<WebXRSubsystem, WebXRSubsystemDescriptor, WebXRSubsystemProvider>
   #else
   public class WebXRManager : SubsystemLifecycleManager<WebXRSubsystem, WebXRSubsystemDescriptor>
