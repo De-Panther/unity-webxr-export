@@ -1,12 +1,65 @@
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
 using AOT;
 using UnityEngine;
 
+#if UNITY_2022_2_OR_NEWER || UNITY_2023_1_OR_NEWER
+using UnityEngine.SubsystemsImplementation;
+#endif
+
 namespace WebXR
 {
-  // TODO: we need an XRInputSubsystem implementation - this can only be done via native code
+#if UNITY_2022_2_OR_NEWER || UNITY_2023_1_OR_NEWER
+	public class WebXRSubsystemDescriptor : SubsystemDescriptorWithProvider<WebXRSubsystem,WebXRSubsystemProvider>
+	{
+    public WebXRSubsystemDescriptor()
+    {
+      providerType = typeof(WebXRSubsystem.Provider);
+    }
+	}
 
+  public abstract class WebXRSubsystemProvider : SubsystemProvider<WebXRSubsystem> { }
+  
+	public class WebXRSubsystem : SubsystemWithProvider<WebXRSubsystem,WebXRSubsystemDescriptor,WebXRSubsystemProvider>
+	{
+    public class Provider : WebXRSubsystemProvider
+    {
+      public override void Start() { }
+      public override void Stop() { }
+      public override void Destroy() { }
+    }
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void RegisterDescriptor()
+    {
+      SubsystemDescriptorStore.RegisterDescriptor(new WebXRSubsystemDescriptor() {
+        id = typeof(WebXRSubsystem).FullName
+      });
+    }
+
+    internal static WebXRSubsystem Instance;
+    protected override void OnStart()
+    {
+      if (Instance != null) return;
+      Debug.Log("Start " + nameof(WebXRSubsystem));
+      Instance = this;
+      InternalStart();
+    }
+
+    protected override void OnStop()
+    {
+      if (Instance == null) return;
+      Debug.Log("Stop " + nameof(WebXRSubsystem));
+      Instance = null;
+    }
+
+    protected override void OnDestroy()
+    {
+      if (Instance == null) return;
+      Debug.Log("Destroy " + nameof(WebXRSubsystem));
+      Instance = null;
+    }
+#else
   public class WebXRSubsystemDescriptor : SubsystemDescriptor<WebXRSubsystem>
   {
   }
@@ -51,6 +104,11 @@ namespace WebXR
       Instance = null;
     }
 
+    private bool _running;
+    public override bool running => _running;
+
+    private static WebXRSubsystem Instance;
+#endif
     private void UpdateControllersOnEnd()
     {
       if (OnHandUpdate != null)
@@ -161,12 +219,7 @@ namespace WebXR
       }
     }
 
-    private bool _running;
-    public override bool running => _running;
-
-    private static WebXRSubsystem Instance;
-
-    private void InternalStart()
+    internal void InternalStart()
     {
 #if UNITY_WEBGL
       Native.SetWebXREvents(OnStartAR, OnStartVR, UpdateVisibilityState, OnEndXR, OnXRCapabilities, OnInputProfiles);
