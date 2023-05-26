@@ -2,7 +2,6 @@ using System;
 using System.Runtime.InteropServices;
 using AOT;
 using UnityEngine;
-
 #if UNITY_XR_MANAGEMENT_4_3_1_OR_NEWER
 using UnityEngine.SubsystemsImplementation;
 #endif
@@ -72,20 +71,6 @@ namespace WebXR
       Instance = this;
       InternalStart();
     }
-
-    protected override void OnStop()
-    {
-      if (Instance == null) return;
-      Debug.Log("Stop " + nameof(WebXRSubsystem));
-      Instance = null;
-    }
-
-    protected override void OnDestroy()
-    {
-      if (Instance == null) return;
-      Debug.Log("Destroy " + nameof(WebXRSubsystem));
-      Instance = null;
-    }
 #else
     public override void Start()
     {
@@ -95,7 +80,16 @@ namespace WebXR
       Instance = this;
       InternalStart();
     }
+#endif
 
+#if UNITY_XR_MANAGEMENT_4_3_1_OR_NEWER
+    protected override void OnStop()
+    {
+      if (Instance == null) return;
+      Debug.Log("Stop " + nameof(WebXRSubsystem));
+      Instance = null;
+    }
+#else
     public override void Stop()
     {
       if (!_running) return;
@@ -103,7 +97,16 @@ namespace WebXR
       _running = false;
       Instance = null;
     }
+#endif
 
+#if UNITY_XR_MANAGEMENT_4_3_1_OR_NEWER
+    protected override void OnDestroy()
+    {
+      if (Instance == null) return;
+      Debug.Log("Destroy " + nameof(WebXRSubsystem));
+      Instance = null;
+    }
+#else
     protected override void OnDestroy()
     {
       if (!running) return;
@@ -111,10 +114,8 @@ namespace WebXR
       _running = false;
       Instance = null;
     }
-
-    private bool _running;
-    public override bool running => _running;
 #endif
+
     private void UpdateControllersOnEnd()
     {
       if (OnHandUpdate != null)
@@ -225,12 +226,14 @@ namespace WebXR
       }
     }
 
-    //private bool _running;
-    //public override bool running => _running;
+#if !UNITY_XR_MANAGEMENT_4_3_1_OR_NEWER
+    private bool _running;
+    public override bool running => _running;
+#endif
 
     private static WebXRSubsystem Instance;
 
-    internal void InternalStart()
+    private void InternalStart()
     {
 #if UNITY_WEBGL
       Native.SetWebXREvents(OnStartAR, OnStartVR, UpdateVisibilityState, OnEndXR, OnXRCapabilities, OnInputProfiles);
