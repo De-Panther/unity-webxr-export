@@ -9,6 +9,8 @@ using UnityEngine.SubsystemsImplementation;
 
 namespace WebXR
 {
+  // TODO: we need an XRInputSubsystem implementation - this can only be done via native code
+
 #if UNITY_XR_MANAGEMENT_4_3_1_OR_NEWER
   public class WebXRSubsystemDescriptor : SubsystemDescriptorWithProvider<WebXRSubsystem, WebXRSubsystemProvider>
   {
