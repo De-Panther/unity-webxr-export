@@ -17,11 +17,21 @@ namespace WebXR
       providerType = typeof(WebXRSubsystem.Provider);
     }
   }
+#else
+  public class WebXRSubsystemDescriptor : SubsystemDescriptor<WebXRSubsystem>
+  {
+  }
+#endif
 
+#if UNITY_XR_MANAGEMENT_4_3_1_OR_NEWER
   public abstract class WebXRSubsystemProvider : SubsystemProvider<WebXRSubsystem> { }
 
   public class WebXRSubsystem : SubsystemWithProvider<WebXRSubsystem, WebXRSubsystemDescriptor, WebXRSubsystemProvider>
+#else
+  public class WebXRSubsystem : Subsystem<WebXRSubsystemDescriptor>
+#endif
   {
+#if UNITY_XR_MANAGEMENT_4_3_1_OR_NEWER
     public class Provider : WebXRSubsystemProvider
     {
       public override void Start() { }
@@ -37,8 +47,22 @@ namespace WebXR
         id = typeof(WebXRSubsystem).FullName
       });
     }
+#else
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void RegisterDescriptor()
+    {
+      var res = SubsystemRegistration.CreateDescriptor(new WebXRSubsystemDescriptor()
+      {
+        id = typeof(WebXRSubsystem).FullName,
+        subsystemImplementationType = typeof(WebXRSubsystem)
+      });
+      if (res)
+        Debug.Log("Registered " + nameof(WebXRSubsystemDescriptor));
+      else Debug.Log("Failed registering " + nameof(WebXRSubsystemDescriptor));
+    }
+#endif
 
-    internal static WebXRSubsystem Instance;
+#if UNITY_XR_MANAGEMENT_4_3_1_OR_NEWER
     protected override void OnStart()
     {
       if (Instance != null) return;
@@ -61,25 +85,6 @@ namespace WebXR
       Instance = null;
     }
 #else
-  public class WebXRSubsystemDescriptor : SubsystemDescriptor<WebXRSubsystem>
-  {
-  }
-
-  public class WebXRSubsystem : Subsystem<WebXRSubsystemDescriptor>
-  {
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-    private static void RegisterDescriptor()
-    {
-      var res = SubsystemRegistration.CreateDescriptor(new WebXRSubsystemDescriptor()
-      {
-        id = typeof(WebXRSubsystem).FullName,
-        subsystemImplementationType = typeof(WebXRSubsystem)
-      });
-      if (res)
-        Debug.Log("Registered " + nameof(WebXRSubsystemDescriptor));
-      else Debug.Log("Failed registering " + nameof(WebXRSubsystemDescriptor));
-    }
-
     public override void Start()
     {
       if (running) return;
@@ -107,8 +112,6 @@ namespace WebXR
 
     private bool _running;
     public override bool running => _running;
-
-    private static WebXRSubsystem Instance;
 #endif
     private void UpdateControllersOnEnd()
     {
@@ -219,6 +222,11 @@ namespace WebXR
             rightPosition);
       }
     }
+
+    //private bool _running;
+    //public override bool running => _running;
+
+    private static WebXRSubsystem Instance;
 
     internal void InternalStart()
     {
