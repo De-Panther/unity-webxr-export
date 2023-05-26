@@ -11,7 +11,11 @@ namespace WebXR
   }
 
   [DefaultExecutionOrder(-2020)]
+  #if UNITY_XR_MANAGEMENT_4_3_1_OR_NEWER
+  public class WebXRManager : SubsystemLifecycleManager<WebXRSubsystem, WebXRSubsystemDescriptor, WebXRSubsystemProvider>
+  #else
   public class WebXRManager : SubsystemLifecycleManager<WebXRSubsystem, WebXRSubsystemDescriptor>
+  #endif
   {
     private static readonly Rect defaultRect = new Rect(0, 0, 1, 1);
 

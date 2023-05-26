@@ -1,21 +1,54 @@
-﻿using System;
 using System.Runtime.InteropServices;
 using AOT;
 using UnityEngine;
+#if UNITY_XR_MANAGEMENT_4_3_1_OR_NEWER
+using UnityEngine.SubsystemsImplementation;
+#endif
 
 namespace WebXR
 {
   // TODO: we need an XRInputSubsystem implementation - this can only be done via native code
 
+#if UNITY_XR_MANAGEMENT_4_3_1_OR_NEWER
+  public abstract class WebXRSubsystemProvider : SubsystemProvider<WebXRSubsystem> { }
+
+  public class WebXRSubsystemDescriptor : SubsystemDescriptorWithProvider<WebXRSubsystem, WebXRSubsystemProvider>
+  {
+    public WebXRSubsystemDescriptor()
+    {
+      providerType = typeof(WebXRSubsystem.Provider);
+    }
+  }
+#else
   public class WebXRSubsystemDescriptor : SubsystemDescriptor<WebXRSubsystem>
   {
   }
+#endif
 
+#if UNITY_XR_MANAGEMENT_4_3_1_OR_NEWER
+  public class WebXRSubsystem : SubsystemWithProvider<WebXRSubsystem, WebXRSubsystemDescriptor, WebXRSubsystemProvider>
+#else
   public class WebXRSubsystem : Subsystem<WebXRSubsystemDescriptor>
+#endif
   {
+#if UNITY_XR_MANAGEMENT_4_3_1_OR_NEWER
+    public class Provider : WebXRSubsystemProvider
+    {
+      public override void Start() { }
+      public override void Stop() { }
+      public override void Destroy() { }
+    }
+#endif
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void RegisterDescriptor()
     {
+#if UNITY_XR_MANAGEMENT_4_3_1_OR_NEWER
+      SubsystemDescriptorStore.RegisterDescriptor(new WebXRSubsystemDescriptor()
+      {
+        id = typeof(WebXRSubsystem).FullName
+      });
+#else
       var res = SubsystemRegistration.CreateDescriptor(new WebXRSubsystemDescriptor()
       {
         id = typeof(WebXRSubsystem).FullName,
@@ -24,8 +57,18 @@ namespace WebXR
       if (res)
         Debug.Log("Registered " + nameof(WebXRSubsystemDescriptor));
       else Debug.Log("Failed registering " + nameof(WebXRSubsystemDescriptor));
+#endif
     }
 
+#if UNITY_XR_MANAGEMENT_4_3_1_OR_NEWER
+    protected override void OnStart()
+    {
+      if (Instance != null) return;
+      Debug.Log("Start " + nameof(WebXRSubsystem));
+      Instance = this;
+      InternalStart();
+    }
+#else
     public override void Start()
     {
       if (running) return;
@@ -34,7 +77,16 @@ namespace WebXR
       Instance = this;
       InternalStart();
     }
+#endif
 
+#if UNITY_XR_MANAGEMENT_4_3_1_OR_NEWER
+    protected override void OnStop()
+    {
+      if (Instance == null) return;
+      Debug.Log("Stop " + nameof(WebXRSubsystem));
+      Instance = null;
+    }
+#else
     public override void Stop()
     {
       if (!_running) return;
@@ -42,7 +94,16 @@ namespace WebXR
       _running = false;
       Instance = null;
     }
+#endif
 
+#if UNITY_XR_MANAGEMENT_4_3_1_OR_NEWER
+    protected override void OnDestroy()
+    {
+      if (Instance == null) return;
+      Debug.Log("Destroy " + nameof(WebXRSubsystem));
+      Instance = null;
+    }
+#else
     protected override void OnDestroy()
     {
       if (!running) return;
@@ -50,6 +111,7 @@ namespace WebXR
       _running = false;
       Instance = null;
     }
+#endif
 
     private void UpdateControllersOnEnd()
     {
@@ -161,8 +223,10 @@ namespace WebXR
       }
     }
 
+#if !UNITY_XR_MANAGEMENT_4_3_1_OR_NEWER
     private bool _running;
     public override bool running => _running;
+#endif
 
     private static WebXRSubsystem Instance;
 

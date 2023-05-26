@@ -2,11 +2,22 @@
 using UnityEngine;
 using UnityEngine.XR.Management;
 
+#if UNITY_XR_MANAGEMENT_4_3_1_OR_NEWER
+using UnityEngine.SubsystemsImplementation;
+#endif
+
 namespace WebXR
 {
+#if UNITY_XR_MANAGEMENT_4_3_1_OR_NEWER
+    public class SubsystemLifecycleManager<TSubsystem, TSubsystemDescriptor,TProvider> : MonoBehaviour
+        where TSubsystem : SubsystemWithProvider<TSubsystem, TSubsystemDescriptor,TProvider>, new()
+        where TSubsystemDescriptor : SubsystemDescriptorWithProvider
+        where TProvider : SubsystemProvider<TSubsystem>
+#else
     public class SubsystemLifecycleManager<TSubsystem, TSubsystemDescriptor> : MonoBehaviour
         where TSubsystem : Subsystem<TSubsystemDescriptor>
         where TSubsystemDescriptor : SubsystemDescriptor<TSubsystem>
+#endif
     {
         /// <summary>
         /// Get the <c>TSubsystem</c> whose lifetime this component manages.

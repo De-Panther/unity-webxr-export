@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Issues when using more than one WebXRManager components.
+- Missing SubsystemRegistration when using newer versions of Unity XR Management package.
 
 ## [0.16.0] - 2023-02-02
 ### Added
