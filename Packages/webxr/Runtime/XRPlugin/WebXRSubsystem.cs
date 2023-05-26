@@ -10,6 +10,8 @@ namespace WebXR
   // TODO: we need an XRInputSubsystem implementation - this can only be done via native code
 
 #if UNITY_XR_MANAGEMENT_4_3_1_OR_NEWER
+  public abstract class WebXRSubsystemProvider : SubsystemProvider<WebXRSubsystem> { }
+
   public class WebXRSubsystemDescriptor : SubsystemDescriptorWithProvider<WebXRSubsystem, WebXRSubsystemProvider>
   {
     public WebXRSubsystemDescriptor()
@@ -24,8 +26,6 @@ namespace WebXR
 #endif
 
 #if UNITY_XR_MANAGEMENT_4_3_1_OR_NEWER
-  public abstract class WebXRSubsystemProvider : SubsystemProvider<WebXRSubsystem> { }
-
   public class WebXRSubsystem : SubsystemWithProvider<WebXRSubsystem, WebXRSubsystemDescriptor, WebXRSubsystemProvider>
 #else
   public class WebXRSubsystem : Subsystem<WebXRSubsystemDescriptor>
