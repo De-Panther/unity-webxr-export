@@ -72,7 +72,7 @@ namespace WebXR
     {
       get
       {
-        return subsystem == null ? false : subsystem.capabilities.canPresentAR;
+        return subsystem != null && subsystem.capabilities.canPresentAR;
       }
     }
 
@@ -80,7 +80,7 @@ namespace WebXR
     {
       get
       {
-        return subsystem == null ? false : subsystem.capabilities.canPresentVR;
+        return subsystem != null && subsystem.capabilities.canPresentVR;
       }
     }
 

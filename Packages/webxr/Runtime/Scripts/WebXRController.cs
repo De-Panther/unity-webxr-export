@@ -371,13 +371,23 @@ namespace WebXR
           gripPosition = controllerData.gripPosition;
           if (alwaysUseGrip)
           {
+#if UNITY_2022_3_OR_NEWER
+            transform.SetLocalPositionAndRotation(controllerData.rotation * (controllerData.position + controllerData.gripPosition), 
+              controllerData.rotation * controllerData.gripRotation);
+#else
             transform.localRotation = controllerData.rotation * controllerData.gripRotation;
             transform.localPosition = controllerData.rotation * (controllerData.position + controllerData.gripPosition);
+#endif
           }
           else
           {
+#if UNITY_2022_3_OR_NEWER
+            transform.SetLocalPositionAndRotation(controllerData.position, 
+              controllerData.rotation);
+#else
             transform.localRotation = controllerData.rotation;
             transform.localPosition = controllerData.position;
+#endif
           }
           // Oculus on desktop returns wrong rotation for targetRaySpace, this is an ugly hack to fix it
           if (CheckOculusLinkBug())
@@ -428,13 +438,23 @@ namespace WebXR
       gripPosition = controllerData.gripPosition;
       if (alwaysUseGrip)
       {
+#if UNITY_2022_3_OR_NEWER
+        transform.SetLocalPositionAndRotation(controllerData.rotation * (controllerData.position + controllerData.gripPosition), 
+          controllerData.rotation * controllerData.gripRotation);
+#else
         transform.localRotation = controllerData.rotation * controllerData.gripRotation;
         transform.localPosition = controllerData.rotation * (controllerData.position + controllerData.gripPosition);
+#endif
       }
       else
       {
+#if UNITY_2022_3_OR_NEWER
+        transform.SetLocalPositionAndRotation(controllerData.position, 
+          controllerData.rotation * oculusOffsetRay);
+#else
         transform.localRotation = controllerData.rotation * oculusOffsetRay;
         transform.localPosition = controllerData.position;
+#endif
       }
     }
 
@@ -468,10 +488,13 @@ namespace WebXR
         }
         SetControllerActive(false);
         SetHandActive(true);
-
+#if UNITY_2022_3_OR_NEWER
+        transform.SetLocalPositionAndRotation(handData.joints[0].position, 
+          handData.joints[0].rotation);
+#else
         transform.localPosition = handData.joints[0].position;
         transform.localRotation = handData.joints[0].rotation;
-
+#endif
         trigger = handData.trigger;
         squeeze = handData.squeeze;
 

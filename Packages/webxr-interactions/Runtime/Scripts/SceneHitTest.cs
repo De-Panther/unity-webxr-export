@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace WebXR.Interactions
 {
@@ -77,8 +77,12 @@ namespace WebXR.Interactions
 
     private void HandleOnXRChange(WebXRState state, int viewsCount, Rect leftRect, Rect rightRect)
     {
+#if UNITY_2022_3_OR_NEWER
+      WebXRManager.Instance.transform.SetLocalPositionAndRotation(originPosition, originRotation);
+#else
       WebXRManager.Instance.transform.localPosition = originPosition;
       WebXRManager.Instance.transform.localRotation = originRotation;
+#endif
       isFollowing = false;
       if (state == WebXRState.AR)
       {
@@ -97,8 +101,12 @@ namespace WebXR.Interactions
       if (hitPoseData.available)
       {
         isFollowing = true;
+#if UNITY_2022_3_OR_NEWER
+        transform.SetLocalPositionAndRotation(hitPoseData.position, hitPoseData.rotation);
+#else
         transform.localPosition = hitPoseData.position;
         transform.localRotation = hitPoseData.rotation;
+#endif
         FollowByViewRotation(hitPoseData);
       }
     }
@@ -106,8 +114,12 @@ namespace WebXR.Interactions
     void FollowByHitRotation(WebXRHitPoseData hitPoseData)
     {
       Quaternion rotationOffset = Quaternion.Inverse(hitPoseData.rotation);
+#if UNITY_2022_3_OR_NEWER
+      WebXRManager.Instance.transform.SetLocalPositionAndRotation(rotationOffset * (originPosition - hitPoseData.position), rotationOffset);
+#else
       WebXRManager.Instance.transform.localPosition = rotationOffset * (originPosition - hitPoseData.position);
       WebXRManager.Instance.transform.localRotation = rotationOffset;
+#endif
     }
 
     void FollowByViewRotation(WebXRHitPoseData hitPoseData)
@@ -115,8 +127,12 @@ namespace WebXR.Interactions
       Vector2 diff = new Vector2(hitPoseData.position.x, hitPoseData.position.z) - new Vector2(arCameraTransform.localPosition.x, arCameraTransform.localPosition.z);
       float angle = Mathf.Atan2(diff.y, diff.x) * Mathf.Rad2Deg - 90f;
       Quaternion rotationOffset = Quaternion.Euler(0, angle, 0);
+#if UNITY_2022_3_OR_NEWER
+      WebXRManager.Instance.transform.SetLocalPositionAndRotation(rotationOffset * (originPosition - hitPoseData.position), rotationOffset);
+#else
       WebXRManager.Instance.transform.localPosition = rotationOffset * (originPosition - hitPoseData.position);
       WebXRManager.Instance.transform.localRotation = rotationOffset;
+#endif
     }
   }
 }

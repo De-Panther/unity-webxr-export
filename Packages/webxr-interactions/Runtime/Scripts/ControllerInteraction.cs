@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 #if WEBXR_INPUT_PROFILES
 using WebXRInputProfile;
@@ -161,7 +161,7 @@ namespace WebXR.Interactions
 
     private void OnTriggerEnter(Collider other)
     {
-      if (other.gameObject.tag != "Interactable")
+      if (!other.gameObject.CompareTag("Interactable"))
         return;
 
       contactRigidBodies.Add(other.gameObject.GetComponent<Rigidbody>());
@@ -170,7 +170,7 @@ namespace WebXR.Interactions
 
     private void OnTriggerExit(Collider other)
     {
-      if (other.gameObject.tag != "Interactable")
+      if (!other.gameObject.CompareTag("Interactable"))
         return;
 
       contactRigidBodies.Remove(other.gameObject.GetComponent<Rigidbody>());
@@ -183,8 +183,7 @@ namespace WebXR.Interactions
       {
         if (handJoints.ContainsKey(i))
         {
-          var collider = handJoints[i].GetComponent<Collider>();
-          if (collider != null)
+          if (handJoints[i].TryGetComponent<Collider>(out var collider))
           {
             collider.enabled = useCollidersForHandJoints;
           }
@@ -192,8 +191,7 @@ namespace WebXR.Interactions
 #if WEBXR_INPUT_PROFILES
         if (handModelJoints.ContainsKey(i))
         {
-          var collider = handModelJoints[i].GetComponent<Collider>();
-          if (collider != null)
+          if (handModelJoints[i].TryGetComponent<Collider>(out var collider))
           {
             collider.enabled = useCollidersForHandJoints;
           }
@@ -259,8 +257,13 @@ namespace WebXR.Interactions
 
     private void SetInputProfileModelPose(bool alwaysUseGrip)
     {
+#if UNITY_2022_3_OR_NEWER
+      inputProfileModelParent.transform.SetLocalPositionAndRotation(alwaysUseGrip ? Vector3.zero : controller.gripPosition, 
+        alwaysUseGrip ? Quaternion.identity : controller.gripRotation);
+#else
       inputProfileModelParent.transform.localPosition = alwaysUseGrip ? Vector3.zero : controller.gripPosition;
       inputProfileModelParent.transform.localRotation = alwaysUseGrip ? Quaternion.identity : controller.gripRotation;
+#endif
     }
 
     private void SetHandJointsVisible(bool visible)
@@ -328,8 +331,12 @@ namespace WebXR.Interactions
       {
         if (handJoints.ContainsKey(i))
         {
+#if UNITY_2022_3_OR_NEWER
+          handJoints[i].SetLocalPositionAndRotation(rotationOffset * (handData.joints[i].position - handData.joints[0].position), rotationOffset * handData.joints[i].rotation);
+#else
           handJoints[i].localPosition = rotationOffset * (handData.joints[i].position - handData.joints[0].position);
           handJoints[i].localRotation = rotationOffset * handData.joints[i].rotation;
+#endif
           if (handData.joints[i].radius != handJoints[i].localScale.x && handData.joints[i].radius > 0)
           {
             handJoints[i].localScale = new Vector3(handData.joints[i].radius, handData.joints[i].radius, handData.joints[i].radius);
@@ -338,8 +345,12 @@ namespace WebXR.Interactions
         else
         {
           var clone = Instantiate(handJointPrefab, transform);
+#if UNITY_2022_3_OR_NEWER
+          clone.SetLocalPositionAndRotation(rotationOffset * (handData.joints[i].position - handData.joints[0].position), rotationOffset * handData.joints[i].rotation);
+#else
           clone.localPosition = rotationOffset * (handData.joints[i].position - handData.joints[0].position);
           clone.localRotation = rotationOffset * handData.joints[i].rotation;
+#endif
           if (handData.joints[i].radius > 0f)
           {
             clone.localScale = new Vector3(handData.joints[i].radius, handData.joints[i].radius, handData.joints[i].radius);

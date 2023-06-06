@@ -278,10 +278,15 @@ namespace WebXR.Interactions
       webcamParent.gameObject.SetActive(storedWebcamParentActive);
       stackCameras.SetActive(false);
       ClearRenderTextures();
+#if UNITY_2022_3_OR_NEWER
+      spectatorCameraParent.SetPositionAndRotation(storedSpectatorParentPosition, storedSpectatorParentRotation);
+      spectatorCameraTransform.SetPositionAndRotation(storedSpectatorPosition, storedSpectatorRotation);
+#else
       spectatorCameraParent.position = storedSpectatorParentPosition;
       spectatorCameraParent.rotation = storedSpectatorParentRotation;
       spectatorCameraTransform.position = storedSpectatorPosition;
       spectatorCameraTransform.rotation = storedSpectatorRotation;
+#endif
       spectatorCamera.cullingMask = storedSpectatorCullingMask;
       spectatorCamera.clearFlags = storedSpectatorClearFlags;
       spectatorCamera.fieldOfView = storedSpectatorFieldOfView;
@@ -289,8 +294,12 @@ namespace WebXR.Interactions
       spectatorCamera.farClipPlane = sotredSpectatorFarClipPlane;
       spectatorCamera.orthographic = storedSpectatorOrthographic;
       spectatorCamera.orthographicSize = storedSpectatorOrthographicSize;
+#if UNITY_2022_3_OR_NEWER
+      webcamParent.SetPositionAndRotation(storedWebcamParentPosition, storedWebcamParentRotation);
+#else
       webcamParent.position = storedWebcamParentPosition;
       webcamParent.rotation = storedWebcamParentRotation;
+#endif
       webcamParent.localScale = storedWebcamParentScale;
       webcam.TrySetLightingTexture(null);
     }
