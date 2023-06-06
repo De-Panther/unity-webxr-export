@@ -373,7 +373,7 @@ namespace WebXR
           {
 #if UNITY_2022_3_OR_NEWER
             transform.SetLocalPositionAndRotation(controllerData.rotation * (controllerData.position + controllerData.gripPosition), 
-                controllerData.rotation * controllerData.gripRotation);
+              controllerData.rotation * controllerData.gripRotation);
 #else
             transform.localRotation = controllerData.rotation * controllerData.gripRotation;
             transform.localPosition = controllerData.rotation * (controllerData.position + controllerData.gripPosition);
@@ -383,7 +383,7 @@ namespace WebXR
           {
 #if UNITY_2022_3_OR_NEWER
             transform.SetLocalPositionAndRotation(controllerData.position, 
-                controllerData.rotation);
+              controllerData.rotation);
 #else
             transform.localRotation = controllerData.rotation;
             transform.localPosition = controllerData.position;           
@@ -440,7 +440,7 @@ namespace WebXR
       {
 #if UNITY_2022_3_OR_NEWER
         transform.SetLocalPositionAndRotation(controllerData.rotation * (controllerData.position + controllerData.gripPosition), 
-            controllerData.rotation * controllerData.gripRotation);
+          controllerData.rotation * controllerData.gripRotation);
 #else
         transform.localRotation = controllerData.rotation * controllerData.gripRotation;
         transform.localPosition = controllerData.rotation * (controllerData.position + controllerData.gripPosition);
@@ -450,7 +450,7 @@ namespace WebXR
       {
 #if UNITY_2022_3_OR_NEWER
         transform.SetLocalPositionAndRotation(controllerData.position, 
-            controllerData.rotation * oculusOffsetRay);
+          controllerData.rotation * oculusOffsetRay);
 #else
         transform.localRotation = controllerData.rotation * oculusOffsetRay;
         transform.localPosition = controllerData.position;
@@ -490,7 +490,7 @@ namespace WebXR
         SetHandActive(true);
 #if UNITY_2022_3_OR_NEWER
         transform.SetLocalPositionAndRotation(handData.joints[0].position, 
-            handData.joints[0].rotation);
+          handData.joints[0].rotation);
 #else
         transform.localPosition = handData.joints[0].position;
         transform.localRotation = handData.joints[0].rotation;

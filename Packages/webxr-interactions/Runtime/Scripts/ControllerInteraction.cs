@@ -193,7 +193,7 @@ namespace WebXR.Interactions
         {
           if (handModelJoints[i].TryGetComponent<Collider>(out var collider))
           {
-                        collider.enabled = useCollidersForHandJoints;
+              collider.enabled = useCollidersForHandJoints;
           }
         }
 #endif
@@ -259,14 +259,14 @@ namespace WebXR.Interactions
     {
 #if UNITY_2022_3_OR_NEWER
       inputProfileModelParent.transform.SetLocalPositionAndRotation(alwaysUseGrip ? Vector3.zero : controller.gripPosition, 
-          alwaysUseGrip ? Quaternion.identity : controller.gripRotation);
+        alwaysUseGrip ? Quaternion.identity : controller.gripRotation);
 #else
       inputProfileModelParent.transform.localPosition = alwaysUseGrip ? Vector3.zero : controller.gripPosition;
       inputProfileModelParent.transform.localRotation = alwaysUseGrip ? Quaternion.identity : controller.gripRotation;
 #endif
-        }
+    }
 
-        private void SetHandJointsVisible(bool visible)
+    private void SetHandJointsVisible(bool visible)
     {
       if (handJointsVisible != visible)
       {
@@ -337,7 +337,7 @@ namespace WebXR.Interactions
           handJoints[i].localPosition = rotationOffset * (handData.joints[i].position - handData.joints[0].position);
           handJoints[i].localRotation = rotationOffset * handData.joints[i].rotation;
 #endif
-        if (handData.joints[i].radius != handJoints[i].localScale.x && handData.joints[i].radius > 0)
+          if (handData.joints[i].radius != handJoints[i].localScale.x && handData.joints[i].radius > 0)
           {
             handJoints[i].localScale = new Vector3(handData.joints[i].radius, handData.joints[i].radius, handData.joints[i].radius);
           }

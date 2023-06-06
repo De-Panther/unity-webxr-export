@@ -78,9 +78,9 @@ namespace WebXR.Interactions
     private void HandleOnXRChange(WebXRState state, int viewsCount, Rect leftRect, Rect rightRect)
     {
 #if UNITY_2022_3_OR_NEWER
-       WebXRManager.Instance.transform.SetLocalPositionAndRotation(originPosition, originRotation);
+      WebXRManager.Instance.transform.SetLocalPositionAndRotation(originPosition, originRotation);
 #else
-       WebXRManager.Instance.transform.localPosition = originPosition;
+      WebXRManager.Instance.transform.localPosition = originPosition;
       WebXRManager.Instance.transform.localRotation = originRotation;
 #endif
       isFollowing = false;
@@ -133,7 +133,6 @@ namespace WebXR.Interactions
       WebXRManager.Instance.transform.localPosition = rotationOffset * (originPosition - hitPoseData.position);
       WebXRManager.Instance.transform.localRotation = rotationOffset;
 #endif
-
     }
-    }
+  }
 }
