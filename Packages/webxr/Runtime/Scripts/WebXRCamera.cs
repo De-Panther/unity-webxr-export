@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace WebXR
 {
@@ -89,21 +89,31 @@ namespace WebXR
       switch (xrState)
       {
         case WebXRState.AR:
+#if UNITY_2022_3_OR_NEWER
+          cameraFollower.SetLocalPositionAndRotation(viewsCount > 1 ? (cameraARL.transform.localPosition + cameraARR.transform.localPosition) * 0.5f : cameraARL.transform.localPosition,
+               cameraARL.transform.localRotation);
+#else
+          cameraFollower.localPosition = viewsCount > 1 ? (cameraARL.transform.localPosition + cameraARR.transform.localPosition) * 0.5f : cameraARL.transform.localPosition;
           cameraFollower.localRotation = cameraARL.transform.localRotation;
-          if (viewsCount > 1)
-          {
-            cameraFollower.localPosition = (cameraARL.transform.localPosition + cameraARR.transform.localPosition) * 0.5f;
-            return;
-          }
-          cameraFollower.localPosition = cameraARL.transform.localPosition;
+#endif
           return;
         case WebXRState.VR:
-          cameraFollower.localRotation = cameraL.transform.localRotation;
+#if UNITY_2022_3_OR_NEWER
+          cameraFollower.SetLocalPositionAndRotation((cameraL.transform.localPosition + cameraR.transform.localPosition) * 0.5f, 
+              cameraL.transform.localRotation);
+#else
           cameraFollower.localPosition = (cameraL.transform.localPosition + cameraR.transform.localPosition) * 0.5f;
+          cameraFollower.localRotation = cameraL.transform.localRotation;
+#endif
           return;
       }
-      cameraFollower.localRotation = cameraMain.transform.localRotation;
-      cameraFollower.localPosition = cameraMain.transform.localPosition;
+#if UNITY_2022_3_OR_NEWER
+        cameraFollower.SetLocalPositionAndRotation(cameraMain.transform.localPosition, 
+            cameraMain.transform.localRotation);
+#else
+        cameraFollower.localRotation = cameraMain.transform.localRotation;
+        cameraFollower.localPosition = cameraMain.transform.localPosition;
+#endif
     }
 
     public Quaternion GetLocalRotation()
@@ -168,21 +178,38 @@ namespace WebXR
         Vector3 rightPosition)
     {
       if (xrState == WebXRState.VR)
-      {
+            {
+#if UNITY_2022_3_OR_NEWER
+        cameraL.transform.SetLocalPositionAndRotation(leftPosition, leftRotation);
+#else
         cameraL.transform.localPosition = leftPosition;
         cameraL.transform.localRotation = leftRotation;
+#endif
         cameraL.projectionMatrix = leftProjectionMatrix;
+
+#if UNITY_2022_3_OR_NEWER
+        cameraR.transform.SetLocalPositionAndRotation(rightPosition, rightRotation);
+#else
         cameraR.transform.localPosition = rightPosition;
         cameraR.transform.localRotation = rightRotation;
+#endif
         cameraR.projectionMatrix = rightProjectionMatrix;
       }
       else if (xrState == WebXRState.AR)
-      {
+            {
+#if UNITY_2022_3_OR_NEWER
+        cameraARL.transform.SetLocalPositionAndRotation(leftPosition, leftRotation);
+#else
         cameraARL.transform.localPosition = leftPosition;
         cameraARL.transform.localRotation = leftRotation;
+#endif
         cameraARL.projectionMatrix = leftProjectionMatrix;
+#if UNITY_2022_3_OR_NEWER
+        cameraARR.transform.SetLocalPositionAndRotation(rightPosition, rightRotation);
+#else
         cameraARR.transform.localPosition = rightPosition;
         cameraARR.transform.localRotation = rightRotation;
+#endif
         cameraARR.projectionMatrix = rightProjectionMatrix;
       }
     }

@@ -46,11 +46,7 @@ namespace WebXR.Editor
         public bool PopulateNewSettingsInstance(ScriptableObject obj)
         {
             var settings = obj as WebXRSettings;
-            if (settings != null)
-            {
-                return true;
-            }
-            return false;
+            return settings != null;
         }
     }
 }
