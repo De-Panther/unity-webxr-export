@@ -386,7 +386,7 @@ namespace WebXR
               controllerData.rotation);
 #else
             transform.localRotation = controllerData.rotation;
-            transform.localPosition = controllerData.position;           
+            transform.localPosition = controllerData.position;
 #endif
           }
           // Oculus on desktop returns wrong rotation for targetRaySpace, this is an ugly hack to fix it

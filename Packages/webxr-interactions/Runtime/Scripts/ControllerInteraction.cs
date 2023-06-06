@@ -193,7 +193,7 @@ namespace WebXR.Interactions
         {
           if (handModelJoints[i].TryGetComponent<Collider>(out var collider))
           {
-              collider.enabled = useCollidersForHandJoints;
+            collider.enabled = useCollidersForHandJoints;
           }
         }
 #endif
