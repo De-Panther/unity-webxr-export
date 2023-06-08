@@ -278,7 +278,7 @@ namespace WebXR.Interactions
       webcamParent.gameObject.SetActive(storedWebcamParentActive);
       stackCameras.SetActive(false);
       ClearRenderTextures();
-#if UNITY_2022_3_OR_NEWER
+#if HAS_POSITION_AND_ROTATION
       spectatorCameraParent.SetPositionAndRotation(storedSpectatorParentPosition, storedSpectatorParentRotation);
       spectatorCameraTransform.SetPositionAndRotation(storedSpectatorPosition, storedSpectatorRotation);
 #else
@@ -294,7 +294,7 @@ namespace WebXR.Interactions
       spectatorCamera.farClipPlane = sotredSpectatorFarClipPlane;
       spectatorCamera.orthographic = storedSpectatorOrthographic;
       spectatorCamera.orthographicSize = storedSpectatorOrthographicSize;
-#if UNITY_2022_3_OR_NEWER
+#if HAS_POSITION_AND_ROTATION
       webcamParent.SetPositionAndRotation(storedWebcamParentPosition, storedWebcamParentRotation);
 #else
       webcamParent.position = storedWebcamParentPosition;

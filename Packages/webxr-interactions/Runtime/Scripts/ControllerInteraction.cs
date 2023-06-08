@@ -257,7 +257,7 @@ namespace WebXR.Interactions
 
     private void SetInputProfileModelPose(bool alwaysUseGrip)
     {
-#if UNITY_2022_3_OR_NEWER
+#if HAS_POSITION_AND_ROTATION
       inputProfileModelParent.transform.SetLocalPositionAndRotation(alwaysUseGrip ? Vector3.zero : controller.gripPosition, 
         alwaysUseGrip ? Quaternion.identity : controller.gripRotation);
 #else
@@ -331,7 +331,7 @@ namespace WebXR.Interactions
       {
         if (handJoints.ContainsKey(i))
         {
-#if UNITY_2022_3_OR_NEWER
+#if HAS_POSITION_AND_ROTATION
           handJoints[i].SetLocalPositionAndRotation(rotationOffset * (handData.joints[i].position - handData.joints[0].position), rotationOffset * handData.joints[i].rotation);
 #else
           handJoints[i].localPosition = rotationOffset * (handData.joints[i].position - handData.joints[0].position);
@@ -345,7 +345,7 @@ namespace WebXR.Interactions
         else
         {
           var clone = Instantiate(handJointPrefab, transform);
-#if UNITY_2022_3_OR_NEWER
+#if HAS_POSITION_AND_ROTATION
           clone.SetLocalPositionAndRotation(rotationOffset * (handData.joints[i].position - handData.joints[0].position), rotationOffset * handData.joints[i].rotation);
 #else
           clone.localPosition = rotationOffset * (handData.joints[i].position - handData.joints[0].position);

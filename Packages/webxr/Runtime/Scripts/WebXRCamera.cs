@@ -89,7 +89,7 @@ namespace WebXR
       switch (xrState)
       {
         case WebXRState.AR:
-#if UNITY_2022_3_OR_NEWER
+#if HAS_POSITION_AND_ROTATION
           cameraFollower.SetLocalPositionAndRotation(viewsCount > 1 ? (cameraARL.transform.localPosition + cameraARR.transform.localPosition) * 0.5f : cameraARL.transform.localPosition,
             cameraARL.transform.localRotation);
 #else
@@ -98,7 +98,7 @@ namespace WebXR
 #endif
           return;
         case WebXRState.VR:
-#if UNITY_2022_3_OR_NEWER
+#if HAS_POSITION_AND_ROTATION
           cameraFollower.SetLocalPositionAndRotation((cameraL.transform.localPosition + cameraR.transform.localPosition) * 0.5f, 
             cameraL.transform.localRotation);
 #else
@@ -107,7 +107,7 @@ namespace WebXR
 #endif
           return;
       }
-#if UNITY_2022_3_OR_NEWER
+#if HAS_POSITION_AND_ROTATION
       cameraFollower.SetLocalPositionAndRotation(cameraMain.transform.localPosition, 
         cameraMain.transform.localRotation);
 #else
@@ -179,7 +179,7 @@ namespace WebXR
     {
       if (xrState == WebXRState.VR)
       {
-#if UNITY_2022_3_OR_NEWER
+#if HAS_POSITION_AND_ROTATION
         cameraL.transform.SetLocalPositionAndRotation(leftPosition, leftRotation);
 #else
         cameraL.transform.localPosition = leftPosition;
@@ -187,7 +187,7 @@ namespace WebXR
 #endif
         cameraL.projectionMatrix = leftProjectionMatrix;
 
-#if UNITY_2022_3_OR_NEWER
+#if HAS_POSITION_AND_ROTATION
         cameraR.transform.SetLocalPositionAndRotation(rightPosition, rightRotation);
 #else
         cameraR.transform.localPosition = rightPosition;
@@ -197,14 +197,14 @@ namespace WebXR
       }
       else if (xrState == WebXRState.AR)
       {
-#if UNITY_2022_3_OR_NEWER
+#if HAS_POSITION_AND_ROTATION
         cameraARL.transform.SetLocalPositionAndRotation(leftPosition, leftRotation);
 #else
         cameraARL.transform.localPosition = leftPosition;
         cameraARL.transform.localRotation = leftRotation;
 #endif
         cameraARL.projectionMatrix = leftProjectionMatrix;
-#if UNITY_2022_3_OR_NEWER
+#if HAS_POSITION_AND_ROTATION
         cameraARR.transform.SetLocalPositionAndRotation(rightPosition, rightRotation);
 #else
         cameraARR.transform.localPosition = rightPosition;
