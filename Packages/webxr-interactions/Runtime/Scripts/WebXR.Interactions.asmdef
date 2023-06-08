@@ -1,5 +1,6 @@
 {
     "name": "WebXR.Samples.Scripts",
+    "rootNamespace": "",
     "references": [
         "GUID:fd4abe4ffe74ef1448afe15c6cb36bb7",
         "GUID:84a2d09f0bb073f40922f5ea5362abe7"
@@ -16,6 +17,16 @@
             "name": "com.de-panther.webxr-input-profiles-loader",
             "expression": "0.4.0",
             "define": "WEBXR_INPUT_PROFILES"
+        },
+        {
+            "name": "Unity",
+            "expression": "[2021.3.11,2022.1)",
+            "define": "HAS_POSITION_AND_ROTATION"
+        },
+        {
+            "name": "Unity",
+            "expression": "2022.3",
+            "define": "HAS_POSITION_AND_ROTATION"
         }
     ],
     "noEngineReferences": false

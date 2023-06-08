@@ -371,7 +371,7 @@ namespace WebXR
           gripPosition = controllerData.gripPosition;
           if (alwaysUseGrip)
           {
-#if UNITY_2022_3_OR_NEWER
+#if HAS_POSITION_AND_ROTATION
             transform.SetLocalPositionAndRotation(controllerData.rotation * (controllerData.position + controllerData.gripPosition), 
               controllerData.rotation * controllerData.gripRotation);
 #else
@@ -381,7 +381,7 @@ namespace WebXR
           }
           else
           {
-#if UNITY_2022_3_OR_NEWER
+#if HAS_POSITION_AND_ROTATION
             transform.SetLocalPositionAndRotation(controllerData.position, 
               controllerData.rotation);
 #else
@@ -438,7 +438,7 @@ namespace WebXR
       gripPosition = controllerData.gripPosition;
       if (alwaysUseGrip)
       {
-#if UNITY_2022_3_OR_NEWER
+#if HAS_POSITION_AND_ROTATION
         transform.SetLocalPositionAndRotation(controllerData.rotation * (controllerData.position + controllerData.gripPosition), 
           controllerData.rotation * controllerData.gripRotation);
 #else
@@ -448,7 +448,7 @@ namespace WebXR
       }
       else
       {
-#if UNITY_2022_3_OR_NEWER
+#if HAS_POSITION_AND_ROTATION
         transform.SetLocalPositionAndRotation(controllerData.position, 
           controllerData.rotation * oculusOffsetRay);
 #else
@@ -488,7 +488,7 @@ namespace WebXR
         }
         SetControllerActive(false);
         SetHandActive(true);
-#if UNITY_2022_3_OR_NEWER
+#if HAS_POSITION_AND_ROTATION
         transform.SetLocalPositionAndRotation(handData.joints[0].position, 
           handData.joints[0].rotation);
 #else

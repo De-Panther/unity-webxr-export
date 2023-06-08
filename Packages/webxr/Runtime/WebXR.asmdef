@@ -17,6 +17,16 @@
             "name": "com.unity.xr.management",
             "expression": "4.3.1",
             "define": "UNITY_XR_MANAGEMENT_4_3_1_OR_NEWER"
+        },
+        {
+            "name": "Unity",
+            "expression": "[2021.3.11,2022.1)",
+            "define": "HAS_POSITION_AND_ROTATION"
+        },
+        {
+            "name": "Unity",
+            "expression": "2022.3",
+            "define": "HAS_POSITION_AND_ROTATION"
         }
     ],
     "noEngineReferences": false

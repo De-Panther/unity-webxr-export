@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Improve performance.
+
 ## [0.16.1] - 2023-05-27
 ### Fixed
 - Issues when using more than one WebXRManager components.

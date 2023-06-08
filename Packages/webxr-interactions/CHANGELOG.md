@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - An option to set pickup buttons in ControllerInteraction.
 
+### Changed
+- Improve performance.
+
 ### Fixed
 - Lighting after threshold test in ChromaKeyUnlit.
 
