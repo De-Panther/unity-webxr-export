@@ -60,6 +60,10 @@ namespace WebXR
           cameraARL.rect = leftRect;
           cameraARR.enabled = viewsCount > 1;
           cameraARR.rect = rightRect;
+          
+          cameraMain.tag = "Untagged";
+          cameraL.tag = "Untagged";
+          cameraARL.tag = "MainCamera";
           break;
         case WebXRState.VR:
           cameraMain.enabled = false;
@@ -69,6 +73,10 @@ namespace WebXR
           cameraR.rect = rightRect;
           cameraARL.enabled = false;
           cameraARR.enabled = false;
+          
+          cameraMain.tag = "Untagged";
+          cameraARL.tag = "Untagged";
+          cameraL.tag = "MainCamera";
           break;
         case WebXRState.NORMAL:
           cameraMain.enabled = true;
@@ -76,6 +84,10 @@ namespace WebXR
           cameraR.enabled = false;
           cameraARL.enabled = false;
           cameraARR.enabled = false;
+          
+          cameraL.tag = "Untagged";
+          cameraARL.tag = "Untagged";
+          cameraMain.tag = "MainCamera";
           break;
       }
     }
