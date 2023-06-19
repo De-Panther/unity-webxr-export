@@ -62,11 +62,13 @@ Google Chrome on Android (Supports both AR and VR sessions).
 
 Samsung Internet Browser on Android (Supports both AR and VR sessions).
 
+Mozilla WebXR Viewer on iOS.
+
 Firefox Reality on Vive Focus Plus.
 
-#### 🐞 Has bugs/issues
+Helio on Magic Leap 2.
 
-Mozilla WebXR Viewer on iOS (Has a bug related to touch input).
+#### 🐞 Has bugs/issues
 
 Helio on Magic Leap One (Has a bug related to eye views).
 
