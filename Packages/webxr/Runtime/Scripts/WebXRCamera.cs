@@ -14,6 +14,9 @@ namespace WebXR
       RightAR
     }
 
+    private static readonly string mainCameraTag = "MainCamera";
+    private static readonly string untaggedTag = "Untagged";
+
     [SerializeField]
     private Camera cameraMain = null, cameraL = null, cameraR = null, cameraARL = null, cameraARR = null;
     [SerializeField]
@@ -25,6 +28,9 @@ namespace WebXR
     private int viewsCount = 1;
 
     private bool hasFollower = false;
+
+    [SerializeField]
+    private bool updateCameraTag = false;
 
     private void OnEnable()
     {
@@ -60,10 +66,12 @@ namespace WebXR
           cameraARL.rect = leftRect;
           cameraARR.enabled = viewsCount > 1;
           cameraARR.rect = rightRect;
-          
-          cameraMain.tag = "Untagged";
-          cameraL.tag = "Untagged";
-          cameraARL.tag = "MainCamera";
+          if (updateCameraTag)
+          {
+            cameraMain.tag = untaggedTag;
+            cameraL.tag = untaggedTag;
+            cameraARL.tag = mainCameraTag;
+          }
           break;
         case WebXRState.VR:
           cameraMain.enabled = false;
@@ -73,10 +81,12 @@ namespace WebXR
           cameraR.rect = rightRect;
           cameraARL.enabled = false;
           cameraARR.enabled = false;
-          
-          cameraMain.tag = "Untagged";
-          cameraARL.tag = "Untagged";
-          cameraL.tag = "MainCamera";
+          if (updateCameraTag)
+          {
+            cameraMain.tag = untaggedTag;
+            cameraL.tag = mainCameraTag;
+            cameraARL.tag = untaggedTag;
+          }
           break;
         case WebXRState.NORMAL:
           cameraMain.enabled = true;
@@ -84,10 +94,12 @@ namespace WebXR
           cameraR.enabled = false;
           cameraARL.enabled = false;
           cameraARR.enabled = false;
-          
-          cameraL.tag = "Untagged";
-          cameraARL.tag = "Untagged";
-          cameraMain.tag = "MainCamera";
+          if (updateCameraTag)
+          {
+            cameraMain.tag = mainCameraTag;
+            cameraL.tag = untaggedTag;
+            cameraARL.tag = untaggedTag;
+          }
           break;
       }
     }
