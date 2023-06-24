@@ -48,13 +48,9 @@ Google Chrome on Windows.
 
 Microsoft Edge on Windows.
 
-Mozilla Firefox on Windows.
+Quest Browser on Meta Quests (1, 2, Pro, etc...).
 
-Oculus Browser on Oculus Quest (Supports WebXR Hand Input).
-
-Firefox Reality on Oculus Quest.
-
-Firefox Reality on Hololens 2 (Supports WebXR Hand Input).
+Wolvic on Meta Quests (1, 2, Pro, etc...).
 
 Microsoft Edge on Hololens 2.
 
@@ -64,9 +60,15 @@ Samsung Internet Browser on Android (Supports both AR and VR sessions).
 
 Mozilla WebXR Viewer on iOS.
 
-Firefox Reality on Vive Focus Plus.
+Firefox Reality on VIVE Focus Plus.
+
+Wolvic on VIVE Focus 3.
 
 Helio on Magic Leap 2.
+
+PICO Browser on PICO 4 and PICO 4E.
+
+Wolvic on PICO 4 and PICO 4E.
 
 #### 🐞 Has bugs/issues
 
