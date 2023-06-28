@@ -32,6 +32,7 @@ namespace WebXR
 #endif
   {
 #if UNITY_XR_MANAGEMENT_4_3_1_OR_NEWER
+    [UnityEngine.Scripting.Preserve]
     public class Provider : WebXRSubsystemProvider
     {
       public override void Start() { }
