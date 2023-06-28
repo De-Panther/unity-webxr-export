@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Improve performance.
 
+### Fixed
+- Missing Provider class in build.
+
 ## [0.16.1] - 2023-05-27
 ### Fixed
 - Issues when using more than one WebXRManager components.
