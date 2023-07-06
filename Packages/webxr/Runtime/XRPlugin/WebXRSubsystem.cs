@@ -395,8 +395,8 @@ namespace WebXR
 
     public void OnInputProfiles(WebXRControllersProfiles controllersProfiles)
     {
-      controller1.profiles = controllersProfiles.conrtoller1;
-      controller2.profiles = controllersProfiles.conrtoller2;
+      controller1.profiles = controllersProfiles.controller1;
+      controller2.profiles = controllersProfiles.controller2;
     }
 
     public void setXrState(WebXRState state, int viewsCount, Rect leftRect, Rect rightRect)

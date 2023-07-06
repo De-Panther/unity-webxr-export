@@ -34,8 +34,8 @@ namespace WebXR
   [System.Serializable]
   public class WebXRControllersProfiles
   {
-    public string[] conrtoller1;
-    public string[] conrtoller2;
+    public string[] controller1;
+    public string[] controller2;
   }
 
   public enum WebXRHandJoint
@@ -122,26 +122,9 @@ namespace WebXR
 
     public void UpdateState(bool isPressed, bool isTouched, float buttonValue)
     {
-      if (isPressed && pressed) // nothing
-      {
-        down = false;
-        up = false;
-      }
-      else if (isPressed && !pressed) // up
-      {
-        down = true;
-        up = false;
-      }
-      else if (!isPressed && !pressed) // nothing
-      {
-        down = false;
-        up = false;
-      }
-      else if (!isPressed && pressed) // down
-      {
-        down = false;
-        up = true;
-      }
+      down = isPressed && !pressed;
+      up = !isPressed && pressed;
+
       pressed = isPressed;
       touched = isTouched;
       value = buttonValue;
