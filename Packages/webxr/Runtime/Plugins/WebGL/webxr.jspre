@@ -995,8 +995,8 @@ setTimeout(function () {
         if (xrData.controllerA.updatedProfiles == 1 || xrData.controllerB.updatedProfiles == 1)
         {
           var inputProfiles = {};
-          inputProfiles.conrtoller1 = xrData.controllerA.profiles;
-          inputProfiles.conrtoller2 = xrData.controllerB.profiles;
+          inputProfiles.controller1 = xrData.controllerA.profiles;
+          inputProfiles.controller2 = xrData.controllerB.profiles;
           if (xrData.controllerA.updatedProfiles == 1)
           {
             xrData.controllerA.updatedProfiles = 2;
