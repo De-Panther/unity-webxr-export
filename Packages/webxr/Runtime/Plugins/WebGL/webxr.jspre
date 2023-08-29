@@ -848,14 +848,26 @@ setTimeout(function () {
       }
     
       XRManager.prototype.onSessionStarted = function (session) {
-        var glLayer = new XRWebGLLayer(session, this.ctx);
+        var webXRSettings = this.gameModule.WebXR.Settings;
+        var glLayer;
+        if (webXRSettings.UseFramebufferScaleFactor) {
+          var scaleFactor = webXRSettings.FramebufferScaleFactor;
+          if (webXRSettings.UseNativeResolution && XRWebGLLayer.getNativeFramebufferScaleFactor) {
+            scaleFactor = XRWebGLLayer.getNativeFramebufferScaleFactor(session);
+          }
+          glLayer = new XRWebGLLayer(session, this.ctx, {
+            framebufferScaleFactor: scaleFactor
+          });
+        } else {
+          glLayer = new XRWebGLLayer(session, this.ctx);
+        }
         session.updateRenderState({ baseLayer: glLayer });
         
         var refSpaceType = 'viewer';
         if (session.isImmersive) {
-          refSpaceType = this.gameModule.WebXR.Settings.VRRequiredReferenceSpace[0];
+          refSpaceType = webXRSettings.VRRequiredReferenceSpace[0];
           if (session.isAR) {
-            refSpaceType = this.gameModule.WebXR.Settings.ARRequiredReferenceSpace[0];
+            refSpaceType = webXRSettings.ARRequiredReferenceSpace[0];
             this.ctx.dontClearAlphaOnly = true;
           }
     
