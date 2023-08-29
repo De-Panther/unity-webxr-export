@@ -32,6 +32,18 @@ namespace WebXR
     public ReferenceSpaceTypes ARRequiredReferenceSpace = ReferenceSpaceTypes.local_floor;
     public ExtraFeatureTypes AROptionalFeatures = (ExtraFeatureTypes)(-1);
 
+    [Header("More Settings")]
+    [Tooltip(@"Should manually set FramebufferScaleFactor?
+The scale factor in which the scene is rendered in.
+Default is the recommended resolution. Can be different than native resolution.")]
+    public bool UseFramebufferScaleFactor = false;
+    [Tooltip(@"If ""Use Framebuffer Scale Factor"" is true, should use native resolution?")]
+    public bool UseNativeResolution = false;
+    [Tooltip(@"If ""Use Framebuffer Scale Factor"" is true, and not using native resolution, what should be the scale factor?
+Default is 1.0, the recommended resolution.")]
+    [Range(0.2f,2.0f)]
+    public float FramebufferScaleFactor = 1.0f;
+
     string EnumToString<T>(T value) where T : Enum
     {
       return value.ToString().Replace('_','-');
@@ -65,7 +77,10 @@ namespace WebXR
         ""VRRequiredReferenceSpace"": [""{EnumToString(VRRequiredReferenceSpace)}""],
         ""VROptionalFeatures"": {FlagsToString(VROptionalFeatures)},
         ""ARRequiredReferenceSpace"": [""{EnumToString(ARRequiredReferenceSpace)}""],
-        ""AROptionalFeatures"": {FlagsToString(AROptionalFeatures)}
+        ""AROptionalFeatures"": {FlagsToString(AROptionalFeatures)},
+        ""UseFramebufferScaleFactor"": {(UseFramebufferScaleFactor ? "true" : "false")},
+        ""UseNativeResolution"": {(UseNativeResolution ? "true" : "false")},
+        ""FramebufferScaleFactor"": {FramebufferScaleFactor}
 }}";
       return result;
     }
