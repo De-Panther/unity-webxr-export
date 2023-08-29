@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Option to update active camera tag in WebXRCamera.
+
 ## [0.17.0] - 2023-07-10
 ### Changed
 - Improve performance.
