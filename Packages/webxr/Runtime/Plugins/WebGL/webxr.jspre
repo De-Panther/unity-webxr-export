@@ -849,18 +849,20 @@ setTimeout(function () {
     
       XRManager.prototype.onSessionStarted = function (session) {
         var webXRSettings = this.gameModule.WebXR.Settings;
-        var glLayer;
+        var glLayerOptions = {
+          alpha: true,
+          antialias: true,
+          depth: true,
+          stencil: true
+        };
         if (webXRSettings.UseFramebufferScaleFactor) {
           var scaleFactor = webXRSettings.FramebufferScaleFactor;
           if (webXRSettings.UseNativeResolution && XRWebGLLayer.getNativeFramebufferScaleFactor) {
             scaleFactor = XRWebGLLayer.getNativeFramebufferScaleFactor(session);
           }
-          glLayer = new XRWebGLLayer(session, this.ctx, {
-            framebufferScaleFactor: scaleFactor
-          });
-        } else {
-          glLayer = new XRWebGLLayer(session, this.ctx);
+          glLayerOptions.framebufferScaleFactor = scaleFactor;
         }
+        var glLayer = new XRWebGLLayer(session, this.ctx, glLayerOptions);
         session.updateRenderState({ baseLayer: glLayer });
         
         var refSpaceType = 'viewer';

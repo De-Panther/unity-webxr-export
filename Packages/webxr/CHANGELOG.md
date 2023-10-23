@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Enabled stencil buffer when creating the session XRWebGLLayer.
+
 ## [0.18.0] - 2023-08-29
 ### Added
 - Option to update active camera tag in WebXRCamera.
