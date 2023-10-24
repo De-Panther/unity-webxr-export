@@ -12,7 +12,9 @@ using UnityEngine.XR.Hands.ProviderImplementation;
 
 namespace WebXR.InputSystem
 {
+#if UNITY_INPUT_SYSTEM_1_4_4_OR_NEWER
   using InputSystem = UnityEngine.InputSystem.InputSystem;
+#endif
   public class WebXRInputSystem : MonoBehaviour
   {
 #if UNITY_INPUT_SYSTEM_1_4_4_OR_NEWER
