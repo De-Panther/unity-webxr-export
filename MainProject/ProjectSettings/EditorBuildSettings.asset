@@ -5,12 +5,19 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/WebXR/Samples/Desert/Scenes/Desert.unity
     guid: 85380d4847db7b74a850284461349c36
+  - enabled: 1
+    path: Assets/Samples/XR Interaction Toolkit/2.3.2/Hands Interaction Demo/Runtime/HandsDemoScene.unity
+    guid: 3ff35cecbcc52cc42945cf531638a60a
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 65eada5edf5f16b4a9d0bd3a76fa026f,
       type: 2}
     WebXR.Settings: {fileID: 11400000, guid: a5e5b7605fb48984988490688c2a74e2, type: 2}
+    com.unity.input.settings: {fileID: 11400000, guid: 9200075b9150b364996d99532e344a14,
+      type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 552445d583cb06c4eaf9d56596dd45c2,
+      type: 2}
+    com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 5b0903de6c5e23b4a9cdf346520d272d,
       type: 2}
