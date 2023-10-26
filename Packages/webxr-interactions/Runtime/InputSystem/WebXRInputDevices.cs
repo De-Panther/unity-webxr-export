@@ -272,7 +272,7 @@ namespace WebXR.InputSystem
         buttonATouched = controllerData.buttonATouched,
         buttonB = controllerData.buttonA >= 0.9f,
         buttonBTouched = controllerData.buttonBTouched,
-        trackingState = 63,
+        trackingState = 3,
         isTracked = true,
         devicePosition = controllerData.gripPosition,
         deviceRotation = controllerData.gripRotation,
