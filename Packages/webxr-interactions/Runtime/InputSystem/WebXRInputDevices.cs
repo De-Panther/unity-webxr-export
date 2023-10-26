@@ -12,7 +12,7 @@ namespace WebXR.InputSystem
   using InputSystem = UnityEngine.InputSystem.InputSystem;
   public struct WebXRHMDState : IInputStateTypeInfo
   {
-    public static FourCC Format => new FourCC('X', 'R', 'D', 'I');
+    public static FourCC Format => new FourCC('W', 'X', 'R', 'H');
 
     public readonly FourCC format => Format;
 
@@ -86,7 +86,7 @@ namespace WebXR.InputSystem
 
   public struct WebXRControllerState : IInputStateTypeInfo
   {
-    public static FourCC Format => new FourCC('X', 'R', 'D', 'I');
+    public static FourCC Format => new FourCC('W', 'X', 'R', 'C');
 
     public readonly FourCC format => Format;
 

@@ -1,8 +1,10 @@
 using UnityEngine;
+using InputDevice = UnityEngine.XR.InputDevice;
 #if UNITY_INPUT_SYSTEM_1_4_4_OR_NEWER
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Layouts;
 #if XR_HANDS_1_1_OR_NEWER
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.XR;
 using UnityEngine.XR.Hands;
@@ -17,6 +19,15 @@ namespace WebXR.InputSystem
 #endif
   public class WebXRInputSystem : MonoBehaviour
   {
+    public Transform[] leftHandTransforms;
+    public Transform[] rightHandTransforms;
+    private Pose[] leftPoses;
+    private Pose[] rightPoses;
+    public Vector3 rightPos;
+    public Vector3 leftPos;
+    public Vector3 headPos;
+    public int devicesType;
+
 #if UNITY_INPUT_SYSTEM_1_4_4_OR_NEWER
     private static bool initialized = false;
     WebXRController left = null;
@@ -28,7 +39,7 @@ namespace WebXR.InputSystem
     XRHandProviderUtility.SubsystemUpdater subsystemUpdater;
 #endif
 
-    void Awake()
+    private void Awake()
     {
       if (initialized)
       {
@@ -53,12 +64,19 @@ namespace WebXR.InputSystem
           break;
         }
       }
-      webXRHandsSubsystem?.SetUpdateHandsAllowed(true);
       subsystemUpdater = new XRHandProviderUtility.SubsystemUpdater(webXRHandsSubsystem);
+      
+      leftPoses = new Pose[leftHandTransforms.Length];
+      rightPoses = new Pose[rightHandTransforms.Length];
+      for (int i = 0; i < leftHandTransforms.Length; i++)
+      {
+        leftPoses[i] = new Pose(leftHandTransforms[i].position, leftHandTransforms[i].rotation);
+        rightPoses[i] = new Pose(rightHandTransforms[i].position, rightHandTransforms[i].rotation);
+      }
 #endif
     }
 
-    protected void OnEnable()
+    private void OnEnable()
     {
       WebXRManager.OnXRChange += OnXRChange;
       WebXRManager.OnHeadsetUpdate += OnHeadsetUpdate;
@@ -70,7 +88,7 @@ namespace WebXR.InputSystem
 #endif
     }
 
-    protected void OnDisable()
+    private void OnDisable()
     {
       RemoveAllDevices();
       WebXRManager.OnXRChange -= OnXRChange;
@@ -84,14 +102,83 @@ namespace WebXR.InputSystem
     }
 
 #if XR_HANDS_1_1_OR_NEWER
-    void OnDestroy()
+    private void OnDestroy()
     {
+      if (MetaAimHand.left != null && MetaAimHand.left.added)
+      {
+        InputSystem.RemoveDevice(MetaAimHand.left);
+        MetaAimHand.left = null;
+      }
+      if (MetaAimHand.right != null && MetaAimHand.right.added)
+      {
+        InputSystem.RemoveDevice(MetaAimHand.right);
+        MetaAimHand.right = null;
+      }
       webXRHandsSubsystem?.Destroy();
       subsystemUpdater?.Destroy();
       webXRHandsSubsystem = null;
       subsystemUpdater = null;
     }
 #endif
+
+    /*
+    private void Update1()
+    {
+      OnHeadsetUpdate(
+        Matrix4x4.identity,
+        Matrix4x4.identity,
+        Quaternion.identity,
+        Quaternion.identity,
+        headPos,
+        headPos
+      );
+      WebXRHandData handDataLeft = new();
+      handDataLeft.frame = Time.frameCount;
+      handDataLeft.enabled = devicesType == 2;
+      handDataLeft.hand = 1;
+      handDataLeft.trigger = 1;
+      for (int i = 0; i < handDataLeft.joints.Length; i++)
+      {
+        handDataLeft.joints[i].radius = 0.01f;
+        handDataLeft.joints[i].position = leftPoses[i].position;
+        handDataLeft.joints[i].rotation = leftPoses[i].rotation;
+        handDataLeft.joints[i].position += leftPos;
+      }
+      OnHandUpdate(handDataLeft);
+      WebXRHandData handDataRight = new();
+      handDataRight.frame = Time.frameCount;
+      handDataRight.enabled = devicesType == 2;
+      handDataRight.hand = 2;
+      handDataRight.trigger = 1;
+      for (int i = 0; i < handDataRight.joints.Length; i++)
+      {
+        handDataRight.joints[i].radius = 0.01f;
+        handDataRight.joints[i].position = rightPoses[i].position;
+        handDataRight.joints[i].rotation = rightPoses[i].rotation;
+        handDataRight.joints[i].position += rightPos;
+      }
+      OnHandUpdate(handDataRight);
+
+      WebXRControllerData controllerDataLeft = new WebXRControllerData();
+      controllerDataLeft.frame = Time.frameCount;
+      controllerDataLeft.enabled = devicesType == 1;
+      controllerDataLeft.hand = 1;
+      controllerDataLeft.position = leftPos;
+      controllerDataLeft.rotation = Quaternion.identity;
+      controllerDataLeft.gripPosition = leftPos;
+      controllerDataLeft.gripRotation = Quaternion.identity;
+      OnControllerUpdate(controllerDataLeft);
+      WebXRControllerData controllerDataRight = new WebXRControllerData();
+      controllerDataRight.frame = Time.frameCount;
+      controllerDataRight.enabled = devicesType == 1;
+      controllerDataRight.hand = 2;
+      controllerDataRight.position = rightPos;
+      controllerDataRight.rotation = Quaternion.identity;
+      controllerDataRight.gripPosition = rightPos;
+      controllerDataRight.gripRotation = Quaternion.identity;
+      OnControllerUpdate(controllerDataRight);
+    }
+    */
 
     private void OnXRChange(
       WebXRState state,
@@ -112,9 +199,9 @@ namespace WebXR.InputSystem
       right = null;
       hmd = null;
 #if XR_HANDS_1_1_OR_NEWER
-      DestroyHandLeft();
-      DestroyHandRight();
       webXRHandsSubsystem?.SetUpdateHandsAllowed(false);
+      DisableHandLeft();
+      DisableHandRight();
 #endif
     }
 
@@ -156,11 +243,15 @@ namespace WebXR.InputSystem
     {
       if (controllerData.enabled)
       {
+        // Must wait one update after creating controller.
         if (hand == null)
         {
           hand = GetWebXRController(controllerData.hand);
         }
-        hand.OnControllerUpdate(controllerData);
+        else
+        {
+          hand.OnControllerUpdate(controllerData);
+        }
       }
       else if (hand != null)
       {
@@ -184,7 +275,7 @@ namespace WebXR.InputSystem
         }
         if (handData.hand == 1)
         {
-          CreateHandLeft();
+          MetaAimHand.left ??= MetaAimHand.CreateHand(InputDeviceCharacteristics.Left);
           MetaAimHand.left.UpdateHand(
             true,
             aimFlags,
@@ -196,7 +287,7 @@ namespace WebXR.InputSystem
         }
         else
         {
-          CreateHandRight();
+          MetaAimHand.right ??= MetaAimHand.CreateHand(InputDeviceCharacteristics.Right);
           MetaAimHand.right.UpdateHand(
             true,
             aimFlags,
@@ -211,41 +302,62 @@ namespace WebXR.InputSystem
       {
         if (handData.hand == 1)
         {
-          DestroyHandLeft();
+          DisableHandLeft();
         }
         else
         {
-          DestroyHandRight();
+          DisableHandRight();
         }
       }
     }
 
-    void CreateHandLeft()
+    void DisableHandLeft()
     {
-      MetaAimHand.left ??= MetaAimHand.CreateHand(InputDeviceCharacteristics.Left);
-    }
-
-    void CreateHandRight()
-    {
-      MetaAimHand.right ??= MetaAimHand.CreateHand(InputDeviceCharacteristics.Right);
-    }
-
-    void DestroyHandLeft()
-    {
-      if (MetaAimHand.left != null)
+      if (MetaAimHand.left != null
+          && MetaAimHand.left.added
+          && MetaAimHand.left.aimFlags.value != 0)
       {
-        InputSystem.RemoveDevice(MetaAimHand.left);
-        MetaAimHand.left = null;
+        MetaAimHand.left.UpdateHand(
+          false,
+          MetaAimFlags.None,
+          Pose.identity,
+          0,
+          0,
+          0,
+          0);
+        // Hack - triggers XRInputModalityManager OnDeviceChange.
+        var device = InputSystem.AddDevice("XRController");
+        InputSystem.AddDeviceUsage(device, "LeftHand");
+        StartCoroutine(RemoveDeviceAfterFrame(device));
       }
     }
 
-    void DestroyHandRight()
+    void DisableHandRight()
     {
-      if (MetaAimHand.right != null)
+      if (MetaAimHand.right != null
+          && MetaAimHand.right.added
+          && MetaAimHand.right.aimFlags.value != 0)
       {
-        InputSystem.RemoveDevice(MetaAimHand.right);
-        MetaAimHand.right = null;
+        MetaAimHand.right.UpdateHand(
+          false,
+          MetaAimFlags.None,
+          Pose.identity,
+          0,
+          0,
+          0,
+          0);
+        // Hack - triggers XRInputModalityManager OnDeviceChange.
+        var device = InputSystem.AddDevice("XRController");
+        InputSystem.AddDeviceUsage(device, "RightHand");
+        StartCoroutine(RemoveDeviceAfterFrame(device));
       }
+    }
+
+    // Hack - triggers XRInputModalityManager OnDeviceChange.
+    IEnumerator RemoveDeviceAfterFrame(UnityEngine.InputSystem.InputDevice device)
+    {
+      yield return null;
+      InputSystem.RemoveDevice(device);
     }
 #endif
 
@@ -265,18 +377,18 @@ namespace WebXR.InputSystem
 
     private WebXRController GetWebXRController(int hand)
     {
-      string name = "WebXRController Left";
+      string product = "WebXRController Left";
       string usage = "LeftHand";
       if (hand == 2)
       {
-        name = "WebXRController Right";
+        product = "WebXRController Right";
         usage = "RightHand";
       }
       var device = InputSystem.AddDevice(
         new InputDeviceDescription
         {
           interfaceName = "WebXRController",
-          product = name
+          product = product
         });
       InputSystem.AddDeviceUsage(device, usage);
       return (WebXRController)device;
@@ -284,7 +396,7 @@ namespace WebXR.InputSystem
 
     private void RemoveDevice(TrackedDevice device)
     {
-      if (device != null)
+      if (device != null && device.added)
       {
         InputSystem.RemoveDevice(device);
       }

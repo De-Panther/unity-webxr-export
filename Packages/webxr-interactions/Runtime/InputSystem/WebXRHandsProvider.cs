@@ -154,6 +154,11 @@ namespace WebXR.InputSystem
 
       var handState = handedness == Handedness.Left ? leftHandData : rightHandData;
       handState.enabled = isTracked;
+
+      if (!leftHandData.enabled && !rightHandData.enabled)
+      {
+        updateHandsAllowed = false;
+      }
     }
 
     [Preserve, RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
