@@ -165,30 +165,36 @@ namespace WebXR
         return;
       }
       UpdateXRCameras();
-      bool hasHandsData = false;
+      bool handWasDisabled = false;
       if (OnHandUpdate != null && this.xrState != WebXRState.NORMAL)
       {
-        if (GetHandFromHandsArray(0, ref leftHand))
+        handWasDisabled = !leftHand.enabled;
+        if (GetHandFromHandsArray(0, ref leftHand)
+            && (leftHand.enabled || !handWasDisabled))
         {
           OnHandUpdate?.Invoke(leftHand);
         }
 
-        if (GetHandFromHandsArray(1, ref rightHand))
+        handWasDisabled = !rightHand.enabled;
+        if (GetHandFromHandsArray(1, ref rightHand)
+            && (rightHand.enabled || !handWasDisabled))
         {
           OnHandUpdate?.Invoke(rightHand);
         }
-
-        hasHandsData = leftHand.enabled || rightHand.enabled;
       }
 
-      if (!hasHandsData && OnControllerUpdate != null && this.xrState != WebXRState.NORMAL)
+      if (OnControllerUpdate != null && this.xrState != WebXRState.NORMAL)
       {
-        if (GetGamepadFromControllersArray(0, ref controller1))
+        handWasDisabled = !controller1.enabled;
+        if (GetGamepadFromControllersArray(0, ref controller1)
+            && (controller1.enabled || !handWasDisabled))
         {
           OnControllerUpdate?.Invoke(controller1);
         }
 
-        if (GetGamepadFromControllersArray(1, ref controller2))
+        handWasDisabled = !controller2.enabled;
+        if (GetGamepadFromControllersArray(1, ref controller2)
+            && (controller2.enabled || !handWasDisabled))
         {
           OnControllerUpdate?.Invoke(controller2);
         }

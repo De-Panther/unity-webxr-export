@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Enabled stencil buffer when creating the session XRWebGLLayer.
+- OnControllerUpdate is not dependent on OnHandUpdate in WebXRSubsystem.
 
 ## [0.18.0] - 2023-08-29
 ### Added
