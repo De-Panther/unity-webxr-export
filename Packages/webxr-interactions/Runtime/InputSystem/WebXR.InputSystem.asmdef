@@ -4,11 +4,13 @@
     "references": [
         "GUID:fd4abe4ffe74ef1448afe15c6cb36bb7",
         "GUID:75469ad4d38634e559750d17036d5f7c",
-        "GUID:ce522b6ed64c8be4c989a1d26d0e3275"
+        "GUID:ce522b6ed64c8be4c989a1d26d0e3275",
+        "GUID:fe685ec1767f73d42b749ea8045bfe43",
+        "GUID:84a2d09f0bb073f40922f5ea5362abe7"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": false,
+    "allowUnsafeCode": true,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": false,
@@ -23,6 +25,11 @@
             "name": "com.unity.xr.hands",
             "expression": "1.1.0",
             "define": "XR_HANDS_1_1_OR_NEWER"
+        },
+        {
+            "name": "com.de-panther.webxr-input-profiles-loader",
+            "expression": "0.4.0",
+            "define": "WEBXR_INPUT_PROFILES"
         }
     ],
     "noEngineReferences": false

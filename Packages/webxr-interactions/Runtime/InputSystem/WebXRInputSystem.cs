@@ -1,8 +1,9 @@
 using UnityEngine;
-using InputDevice = UnityEngine.XR.InputDevice;
+using UnityEngine.Events;
 #if UNITY_INPUT_SYSTEM_1_4_4_OR_NEWER
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Layouts;
+using UnityEngine.InputSystem.LowLevel;
 #if XR_HANDS_1_1_OR_NEWER
 using System.Collections;
 using System.Collections.Generic;
@@ -19,15 +20,35 @@ namespace WebXR.InputSystem
 #endif
   public class WebXRInputSystem : MonoBehaviour
   {
-    public Transform[] leftHandTransforms;
-    public Transform[] rightHandTransforms;
-    private Pose[] leftPoses;
-    private Pose[] rightPoses;
-    public Vector3 rightPos;
-    public Vector3 leftPos;
-    public Vector3 headPos;
-    public int devicesType;
+    [SerializeField]
+    private UnityEvent onLeftControllerProfiles;
+    public UnityEvent OnLeftControllerProfiles
+    {
+      get => onLeftControllerProfiles;
+      set => onLeftControllerProfiles = value;
+    }
+    
+    [SerializeField]
+    private UnityEvent onRightControllerProfiles;
+    public UnityEvent OnRightControllerProfiles
+    {
+      get => onRightControllerProfiles;
+      set => onRightControllerProfiles = value;
+    }
+    private string[] leftProfiles = null;
+    private string[] rightProfiles = null;
+    private bool hasLeftProfiles = false;
+    private bool hasRightProfiles = false;
 
+    public string[] GetLeftProfiles()
+    {
+      return leftProfiles;
+    }
+    
+    public string[] GetRightProfiles()
+    {
+      return rightProfiles;
+    }
 #if UNITY_INPUT_SYSTEM_1_4_4_OR_NEWER
     private static bool initialized = false;
     WebXRController left = null;
@@ -65,19 +86,15 @@ namespace WebXR.InputSystem
         }
       }
       subsystemUpdater = new XRHandProviderUtility.SubsystemUpdater(webXRHandsSubsystem);
-      
-      leftPoses = new Pose[leftHandTransforms.Length];
-      rightPoses = new Pose[rightHandTransforms.Length];
-      for (int i = 0; i < leftHandTransforms.Length; i++)
-      {
-        leftPoses[i] = new Pose(leftHandTransforms[i].position, leftHandTransforms[i].rotation);
-        rightPoses[i] = new Pose(rightHandTransforms[i].position, rightHandTransforms[i].rotation);
-      }
 #endif
     }
 
     private void OnEnable()
     {
+      unsafe
+      {
+        InputSystem.onDeviceCommand += HandleOnDeviceCommand;
+      }
       WebXRManager.OnXRChange += OnXRChange;
       WebXRManager.OnHeadsetUpdate += OnHeadsetUpdate;
       WebXRManager.OnControllerUpdate += OnControllerUpdate;
@@ -90,6 +107,10 @@ namespace WebXR.InputSystem
 
     private void OnDisable()
     {
+      unsafe
+      {
+        InputSystem.onDeviceCommand -= HandleOnDeviceCommand;
+      }
       RemoveAllDevices();
       WebXRManager.OnXRChange -= OnXRChange;
       WebXRManager.OnHeadsetUpdate -= OnHeadsetUpdate;
@@ -121,64 +142,26 @@ namespace WebXR.InputSystem
     }
 #endif
 
-    /*
-    private void Update1()
+    private unsafe long? HandleOnDeviceCommand(
+      UnityEngine.InputSystem.InputDevice inputDevice,
+      InputDeviceCommand* command)
     {
-      OnHeadsetUpdate(
-        Matrix4x4.identity,
-        Matrix4x4.identity,
-        Quaternion.identity,
-        Quaternion.identity,
-        headPos,
-        headPos
-      );
-      WebXRHandData handDataLeft = new();
-      handDataLeft.frame = Time.frameCount;
-      handDataLeft.enabled = devicesType == 2;
-      handDataLeft.hand = 1;
-      handDataLeft.trigger = 1;
-      for (int i = 0; i < handDataLeft.joints.Length; i++)
+      if (inputDevice != left && inputDevice != right)
       {
-        handDataLeft.joints[i].radius = 0.01f;
-        handDataLeft.joints[i].position = leftPoses[i].position;
-        handDataLeft.joints[i].rotation = leftPoses[i].rotation;
-        handDataLeft.joints[i].position += leftPos;
+        return null;
       }
-      OnHandUpdate(handDataLeft);
-      WebXRHandData handDataRight = new();
-      handDataRight.frame = Time.frameCount;
-      handDataRight.enabled = devicesType == 2;
-      handDataRight.hand = 2;
-      handDataRight.trigger = 1;
-      for (int i = 0; i < handDataRight.joints.Length; i++)
+      if (command->type != InternalSendHapticImpulseCommand.Type)
       {
-        handDataRight.joints[i].radius = 0.01f;
-        handDataRight.joints[i].position = rightPoses[i].position;
-        handDataRight.joints[i].rotation = rightPoses[i].rotation;
-        handDataRight.joints[i].position += rightPos;
+        return null;
       }
-      OnHandUpdate(handDataRight);
 
-      WebXRControllerData controllerDataLeft = new WebXRControllerData();
-      controllerDataLeft.frame = Time.frameCount;
-      controllerDataLeft.enabled = devicesType == 1;
-      controllerDataLeft.hand = 1;
-      controllerDataLeft.position = leftPos;
-      controllerDataLeft.rotation = Quaternion.identity;
-      controllerDataLeft.gripPosition = leftPos;
-      controllerDataLeft.gripRotation = Quaternion.identity;
-      OnControllerUpdate(controllerDataLeft);
-      WebXRControllerData controllerDataRight = new WebXRControllerData();
-      controllerDataRight.frame = Time.frameCount;
-      controllerDataRight.enabled = devicesType == 1;
-      controllerDataRight.hand = 2;
-      controllerDataRight.position = rightPos;
-      controllerDataRight.rotation = Quaternion.identity;
-      controllerDataRight.gripPosition = rightPos;
-      controllerDataRight.gripRotation = Quaternion.identity;
-      OnControllerUpdate(controllerDataRight);
+      var impulseCommand = *(InternalSendHapticImpulseCommand*)command;
+      WebXRManager.Instance.HapticPulse(
+        inputDevice == left ? WebXRControllerHand.LEFT : WebXRControllerHand.RIGHT,
+        impulseCommand.amplitude,
+        impulseCommand.duration * 1000f);
+      return 0;
     }
-    */
 
     private void OnXRChange(
       WebXRState state,
@@ -232,9 +215,21 @@ namespace WebXR.InputSystem
       {
         case 1:
           UpdateController(controllerData, ref left);
+          if (!hasLeftProfiles && controllerData.profiles != null)
+          {
+            leftProfiles = controllerData.profiles;
+            hasLeftProfiles = true;
+            onLeftControllerProfiles?.Invoke();
+          }
           break;
         case 2:
           UpdateController(controllerData, ref right);
+          if (!hasRightProfiles && controllerData.profiles != null)
+          {
+            rightProfiles = controllerData.profiles;
+            hasRightProfiles = true;
+            onRightControllerProfiles?.Invoke();
+          }
           break;
       }
     }

@@ -144,10 +144,10 @@ namespace WebXR.InputSystem
     [InputControl(bit = 0, offset = 48, sizeInBits = 1, layout = "Button")]
     public bool isTracked;
 
-    [InputControl(bit = 0, offset = 52, layout = "Vector3")]
+    [InputControl(bit = 0, offset = 52, layout = "Vector3", alias = "gripPosition")]
     public Vector3 devicePosition;
 
-    [InputControl(bit = 0, offset = 64, layout = "Quaternion")]
+    [InputControl(bit = 0, offset = 64, layout = "Quaternion", alias = "gripOrientation")]
     public Quaternion deviceRotation;
 
     [InputControl(bit = 0, offset = 80, layout = "Vector3", noisy = true, dontReset = true)]
