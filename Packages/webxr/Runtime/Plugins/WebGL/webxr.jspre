@@ -749,7 +749,7 @@ setTimeout(function () {
               Module.HEAPF32[controller.rotationZIndex] = orientation.z; // XRControllerData.rotationZ
               Module.HEAPF32[controller.rotationWIndex] = orientation.w; // XRControllerData.rotationW
 
-              if (Module.HEAPF32[controller.updatedGripIndex] == 0 && inputSource.gripSpace) { // XRControllerData.updatedGrip
+              if (inputSource.gripSpace) {
                 var inputPose = frame.getPose(inputSource.gripSpace, refSpace);
                 if (inputPose) {
                   var gripPosition = inputPose.transform.position;

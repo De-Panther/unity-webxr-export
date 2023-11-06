@@ -577,13 +577,10 @@ namespace WebXR
       newControllerData.buttonBTouched = controllersArray[arrayPosition++] != 0;
       if (controllersArray[arrayPosition] == 1)
       {
-        controllersArray[arrayPosition++] = 2;
+        arrayPosition++;
         newControllerData.gripPosition = new Vector3(controllersArray[arrayPosition++], controllersArray[arrayPosition++], controllersArray[arrayPosition++]);
         newControllerData.gripRotation = new Quaternion(controllersArray[arrayPosition++], controllersArray[arrayPosition++], controllersArray[arrayPosition++],
             controllersArray[arrayPosition++]);
-        Quaternion rotationOffset = Quaternion.Inverse(newControllerData.rotation);
-        newControllerData.gripPosition = rotationOffset * (newControllerData.gripPosition - newControllerData.position);
-        newControllerData.gripRotation = rotationOffset * newControllerData.gripRotation;
       }
       return true;
     }

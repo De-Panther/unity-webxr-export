@@ -30,6 +30,16 @@
             "name": "com.de-panther.webxr-input-profiles-loader",
             "expression": "0.4.0",
             "define": "WEBXR_INPUT_PROFILES"
+        },
+        {
+            "name": "Unity",
+            "expression": "[2021.3.11,2022.1)",
+            "define": "HAS_POSITION_AND_ROTATION"
+        },
+        {
+            "name": "Unity",
+            "expression": "2022.3",
+            "define": "HAS_POSITION_AND_ROTATION"
         }
     ],
     "noEngineReferences": false

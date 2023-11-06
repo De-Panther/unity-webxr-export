@@ -257,12 +257,26 @@ namespace WebXR.Interactions
 
     private void SetInputProfileModelPose(bool alwaysUseGrip)
     {
+      if (alwaysUseGrip)
+      {
 #if HAS_POSITION_AND_ROTATION
-      inputProfileModelParent.transform.SetLocalPositionAndRotation(alwaysUseGrip ? Vector3.zero : controller.gripPosition, 
-        alwaysUseGrip ? Quaternion.identity : controller.gripRotation);
+        inputProfileModelParent.transform.SetLocalPositionAndRotation(Vector3.zero, 
+          Quaternion.identity);
 #else
-      inputProfileModelParent.transform.localPosition = alwaysUseGrip ? Vector3.zero : controller.gripPosition;
-      inputProfileModelParent.transform.localRotation = alwaysUseGrip ? Quaternion.identity : controller.gripRotation;
+        inputProfileModelParent.transform.localPosition = Vector3.zero;
+        inputProfileModelParent.transform.localRotation = Quaternion.identity;
+#endif
+        return;
+      }
+      Quaternion rotationOffset = Quaternion.Inverse(transform.localRotation);
+      var gripPosition = rotationOffset * (controller.gripPosition - transform.localPosition);
+      var gripRotation = rotationOffset * controller.gripRotation;
+#if HAS_POSITION_AND_ROTATION
+      inputProfileModelParent.transform.SetLocalPositionAndRotation(gripPosition, 
+        gripRotation);
+#else
+      inputProfileModelParent.transform.localPosition = gripPosition;
+      inputProfileModelParent.transform.localRotation = gripRotation;
 #endif
     }
 
@@ -451,7 +465,7 @@ namespace WebXR.Interactions
       loadedModel = success;
       if (loadedModel)
       {
-        // Set parent only after successful loading, to not interupt loading in case of disabled object
+        // Set parent only after successful loading, to not interrupt loading in case of disabled object
         var inputProfileModelTransform = inputProfileModel.transform;
         inputProfileModelTransform.SetParent(inputProfileModelParent.transform);
         inputProfileModelTransform.localPosition = Vector3.zero;

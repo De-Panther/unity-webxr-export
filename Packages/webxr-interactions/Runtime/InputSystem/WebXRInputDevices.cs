@@ -6,6 +6,7 @@ using UnityEngine.InputSystem.Layouts;
 using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.InputSystem.Utilities;
 using UnityEngine.InputSystem.XR;
+using UnityEngine.Scripting;
 
 namespace WebXR.InputSystem
 {
@@ -28,22 +29,22 @@ namespace WebXR.InputSystem
     [InputControl(layout = "Quaternion", noisy = true, dontReset = true)]
     public Quaternion deviceRotation;
 
-    [InputControl(layout = "Vector3", noisy = true)]
+    [InputControl(layout = "Vector3", noisy = true, dontReset = true)]
     public Vector3 leftEyePosition;
 
-    [InputControl(layout = "Quaternion", noisy = true)]
+    [InputControl(layout = "Quaternion", noisy = true, dontReset = true)]
     public Quaternion leftEyeRotation;
 
-    [InputControl(layout = "Vector3", noisy = true)]
+    [InputControl(layout = "Vector3", noisy = true, dontReset = true)]
     public Vector3 rightEyePosition;
 
-    [InputControl(layout = "Quaternion", noisy = true)]
+    [InputControl(layout = "Quaternion", noisy = true, dontReset = true)]
     public Quaternion rightEyeRotation;
 
-    [InputControl(layout = "Vector3", noisy = true)]
+    [InputControl(layout = "Vector3", noisy = true, dontReset = true)]
     public Vector3 centerEyePosition;
 
-    [InputControl(layout = "Quaternion", noisy = true)]
+    [InputControl(layout = "Quaternion", noisy = true, dontReset = true)]
     public Quaternion centerEyeRotation;
   }
 
@@ -84,76 +85,81 @@ namespace WebXR.InputSystem
     }
   }
 
+  [Preserve]
   public struct WebXRControllerState : IInputStateTypeInfo
   {
     public static FourCC Format => new FourCC('W', 'X', 'R', 'C');
 
     public readonly FourCC format => Format;
 
-    [InputControl(bit = 0, offset = 0, layout = "Axis", usage = "Trigger")]
+    [Preserve, InputControl(bit = 0, offset = 0, layout = "Axis", usage = "Trigger")]
     public float trigger;
 
-    [InputControl(bit = 0, offset = 4, layout = "Button", usage = "TriggerButton")]
+    [Preserve, InputControl(bit = 0, offset = 4, layout = "Button", usage = "TriggerButton")]
     public bool triggerPressed;
 
-    [InputControl(bit = 0, offset = 5, layout = "Button", usage = "TriggerTouch")]
+    [Preserve, InputControl(bit = 0, offset = 5, layout = "Button", usage = "TriggerTouch")]
     public bool triggerTouched;
 
-    [InputControl(bit = 0, offset = 8, layout = "Axis", usage = "Grip")]
+    [Preserve, InputControl(bit = 0, offset = 8, layout = "Axis", usage = "Grip")]
     public float squeeze;
 
-    [InputControl(bit = 0, offset = 12, layout = "Button", usage = "GripButton")]
+    [Preserve, InputControl(bit = 0, offset = 12, layout = "Button", usage = "GripButton")]
     public bool squeezePressed;
 
-    [InputControl(bit = 0, offset = 13, layout = "Button", usage = "GripTouch")]
+    [Preserve, InputControl(bit = 0, offset = 13, layout = "Button", usage = "GripTouch")]
     public bool squeezeTouched;
 
-    [InputControl(bit = 0, offset = 16, layout = "Vector2", usage = "Primary2DAxis")]
+    [Preserve, InputControl(bit = 0, offset = 16, layout = "Vector2", usage = "Primary2DAxis")]
     public Vector2 thumbstick;
 
-    [InputControl(bit = 0, offset = 24, layout = "Button", usage = "Primary2DAxisClick")]
+    [Preserve, InputControl(bit = 0, offset = 24, layout = "Button", usage = "Primary2DAxisClick")]
     public bool thumbstickPressed;
 
-    [InputControl(bit = 0, offset = 25, layout = "Button", usage = "Primary2DAxisTouch")]
+    [Preserve, InputControl(bit = 0, offset = 25, layout = "Button", usage = "Primary2DAxisTouch")]
     public bool thumbstickTouched;
 
-    [InputControl(bit = 0, offset = 28, layout = "Vector2", usage = "Secondary2DAxis")]
+    [Preserve, InputControl(bit = 0, offset = 28, layout = "Vector2", usage = "Secondary2DAxis")]
     public Vector2 touchpad;
 
-    [InputControl(bit = 0, offset = 36, layout = "Button", usage = "Secondary2DAxisClick")]
+    [Preserve, InputControl(bit = 0, offset = 36, layout = "Button", usage = "Secondary2DAxisClick")]
     public bool touchpadPressed;
 
-    [InputControl(bit = 0, offset = 37, layout = "Button", usage = "Secondary2DAxisTouch")]
+    [Preserve, InputControl(bit = 0, offset = 37, layout = "Button", usage = "Secondary2DAxisTouch")]
     public bool touchpadTouched;
 
-    [InputControl(bit = 0, offset = 38, layout = "Button", usage = "PrimaryButton")]
+    [Preserve, InputControl(bit = 0, offset = 38, layout = "Button", usage = "PrimaryButton")]
     public bool buttonA;
 
-    [InputControl(bit = 0, offset = 39, layout = "Button", usage = "PrimaryTouch")]
+    [Preserve, InputControl(bit = 0, offset = 39, layout = "Button", usage = "PrimaryTouch")]
     public bool buttonATouched;
 
-    [InputControl(bit = 0, offset = 40, layout = "Button", usage = "SecondaryButton")]
+    [Preserve, InputControl(bit = 0, offset = 40, layout = "Button", usage = "SecondaryButton")]
     public bool buttonB;
 
-    [InputControl(bit = 0, offset = 41, layout = "Button", usage = "SecondaryTouch")]
+    [Preserve, InputControl(bit = 0, offset = 41, layout = "Button", usage = "SecondaryTouch")]
     public bool buttonBTouched;
 
-    [InputControl(bit = 0, offset = 44, layout = "Integer")]
+    [Preserve, InputControl(bit = 0, offset = 44, layout = "Integer")]
     public int trackingState;
 
-    [InputControl(bit = 0, offset = 48, sizeInBits = 1, layout = "Button")]
+    [Preserve, InputControl(bit = 0, offset = 48, sizeInBits = 1, layout = "Button")]
     public bool isTracked;
 
-    [InputControl(bit = 0, offset = 52, layout = "Vector3", alias = "gripPosition")]
+    [Preserve, InputControl(bit = 0, offset = 52, layout = "Vector3",
+       aliases = new[] { "devicePosition", "gripPosition"},
+       noisy = true, dontReset = true)]
     public Vector3 devicePosition;
 
-    [InputControl(bit = 0, offset = 64, layout = "Quaternion", alias = "gripOrientation")]
+    [Preserve, InputControl(bit = 0, offset = 64, layout = "Quaternion",
+       aliases = new[] { "deviceRotation", "gripOrientation"},
+       noisy = true, dontReset = true)]
     public Quaternion deviceRotation;
 
-    [InputControl(bit = 0, offset = 80, layout = "Vector3", noisy = true, dontReset = true)]
+    [Preserve, InputControl(bit = 0, offset = 80, layout = "Vector3", noisy = true, dontReset = true)]
     public Vector3 pointerPosition;
 
-    [InputControl(bit = 0, offset = 92, layout = "Quaternion", noisy = true, dontReset = true)]
+    [Preserve, InputControl(bit = 0, offset = 92, layout = "Quaternion", noisy = true, dontReset = true)]
     public Quaternion pointerRotation;
   }
 
