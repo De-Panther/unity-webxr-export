@@ -142,6 +142,13 @@ setTimeout(function () {
         this.handIndex = 0;
         this.triggerIndex = 0;
         this.squeezeIndex = 0;
+        this.pointerPositionXIndex = 0;
+        this.pointerPositionYIndex = 0;
+        this.pointerPositionZIndex = 0;
+        this.pointerRotationXIndex = 0;
+        this.pointerRotationYIndex = 0;
+        this.pointerRotationZIndex = 0;
+        this.pointerRotationWIndex = 0;
         this.jointsStartIndex = 0;
         this.poses = new Float32Array(16 * 25);
         this.radii = new Float32Array(25);
@@ -157,6 +164,13 @@ setTimeout(function () {
           this.handIndex = index++;
           this.triggerIndex = index++;
           this.squeezeIndex = index++;
+          this.pointerPositionXIndex = index++;
+          this.pointerPositionYIndex = index++;
+          this.pointerPositionZIndex = index++;
+          this.pointerRotationXIndex = index++;
+          this.pointerRotationYIndex = index++;
+          this.pointerRotationZIndex = index++;
+          this.pointerRotationWIndex = index++;
           this.jointsStartIndex = index;
         }
       }
@@ -718,6 +732,19 @@ setTimeout(function () {
                 xrHand.bufferJointIndex++;
               }
             }
+            // Get pointer pose for hand
+            var inputRayPose = frame.getPose(inputSource.targetRaySpace, refSpace);
+            if (inputRayPose) {
+              var position = inputRayPose.transform.position;
+              var orientation = inputRayPose.transform.orientation;
+              Module.HEAPF32[xrHand.pointerPositionXIndex] = position.x; // XRHandData.pointerPositionX
+              Module.HEAPF32[xrHand.pointerPositionYIndex] = position.y; // XRHandData.pointerPositionY
+              Module.HEAPF32[xrHand.pointerPositionZIndex] = -position.z; // XRHandData.pointerPositionZ
+              Module.HEAPF32[xrHand.pointerRotationXIndex] = -orientation.x; // XRHandData.pointerRotationX
+              Module.HEAPF32[xrHand.pointerRotationYIndex] = -orientation.y; // XRHandData.pointerRotationY
+              Module.HEAPF32[xrHand.pointerRotationZIndex] = orientation.z; // XRHandData.pointerRotationZ
+              Module.HEAPF32[xrHand.pointerRotationWIndex] = orientation.w; // XRHandData.pointerRotationW
+            }
           } else if (inputSource.gripSpace) {
             var inputRayPose = frame.getPose(inputSource.targetRaySpace, refSpace);
             if (inputRayPose) {
@@ -890,7 +917,7 @@ setTimeout(function () {
           this.xrData.controllerA.setIndices(Module.ControllersArrayOffset);
           this.xrData.controllerB.setIndices(Module.ControllersArrayOffset + 34);
           this.xrData.handLeft.setIndices(Module.HandsArrayOffset);
-          this.xrData.handRight.setIndices(Module.HandsArrayOffset + 205);
+          this.xrData.handRight.setIndices(Module.HandsArrayOffset + 212);
           this.xrData.viewerHitTestPose.setIndices(Module.ViewerHitTestPoseArrayOffset);
           this.xrData.controllerA.updatedProfiles = 0;
           this.xrData.controllerB.updatedProfiles = 0;

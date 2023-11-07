@@ -274,7 +274,7 @@ namespace WebXR.InputSystem
           MetaAimHand.left.UpdateHand(
             true,
             aimFlags,
-            new Pose(handData.joints[10].position, handData.joints[10].rotation),
+            new Pose(handData.pointerPosition, handData.pointerRotation),
             handData.trigger,
             0,
             0,
@@ -286,7 +286,7 @@ namespace WebXR.InputSystem
           MetaAimHand.right.UpdateHand(
             true,
             aimFlags,
-            new Pose(handData.joints[10].position, handData.joints[10].rotation),
+            new Pose(handData.pointerPosition, handData.pointerRotation),
             handData.trigger,
             0,
             0,

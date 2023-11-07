@@ -358,7 +358,7 @@ namespace WebXR
     float[] controllersArray = new float[2 * 34];
 
     // Shared array for hands data
-    float[] handsArray = new float[2 * (25 * 8 + 5)];
+    float[] handsArray = new float[2 * (25 * 8 + 5 + 7)]; // 2 hands, 25 joints
 
     // Shared array for hit-test pose data
     float[] viewerHitTestPoseArray = new float[9];
@@ -587,7 +587,7 @@ namespace WebXR
 
     bool GetHandFromHandsArray(int handIndex, ref WebXRHandData handObject)
     {
-      int arrayPosition = handIndex * 205;
+      int arrayPosition = handIndex * 212;
       int frameNumber = (int)handsArray[arrayPosition++];
       if (handObject.frame == frameNumber)
       {
@@ -604,6 +604,9 @@ namespace WebXR
         return true;
       }
 
+      handObject.pointerPosition = new Vector3(handsArray[arrayPosition++], handsArray[arrayPosition++], handsArray[arrayPosition++]);
+      handObject.pointerRotation = new Quaternion(handsArray[arrayPosition++], handsArray[arrayPosition++], handsArray[arrayPosition++],
+        handsArray[arrayPosition++]);
       for (int i = 0; i <= (int)WebXRHandJoint.pinky_finger_tip; i++)
       {
         handObject.joints[i].position = new Vector3(handsArray[arrayPosition++], handsArray[arrayPosition++], handsArray[arrayPosition++]);
