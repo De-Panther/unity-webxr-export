@@ -253,22 +253,22 @@ namespace WebXR.InputSystem
         case Handedness.Left:
           buttonActions[0] = actions.XRLeftHand.Trigger;
           buttonActions[1] = actions.XRLeftHand.Grip;
-          buttonActions[2] = actions.XRLeftHand.ThumbstickPressed;
-          buttonActions[3] = actions.XRLeftHand.TouchpadPressed;
+          buttonActions[2] = actions.XRLeftHand.TouchpadPressed;
+          buttonActions[3] = actions.XRLeftHand.ThumbstickPressed;
           buttonActions[4] = actions.XRLeftHand.ButtonA;
           buttonActions[5] = actions.XRLeftHand.ButtonB;
-          axisActions[0] = actions.XRLeftHand.Thumbstick;
-          axisActions[1] = actions.XRLeftHand.Touchpad;
+          axisActions[0] = actions.XRLeftHand.Touchpad;
+          axisActions[1] = actions.XRLeftHand.Thumbstick;
           break;
         case Handedness.Right:
           buttonActions[0] = actions.XRRightHand.Trigger;
           buttonActions[1] = actions.XRRightHand.Grip;
-          buttonActions[2] = actions.XRRightHand.ThumbstickPressed;
-          buttonActions[3] = actions.XRRightHand.TouchpadPressed;
+          buttonActions[2] = actions.XRRightHand.TouchpadPressed;
+          buttonActions[3] = actions.XRRightHand.ThumbstickPressed;
           buttonActions[4] = actions.XRRightHand.ButtonA;
           buttonActions[5] = actions.XRRightHand.ButtonB;
-          axisActions[0] = actions.XRRightHand.Thumbstick;
-          axisActions[1] = actions.XRRightHand.Touchpad;
+          axisActions[0] = actions.XRRightHand.Touchpad;
+          axisActions[1] = actions.XRRightHand.Thumbstick;
           break;
       }
 
