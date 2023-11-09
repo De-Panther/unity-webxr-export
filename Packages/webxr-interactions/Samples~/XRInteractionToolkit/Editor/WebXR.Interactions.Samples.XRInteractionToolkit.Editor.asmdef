@@ -1,0 +1,19 @@
+{
+    "name": "WebXR.Interactions.Samples.XRInteractionToolkit.Editor",
+    "rootNamespace": "",
+    "references": [
+        "Unity.XR.CoreUtils",
+        "Unity.XR.CoreUtils.Editor"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

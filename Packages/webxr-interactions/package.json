@@ -1,7 +1,7 @@
 {
   "name": "com.de-panther.webxr-interactions",
   "displayName": "WebXR Interactions",
-  "version": "0.18.1-preview",
+  "version": "0.19.0-preview",
   "unity": "2019.4",
   "unityRelease": "33f1",
   "description": "WebXR interactions components and samples for WebXR Export",
@@ -22,6 +22,11 @@
       "displayName": "Sample Scene",
       "description": "Sample Scene with full WebXR Camera rig, including Controllers and Hands components",
       "path": "Samples~/Desert"
+    },
+    {
+      "displayName": "XR Interaction Toolkit Sample",
+      "description": "Sample Scene with support for Unity Input System and XR Interaction Toolkit. Including XR Rig and Components to load WebXR Input Profiles.",
+      "path": "Samples~/XRInteractionToolkit"
     }
   ],
   "dependencies": {
