@@ -197,7 +197,7 @@ namespace WebXR.InputSystem
                 {
                     ""name"": """",
                     ""id"": ""63aa790d-a8f4-45ba-9444-437bc2ee7dc7"",
-                    ""path"": ""<XRController>{LeftHand}/grip"",
+                    ""path"": ""<XRController>{LeftHand}/{Grip}"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""XR"",
@@ -208,7 +208,7 @@ namespace WebXR.InputSystem
                 {
                     ""name"": """",
                     ""id"": ""43ba5fd1-7873-48a9-8031-69f1a5eaf8ae"",
-                    ""path"": ""<XRController>{LeftHand}/primary2DAxis"",
+                    ""path"": ""<XRController>{LeftHand}/{Primary2DAxis}"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""XR"",
@@ -219,7 +219,7 @@ namespace WebXR.InputSystem
                 {
                     ""name"": """",
                     ""id"": ""7dda14be-31ab-439e-a6e3-246788dd66ba"",
-                    ""path"": ""<XRController>{LeftHand}/secondary2DAxis"",
+                    ""path"": ""<XRController>{LeftHand}/{Secondary2DAxis}"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""XR"",
@@ -230,7 +230,7 @@ namespace WebXR.InputSystem
                 {
                     ""name"": """",
                     ""id"": ""d2afcd0c-9ded-43be-9d93-b5f63cae20b6"",
-                    ""path"": ""<XRController>{LeftHand}/primaryButton"",
+                    ""path"": ""<XRController>{LeftHand}/{PrimaryButton}"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""XR"",
@@ -241,7 +241,7 @@ namespace WebXR.InputSystem
                 {
                     ""name"": """",
                     ""id"": ""17f38512-dbc2-4572-ba83-b15851668b47"",
-                    ""path"": ""<XRController>{LeftHand}/secondaryButton"",
+                    ""path"": ""<XRController>{LeftHand}/{SecondaryButton}"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""XR"",
@@ -252,7 +252,7 @@ namespace WebXR.InputSystem
                 {
                     ""name"": """",
                     ""id"": ""3ceae2e0-3858-4197-a3bd-be17f192ccaa"",
-                    ""path"": ""<XRController>{LeftHand}/secondary2DAxisClick"",
+                    ""path"": ""<XRController>{LeftHand}/{Secondary2DAxisClick}"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""XR"",
@@ -263,7 +263,7 @@ namespace WebXR.InputSystem
                 {
                     ""name"": """",
                     ""id"": ""40f0145a-23fe-41f6-a684-e7d6dc62b23c"",
-                    ""path"": ""<XRController>{LeftHand}/primary2DAxisClick"",
+                    ""path"": ""<XRController>{LeftHand}/{Primary2DAxisClick}"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""XR"",
@@ -325,7 +325,7 @@ namespace WebXR.InputSystem
                 {
                     ""name"": ""Grip"",
                     ""type"": ""Value"",
-                    ""id"": ""c4e66c4b-9887-4b92-9986-639cd146f6f8"",
+                    ""id"": ""202b5135-089e-42d8-9a55-352c574df867"",
                     ""expectedControlType"": ""Axis"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -334,7 +334,7 @@ namespace WebXR.InputSystem
                 {
                     ""name"": ""Thumbstick"",
                     ""type"": ""Value"",
-                    ""id"": ""541a6e85-c787-4c47-a098-ab52932f8eec"",
+                    ""id"": ""fbd3f2c6-d870-40a1-9e77-a6550e2d0cdd"",
                     ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -343,7 +343,7 @@ namespace WebXR.InputSystem
                 {
                     ""name"": ""ThumbstickPressed"",
                     ""type"": ""Button"",
-                    ""id"": ""034afb4f-da27-441e-b22f-76c53054eb93"",
+                    ""id"": ""74c8ada5-db72-4e69-87ff-405afc4d9168"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -352,7 +352,7 @@ namespace WebXR.InputSystem
                 {
                     ""name"": ""Touchpad"",
                     ""type"": ""Value"",
-                    ""id"": ""9d2a1772-bcae-40c4-bc28-d36d7447db27"",
+                    ""id"": ""7dd105e7-f8dd-43ab-af8b-5ab964c5fed2"",
                     ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -361,7 +361,7 @@ namespace WebXR.InputSystem
                 {
                     ""name"": ""TouchpadPressed"",
                     ""type"": ""Button"",
-                    ""id"": ""6059657c-efaf-43f0-aa48-8296f9697b81"",
+                    ""id"": ""a68c8312-3f17-42f5-81e7-77a46f022acd"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -370,7 +370,7 @@ namespace WebXR.InputSystem
                 {
                     ""name"": ""ButtonA"",
                     ""type"": ""Button"",
-                    ""id"": ""b8498c86-f27e-490d-b6fc-cb116d42c422"",
+                    ""id"": ""06855edf-5fec-4a4c-868a-0af4d323e81c"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -379,7 +379,7 @@ namespace WebXR.InputSystem
                 {
                     ""name"": ""ButtonB"",
                     ""type"": ""Button"",
-                    ""id"": ""62b343c7-ac5d-4dc7-99d7-4b6e5f8a0b65"",
+                    ""id"": ""a2a2bc86-b6c0-4c49-a205-947101fe0d78"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -422,83 +422,6 @@ namespace WebXR.InputSystem
                 },
                 {
                     ""name"": """",
-                    ""id"": ""376297e2-c885-44e9-97a3-a465484866b8"",
-                    ""path"": ""<XRController>{RightHand}/grip"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""XR"",
-                    ""action"": ""Grip"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""1db38c6b-afbb-4a14-a7b2-f8b890fb5532"",
-                    ""path"": ""<XRController>{RightHand}/primary2DAxis"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""XR"",
-                    ""action"": ""Thumbstick"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""243771b7-1d06-4366-9d07-766646db5d60"",
-                    ""path"": ""<XRController>{RightHand}/primary2DAxisClick"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""XR"",
-                    ""action"": ""ThumbstickPressed"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""c7115824-4365-4b20-9ff0-67149d190bf0"",
-                    ""path"": ""<XRController>{RightHand}/secondary2DAxis"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""XR"",
-                    ""action"": ""Touchpad"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""6f1e295b-f9ec-4f54-83f6-991795922292"",
-                    ""path"": ""<XRController>{RightHand}/secondary2DAxisClick"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""XR"",
-                    ""action"": ""TouchpadPressed"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""1c578fc6-6b22-43b9-932c-84a6a69b28f6"",
-                    ""path"": ""<XRController>{RightHand}/primaryButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""XR"",
-                    ""action"": ""ButtonA"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""01f7d2c5-74f1-49fe-aa18-5f223e3b4dcd"",
-                    ""path"": ""<XRController>{RightHand}/secondaryButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""XR"",
-                    ""action"": ""ButtonB"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""cab631e7-1c7b-4c82-9466-36fbf509a3d0"",
                     ""path"": ""<XRController>{RightHand}/deviceRotation"",
                     ""interactions"": """",
@@ -516,6 +439,83 @@ namespace WebXR.InputSystem
                     ""processors"": """",
                     ""groups"": ""XR"",
                     ""action"": ""Position"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""46fd4683-77c3-4db4-a329-02c985e617a3"",
+                    ""path"": ""<XRController>{RightHand}/{Grip}"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""XR"",
+                    ""action"": ""Grip"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b0547fc8-1676-4606-82b5-05856d6f79ee"",
+                    ""path"": ""<XRController>{RightHand}/{Primary2DAxis}"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""XR"",
+                    ""action"": ""Thumbstick"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""72e50a78-6304-4080-b0dd-92875103a072"",
+                    ""path"": ""<XRController>{RightHand}/{Primary2DAxisClick}"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""XR"",
+                    ""action"": ""ThumbstickPressed"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""02496df6-f863-4ab0-9a2b-19f379d1802e"",
+                    ""path"": ""<XRController>{RightHand}/{Secondary2DAxis}"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""XR"",
+                    ""action"": ""Touchpad"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f4d512d5-b208-4144-9e13-e8b28fe90db6"",
+                    ""path"": ""<XRController>{RightHand}/{Secondary2DAxisClick}"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""XR"",
+                    ""action"": ""TouchpadPressed"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""eed7075e-6a68-4284-93e5-aac10ac8fbf2"",
+                    ""path"": ""<XRController>{RightHand}/{PrimaryButton}"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""XR"",
+                    ""action"": ""ButtonA"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0dac47c1-275d-4fb3-9c67-1e1af9ace8e7"",
+                    ""path"": ""<XRController>{RightHand}/{SecondaryButton}"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""XR"",
+                    ""action"": ""ButtonB"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }

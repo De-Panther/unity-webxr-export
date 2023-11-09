@@ -276,7 +276,7 @@ namespace WebXR.InputSystem
         touchpadTouched = controllerData.touchpadTouched,
         buttonA = controllerData.buttonA >= 0.9f,
         buttonATouched = controllerData.buttonATouched,
-        buttonB = controllerData.buttonA >= 0.9f,
+        buttonB = controllerData.buttonB >= 0.9f,
         buttonBTouched = controllerData.buttonBTouched,
         trackingState = 3,
         isTracked = true,

@@ -1,5 +1,5 @@
+using System;
 using UnityEngine;
-using UnityEngine.Events;
 #if UNITY_INPUT_SYSTEM_1_4_4_OR_NEWER
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Layouts;
@@ -20,44 +20,33 @@ namespace WebXR.InputSystem
 #endif
   public class WebXRInputSystem : MonoBehaviour
   {
-    [SerializeField]
-    private UnityEvent onLeftControllerProfiles;
-    public UnityEvent OnLeftControllerProfiles
-    {
-      get => onLeftControllerProfiles;
-      set => onLeftControllerProfiles = value;
-    }
+    public static event Action OnLeftControllerProfiles;
     
-    [SerializeField]
-    private UnityEvent onRightControllerProfiles;
-    public UnityEvent OnRightControllerProfiles
-    {
-      get => onRightControllerProfiles;
-      set => onRightControllerProfiles = value;
-    }
-    private string[] leftProfiles = null;
-    private string[] rightProfiles = null;
-    private bool hasLeftProfiles = false;
-    private bool hasRightProfiles = false;
+    public static event Action OnRightControllerProfiles;
 
-    public string[] GetLeftProfiles()
+    private static string[] leftProfiles = null;
+    private static string[] rightProfiles = null;
+    private static bool hasLeftProfiles = false;
+    private static bool hasRightProfiles = false;
+
+    public static string[] GetLeftProfiles()
     {
       return leftProfiles;
     }
     
-    public string[] GetRightProfiles()
+    public static string[] GetRightProfiles()
     {
       return rightProfiles;
     }
 #if UNITY_INPUT_SYSTEM_1_4_4_OR_NEWER
     private static bool initialized = false;
-    WebXRController left = null;
-    WebXRController right = null;
-    WebXRHMD hmd = null;
+    private static WebXRController left = null;
+    private static WebXRController right = null;
+    private static WebXRHMD hmd = null;
 
 #if XR_HANDS_1_1_OR_NEWER
-    WebXRHandsSubsystem webXRHandsSubsystem = null;
-    XRHandProviderUtility.SubsystemUpdater subsystemUpdater;
+    private static WebXRHandsSubsystem webXRHandsSubsystem = null;
+    private static XRHandProviderUtility.SubsystemUpdater subsystemUpdater;
 #endif
 
     private void Awake()
@@ -142,7 +131,7 @@ namespace WebXR.InputSystem
     }
 #endif
 
-    private unsafe long? HandleOnDeviceCommand(
+    private static unsafe long? HandleOnDeviceCommand(
       UnityEngine.InputSystem.InputDevice inputDevice,
       InputDeviceCommand* command)
     {
@@ -163,7 +152,7 @@ namespace WebXR.InputSystem
       return 0;
     }
 
-    private void OnXRChange(
+    private static void OnXRChange(
       WebXRState state,
       int viewsCount, Rect leftRect, Rect rightRect)
     {
@@ -173,7 +162,7 @@ namespace WebXR.InputSystem
       }
     }
 
-    private void RemoveAllDevices()
+    private static void RemoveAllDevices()
     {
       RemoveDevice(left);
       RemoveDevice(right);
@@ -188,7 +177,7 @@ namespace WebXR.InputSystem
 #endif
     }
 
-    private void OnHeadsetUpdate(
+    private static void OnHeadsetUpdate(
         Matrix4x4 leftProjectionMatrix,
         Matrix4x4 rightProjectionMatrix,
         Quaternion leftRotation,
@@ -209,7 +198,7 @@ namespace WebXR.InputSystem
         leftPosition, rightPosition);
     }
 
-    private void OnControllerUpdate(WebXRControllerData controllerData)
+    private static void OnControllerUpdate(WebXRControllerData controllerData)
     {
       switch (controllerData.hand)
       {
@@ -219,7 +208,7 @@ namespace WebXR.InputSystem
           {
             leftProfiles = controllerData.profiles;
             hasLeftProfiles = true;
-            onLeftControllerProfiles?.Invoke();
+            OnLeftControllerProfiles?.Invoke();
           }
           break;
         case 2:
@@ -228,13 +217,13 @@ namespace WebXR.InputSystem
           {
             rightProfiles = controllerData.profiles;
             hasRightProfiles = true;
-            onRightControllerProfiles?.Invoke();
+            OnRightControllerProfiles?.Invoke();
           }
           break;
       }
     }
 
-    private void UpdateController(WebXRControllerData controllerData, ref WebXRController hand)
+    private static void UpdateController(WebXRControllerData controllerData, ref WebXRController hand)
     {
       if (controllerData.enabled)
       {
@@ -256,7 +245,7 @@ namespace WebXR.InputSystem
     }
 
 #if XR_HANDS_1_1_OR_NEWER
-    private void OnHandUpdate(WebXRHandData handData)
+    private static void OnHandUpdate(WebXRHandData handData)
     {
       webXRHandsSubsystem?.SetIsTracked((Handedness)handData.hand, handData.enabled);
       if (handData.enabled)
@@ -306,7 +295,7 @@ namespace WebXR.InputSystem
       }
     }
 
-    void DisableHandLeft()
+    private static void DisableHandLeft()
     {
       if (MetaAimHand.left != null
           && MetaAimHand.left.added
@@ -323,11 +312,11 @@ namespace WebXR.InputSystem
         // Hack - triggers XRInputModalityManager OnDeviceChange.
         var device = InputSystem.AddDevice("XRController");
         InputSystem.AddDeviceUsage(device, "LeftHand");
-        StartCoroutine(RemoveDeviceAfterFrame(device));
+        WebXRManager.Instance.StartCoroutine(RemoveDeviceAfterFrame(device));
       }
     }
 
-    void DisableHandRight()
+    private static void DisableHandRight()
     {
       if (MetaAimHand.right != null
           && MetaAimHand.right.added
@@ -344,19 +333,19 @@ namespace WebXR.InputSystem
         // Hack - triggers XRInputModalityManager OnDeviceChange.
         var device = InputSystem.AddDevice("XRController");
         InputSystem.AddDeviceUsage(device, "RightHand");
-        StartCoroutine(RemoveDeviceAfterFrame(device));
+        WebXRManager.Instance.StartCoroutine(RemoveDeviceAfterFrame(device));
       }
     }
 
     // Hack - triggers XRInputModalityManager OnDeviceChange.
-    IEnumerator RemoveDeviceAfterFrame(UnityEngine.InputSystem.InputDevice device)
+    private static IEnumerator RemoveDeviceAfterFrame(UnityEngine.InputSystem.InputDevice device)
     {
       yield return null;
       InputSystem.RemoveDevice(device);
     }
 #endif
 
-    private void SetWebXRHMD()
+    private static void SetWebXRHMD()
     {
       if (hmd != null)
       {
@@ -370,7 +359,7 @@ namespace WebXR.InputSystem
         });
     }
 
-    private WebXRController GetWebXRController(int hand)
+    private static WebXRController GetWebXRController(int hand)
     {
       string product = "WebXRController Left";
       string usage = "LeftHand";
@@ -389,7 +378,7 @@ namespace WebXR.InputSystem
       return (WebXRController)device;
     }
 
-    private void RemoveDevice(TrackedDevice device)
+    private static void RemoveDevice(TrackedDevice device)
     {
       if (device != null && device.added)
       {

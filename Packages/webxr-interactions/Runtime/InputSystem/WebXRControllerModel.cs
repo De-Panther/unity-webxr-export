@@ -20,12 +20,6 @@ namespace WebXR.InputSystem
 
   public class WebXRControllerModel : MonoBehaviour
   {
-    public void OnControllerProfiles()
-    {
-#if WEBXR_INPUT_PROFILES
-      HandleOnControllerProfiles();
-#endif
-    }
 #if UNITY_INPUT_SYSTEM_1_4_4_OR_NEWER
     /// <summary>
     /// Options for which <see cref="Transform"/> properties to update.
@@ -137,7 +131,7 @@ namespace WebXR.InputSystem
       set => m_UpdateType = value;
     }
 
-    [SerializeField] private WebXRInputSystem webXRInputSystem;
+    [SerializeField] private GameObject rigOrigin;
 
     [SerializeField] private Handedness hand;
 
@@ -361,10 +355,10 @@ namespace WebXR.InputSystem
     private void Awake()
     {
       actions = new WebXRInputActions();
-      inputProfileLoader = webXRInputSystem.GetComponent<InputProfileLoader>();
+      inputProfileLoader = rigOrigin.GetComponent<InputProfileLoader>();
       if (inputProfileLoader == null)
       {
-        inputProfileLoader = webXRInputSystem.gameObject.AddComponent<InputProfileLoader>();
+        inputProfileLoader = rigOrigin.AddComponent<InputProfileLoader>();
       }
 
       var profilesPaths = inputProfileLoader.GetProfilesPaths();
@@ -390,6 +384,15 @@ namespace WebXR.InputSystem
       // Read current input values when becoming enabled,
       // but wait until after the input update so the input is read at a consistent time
       m_IsFirstUpdate = true;
+      switch (hand)
+      {
+        case Handedness.Left:
+          WebXRInputSystem.OnLeftControllerProfiles += HandleOnControllerProfiles;
+          break;
+        case Handedness.Right:
+          WebXRInputSystem.OnRightControllerProfiles += HandleOnControllerProfiles;
+          break;
+      }
     }
 
     /// <summary>
@@ -400,6 +403,15 @@ namespace WebXR.InputSystem
       actions.Disable();
       UnbindActions();
       InputSystem.onAfterUpdate -= UpdateCallback;
+      switch (hand)
+      {
+        case Handedness.Left:
+          WebXRInputSystem.OnLeftControllerProfiles -= HandleOnControllerProfiles;
+          break;
+        case Handedness.Right:
+          WebXRInputSystem.OnRightControllerProfiles -= HandleOnControllerProfiles;
+          break;
+      }
     }
 
     /// <summary>
@@ -556,10 +568,10 @@ namespace WebXR.InputSystem
       switch (hand)
       {
         case Handedness.Left:
-          profiles = webXRInputSystem.GetLeftProfiles();
+          profiles = WebXRInputSystem.GetLeftProfiles();
           break;
         case Handedness.Right:
-          profiles = webXRInputSystem.GetRightProfiles();
+          profiles = WebXRInputSystem.GetRightProfiles();
           break;
       }
 
