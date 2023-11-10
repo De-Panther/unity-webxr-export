@@ -6912,6 +6912,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: XR Interaction WebXR Setup
       objectReference: {fileID: 0}
+    - target: {fileID: 1478900902061109886, guid: 1644f8f6d950f87408375866a875e80d,
+        type: 3}
+      propertyPath: m_UseGravity
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5773256366622995465, guid: 1644f8f6d950f87408375866a875e80d,
         type: 3}
       propertyPath: m_LocalPosition.x

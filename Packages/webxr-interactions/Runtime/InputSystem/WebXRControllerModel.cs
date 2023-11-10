@@ -8,7 +8,6 @@ using UnityEngine.XR.Hands;
 using UnityEngine.XR.Interaction.Toolkit;
 #endif
 #if WEBXR_INPUT_PROFILES
-using UnityEngine.InputSystem.XR;
 using WebXRInputProfile;
 #endif
 
@@ -137,8 +136,10 @@ namespace WebXR.InputSystem
 
     [SerializeField]private XRBaseController xrController;
 
+#if WEBXR_INPUT_PROFILES
     private InputProfileLoader inputProfileLoader;
     private InputProfileModel inputProfileModel;
+#endif
     private bool startedLoading = false;
     private bool hasProfileList = false;
     private string loadedProfile = null;
@@ -160,6 +161,7 @@ namespace WebXR.InputSystem
     private bool visualActionsInit;
     bool m_IsFirstUpdate = true;
 
+#if WEBXR_INPUT_PROFILES
     void BindActions()
     {
       BindPosition();
@@ -393,6 +395,7 @@ namespace WebXR.InputSystem
           WebXRInputSystem.OnRightControllerProfiles += HandleOnControllerProfiles;
           break;
       }
+      HandleOnControllerProfiles();
     }
 
     /// <summary>
@@ -411,6 +414,10 @@ namespace WebXR.InputSystem
         case Handedness.Right:
           WebXRInputSystem.OnRightControllerProfiles -= HandleOnControllerProfiles;
           break;
+      }
+      if (xrController != null && xrController.model != null)
+      {
+        xrController.model.gameObject.SetActive(true);
       }
     }
 
@@ -559,6 +566,10 @@ namespace WebXR.InputSystem
 
     public void HandleOnControllerProfiles()
     {
+      if (loadedModel)
+      {
+        HandleModelLoaded(loadedModel);
+      }
       if (startedLoading)
       {
         return;
@@ -620,13 +631,9 @@ namespace WebXR.InputSystem
       inputProfileModelTransform.localPosition = Vector3.zero;
       inputProfileModelTransform.localRotation = Quaternion.identity;
       inputProfileModelTransform.localScale = Vector3.one;
-      if (xrController != null)
+      if (xrController != null && xrController.model != null)
       {
-        xrController.modelPrefab = null;
-        if (xrController.model != null)
-        {
-          Destroy(xrController.model.gameObject);
-        }
+        xrController.model.gameObject.SetActive(false);
       }
 
       if (m_CurrentTrackingState == TrackingStates.None)
@@ -634,6 +641,7 @@ namespace WebXR.InputSystem
         inputProfileModel.gameObject.SetActive(false);
       }
     }
+#endif
 #endif
   }
 }
