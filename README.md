@@ -2,6 +2,8 @@
 
 You can [check the live demo here](https://de-panther.github.io/unity-webxr-export/Build).
 
+Or the [XR Interaction Toolkit demo here](https://de-panther.github.io/unity-webxr-export/XRInteractionToolkitDemo).
+
 Develop and export WebXR experiences using the [Unity Engine](https://unity.com/).
 
 WebXR Export supports both Augmented Reality and Virtual Reality [WebXR API](https://www.w3.org/TR/webxr/) immersive sessions.
