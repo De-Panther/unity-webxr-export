@@ -106,6 +106,18 @@ namespace WebXR.Interactions
     private WebXRController leftController;
     [SerializeField]
     private WebXRController rightController;
+#if UNITY_INPUT_SYSTEM_1_4_4_OR_NEWER
+    [SerializeField]
+#endif
+    private bool useInputSystem = false;
+#if UNITY_INPUT_SYSTEM_1_4_4_OR_NEWER
+    [SerializeField]
+    private UnityEngine.InputSystem.InputActionProperty rightPosition;
+    [SerializeField]
+    private UnityEngine.InputSystem.InputActionProperty leftTrigger;
+    [SerializeField]
+    private UnityEngine.InputSystem.InputActionProperty rightTrigger;
+#endif
     [SerializeField]
     private int webcamFramesDelaySize = 0;
 
@@ -306,7 +318,14 @@ namespace WebXR.Interactions
 
     private void SetPoint(Transform point, GameObject hint, ControllerState nextState, GameObject nextHint, Transform nextPoint)
     {
-      point.position = rightController.transform.position;
+      if (useInputSystem)
+      {
+        point.position = rightPosition.action.ReadValue<Vector3>();
+      }
+      else
+      {
+        point.position = rightController.transform.position;
+      }
       if (GetControllersButtonDown())
       {
         hint.SetActive(false);
@@ -319,7 +338,9 @@ namespace WebXR.Interactions
     private void SetBottomPoint()
     {
       float cameraToTopDistance = Vector3.Distance(calibrationPointCamera.position, calibrationPointTop.position);
-      Vector3 cameraToBottomDirection = (rightController.transform.position - calibrationPointCamera.position).normalized;
+      Vector3 cameraToBottomDirection = useInputSystem ?
+        (rightPosition.action.ReadValue<Vector3>() - calibrationPointCamera.position).normalized
+        : (rightController.transform.position - calibrationPointCamera.position).normalized;
       calibrationPointBottom.position = calibrationPointCamera.position + cameraToBottomDirection * cameraToTopDistance;
       if (GetControllersButtonDown())
       {
@@ -385,6 +406,14 @@ namespace WebXR.Interactions
 
     private bool GetControllersButtonDown()
     {
+      if (useInputSystem)
+      {
+        if (leftTrigger.action.ReadValue<bool>())
+        {
+          return true;
+        }
+        return rightTrigger.action.ReadValue<bool>();
+      }
       bool leftDown = (leftController.isHandActive || leftController.isControllerActive)
                       && leftController.GetButtonDown(WebXRController.ButtonTypes.Trigger);
       if (leftDown)

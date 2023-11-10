@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - WebXRControllerModel to load WebXR Input Profiles model when using Unity Input System.
 - HandMenu to override XR Interaction Toolkit one, as it's missing an option to set camera transform.
 - WebXR + XR Interaction Toolkit Sample.
+- Support Input Actions in MixedRealityCaptureController.
 
 ## [0.18.0] - 2023-08-29
 ### Changed
