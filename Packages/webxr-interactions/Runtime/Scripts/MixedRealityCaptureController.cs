@@ -338,9 +338,13 @@ namespace WebXR.Interactions
     private void SetBottomPoint()
     {
       float cameraToTopDistance = Vector3.Distance(calibrationPointCamera.position, calibrationPointTop.position);
+#if UNITY_INPUT_SYSTEM_1_4_4_OR_NEWER
       Vector3 cameraToBottomDirection = useInputSystem ?
         (rightPosition.action.ReadValue<Vector3>() - calibrationPointCamera.position).normalized
         : (rightController.transform.position - calibrationPointCamera.position).normalized;
+#else
+      Vector3 cameraToBottomDirection = (rightController.transform.position - calibrationPointCamera.position).normalized;
+#endif
       calibrationPointBottom.position = calibrationPointCamera.position + cameraToBottomDirection * cameraToTopDistance;
       if (GetControllersButtonDown())
       {
@@ -406,14 +410,13 @@ namespace WebXR.Interactions
 
     private bool GetControllersButtonDown()
     {
+#if UNITY_INPUT_SYSTEM_1_4_4_OR_NEWER
       if (useInputSystem)
       {
-        if (leftTrigger.action.ReadValue<bool>())
-        {
-          return true;
-        }
-        return rightTrigger.action.ReadValue<bool>();
+        return leftTrigger.action.ReadValue<bool>()
+               || rightTrigger.action.ReadValue<bool>();
       }
+#endif
       bool leftDown = (leftController.isHandActive || leftController.isControllerActive)
                       && leftController.GetButtonDown(WebXRController.ButtonTypes.Trigger);
       if (leftDown)

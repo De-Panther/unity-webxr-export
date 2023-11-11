@@ -161,6 +161,8 @@ namespace WebXR.InputSystem
     private bool visualActionsInit;
     bool m_IsFirstUpdate = true;
 
+    private Transform xrControllerOldModel;
+
 #if WEBXR_INPUT_PROFILES
     void BindActions()
     {
@@ -415,9 +417,10 @@ namespace WebXR.InputSystem
           WebXRInputSystem.OnRightControllerProfiles -= HandleOnControllerProfiles;
           break;
       }
-      if (xrController != null && xrController.model != null)
+      if (xrController != null && xrControllerOldModel != null)
       {
-        xrController.model.gameObject.SetActive(true);
+        xrController.model = xrControllerOldModel;
+        xrController.hideControllerModel = false;
       }
     }
 
@@ -633,7 +636,9 @@ namespace WebXR.InputSystem
       inputProfileModelTransform.localScale = Vector3.one;
       if (xrController != null && xrController.model != null)
       {
-        xrController.model.gameObject.SetActive(false);
+        xrControllerOldModel = xrController.model;
+        xrController.hideControllerModel = true;
+        xrController.model = null;
       }
 
       if (m_CurrentTrackingState == TrackingStates.None)
