@@ -372,11 +372,11 @@ namespace WebXR
           if (alwaysUseGrip)
           {
 #if HAS_POSITION_AND_ROTATION
-            transform.SetLocalPositionAndRotation(controllerData.rotation * (controllerData.position + controllerData.gripPosition), 
-              controllerData.rotation * controllerData.gripRotation);
+            transform.SetLocalPositionAndRotation(gripPosition, 
+              gripRotation);
 #else
-            transform.localRotation = controllerData.rotation * controllerData.gripRotation;
-            transform.localPosition = controllerData.rotation * (controllerData.position + controllerData.gripPosition);
+            transform.localRotation = gripRotation;
+            transform.localPosition = gripPosition;
 #endif
           }
           else
@@ -439,11 +439,11 @@ namespace WebXR
       if (alwaysUseGrip)
       {
 #if HAS_POSITION_AND_ROTATION
-        transform.SetLocalPositionAndRotation(controllerData.rotation * (controllerData.position + controllerData.gripPosition), 
-          controllerData.rotation * controllerData.gripRotation);
+        transform.SetLocalPositionAndRotation(gripPosition, 
+          gripRotation);
 #else
-        transform.localRotation = controllerData.rotation * controllerData.gripRotation;
-        transform.localPosition = controllerData.rotation * (controllerData.position + controllerData.gripPosition);
+        transform.localRotation = gripRotation;
+        transform.localPosition = gripPosition;
 #endif
       }
       else

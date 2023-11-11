@@ -165,30 +165,36 @@ namespace WebXR
         return;
       }
       UpdateXRCameras();
-      bool hasHandsData = false;
+      bool handWasDisabled = false;
       if (OnHandUpdate != null && this.xrState != WebXRState.NORMAL)
       {
-        if (GetHandFromHandsArray(0, ref leftHand))
+        handWasDisabled = !leftHand.enabled;
+        if (GetHandFromHandsArray(0, ref leftHand)
+            && (leftHand.enabled || !handWasDisabled))
         {
           OnHandUpdate?.Invoke(leftHand);
         }
 
-        if (GetHandFromHandsArray(1, ref rightHand))
+        handWasDisabled = !rightHand.enabled;
+        if (GetHandFromHandsArray(1, ref rightHand)
+            && (rightHand.enabled || !handWasDisabled))
         {
           OnHandUpdate?.Invoke(rightHand);
         }
-
-        hasHandsData = leftHand.enabled || rightHand.enabled;
       }
 
-      if (!hasHandsData && OnControllerUpdate != null && this.xrState != WebXRState.NORMAL)
+      if (OnControllerUpdate != null && this.xrState != WebXRState.NORMAL)
       {
-        if (GetGamepadFromControllersArray(0, ref controller1))
+        handWasDisabled = !controller1.enabled;
+        if (GetGamepadFromControllersArray(0, ref controller1)
+            && (controller1.enabled || !handWasDisabled))
         {
           OnControllerUpdate?.Invoke(controller1);
         }
 
-        if (GetGamepadFromControllersArray(1, ref controller2))
+        handWasDisabled = !controller2.enabled;
+        if (GetGamepadFromControllersArray(1, ref controller2)
+            && (controller2.enabled || !handWasDisabled))
         {
           OnControllerUpdate?.Invoke(controller2);
         }
@@ -352,7 +358,7 @@ namespace WebXR
     float[] controllersArray = new float[2 * 34];
 
     // Shared array for hands data
-    float[] handsArray = new float[2 * (25 * 8 + 5)];
+    float[] handsArray = new float[2 * (25 * 8 + 5 + 7)]; // 2 hands, 25 joints
 
     // Shared array for hit-test pose data
     float[] viewerHitTestPoseArray = new float[9];
@@ -571,20 +577,17 @@ namespace WebXR
       newControllerData.buttonBTouched = controllersArray[arrayPosition++] != 0;
       if (controllersArray[arrayPosition] == 1)
       {
-        controllersArray[arrayPosition++] = 2;
+        arrayPosition++;
         newControllerData.gripPosition = new Vector3(controllersArray[arrayPosition++], controllersArray[arrayPosition++], controllersArray[arrayPosition++]);
         newControllerData.gripRotation = new Quaternion(controllersArray[arrayPosition++], controllersArray[arrayPosition++], controllersArray[arrayPosition++],
             controllersArray[arrayPosition++]);
-        Quaternion rotationOffset = Quaternion.Inverse(newControllerData.rotation);
-        newControllerData.gripPosition = rotationOffset * (newControllerData.gripPosition - newControllerData.position);
-        newControllerData.gripRotation = rotationOffset * newControllerData.gripRotation;
       }
       return true;
     }
 
     bool GetHandFromHandsArray(int handIndex, ref WebXRHandData handObject)
     {
-      int arrayPosition = handIndex * 205;
+      int arrayPosition = handIndex * 212;
       int frameNumber = (int)handsArray[arrayPosition++];
       if (handObject.frame == frameNumber)
       {
@@ -601,6 +604,9 @@ namespace WebXR
         return true;
       }
 
+      handObject.pointerPosition = new Vector3(handsArray[arrayPosition++], handsArray[arrayPosition++], handsArray[arrayPosition++]);
+      handObject.pointerRotation = new Quaternion(handsArray[arrayPosition++], handsArray[arrayPosition++], handsArray[arrayPosition++],
+        handsArray[arrayPosition++]);
       for (int i = 0; i <= (int)WebXRHandJoint.pinky_finger_tip; i++)
       {
         handObject.joints[i].position = new Vector3(handsArray[arrayPosition++], handsArray[arrayPosition++], handsArray[arrayPosition++]);

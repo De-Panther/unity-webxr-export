@@ -1,4 +1,7 @@
 using UnityEngine;
+#if UNITY_INPUT_SYSTEM_1_4_4_OR_NEWER
+using UnityEngine.InputSystem;
+#endif
 
 namespace WebXR.Interactions
 {
@@ -10,6 +13,16 @@ namespace WebXR.Interactions
     private WebXRController leftController;
     [SerializeField]
     private WebXRController rightController;
+#if UNITY_INPUT_SYSTEM_1_4_4_OR_NEWER
+    [SerializeField]
+#endif
+    private bool useInputSystem = false;
+#if UNITY_INPUT_SYSTEM_1_4_4_OR_NEWER
+    [SerializeField]
+    private InputActionProperty leftTrigger;
+    [SerializeField]
+    private InputActionProperty rightTrigger;
+#endif
 
     private bool isFollowing = false;
 
@@ -20,6 +33,10 @@ namespace WebXR.Interactions
 
     void Start()
     {
+      if (useInputSystem)
+      {
+        return;
+      }
       if (leftController == null || rightController == null)
       {
         var controllers = FindObjectsOfType<WebXRController>();
@@ -59,6 +76,13 @@ namespace WebXR.Interactions
 
     bool GetControllersButtonDown()
     {
+#if UNITY_INPUT_SYSTEM_1_4_4_OR_NEWER
+      if (useInputSystem)
+      {
+        return leftTrigger.action.phase == InputActionPhase.Performed
+          || rightTrigger.action.phase == InputActionPhase.Performed;
+      }
+#endif
       bool leftDown = (leftController.isHandActive || leftController.isControllerActive) && leftController.GetButtonDown(WebXRController.ButtonTypes.Trigger);
       bool rightDown = (rightController.isHandActive || rightController.isControllerActive) && rightController.GetButtonDown(WebXRController.ButtonTypes.Trigger);
       return leftDown || rightDown;

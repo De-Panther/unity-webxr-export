@@ -1,0 +1,48 @@
+{
+    "name": "WebXR.InputSystem",
+    "rootNamespace": "",
+    "references": [
+        "GUID:fd4abe4ffe74ef1448afe15c6cb36bb7",
+        "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:d8b63aba1907145bea998dd612889d6b",
+        "GUID:dc960734dc080426fa6612f1c5fe95f3",
+        "GUID:ce522b6ed64c8be4c989a1d26d0e3275",
+        "GUID:fe685ec1767f73d42b749ea8045bfe43",
+        "GUID:84a2d09f0bb073f40922f5ea5362abe7"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.inputsystem",
+            "expression": "1.4.4",
+            "define": "UNITY_INPUT_SYSTEM_1_4_4_OR_NEWER"
+        },
+        {
+            "name": "com.unity.xr.hands",
+            "expression": "1.1.0",
+            "define": "XR_HANDS_1_1_OR_NEWER"
+        },
+        {
+            "name": "com.de-panther.webxr-input-profiles-loader",
+            "expression": "0.4.0",
+            "define": "WEBXR_INPUT_PROFILES"
+        },
+        {
+            "name": "Unity",
+            "expression": "[2021.3.11,2022.1)",
+            "define": "HAS_POSITION_AND_ROTATION"
+        },
+        {
+            "name": "Unity",
+            "expression": "2022.3",
+            "define": "HAS_POSITION_AND_ROTATION"
+        }
+    ],
+    "noEngineReferences": false
+}

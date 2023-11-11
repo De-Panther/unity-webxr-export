@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Support for Unity Input System and XR Interaction Toolkit.
+- Support WebXR Controllers, Hands and Headset input actions.
+- WebXRInputActions to handle WebXR Controllers input using Unity Input System.
+- WebXRControllerModel to load WebXR Input Profiles model when using Unity Input System.
+- HandMenu to override XR Interaction Toolkit one, as it's missing an option to set camera transform.
+- WebXR + XR Interaction Toolkit Sample.
+- Support Input Actions in MixedRealityCaptureController.
+
 ## [0.18.0] - 2023-08-29
 ### Changed
 - Requires WebXR Export 0.18.0.

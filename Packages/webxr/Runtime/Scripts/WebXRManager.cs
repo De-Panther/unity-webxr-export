@@ -106,6 +106,7 @@ namespace WebXR
       subsystem?.ToggleVR();
     }
 
+    // duration in milliseconds
     public void HapticPulse(WebXRControllerHand hand, float intensity, float duration)
     {
       subsystem?.HapticPulse(hand, intensity, duration);

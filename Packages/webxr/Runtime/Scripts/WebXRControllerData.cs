@@ -75,6 +75,8 @@ namespace WebXR
     public int hand;
     public float trigger;
     public float squeeze;
+    public Vector3 pointerPosition;
+    public Quaternion pointerRotation;
     public WebXRJointData[] joints = new WebXRJointData[25];
   }
 
