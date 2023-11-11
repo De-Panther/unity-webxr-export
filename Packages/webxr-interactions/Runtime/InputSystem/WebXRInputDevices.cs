@@ -110,19 +110,23 @@ namespace WebXR.InputSystem
     [Preserve, InputControl(bit = 0, offset = 13, layout = "Button", usage = "GripTouch")]
     public bool squeezeTouched;
 
-    [Preserve, InputControl(bit = 0, offset = 16, layout = "Vector2", usage = "Primary2DAxis")]
+    [Preserve, InputControl(bit = 0, offset = 16, layout = "Vector2", usage = "Primary2DAxis",
+       alias = "joystick")]
     public Vector2 thumbstick;
 
-    [Preserve, InputControl(bit = 0, offset = 24, layout = "Button", usage = "Primary2DAxisClick")]
+    [Preserve, InputControl(bit = 0, offset = 24, layout = "Button", usage = "Primary2DAxisClick",
+       aliases = new[] { "thumbstickClicked", "joystickPressed", "joystickClicked"})]
     public bool thumbstickPressed;
 
     [Preserve, InputControl(bit = 0, offset = 25, layout = "Button", usage = "Primary2DAxisTouch")]
     public bool thumbstickTouched;
 
-    [Preserve, InputControl(bit = 0, offset = 28, layout = "Vector2", usage = "Secondary2DAxis")]
+    [Preserve, InputControl(bit = 0, offset = 28, layout = "Vector2", usage = "Secondary2DAxis",
+       alias = "trackpad")]
     public Vector2 touchpad;
 
-    [Preserve, InputControl(bit = 0, offset = 36, layout = "Button", usage = "Secondary2DAxisClick")]
+    [Preserve, InputControl(bit = 0, offset = 36, layout = "Button", usage = "Secondary2DAxisClick",
+       aliases = new[] { "touchpadClicked", "trackpadPressed", "trackpadClicked"})]
     public bool touchpadPressed;
 
     [Preserve, InputControl(bit = 0, offset = 37, layout = "Button", usage = "Secondary2DAxisTouch")]

@@ -134,7 +134,19 @@ namespace WebXR.InputSystem
 
     [SerializeField] private Handedness hand;
 
-    [SerializeField]private XRBaseController xrController;
+    [SerializeField] private XRBaseController xrController;
+
+    [SerializeField] private InputActionProperty positionActionProperty;
+    [SerializeField] private InputActionProperty rotationActionProperty;
+    [SerializeField] private InputActionProperty trackingStateActionProperty;
+    [SerializeField] private InputActionProperty triggerActionProperty;
+    [SerializeField] private InputActionProperty gripActionProperty;
+    [SerializeField] private InputActionProperty touchpadActionProperty;
+    [SerializeField] private InputActionProperty touchpadPressedActionProperty;
+    [SerializeField] private InputActionProperty thumbstickActionProperty;
+    [SerializeField] private InputActionProperty thumbstickPressedActionProperty;
+    [SerializeField] private InputActionProperty buttonAActionProperty;
+    [SerializeField] private InputActionProperty buttonBActionProperty;
 
 #if WEBXR_INPUT_PROFILES
     private InputProfileLoader inputProfileLoader;
@@ -145,7 +157,6 @@ namespace WebXR.InputSystem
     private string loadedProfile = null;
     private bool loadedModel = false;
     private static Quaternion quat180 = Quaternion.Euler(0, 180, 0);
-    private WebXRInputActions actions = null;
     private InputAction positionAction;
     private InputAction rotationAction;
     private InputAction trackingStateAction;
@@ -184,15 +195,7 @@ namespace WebXR.InputSystem
       if (m_PositionBound)
         return;
 
-      switch (hand)
-      {
-        case Handedness.Left:
-          positionAction = actions.XRLeftHand.Position;
-          break;
-        case Handedness.Right:
-          positionAction = actions.XRRightHand.Position;
-          break;
-      }
+      positionAction = positionActionProperty.action;
       if (positionAction == null)
         return;
 
@@ -206,15 +209,7 @@ namespace WebXR.InputSystem
       if (m_RotationBound)
         return;
 
-      switch (hand)
-      {
-        case Handedness.Left:
-          rotationAction = actions.XRLeftHand.Rotation;
-          break;
-        case Handedness.Right:
-          rotationAction = actions.XRRightHand.Rotation;
-          break;
-      }
+      rotationAction = rotationActionProperty.action;
       if (rotationAction == null)
         return;
 
@@ -228,15 +223,7 @@ namespace WebXR.InputSystem
       if (m_TrackingStateBound)
         return;
 
-      switch (hand)
-      {
-        case Handedness.Left:
-          trackingStateAction = actions.XRLeftHand.TrackingState;
-          break;
-        case Handedness.Right:
-          trackingStateAction = actions.XRRightHand.TrackingState;
-          break;
-      }
+      trackingStateAction = trackingStateActionProperty.action;
       if (trackingStateAction == null)
         return;
 
@@ -252,29 +239,14 @@ namespace WebXR.InputSystem
 
       buttonActions = new InputAction[6];
       axisActions = new InputAction[2];
-      switch (hand)
-      {
-        case Handedness.Left:
-          buttonActions[0] = actions.XRLeftHand.Trigger;
-          buttonActions[1] = actions.XRLeftHand.Grip;
-          buttonActions[2] = actions.XRLeftHand.TouchpadPressed;
-          buttonActions[3] = actions.XRLeftHand.ThumbstickPressed;
-          buttonActions[4] = actions.XRLeftHand.ButtonA;
-          buttonActions[5] = actions.XRLeftHand.ButtonB;
-          axisActions[0] = actions.XRLeftHand.Touchpad;
-          axisActions[1] = actions.XRLeftHand.Thumbstick;
-          break;
-        case Handedness.Right:
-          buttonActions[0] = actions.XRRightHand.Trigger;
-          buttonActions[1] = actions.XRRightHand.Grip;
-          buttonActions[2] = actions.XRRightHand.TouchpadPressed;
-          buttonActions[3] = actions.XRRightHand.ThumbstickPressed;
-          buttonActions[4] = actions.XRRightHand.ButtonA;
-          buttonActions[5] = actions.XRRightHand.ButtonB;
-          axisActions[0] = actions.XRRightHand.Touchpad;
-          axisActions[1] = actions.XRRightHand.Thumbstick;
-          break;
-      }
+      buttonActions[0] = triggerActionProperty.action;
+      buttonActions[1] = gripActionProperty.action;
+      buttonActions[2] = touchpadPressedActionProperty.action;
+      buttonActions[3] = thumbstickPressedActionProperty.action;
+      buttonActions[4] = buttonAActionProperty.action;
+      buttonActions[5] = buttonBActionProperty.action;
+      axisActions[0] = touchpadActionProperty.action;
+      axisActions[1] = thumbstickActionProperty.action;
 
       visualActionsInit = true;
     }
@@ -358,7 +330,6 @@ namespace WebXR.InputSystem
 
     private void Awake()
     {
-      actions = new WebXRInputActions();
       inputProfileLoader = rigOrigin.GetComponent<InputProfileLoader>();
       if (inputProfileLoader == null)
       {
@@ -381,7 +352,6 @@ namespace WebXR.InputSystem
     /// </summary>
     protected void OnEnable()
     {
-      actions.Enable();
       BindActions();
       InputSystem.onAfterUpdate += UpdateCallback;
 
@@ -405,7 +375,6 @@ namespace WebXR.InputSystem
     /// </summary>
     protected void OnDisable()
     {
-      actions.Disable();
       UnbindActions();
       InputSystem.onAfterUpdate -= UpdateCallback;
       switch (hand)

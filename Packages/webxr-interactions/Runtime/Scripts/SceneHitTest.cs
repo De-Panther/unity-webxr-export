@@ -1,4 +1,7 @@
 using UnityEngine;
+#if UNITY_INPUT_SYSTEM_1_4_4_OR_NEWER
+using UnityEngine.InputSystem;
+#endif
 
 namespace WebXR.Interactions
 {
@@ -16,9 +19,9 @@ namespace WebXR.Interactions
     private bool useInputSystem = false;
 #if UNITY_INPUT_SYSTEM_1_4_4_OR_NEWER
     [SerializeField]
-    private UnityEngine.InputSystem.InputActionProperty leftTrigger;
+    private InputActionProperty leftTrigger;
     [SerializeField]
-    private UnityEngine.InputSystem.InputActionProperty rightTrigger;
+    private InputActionProperty rightTrigger;
 #endif
 
     private bool isFollowing = false;
@@ -76,8 +79,8 @@ namespace WebXR.Interactions
 #if UNITY_INPUT_SYSTEM_1_4_4_OR_NEWER
       if (useInputSystem)
       {
-        return leftTrigger.action.ReadValue<bool>()
-          || rightTrigger.action.ReadValue<bool>();
+        return leftTrigger.action.phase == InputActionPhase.Performed
+          || rightTrigger.action.phase == InputActionPhase.Performed;
       }
 #endif
       bool leftDown = (leftController.isHandActive || leftController.isControllerActive) && leftController.GetButtonDown(WebXRController.ButtonTypes.Trigger);

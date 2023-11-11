@@ -223,6 +223,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_ActionAssets:
   - {fileID: -944628639613478452, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+  - {fileID: -944628639613478452, guid: 256061f5afc1f4c49bfcb9ca2bc787e1, type: 3}
 --- !u!1 &6691460237591051992
 GameObject:
   m_ObjectHideFlags: 0

@@ -1285,6 +1285,149 @@ MonoBehaviour:
   rigOrigin: {fileID: 1717954561962503725}
   hand: 1
   xrController: {fileID: 202364692}
+  positionActionProperty:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Position Action Property
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: c2ea62cc-cf78-4a43-9330-63fb5dd8df1f
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 8402928503815848559, guid: 256061f5afc1f4c49bfcb9ca2bc787e1,
+      type: 3}
+  rotationActionProperty:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Rotation Action Property
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 6cadbeac-84c9-435f-912a-853ab404dfca
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 4793445756348432519, guid: 256061f5afc1f4c49bfcb9ca2bc787e1,
+      type: 3}
+  trackingStateActionProperty:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Tracking State Action Property
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 9c766393-0072-4afd-890c-0313d2622b06
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 899701881298878602, guid: 256061f5afc1f4c49bfcb9ca2bc787e1,
+      type: 3}
+  triggerActionProperty:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Trigger Action Property
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 22bff93e-c57b-41e6-ab41-186ff550e659
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 3715949676053157633, guid: 256061f5afc1f4c49bfcb9ca2bc787e1,
+      type: 3}
+  gripActionProperty:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Grip Action Property
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 80c61791-4ee1-41ca-acf1-3a88b4a561ec
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: -2999321778838538841, guid: 256061f5afc1f4c49bfcb9ca2bc787e1,
+      type: 3}
+  touchpadActionProperty:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Touchpad Action Property
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: fa307fcd-3f26-4498-8948-666111e820d5
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: -1447996926927054499, guid: 256061f5afc1f4c49bfcb9ca2bc787e1,
+      type: 3}
+  touchpadPressedActionProperty:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Touchpad Pressed Action Property
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 27e8caa3-73ca-4e77-900e-1130e13a6487
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 6288540238410377001, guid: 256061f5afc1f4c49bfcb9ca2bc787e1,
+      type: 3}
+  thumbstickActionProperty:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Thumbstick Action Property
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: b9f61fac-65e8-4159-b84f-90f4f609fd42
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 4760862364133281138, guid: 256061f5afc1f4c49bfcb9ca2bc787e1,
+      type: 3}
+  thumbstickPressedActionProperty:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Thumbstick Pressed Action Property
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 33cd6b4e-67df-426d-8444-3b5a95da3720
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: -7984393607404931097, guid: 256061f5afc1f4c49bfcb9ca2bc787e1,
+      type: 3}
+  buttonAActionProperty:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Button A Action Property
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 45dfdd66-053d-4164-baa7-d0ffdf995a52
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 7820614690768951932, guid: 256061f5afc1f4c49bfcb9ca2bc787e1,
+      type: 3}
+  buttonBActionProperty:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Button B Action Property
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 68174d70-3dc8-4977-92f1-f577269e9895
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: -8174808067737735911, guid: 256061f5afc1f4c49bfcb9ca2bc787e1,
+      type: 3}
 --- !u!1 &2474197426038533421
 GameObject:
   m_ObjectHideFlags: 0
@@ -1334,6 +1477,149 @@ MonoBehaviour:
   rigOrigin: {fileID: 1717954561962503725}
   hand: 2
   xrController: {fileID: 1670256628}
+  positionActionProperty:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Position Action Property
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 08572561-391f-4278-a714-f92158c5e0c7
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 8693197023798706943, guid: 256061f5afc1f4c49bfcb9ca2bc787e1,
+      type: 3}
+  rotationActionProperty:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Rotation Action Property
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 5c5ca8c2-b3d9-4492-80b9-14ebc391307e
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 1878505909611671238, guid: 256061f5afc1f4c49bfcb9ca2bc787e1,
+      type: 3}
+  trackingStateActionProperty:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Tracking State Action Property
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: ee1f54f9-0c28-470d-9398-d0c843a3c766
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 8944850365428998154, guid: 256061f5afc1f4c49bfcb9ca2bc787e1,
+      type: 3}
+  triggerActionProperty:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Trigger Action Property
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 9346d0a3-4c04-46e9-bd36-fac62c5ab974
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 3903780116801436227, guid: 256061f5afc1f4c49bfcb9ca2bc787e1,
+      type: 3}
+  gripActionProperty:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Grip Action Property
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 39baf466-79a4-4220-9b18-43463c2abdb3
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: -2728031275450385743, guid: 256061f5afc1f4c49bfcb9ca2bc787e1,
+      type: 3}
+  touchpadActionProperty:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Touchpad Action Property
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 29ccd406-9c85-4e72-aabc-9512a81ba862
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: -1962896977760310426, guid: 256061f5afc1f4c49bfcb9ca2bc787e1,
+      type: 3}
+  touchpadPressedActionProperty:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Touchpad Pressed Action Property
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 42c1e30f-9072-4690-9d92-5fc9332c22b8
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: -1520521276803591193, guid: 256061f5afc1f4c49bfcb9ca2bc787e1,
+      type: 3}
+  thumbstickActionProperty:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Thumbstick Action Property
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: fb3c462b-f32f-48a3-ae68-e6be7f76f18b
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: -309749046369283358, guid: 256061f5afc1f4c49bfcb9ca2bc787e1,
+      type: 3}
+  thumbstickPressedActionProperty:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Thumbstick Pressed Action Property
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 3b7fa7d3-c4d0-4284-8576-0228c9a0128a
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 4041625420588436835, guid: 256061f5afc1f4c49bfcb9ca2bc787e1,
+      type: 3}
+  buttonAActionProperty:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Button A Action Property
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: b494570c-62ac-4249-a32f-c011b554197c
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 3262805416975776355, guid: 256061f5afc1f4c49bfcb9ca2bc787e1,
+      type: 3}
+  buttonBActionProperty:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Button B Action Property
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: d4bb5dab-599f-4996-9afa-dc66625c16b5
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: -4739865128998161851, guid: 256061f5afc1f4c49bfcb9ca2bc787e1,
+      type: 3}
 --- !u!1 &2626757739553014894
 GameObject:
   m_ObjectHideFlags: 0

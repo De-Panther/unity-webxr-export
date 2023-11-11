@@ -184,7 +184,18 @@
                 {
                     "name": "",
                     "id": "43ba5fd1-7873-48a9-8031-69f1a5eaf8ae",
-                    "path": "<XRController>{LeftHand}/{Primary2DAxis}",
+                    "path": "<XRController>{LeftHand}/thumbstick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "XR",
+                    "action": "Thumbstick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "bb13bea4-a2b0-43d3-8961-2d87851a2f49",
+                    "path": "<XRController>{LeftHand}/joystick",
                     "interactions": "",
                     "processors": "",
                     "groups": "XR",
@@ -195,7 +206,18 @@
                 {
                     "name": "",
                     "id": "7dda14be-31ab-439e-a6e3-246788dd66ba",
-                    "path": "<XRController>{LeftHand}/{Secondary2DAxis}",
+                    "path": "<XRController>{LeftHand}/touchpad",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "XR",
+                    "action": "Touchpad",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a7ec3a4e-89fc-49a8-ac1e-60c7230c7d86",
+                    "path": "<XRController>{LeftHand}/tackpad",
                     "interactions": "",
                     "processors": "",
                     "groups": "XR",
@@ -228,7 +250,7 @@
                 {
                     "name": "",
                     "id": "3ceae2e0-3858-4197-a3bd-be17f192ccaa",
-                    "path": "<XRController>{LeftHand}/{Secondary2DAxisClick}",
+                    "path": "<XRController>{LeftHand}/touchpadClicked",
                     "interactions": "",
                     "processors": "",
                     "groups": "XR",
@@ -238,12 +260,78 @@
                 },
                 {
                     "name": "",
-                    "id": "40f0145a-23fe-41f6-a684-e7d6dc62b23c",
+                    "id": "f230b028-9030-4925-ab53-f1c0e981b162",
+                    "path": "<XRController>{LeftHand}/trackpadClicked",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "XR",
+                    "action": "TouchpadPressed",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "30d17c6f-442f-494a-98dd-f4fab98740e0",
+                    "path": "<XRController>{LeftHand}/thumbstickClicked",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "XR",
+                    "action": "ThumbstickPressed",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "adb5a09f-7a92-48a9-a00f-a5f684308aae",
+                    "path": "<XRController>{LeftHand}/joystickClicked",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "XR",
+                    "action": "ThumbstickPressed",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "bdd3efce-d806-4ec8-98ac-09587271796a",
+                    "path": "<XRController>{LeftHand}/{Primary2DAxis}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "XR",
+                    "action": "Thumbstick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "40da890c-ce61-4ba6-8400-4430e59e3271",
                     "path": "<XRController>{LeftHand}/{Primary2DAxisClick}",
                     "interactions": "",
                     "processors": "",
                     "groups": "XR",
                     "action": "ThumbstickPressed",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ee69679e-e2fb-4f83-ae31-e33424d62968",
+                    "path": "<XRController>{LeftHand}/{Secondary2DAxis}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "XR",
+                    "action": "Touchpad",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a320e65f-e97b-452e-96d3-779640307387",
+                    "path": "<XRController>{LeftHand}/{Secondary2DAxisClick}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "XR",
+                    "action": "TouchpadPressed",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -431,12 +519,122 @@
                 },
                 {
                     "name": "",
+                    "id": "7344050f-5dc6-4ba8-b5f4-9419f3a3a381",
+                    "path": "<XRController>{RightHand}/thumbstick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "XR",
+                    "action": "Thumbstick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fbe46b04-a62b-400c-aff4-59d898b0157c",
+                    "path": "<XRController>{RightHand}/joystick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "XR",
+                    "action": "Thumbstick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "b0547fc8-1676-4606-82b5-05856d6f79ee",
                     "path": "<XRController>{RightHand}/{Primary2DAxis}",
                     "interactions": "",
                     "processors": "",
                     "groups": "XR",
                     "action": "Thumbstick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "eed7075e-6a68-4284-93e5-aac10ac8fbf2",
+                    "path": "<XRController>{RightHand}/{PrimaryButton}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "XR",
+                    "action": "ButtonA",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0dac47c1-275d-4fb3-9c67-1e1af9ace8e7",
+                    "path": "<XRController>{RightHand}/{SecondaryButton}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "XR",
+                    "action": "ButtonB",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "08a9dc64-9323-457f-ae9e-c4efae18ab00",
+                    "path": "<XRController>{RightHand}/thumbstickClicked",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "XR",
+                    "action": "ThumbstickPressed",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "86c66dee-3f04-463c-af5a-7d0def78b730",
+                    "path": "<XRController>{RightHand}/joystickClicked",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "XR",
+                    "action": "ThumbstickPressed",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4b9ef3a4-64a5-4ed3-9f21-bd30dd3bd3df",
+                    "path": "<XRController>{RightHand}/touchpad",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "XR",
+                    "action": "Touchpad",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8a51fbb2-92f5-43c7-8921-a086d98aee5e",
+                    "path": "<XRController>{RightHand}/tackpad",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "XR",
+                    "action": "Touchpad",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "29819732-927d-4ecb-a13d-a699b0eab3aa",
+                    "path": "<XRController>{RightHand}/touchpadClicked",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "XR",
+                    "action": "TouchpadPressed",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "834dfeb5-fed9-4b91-a213-13e1ade38cc5",
+                    "path": "<XRController>{RightHand}/trackpadClicked",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "XR",
+                    "action": "TouchpadPressed",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -470,28 +668,6 @@
                     "processors": "",
                     "groups": "XR",
                     "action": "TouchpadPressed",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "eed7075e-6a68-4284-93e5-aac10ac8fbf2",
-                    "path": "<XRController>{RightHand}/{PrimaryButton}",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "XR",
-                    "action": "ButtonA",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "0dac47c1-275d-4fb3-9c67-1e1af9ace8e7",
-                    "path": "<XRController>{RightHand}/{SecondaryButton}",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "XR",
-                    "action": "ButtonB",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
