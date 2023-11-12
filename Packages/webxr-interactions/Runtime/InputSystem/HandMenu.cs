@@ -1,12 +1,15 @@
+#if UNITY_INPUT_SYSTEM_1_4_4_OR_NEWER
 using Unity.XR.CoreUtils.Bindings;
 using Unity.XR.CoreUtils.Bindings.Variables;
-using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.XR.Interaction.Toolkit.Inputs;
 using UnityEngine.XR.Interaction.Toolkit.Utilities;
 using UnityEngine.XR.Interaction.Toolkit.Utilities.Tweenables.Primitives;
 using UnityEngine.XR.Interaction.Toolkit.Utilities.Tweenables.SmartTweenableVariables;
 using UnityEngine.XR.Interaction.Toolkit.UI.BodyUI;
+#endif
+using UnityEngine;
+
 
 namespace WebXR.InputSystem
 {
@@ -25,6 +28,7 @@ namespace WebXR.InputSystem
     /// </remarks>
     public class HandMenu : MonoBehaviour
     {
+#if UNITY_INPUT_SYSTEM_1_4_4_OR_NEWER
         /// <summary>
         /// Enum dictating the up direction used in hand menu calculations.
         /// </summary>
@@ -717,5 +721,6 @@ namespace WebXR.InputSystem
         {
             return Mathf.Cos(Mathf.Deg2Rad * angleDeg);
         }
+#endif
     }
 }

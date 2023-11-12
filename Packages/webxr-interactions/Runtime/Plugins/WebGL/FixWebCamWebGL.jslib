@@ -1,30 +1,11 @@
 var LibraryFixWebCamWebGL = {
   $webcamBufferToTextureTable: {},
   $webcamLatestTextureId: 0,
-  $disableNextSubImage: false,
-  
-  glTexSubImage2D: function(target, level, xoffset, yoffset, width, height, format, type, pixels) {
-    if (disableNextSubImage) {
-      disableNextSubImage = false;
-      return;
-    }
-    if (GL.currentContext.supportsWebGL2EntryPoints) {
-      if (GLctx.currentPixelUnpackBufferBinding) {
-        GLctx.texSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels)
-      } else if (pixels != 0) {
-        GLctx.texSubImage2D(target, level, xoffset, yoffset, width, height, format, type, emscriptenWebGLGetHeapForType(type), pixels >> emscriptenWebGLGetShiftForType(type))
-      } else {
-        GLctx.texSubImage2D(target, level, xoffset, yoffset, width, height, format, type, null)
-      }
-      return
-    }
-    var pixelData = null;
-    if (pixels)
-      pixelData = emscriptenWebGLGetTexPixelData(type, format, width, height, pixels, 0);
-    GLctx.texSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixelData)
-  },
 
   JS_WebCamVideo_SetLatestTextureId: function(textureId) {
+    if (typeof _JS_WebCamVideo_Update !== "undefined") {
+      return;
+    }
     webcamLatestTextureId = textureId;
     // Webcam texture is created with texStorage2D so we have to recreate it
     GLctx.deleteTexture(GL.textures[textureId]);
@@ -37,6 +18,9 @@ var LibraryFixWebCamWebGL = {
   },
 
   JS_WebCamVideo_RemoveWhereTextureId: function(textureId) {
+    if (typeof _JS_WebCamVideo_Update !== "undefined") {
+      return;
+    }
     Object.entries(webcamBufferToTextureTable).forEach(function (pair) {
       if (pair[1] == textureId) {
         delete webcamBufferToTextureTable[pair[0]];
@@ -77,12 +61,21 @@ var LibraryFixWebCamWebGL = {
     GLctx.pixelStorei(GLctx.UNPACK_FLIP_Y_WEBGL, true);
     GLctx.texImage2D(GLctx.TEXTURE_2D, 0, GLctx.RGBA, GLctx.RGBA, GLctx.UNSIGNED_BYTE, videoElement);
     GLctx.pixelStorei(GLctx.UNPACK_FLIP_Y_WEBGL, false);
-    disableNextSubImage = true;
+    GLctx.disableNextSubImage = true;
+    if (!GLctx.webcamtexSubImage2D) {
+      GLctx.webcamtexSubImage2D = GLctx.texSubImage2D;
+      GLctx.texSubImage2D = function() {
+        if (this.disableNextSubImage) {
+          this.disableNextSubImage = false;
+          return;
+        }
+        this.webcamtexSubImage2D.apply(this, arguments);
+      }
+    }
     return 1;
   }
 };
 
 autoAddDeps(LibraryFixWebCamWebGL, '$webcamBufferToTextureTable');
 autoAddDeps(LibraryFixWebCamWebGL, '$webcamLatestTextureId');
-autoAddDeps(LibraryFixWebCamWebGL, '$disableNextSubImage');
 mergeInto(LibraryManager.library, LibraryFixWebCamWebGL);

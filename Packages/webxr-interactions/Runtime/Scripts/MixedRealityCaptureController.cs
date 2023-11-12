@@ -28,6 +28,7 @@ using System.Collections;
 using UnityEngine;
 #if UNITY_INPUT_SYSTEM_1_4_4_OR_NEWER
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 #endif
 
 namespace WebXR.Interactions
@@ -321,21 +322,21 @@ namespace WebXR.Interactions
 
     private void SetPoint(Transform point, GameObject hint, ControllerState nextState, GameObject nextHint, Transform nextPoint)
     {
-      if (useInputSystem)
+#if UNITY_INPUT_SYSTEM_1_4_4_OR_NEWER
+      point.position = useInputSystem ?
+        rightPosition.action.ReadValue<Vector3>()
+        : rightController.transform.position;
+#else
+      point.position = rightController.transform.position;
+#endif
+      if (!GetControllersButtonDown())
       {
-        point.position = rightPosition.action.ReadValue<Vector3>();
+        return;
       }
-      else
-      {
-        point.position = rightController.transform.position;
-      }
-      if (GetControllersButtonDown())
-      {
-        hint.SetActive(false);
-        nextHint.SetActive(true);
-        nextPoint.gameObject.SetActive(true);
-        state = nextState;
-      }
+      hint.SetActive(false);
+      nextHint.SetActive(true);
+      nextPoint.gameObject.SetActive(true);
+      state = nextState;
     }
 
     private void SetBottomPoint()
@@ -416,8 +417,8 @@ namespace WebXR.Interactions
 #if UNITY_INPUT_SYSTEM_1_4_4_OR_NEWER
       if (useInputSystem)
       {
-        return leftTrigger.action.phase == InputActionPhase.Performed
-          || rightTrigger.action.phase == InputActionPhase.Performed;
+        return ((ButtonControl)leftTrigger.action.activeControl).wasPressedThisFrame
+          || ((ButtonControl)rightTrigger.action.activeControl).wasPressedThisFrame;
       }
 #endif
       bool leftDown = (leftController.isHandActive || leftController.isControllerActive)
