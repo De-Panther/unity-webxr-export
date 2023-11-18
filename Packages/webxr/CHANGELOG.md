@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - OnControllerUpdate is not dependent on OnHandUpdate in WebXRSubsystem.
 - WebXRControllerData gripPosition and gripRotation return world space value instead of relative to pointer pose.
 
+### Fixed
+- Performance issues in AR mode.
+
 ## [0.18.0] - 2023-08-29
 ### Added
 - Option to update active camera tag in WebXRCamera.
