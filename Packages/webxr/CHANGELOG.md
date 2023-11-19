@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - WebXRHandData pointerPosition and pointerRotation (WebXR targetRaySpace for hands).
+- An option for eventsCamera in WebXRCamera.
 
 ### Changed
 - Enabled stencil buffer when creating the session XRWebGLLayer.

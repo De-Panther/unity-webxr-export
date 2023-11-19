@@ -876,6 +876,7 @@ MonoBehaviour:
   cameraARL: {fileID: 469584278722724955}
   cameraARR: {fileID: 2113255073564658967}
   cameraFollower: {fileID: 5280121735958530868}
+  eventsCamera: {fileID: 5934003548109805725}
   updateCameraTag: 0
 --- !u!1 &1470279098769358944
 GameObject:

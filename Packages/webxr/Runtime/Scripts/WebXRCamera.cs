@@ -22,12 +22,16 @@ namespace WebXR
     [SerializeField]
     private Transform cameraFollower = null;
 
+    [SerializeField]
+    private Camera eventsCamera = null;
+
     private WebXRState xrState = WebXRState.NORMAL;
     private Rect leftRect, rightRect;
 
     private int viewsCount = 1;
 
     private bool hasFollower = false;
+    private bool hasEventsCamera = false;
 
     [SerializeField]
     private bool updateCameraTag = false;
@@ -37,6 +41,7 @@ namespace WebXR
       WebXRManager.OnXRChange += OnXRChange;
       WebXRManager.OnHeadsetUpdate += OnHeadsetUpdate;
       hasFollower = cameraFollower != null;
+      hasEventsCamera = eventsCamera != null;
       OnXRChange(WebXRManager.Instance.XRState,
                   WebXRManager.Instance.ViewsCount,
                   WebXRManager.Instance.ViewsLeftRect,
@@ -101,6 +106,10 @@ namespace WebXR
             cameraARL.tag = untaggedTag;
           }
           break;
+      }
+      if (hasEventsCamera)
+      {
+        eventsCamera.projectionMatrix = cameraMain.projectionMatrix;
       }
     }
 
@@ -235,6 +244,10 @@ namespace WebXR
         cameraARR.transform.localRotation = rightRotation;
 #endif
         cameraARR.projectionMatrix = rightProjectionMatrix;
+        if (hasEventsCamera && viewsCount == 1)
+        {
+          eventsCamera.projectionMatrix = leftProjectionMatrix;
+        }
       }
     }
   }
