@@ -736,6 +736,7 @@ Transform:
   - {fileID: 1670256625}
   - {fileID: 8718302446126152263}
   - {fileID: 6429446445626853776}
+  - {fileID: 6736009103468129833}
   m_Father: {fileID: 1717954561962503726}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &58445280694286476
@@ -1745,7 +1746,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: 0.1
   far clip plane: 1000
   field of view: 60
   orthographic: 0
@@ -2591,6 +2592,365 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!1 &8744034238389983895
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6736009103468129833}
+  - component: {fileID: 652356270709293830}
+  - component: {fileID: 7150155869268716553}
+  m_Layer: 0
+  m_Name: XR Screen Space Controller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6736009103468129833
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8744034238389983895}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1680501587}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &652356270709293830
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8744034238389983895}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7e4c509417774e7e8a8784a2739de68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_UpdateTrackingType: 0
+  m_EnableInputTracking: 1
+  m_EnableInputActions: 1
+  m_ModelPrefab: {fileID: 0}
+  m_ModelParent: {fileID: 0}
+  m_Model: {fileID: 0}
+  m_AnimateModel: 0
+  m_ModelSelectTransition: 
+  m_ModelDeSelectTransition: 
+  m_EnableTouchscreenGestureInputController: 1
+  m_TapStartPositionAction:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Tap Start Position
+      m_Type: 0
+      m_ExpectedControlType: Vector2
+      m_Id: 977d28a5-39dc-48cb-a1a3-a21648f3ffe9
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 2494954584338170553, guid: c348712bda248c246b8c49b3db54643f,
+      type: 3}
+  m_DragCurrentPositionAction:
+    m_UseReference: 0
+    m_Action:
+      m_Name: Drag Current Position
+      m_Type: 0
+      m_ExpectedControlType: Vector2
+      m_Id: dfb3e558-573e-40d6-8586-1cce487aa405
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings:
+      - m_Name: 
+        m_Id: 54c39eff-0341-4654-bd6d-212fde447feb
+        m_Path: <TouchscreenGestureInputController>/dragCurrentPosition
+        m_Interactions: 
+        m_Processors: 
+        m_Groups: 
+        m_Action: Drag Current Position
+        m_Flags: 0
+      - m_Name: One Modifier
+        m_Id: a0e0f6c4-8c9c-479d-a05d-76f37131e158
+        m_Path: OneModifier
+        m_Interactions: 
+        m_Processors: 
+        m_Groups: 
+        m_Action: Drag Current Position
+        m_Flags: 4
+      - m_Name: modifier
+        m_Id: 73d0dd77-a2ac-46e3-9e9b-0b6ecb121a38
+        m_Path: <Mouse>/press
+        m_Interactions: 
+        m_Processors: 
+        m_Groups: 
+        m_Action: Drag Current Position
+        m_Flags: 8
+      - m_Name: binding
+        m_Id: 05c592fb-c24e-46c1-ad54-4a67f005e370
+        m_Path: <Mouse>/position
+        m_Interactions: 
+        m_Processors: 
+        m_Groups: 
+        m_Action: Drag Current Position
+        m_Flags: 8
+      - m_Name: One Modifier
+        m_Id: 88ba6fb2-d372-4dec-b348-709958fc6c2d
+        m_Path: OneModifier
+        m_Interactions: 
+        m_Processors: 
+        m_Groups: 
+        m_Action: Drag Current Position
+        m_Flags: 4
+      - m_Name: modifier
+        m_Id: dcb5f653-0f27-4373-b867-bbe3a0f74ff8
+        m_Path: <Touchscreen>/Press
+        m_Interactions: 
+        m_Processors: 
+        m_Groups: 
+        m_Action: Drag Current Position
+        m_Flags: 8
+      - m_Name: binding
+        m_Id: 19847bf9-f4a1-41bb-9705-0b8d30efb724
+        m_Path: <Touchscreen>/primaryTouch/position
+        m_Interactions: 
+        m_Processors: 
+        m_Groups: 
+        m_Action: Drag Current Position
+        m_Flags: 8
+      m_Flags: 0
+    m_Reference: {fileID: 0}
+  m_DragDeltaAction:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Drag Delta
+      m_Type: 0
+      m_ExpectedControlType: Vector2
+      m_Id: 1bfa5f98-9deb-4cc4-8ffc-b2fb36b8ac1c
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: -3603844561257126198, guid: c348712bda248c246b8c49b3db54643f,
+      type: 3}
+  m_PinchStartPositionAction:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Pinch Start Position
+      m_Type: 0
+      m_ExpectedControlType: Vector2
+      m_Id: fa812a4b-eb24-473e-9d4e-06a2c3703a1d
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 9070054806217310167, guid: c348712bda248c246b8c49b3db54643f,
+      type: 3}
+  m_PinchGapAction:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Pinch Gap
+      m_Type: 0
+      m_ExpectedControlType: Axis
+      m_Id: d111aff7-e6e9-453d-92e9-40e4914468a4
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 3166769696172522120, guid: c348712bda248c246b8c49b3db54643f,
+      type: 3}
+  m_PinchGapDeltaAction:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Pinch Gap Delta
+      m_Type: 0
+      m_ExpectedControlType: Axis
+      m_Id: 61e3a7a6-9045-43dd-8467-b6fdb87fecad
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: -5112888916153672211, guid: c348712bda248c246b8c49b3db54643f,
+      type: 3}
+  m_TwistStartPositionAction:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Twist Start Position
+      m_Type: 0
+      m_ExpectedControlType: Vector2
+      m_Id: 580d81f7-be2c-452d-8cbe-605eac38babd
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: -1941033212670429761, guid: c348712bda248c246b8c49b3db54643f,
+      type: 3}
+  m_TwistDeltaRotationAction:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Twist Delta Rotation
+      m_Type: 0
+      m_ExpectedControlType: Axis
+      m_Id: 32ca2622-2a09-4cf1-b58f-b0bb7563c97f
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: -8156239294363760665, guid: c348712bda248c246b8c49b3db54643f,
+      type: 3}
+  m_ScreenTouchCountAction:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Screen Touch Count
+      m_Type: 0
+      m_ExpectedControlType: Integer
+      m_Id: 8920aaf6-6c49-4e4c-a437-2bdf9f953aeb
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 4162966010302970412, guid: c348712bda248c246b8c49b3db54643f,
+      type: 3}
+  m_ControllerCamera: {fileID: 5934003548109805725}
+  m_BlockInteractionsWithScreenSpaceUI: 1
+--- !u!114 &7150155869268716553
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8744034238389983895}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6803edce0201f574f923fd9d10e5b30a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_InteractionManager: {fileID: 0}
+  m_InteractionLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_InteractionLayers:
+    m_Bits: 4294967295
+  m_AttachTransform: {fileID: 0}
+  m_KeepSelectedTargetValid: 1
+  m_DisableVisualsWhenBlockedInGroup: 1
+  m_StartingSelectedInteractable: {fileID: 0}
+  m_StartingTargetFilter: {fileID: 0}
+  m_HoverEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_HoverExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_SelectEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_SelectExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_StartingHoverFilters: []
+  m_StartingSelectFilters: []
+  m_OnHoverEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_OnHoverExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_OnSelectEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_OnSelectExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_SelectActionTrigger: 1
+  m_HideControllerOnSelect: 0
+  m_AllowHoveredActivate: 0
+  m_TargetPriorityMode: 0
+  m_PlayAudioClipOnSelectEntered: 0
+  m_AudioClipForOnSelectEntered: {fileID: 0}
+  m_PlayAudioClipOnSelectExited: 0
+  m_AudioClipForOnSelectExited: {fileID: 0}
+  m_PlayAudioClipOnSelectCanceled: 0
+  m_AudioClipForOnSelectCanceled: {fileID: 0}
+  m_PlayAudioClipOnHoverEntered: 0
+  m_AudioClipForOnHoverEntered: {fileID: 0}
+  m_PlayAudioClipOnHoverExited: 0
+  m_AudioClipForOnHoverExited: {fileID: 0}
+  m_PlayAudioClipOnHoverCanceled: 0
+  m_AudioClipForOnHoverCanceled: {fileID: 0}
+  m_AllowHoverAudioWhileSelecting: 1
+  m_PlayHapticsOnSelectEntered: 0
+  m_HapticSelectEnterIntensity: 0
+  m_HapticSelectEnterDuration: 0
+  m_PlayHapticsOnSelectExited: 0
+  m_HapticSelectExitIntensity: 0
+  m_HapticSelectExitDuration: 0
+  m_PlayHapticsOnSelectCanceled: 0
+  m_HapticSelectCancelIntensity: 0
+  m_HapticSelectCancelDuration: 0
+  m_PlayHapticsOnHoverEntered: 0
+  m_HapticHoverEnterIntensity: 0
+  m_HapticHoverEnterDuration: 0
+  m_PlayHapticsOnHoverExited: 0
+  m_HapticHoverExitIntensity: 0
+  m_HapticHoverExitDuration: 0
+  m_PlayHapticsOnHoverCanceled: 0
+  m_HapticHoverCancelIntensity: 0
+  m_HapticHoverCancelDuration: 0
+  m_AllowHoverHapticsWhileSelecting: 1
+  m_LineType: 0
+  m_BlendVisualLinePoints: 1
+  m_MaxRaycastDistance: 30
+  m_RayOriginTransform: {fileID: 0}
+  m_ReferenceFrame: {fileID: 0}
+  m_Velocity: 16
+  m_Acceleration: 9.8
+  m_AdditionalGroundHeight: 0.1
+  m_AdditionalFlightTime: 0.5
+  m_EndPointDistance: 30
+  m_EndPointHeight: -10
+  m_ControlPointDistance: 10
+  m_ControlPointHeight: 5
+  m_SampleFrequency: 20
+  m_HitDetectionType: 0
+  m_SphereCastRadius: 0.1
+  m_ConeCastAngle: 6
+  m_RaycastMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RaycastTriggerInteraction: 1
+  m_RaycastSnapVolumeInteraction: 1
+  m_HitClosestOnly: 0
+  m_HoverToSelect: 0
+  m_HoverTimeToSelect: 0.5
+  m_AutoDeselect: 0
+  m_TimeToAutoDeselect: 3
+  m_EnableUIInteraction: 1
+  m_BlockUIOnInteractableSelection: 1
+  m_AllowAnchorControl: 1
+  m_UseForceGrab: 0
+  m_RotateSpeed: 180
+  m_TranslateSpeed: 1
+  m_AnchorRotateReferenceFrame: {fileID: 0}
+  m_AnchorRotationMode: 0
+  m_UIHoverEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_UIHoverExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_EnableARRaycasting: 0
+  m_OccludeARHitsWith3DObjects: 0
+  m_OccludeARHitsWith2DObjects: 0
+  m_ScaleMode: 0
 --- !u!1001 &553018692727262454
 PrefabInstance:
   m_ObjectHideFlags: 0
