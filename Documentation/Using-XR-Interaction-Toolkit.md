@@ -13,6 +13,7 @@ The main difference between XR Interaction Toolkit basic XR Rig to the WebXR XR 
 ## Project Settings
 
 Make sure that in player settings, `Active Input Handling` is set to `Both` or `Input System Package (New)`.
+In the `Input System Package` settings, `Background Behavior` should be set to `Ignore Focus`.
 
 ## Notes
 
