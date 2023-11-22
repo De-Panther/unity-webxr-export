@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Error when Input System package in project and no XR Interaction Toolkit package.
+
 ## [0.19.0] - 2023-11-22
 ### Added
 - Support for Unity Input System and XR Interaction Toolkit.
