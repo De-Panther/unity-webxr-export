@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- HandMenu missing camera transform reference in the XR Interaction Toolkit Sample.
+
 ## [0.19.1] - 2023-11-22
 ### Fixed
 - Error when Input System package in project and no XR Interaction Toolkit package.
