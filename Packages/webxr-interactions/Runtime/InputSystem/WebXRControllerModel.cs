@@ -4,7 +4,8 @@ using UnityEngine;
 #if UNITY_INPUT_SYSTEM_1_4_4_OR_NEWER
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
-using UnityEngine.XR.Hands;
+#endif
+#if HAS_XR_INTERACTION_TOOLKIT
 using UnityEngine.XR.Interaction.Toolkit;
 #endif
 #if WEBXR_INPUT_PROFILES
@@ -132,10 +133,10 @@ namespace WebXR.InputSystem
 
     [SerializeField] private GameObject rigOrigin;
 
-    [SerializeField] private Handedness hand;
-
+    [SerializeField] private WebXRControllerHand hand;
+#if HAS_XR_INTERACTION_TOOLKIT
     [SerializeField] private XRBaseController xrController;
-
+#endif
     [SerializeField] private InputActionProperty positionActionProperty;
     [SerializeField] private InputActionProperty rotationActionProperty;
     [SerializeField] private InputActionProperty trackingStateActionProperty;
@@ -402,10 +403,10 @@ namespace WebXR.InputSystem
       m_IsFirstUpdate = true;
       switch (hand)
       {
-        case Handedness.Left:
+        case WebXRControllerHand.LEFT:
           WebXRInputSystem.OnLeftControllerProfiles += HandleOnControllerProfiles;
           break;
-        case Handedness.Right:
+        case WebXRControllerHand.RIGHT:
           WebXRInputSystem.OnRightControllerProfiles += HandleOnControllerProfiles;
           break;
       }
@@ -421,18 +422,20 @@ namespace WebXR.InputSystem
       InputSystem.onAfterUpdate -= UpdateCallback;
       switch (hand)
       {
-        case Handedness.Left:
+        case WebXRControllerHand.LEFT:
           WebXRInputSystem.OnLeftControllerProfiles -= HandleOnControllerProfiles;
           break;
-        case Handedness.Right:
+        case WebXRControllerHand.RIGHT:
           WebXRInputSystem.OnRightControllerProfiles -= HandleOnControllerProfiles;
           break;
       }
+#if HAS_XR_INTERACTION_TOOLKIT
       if (xrController != null && xrControllerOldModel != null)
       {
         xrController.model = xrControllerOldModel;
         xrController.hideControllerModel = false;
       }
+#endif
     }
 
     /// <summary>
@@ -597,10 +600,10 @@ namespace WebXR.InputSystem
       string[] profiles = null;
       switch (hand)
       {
-        case Handedness.Left:
+        case WebXRControllerHand.LEFT:
           profiles = WebXRInputSystem.GetLeftProfiles();
           break;
-        case Handedness.Right:
+        case WebXRControllerHand.RIGHT:
           profiles = WebXRInputSystem.GetRightProfiles();
           break;
       }
@@ -650,13 +653,14 @@ namespace WebXR.InputSystem
       inputProfileModelTransform.localPosition = Vector3.zero;
       inputProfileModelTransform.localRotation = Quaternion.identity;
       inputProfileModelTransform.localScale = Vector3.one;
+#if HAS_XR_INTERACTION_TOOLKIT
       if (xrController != null && xrController.model != null)
       {
         xrControllerOldModel = xrController.model;
         xrController.hideControllerModel = true;
         xrController.model = null;
       }
-
+#endif
       if (m_CurrentTrackingState == TrackingStates.None)
       {
         inputProfileModel.gameObject.SetActive(false);
