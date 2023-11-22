@@ -1,9 +1,7 @@
-#if UNITY_INPUT_SYSTEM_1_4_4_OR_NEWER
+#if UNITY_INPUT_SYSTEM_1_4_4_OR_NEWER && HAS_XR_INTERACTION_TOOLKIT
 using Unity.XR.CoreUtils.Bindings;
 using Unity.XR.CoreUtils.Bindings.Variables;
 using UnityEngine.Assertions;
-#endif
-#if HAS_XR_INTERACTION_TOOLKIT
 using UnityEngine.XR.Interaction.Toolkit.Inputs;
 using UnityEngine.XR.Interaction.Toolkit.Utilities;
 using UnityEngine.XR.Interaction.Toolkit.Utilities.Tweenables.Primitives;
