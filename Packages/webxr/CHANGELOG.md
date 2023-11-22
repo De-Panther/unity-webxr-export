@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.19.0] - 2023-11-22
 ### Added
 - WebXRHandData pointerPosition and pointerRotation (WebXR targetRaySpace for hands).
 - An option for eventsCamera in WebXRCamera.
