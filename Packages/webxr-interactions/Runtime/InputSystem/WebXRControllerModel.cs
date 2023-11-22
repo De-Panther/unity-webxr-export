@@ -169,7 +169,8 @@ namespace WebXR.InputSystem
     bool m_RotationBound;
     bool m_PositionBound;
     bool m_TrackingStateBound;
-    private bool visualActionsInit;
+    private bool visualActionsBound;
+    private bool visualActionsUpdated;
     bool m_IsFirstUpdate = true;
 
     private Transform xrControllerOldModel;
@@ -180,7 +181,7 @@ namespace WebXR.InputSystem
       BindPosition();
       BindRotation();
       BindTrackingState();
-      InitVisualActions();
+      BindVisualActions();
     }
 
     void UnbindActions()
@@ -188,6 +189,7 @@ namespace WebXR.InputSystem
       UnbindPosition();
       UnbindRotation();
       UnbindTrackingState();
+      UnbindVisualActions();
     }
 
     void BindPosition()
@@ -232,9 +234,9 @@ namespace WebXR.InputSystem
       m_TrackingStateBound = true;
     }
 
-    void InitVisualActions()
+    void BindVisualActions()
     {
-      if (visualActionsInit)
+      if (visualActionsBound)
         return;
 
       buttonActions = new InputAction[6];
@@ -248,7 +250,18 @@ namespace WebXR.InputSystem
       axisActions[0] = touchpadActionProperty.action;
       axisActions[1] = thumbstickActionProperty.action;
 
-      visualActionsInit = true;
+      for (int i = 0; i < buttonActions.Length; i++)
+      {
+        buttonActions[i].performed += OnVisualActionsPerformed;
+        buttonActions[i].canceled += OnVisualActionsCanceled;
+      }
+      for (int i = 0; i < axisActions.Length; i++)
+      {
+        axisActions[i].performed += OnVisualActionsPerformed;
+        axisActions[i].canceled += OnVisualActionsCanceled;
+      }
+
+      visualActionsBound = true;
     }
 
     void UnbindPosition()
@@ -290,6 +303,25 @@ namespace WebXR.InputSystem
       m_TrackingStateBound = false;
     }
 
+    void UnbindVisualActions()
+    {
+      if (!visualActionsBound)
+        return;
+
+      for (int i = 0; i < buttonActions.Length; i++)
+      {
+        buttonActions[i].performed -= OnVisualActionsPerformed;
+        buttonActions[i].canceled -= OnVisualActionsCanceled;
+      }
+      for (int i = 0; i < axisActions.Length; i++)
+      {
+        axisActions[i].performed -= OnVisualActionsPerformed;
+        axisActions[i].canceled -= OnVisualActionsCanceled;
+      }
+
+      visualActionsBound = false;
+    }
+
     void OnPositionPerformed(InputAction.CallbackContext context)
     {
       m_CurrentPosition = context.ReadValue<Vector3>();
@@ -326,6 +358,16 @@ namespace WebXR.InputSystem
       {
         inputProfileModel.gameObject.SetActive(false);
       }
+    }
+
+    void OnVisualActionsPerformed(InputAction.CallbackContext context)
+    {
+      visualActionsUpdated = true;
+    }
+
+    void OnVisualActionsCanceled(InputAction.CallbackContext context)
+    {
+      visualActionsUpdated = true;
     }
 
     private void Awake()
@@ -472,7 +514,7 @@ namespace WebXR.InputSystem
     protected virtual void PerformUpdate()
     {
       SetLocalTransform(m_CurrentPosition, m_CurrentRotation);
-      if (loadedModel && m_CurrentTrackingState != TrackingStates.None)
+      if (loadedModel && visualActionsUpdated)
       {
         UpdateModelInput();
       }
@@ -513,6 +555,11 @@ namespace WebXR.InputSystem
 
     private void UpdateModelInput()
     {
+      if (m_CurrentTrackingState == TrackingStates.None)
+      {
+        return;
+      }
+      visualActionsUpdated = false;
       for (int i = 0; i < 6; i++)
       {
         inputProfileModel.SetButtonValue(i, buttonActions[i].ReadValue<float>());
