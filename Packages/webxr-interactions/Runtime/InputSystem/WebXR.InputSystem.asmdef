@@ -42,6 +42,11 @@
             "name": "Unity",
             "expression": "2022.3",
             "define": "HAS_POSITION_AND_ROTATION"
+        },
+        {
+            "name": "com.unity.xr.interaction.toolkit",
+            "expression": "2.5.2",
+            "define": "HAS_XR_INTERACTION_TOOLKIT"
         }
     ],
     "noEngineReferences": false
