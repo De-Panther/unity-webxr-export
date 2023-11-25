@@ -12,6 +12,8 @@ It integrates the WebXR JavaScript API to [Unity WebGL](https://docs.unity3d.com
 
 [⭐Star to show interest⭐](https://github.com/De-Panther/unity-webxr-export/stargazers)
 
+[❤Sponsor to support the development❤](https://github.com/sponsors/De-Panther)
+
 ![Demo](/Documentation/webxr-input-profiles.gif)
 
 <hr>
