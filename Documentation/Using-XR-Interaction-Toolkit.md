@@ -1,7 +1,6 @@
 # Using XR Interaction Toolkit
 
 A quick guide on using XR Interaction Toolkit with WebXR Export.
-For a guide on how to build and set a project, basic settings and WebGLTemplates, check the Getting Started guide.
 
 ## Sample Scene
 
