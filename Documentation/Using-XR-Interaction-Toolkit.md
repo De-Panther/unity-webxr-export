@@ -73,11 +73,11 @@ After `WebGLTemplates` are in the `Assets` folder, Open the `XR Plug-in Manageme
 
 ![XR Plug-in Management](unity-webxr-export-xr-plug-in-management.png)
 
-Set `Background Behavior` to `Ignore Focus` in the `Input System Package` settings in the `Project Settings` window. That would make sure that the controllers tracking won't be lost when browser tab lose focus.
+Set `Background Behavior` to `Ignore Focus` in the `Input System Package` settings in the `Project Settings` window. That would make sure that the controllers tracking won't be lost when the browser tab loses focus.
 
 ![Input System Package settings](unity-webxr-export-input-system-package.png)
 
-If using the `WebXR Input Profiles Loader` locate the `GLTFShaderVariants`.
+If using the `WebXR Input Profiles Loader`, locate the `GLTFShaderVariants`.
 
 ![WebXR Input Profiles Loader - Shader variants](unity-webxr-export-loader-shader-variants.png)
 
@@ -93,7 +93,7 @@ Now you can build the project.
 
 ![Build](unity-webxr-export-build.png)
 
-WebXR requires a secure context (HTTPS server or localhost URL). Make sure to build the project from `Build Settings > Build`. Unity's `Build And Run` server use HTTP. Run the build on your own HTTPS server.
+WebXR requires a secure context (HTTPS server or localhost URL). Make sure to build the project from `Build Settings > Build`. Unity's `Build And Run` server uses HTTP. Run the build on your own HTTPS server.
 
 ![Result](unity-webxr-export-xri-result.png)
 
