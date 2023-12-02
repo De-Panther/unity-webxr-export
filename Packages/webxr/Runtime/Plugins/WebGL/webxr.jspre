@@ -1073,6 +1073,10 @@ setTimeout(function () {
                 leftRect.y = (viewport.y / glLayer.framebufferHeight) * (glLayer.framebufferHeight / this.canvas.height);
                 leftRect.w = (viewport.width / glLayer.framebufferWidth) * (glLayer.framebufferWidth / this.canvas.width);
                 leftRect.h = (viewport.height / glLayer.framebufferHeight) * (glLayer.framebufferHeight / this.canvas.height);
+                Module.HEAPF32[Module.XRSharedArrayOffset + 46] = viewport.width;
+                Module.HEAPF32[Module.XRSharedArrayOffset + 47] = viewport.height;
+                Module.HEAPF32[Module.XRSharedArrayOffset + 48] = viewport.x;
+                Module.HEAPF32[Module.XRSharedArrayOffset + 49] = viewport.y;
               }
             } else if (view.eye === 'right' && viewport.width != 0 && viewport.height != 0 && viewport.x != 0) { // Ugly hack for iOS Mozilla WebXR Viewer
               eyeCount = 2;
@@ -1081,6 +1085,10 @@ setTimeout(function () {
                 rightRect.y = (viewport.y / glLayer.framebufferHeight) * (glLayer.framebufferHeight / this.canvas.height);
                 rightRect.w = (viewport.width / glLayer.framebufferWidth) * (glLayer.framebufferWidth / this.canvas.width);
                 rightRect.h = (viewport.height / glLayer.framebufferHeight) * (glLayer.framebufferHeight / this.canvas.height);
+                Module.HEAPF32[Module.XRSharedArrayOffset + 50] = viewport.width;
+                Module.HEAPF32[Module.XRSharedArrayOffset + 51] = viewport.height;
+                Module.HEAPF32[Module.XRSharedArrayOffset + 52] = viewport.x;
+                Module.HEAPF32[Module.XRSharedArrayOffset + 53] = viewport.y;
               }
             }
           }

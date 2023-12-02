@@ -79,11 +79,11 @@ namespace WebXR
           }
           break;
         case WebXRState.VR:
-          cameraMain.enabled = false;
-          cameraL.enabled = viewsCount > 0;
-          cameraL.rect = leftRect;
-          cameraR.enabled = viewsCount > 1;
-          cameraR.rect = rightRect;
+          cameraMain.enabled = true;
+          //cameraL.enabled = viewsCount > 0;
+          //cameraL.rect = leftRect;
+          //cameraR.enabled = viewsCount > 1;
+          //cameraR.rect = rightRect;
           cameraARL.enabled = false;
           cameraARR.enabled = false;
           if (updateCameraTag)
@@ -134,6 +134,8 @@ namespace WebXR
 #if HAS_POSITION_AND_ROTATION
           cameraFollower.SetLocalPositionAndRotation((cameraL.transform.localPosition + cameraR.transform.localPosition) * 0.5f, 
             cameraL.transform.localRotation);
+          cameraMain.transform.SetLocalPositionAndRotation(cameraFollower.localPosition, 
+            cameraFollower.localRotation);
 #else
           cameraFollower.localPosition = (cameraL.transform.localPosition + cameraR.transform.localPosition) * 0.5f;
           cameraFollower.localRotation = cameraL.transform.localRotation;
@@ -218,7 +220,7 @@ namespace WebXR
         cameraL.transform.localPosition = leftPosition;
         cameraL.transform.localRotation = leftRotation;
 #endif
-        cameraL.projectionMatrix = leftProjectionMatrix;
+        //cameraL.projectionMatrix = leftProjectionMatrix;
 
 #if HAS_POSITION_AND_ROTATION
         cameraR.transform.SetLocalPositionAndRotation(rightPosition, rightRotation);
@@ -226,7 +228,7 @@ namespace WebXR
         cameraR.transform.localPosition = rightPosition;
         cameraR.transform.localRotation = rightRotation;
 #endif
-        cameraR.projectionMatrix = rightProjectionMatrix;
+        //cameraR.projectionMatrix = rightProjectionMatrix;
       }
       else if (xrState == WebXRState.AR)
       {

@@ -1,11 +1,12 @@
 {
 	"name": "WebXR Export",
 	"version": "0.0.1",
-	"libraryName": "__Internal",
+	"libraryName": "WebXRExport",
 
 	"displays": [
 		{
-			"id": "WebXR VR Display"
+			"id": "WebXR VR Display",
+			"supportedMirrorBlitReservedModes" : ["leftEye","rightEye", "sideBySide"]
 		}
 	],
 	"inputs": [

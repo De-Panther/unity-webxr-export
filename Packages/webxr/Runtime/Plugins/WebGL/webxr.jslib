@@ -33,6 +33,10 @@ mergeInto(LibraryManager.library, {
     Module.ViewerHitTestPoseArrayOffset = byteOffset / 4;
   },
 
+  WebXRGetViewsDataArray: function () {
+    return Module.XRSharedArrayOffset * 4;
+  },
+
   ToggleAR: function() {
     Module.WebXR.toggleAR();
   },
