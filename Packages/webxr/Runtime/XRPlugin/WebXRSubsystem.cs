@@ -1,6 +1,7 @@
 using System.Runtime.InteropServices;
 using AOT;
 using UnityEngine;
+using UnityEngine.XR;
 #if UNITY_XR_MANAGEMENT_4_3_1_OR_NEWER
 using UnityEngine.SubsystemsImplementation;
 #endif
@@ -295,7 +296,7 @@ namespace WebXR
     private bool reportedXRStateSwitch = true;
     internal WebXRVisibilityState visibilityState = WebXRVisibilityState.VISIBLE;
     private bool visibilityStateChanged = false;
-    internal static UnityEngine.XR.XRDisplaySubsystem displaySubsystem;
+    internal static XRDisplaySubsystem displaySubsystem;
 
     public delegate void XRCapabilitiesUpdate(WebXRDisplayCapabilities capabilities);
 
@@ -439,6 +440,11 @@ namespace WebXR
         float right_x, float right_y, float right_w, float right_h)
     {
       displaySubsystem?.Start();
+      XRSettings.useOcclusionMesh = false;
+      // TODO: Enable Single-Pass rendering
+      //displaySubsystem.textureLayout = XRDisplaySubsystem.TextureLayout.Texture2DArray;
+      //Debug.Log(displaySubsystem.supportedTextureLayouts);
+      //Debug.Log(displaySubsystem.textureLayout);
       Instance.setXrState(WebXRState.VR, viewsCount,
           new Rect(left_x, left_y, left_w, left_h),
           new Rect(right_x, right_y, right_w, right_h));

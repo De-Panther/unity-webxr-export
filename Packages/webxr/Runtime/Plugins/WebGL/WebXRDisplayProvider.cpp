@@ -222,13 +222,13 @@ UnitySubsystemErrorCode WebXRDisplayProvider::GfxThread_PopulateNextFrameDesc(co
 #endif
         }
 
-        // renderPass.cullingPassIndex = 0;
+        renderPass.cullingPassIndex = 0;
 
         // TODO: set up culling pass to use a combine frustum
-        // auto& cullingPass = nextFrame.cullingPasses[0];
-        // cullingPass.deviceAnchorToCullingPose = GetPose(0);
-        // cullingPass.projection = GetProjection(0);
-        // cullingPass.separation = 0.625f;
+        auto& cullingPass = nextFrame.cullingPasses[0];
+        cullingPass.deviceAnchorToCullingPose = GetPose(0);
+        cullingPass.projection = GetProjection(0);
+        cullingPass.separation = 0.625f;
     }
 
     return kUnitySubsystemErrorCodeSuccess;
@@ -298,7 +298,6 @@ UnityXRPose WebXRDisplayProvider::GetPose(int pass)
     UnityXRPose pose{};
     if (pass < (sizeof(s_PoseXPositionPerPass) / sizeof(s_PoseXPositionPerPass[0])))
         pose.position.x = s_PoseXPositionPerPass[pass];
-    //pose.position.x = 0.0f;
     pose.position.y = 0.0f;
     pose.position.z = 0.0f;
     pose.rotation.x = 0.0f;
@@ -313,7 +312,6 @@ UnityXRProjection WebXRDisplayProvider::GetProjection(int pass)
     UnityXRProjection ret;
     ret.type = kUnityXRProjectionTypeMatrix;
     int start = pass * 16;
-    //ret.data.matrix = ((UnityXRMatrix4x4 *)m_ViewsDataArray)[start];
     ret.data.matrix.columns[0].x = *(m_ViewsDataArray + start);
     ret.data.matrix.columns[0].y = *(m_ViewsDataArray + start + 1);
     ret.data.matrix.columns[0].z = *(m_ViewsDataArray + start + 2);
