@@ -42,7 +42,6 @@ namespace WebXR.InputSystem
     private static bool initialized = false;
     private static WebXRController left = null;
     private static WebXRController right = null;
-    private static WebXRHMD hmd = null;
 
 #if XR_HANDS_1_1_OR_NEWER
     private static WebXRHandsSubsystem webXRHandsSubsystem = null;
@@ -59,9 +58,6 @@ namespace WebXR.InputSystem
       InputSystem.RegisterLayout<WebXRController>(
         matches: new InputDeviceMatcher()
         .WithInterface("WebXRController"));
-      InputSystem.RegisterLayout<WebXRHMD>(
-        matches: new InputDeviceMatcher()
-        .WithInterface("WebXRHMD"));
 #if XR_HANDS_1_1_OR_NEWER
       var descriptors = new List<XRHandSubsystemDescriptor>();
       SubsystemManager.GetSubsystemDescriptors(descriptors);
@@ -85,7 +81,6 @@ namespace WebXR.InputSystem
         InputSystem.onDeviceCommand += HandleOnDeviceCommand;
       }
       WebXRManager.OnXRChange += OnXRChange;
-      WebXRManager.OnHeadsetUpdate += OnHeadsetUpdate;
       WebXRManager.OnControllerUpdate += OnControllerUpdate;
 #if XR_HANDS_1_1_OR_NEWER
       WebXRManager.OnHandUpdate += OnHandUpdate;
@@ -102,7 +97,6 @@ namespace WebXR.InputSystem
       }
       RemoveAllDevices();
       WebXRManager.OnXRChange -= OnXRChange;
-      WebXRManager.OnHeadsetUpdate -= OnHeadsetUpdate;
       WebXRManager.OnControllerUpdate -= OnControllerUpdate;
 #if XR_HANDS_1_1_OR_NEWER
       WebXRManager.OnHandUpdate += OnHandUpdate;
@@ -166,36 +160,13 @@ namespace WebXR.InputSystem
     {
       RemoveDevice(left);
       RemoveDevice(right);
-      RemoveDevice(hmd);
       left = null;
       right = null;
-      hmd = null;
 #if XR_HANDS_1_1_OR_NEWER
       webXRHandsSubsystem?.SetUpdateHandsAllowed(false);
       DisableHandLeft();
       DisableHandRight();
 #endif
-    }
-
-    private static void OnHeadsetUpdate(
-        Matrix4x4 leftProjectionMatrix,
-        Matrix4x4 rightProjectionMatrix,
-        Quaternion leftRotation,
-        Quaternion rightRotation,
-        Vector3 leftPosition,
-        Vector3 rightPosition)
-    {
-      SetWebXRHMD();
-      Vector3 devicePosition = leftPosition;
-      Quaternion deviceRotation = leftRotation;
-      if (WebXRManager.Instance.ViewsCount == 2)
-      {
-        devicePosition = (leftPosition + rightPosition) * 0.5f;
-      }
-      hmd.OnHeadsetUpdate(
-        devicePosition, deviceRotation,
-        leftRotation, rightRotation,
-        leftPosition, rightPosition);
     }
 
     private static void OnControllerUpdate(WebXRControllerData controllerData)
@@ -344,20 +315,6 @@ namespace WebXR.InputSystem
       InputSystem.RemoveDevice(device);
     }
 #endif
-
-    private static void SetWebXRHMD()
-    {
-      if (hmd != null)
-      {
-        return;
-      }
-      hmd = (WebXRHMD)InputSystem.AddDevice(
-        new InputDeviceDescription
-        {
-          interfaceName = "WebXRHMD",
-          product = "WebXRHMD"
-        });
-    }
 
     private static WebXRController GetWebXRController(int hand)
     {

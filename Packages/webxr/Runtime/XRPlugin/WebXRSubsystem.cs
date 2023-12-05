@@ -297,6 +297,7 @@ namespace WebXR
     internal WebXRVisibilityState visibilityState = WebXRVisibilityState.VISIBLE;
     private bool visibilityStateChanged = false;
     internal static XRDisplaySubsystem displaySubsystem;
+    internal static XRInputSubsystem inputSubsystem;
 
     public delegate void XRCapabilitiesUpdate(WebXRDisplayCapabilities capabilities);
 
@@ -353,8 +354,8 @@ namespace WebXR
     private Quaternion rightRotation = Quaternion.identity;
 
     // Shared array which we will load headset data in from webxr.jslib
-    // Array stores 2 matrices, each 16 values, 2 Quaternions and 2 Vector3, 2 XRViewports, stored linearly.
-    float[] sharedArray = new float[(2 * 16) + (2 * 7) + (2 * 4)];
+    // Array stores 2 matrices, each 16 values, 2 Quaternions and 2 Vector3, 2 XRViewports, views count, stored linearly.
+    float[] sharedArray = new float[(2 * 16) + (2 * 7) + (2 * 4) + 1];
 
     // Shared array for controllers data
     float[] controllersArray = new float[2 * 34];
@@ -428,6 +429,9 @@ namespace WebXR
         float left_x, float left_y, float left_w, float left_h,
         float right_x, float right_y, float right_w, float right_h)
     {
+      displaySubsystem?.Start();
+      inputSubsystem?.Start();
+      // TODO: Enable Single-Pass rendering
       Instance.setXrState(WebXRState.AR, viewsCount,
           new Rect(left_x, left_y, left_w, left_h),
           new Rect(right_x, right_y, right_w, right_h));
@@ -440,6 +444,7 @@ namespace WebXR
         float right_x, float right_y, float right_w, float right_h)
     {
       displaySubsystem?.Start();
+      inputSubsystem?.Start();
       XRSettings.useOcclusionMesh = false;
       // TODO: Enable Single-Pass rendering
       //displaySubsystem.textureLayout = XRDisplaySubsystem.TextureLayout.Texture2DArray;
@@ -464,10 +469,8 @@ namespace WebXR
     [MonoPInvokeCallback(typeof(EndXREvent))]
     public static void OnEndXR()
     {
-      if (Instance.xrState == WebXRState.VR)
-      {
-        displaySubsystem?.Stop();
-      }
+      displaySubsystem?.Stop();
+      inputSubsystem?.Stop();
       Instance.updatedControllersOnEnd = false;
       Instance.setXrState(WebXRState.NORMAL, 1, new Rect(), new Rect());
     }

@@ -9,6 +9,7 @@
 static WebXRProviderContext* s_Context{};
 
 UnitySubsystemErrorCode Load_Display(WebXRProviderContext&);
+UnitySubsystemErrorCode Load_Input(WebXRProviderContext&);
 
 static bool ReportError(const char* name, UnitySubsystemErrorCode err)
 {
@@ -29,6 +30,9 @@ UnityPluginLoad(IUnityInterfaces* unityInterfaces)
     ctx->trace = unityInterfaces->Get<IUnityXRTrace>();
 
     if (ReportError("Display", Load_Display(*ctx)))
+        return;
+
+    if (ReportError("Input", Load_Input(*ctx)))
         return;
 }
 

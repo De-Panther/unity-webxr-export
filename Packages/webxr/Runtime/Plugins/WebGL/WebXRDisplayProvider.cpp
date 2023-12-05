@@ -56,6 +56,7 @@ private:
     //std::vector<void*> m_NativeTextures;
     std::vector<UnityXRRenderTextureId> m_UnityTextures;
     float *m_ViewsDataArray;
+    bool hasMultipleViews = true;
 };
 
 UnitySubsystemErrorCode WebXRDisplayProvider::Initialize()
@@ -73,6 +74,7 @@ UnitySubsystemErrorCode WebXRDisplayProvider::Start()
       + pow((*(m_ViewsDataArray + 42) - *(m_ViewsDataArray + 45)), 2));
     s_PoseXPositionPerPass[0] = -viewsHalfDistance;
     s_PoseXPositionPerPass[1] = viewsHalfDistance;
+    hasMultipleViews = *(m_ViewsDataArray + 54) > 1;
     return kUnitySubsystemErrorCodeSuccess;
 }
 
@@ -143,7 +145,7 @@ UnitySubsystemErrorCode WebXRDisplayProvider::GfxThread_PopulateNextFrameDesc(co
         // Use multi-pass rendering to render
 
         // Can increase render pass count to do wide FOV or to have a separate view into scene.
-        nextFrame.renderPassesCount = NUM_RENDER_PASSES;
+        nextFrame.renderPassesCount = hasMultipleViews ? NUM_RENDER_PASSES : 1;
 
         for (int pass = 0; pass < nextFrame.renderPassesCount; ++pass)
         {
@@ -180,10 +182,10 @@ UnitySubsystemErrorCode WebXRDisplayProvider::GfxThread_PopulateNextFrameDesc(co
 #else
             // TODO: frameHints.appSetup.renderViewport
             renderParams.viewportRect = {
-                pass == 0 ? 0.0f : 0.5f, // x
-                0.0f,                    // y
-                0.5f,                    // width
-                1.0f                     // height
+                pass == 0 ? 0.0f : 0.5f,        // x
+                0.0f,                           // y
+                hasMultipleViews ? 0.5f : 0.0f, // width
+                1.0f                            // height
             };
 #endif
         }
@@ -255,7 +257,7 @@ void WebXRDisplayProvider::Shutdown()
 
 void WebXRDisplayProvider::CreateTextures(int numTextures, int textureArrayLength, float requestedTextureScale)
 {
-    const int texWidth = (int)(*(m_ViewsDataArray + 46) * requestedTextureScale * (SIDE_BY_SIDE ? 2.0f : 1.0f));
+    const int texWidth = (int)(*(m_ViewsDataArray + 46) * requestedTextureScale * (SIDE_BY_SIDE && hasMultipleViews ? 2.0f : 1.0f));
     const int texHeight = (int)(*(m_ViewsDataArray + 47) * requestedTextureScale);
 
     //m_NativeTextures.resize(numTextures);
@@ -456,5 +458,5 @@ UnitySubsystemErrorCode Load_Display(WebXRProviderContext& ctx)
         delete ctx.displayProvider;
     };
 
-    return ctx.display->RegisterLifecycleProvider("WebXR Export", "WebXR VR Display", &displayLifecycleHandler);
+    return ctx.display->RegisterLifecycleProvider("WebXR Export", "WebXR Display", &displayLifecycleHandler);
 }

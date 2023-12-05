@@ -5,13 +5,13 @@
 
 	"displays": [
 		{
-			"id": "WebXR VR Display",
+			"id": "WebXR Display",
 			"supportedMirrorBlitReservedModes" : ["leftEye","rightEye", "sideBySide"]
 		}
 	],
 	"inputs": [
 		{
-			"id": "WebXR Inputs"
+			"id": "WebXR HMD"
 		}
 	]
 }

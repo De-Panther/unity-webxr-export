@@ -12,8 +12,10 @@ extern "C"
 
 struct IUnityXRTrace;
 struct IUnityXRDisplayInterface;
+struct IUnityXRInputInterface;
 
 class WebXRDisplayProvider;
+class WebXRTrackingProvider;
 
 struct WebXRProviderContext
 {
@@ -22,6 +24,9 @@ struct WebXRProviderContext
 
     IUnityXRDisplayInterface* display;
     WebXRDisplayProvider* displayProvider;
+
+    IUnityXRInputInterface* input;
+    WebXRTrackingProvider* trackingProvider;
 };
 
 inline WebXRProviderContext& GetWebXRProviderContext(void* data)

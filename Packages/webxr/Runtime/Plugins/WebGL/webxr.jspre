@@ -1092,6 +1092,7 @@ setTimeout(function () {
               }
             }
           }
+          Module.HEAPF32[Module.XRSharedArrayOffset + 54] = eyeCount;
           if (session.isAR)
           {
             this.gameModule.WebXR.OnStartAR(eyeCount, leftRect, rightRect);

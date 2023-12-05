@@ -54,7 +54,8 @@ namespace WebXR
       }
       XRSettings.useOcclusionMesh = false;
       CreateSubsystem<WebXRSubsystemDescriptor, WebXRSubsystem>(sampleSubsystemDescriptors, typeof(WebXRSubsystem).FullName);
-      CreateSubsystem<XRDisplaySubsystemDescriptor, XRDisplaySubsystem>(displaySubsystemDescriptors, "WebXR VR Display");
+      CreateSubsystem<XRDisplaySubsystemDescriptor, XRDisplaySubsystem>(displaySubsystemDescriptors, "WebXR Display");
+      CreateSubsystem<XRInputSubsystemDescriptor, XRInputSubsystem>(inputSubsystemDescriptors, "WebXR HMD");
       return WebXRSubsystem != null;
     }
 
@@ -63,6 +64,7 @@ namespace WebXR
     {
       WebXRSubsystem.Start();
       WebXRSubsystem.displaySubsystem = XRDisplaySubsystem;
+      WebXRSubsystem.inputSubsystem = XRInputSubsystem;
       return true;
     }
 
@@ -76,6 +78,7 @@ namespace WebXR
     {
       WebXRSubsystem.Destroy();
       XRDisplaySubsystem.Destroy();
+      XRInputSubsystem.Destroy();
       return base.Deinitialize();
     }
   }
