@@ -1838,8 +1838,9 @@ GameObject:
   - component: {fileID: 8193937114927936219}
   - component: {fileID: 7186514573206871672}
   - component: {fileID: 6804544957743522306}
+  - component: {fileID: 4282563079508213950}
   m_Layer: 0
-  m_Name: CameraMain
+  m_Name: MainCamera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1957,6 +1958,14 @@ MonoBehaviour:
   m_arCullingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!81 &4282563079508213950
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4705794530012869112}
+  m_Enabled: 1
 --- !u!1 &5167925059111895691
 GameObject:
   m_ObjectHideFlags: 0
@@ -2482,7 +2491,7 @@ MonoBehaviour:
   m_TimeToAutoDeselect: 3
   m_EnableUIInteraction: 1
   m_BlockUIOnInteractableSelection: 1
-  m_AllowAnchorControl: 1
+  m_AllowAnchorControl: 0
   m_UseForceGrab: 0
   m_RotateSpeed: 180
   m_TranslateSpeed: 1
