@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Native XRSubsystem for WebXR Display rendering.
+- Native XRSubsystem for WebXR Headset/Device tracking.
+- WebXRCameraSettings for updating Camera settings when switching XR modes.
+
 ## [0.19.0] - 2023-11-22
 ### Added
 - WebXRHandData pointerPosition and pointerRotation (WebXR targetRaySpace for hands).

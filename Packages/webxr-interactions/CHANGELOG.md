@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- XR Interaction Toolkit sample XR Rig now use 1 camera instead of cameras group.
+- SceneHitTest now looks for Main Camera if there's no WebXRCamera component in scene.
+
+### Removed
+- WebXRHMD device from WebXRInputDevices as it's now native part of the WebXR Export package.
+
+### Fixed
+- Issue with Anchor Control in the XR Interaction Toolkit sample XR Screen Space Controller.
+
 ## [0.19.2] - 2023-11-22
 ### Fixed
 - HandMenu missing camera transform reference in the XR Interaction Toolkit Sample.
