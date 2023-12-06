@@ -79,7 +79,7 @@ namespace WebXR
           }
           break;
         case WebXRState.VR:
-          cameraMain.enabled = true;
+          cameraMain.enabled = false;
           cameraL.enabled = viewsCount > 0;
           cameraL.rect = leftRect;
           cameraR.enabled = viewsCount > 1;
