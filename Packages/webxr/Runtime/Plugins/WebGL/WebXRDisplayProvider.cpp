@@ -41,6 +41,7 @@ public:
     UnitySubsystemErrorCode GfxThread_FinalBlitToGameViewBackBuffer(const UnityXRMirrorViewBlitInfo* mirrorBlitInfo, WebXRProviderContext& ctx);
 
     UnitySubsystemErrorCode QueryMirrorViewBlitDesc(const UnityXRMirrorViewBlitInfo* mirrorRtDesc, UnityXRMirrorViewBlitDesc* blitDescriptor, WebXRProviderContext& ctx);
+    UnitySubsystemErrorCode UpdateDisplayState(UnityXRDisplayState* state);
 
     void Stop() override;
     void Shutdown() override;
@@ -57,6 +58,7 @@ private:
     std::vector<UnityXRRenderTextureId> m_UnityTextures;
     float *m_ViewsDataArray;
     bool hasMultipleViews = true;
+    bool transparentBackground = false;
 };
 
 UnitySubsystemErrorCode WebXRDisplayProvider::Initialize()
@@ -75,6 +77,7 @@ UnitySubsystemErrorCode WebXRDisplayProvider::Start()
     s_PoseXPositionPerPass[0] = -viewsHalfDistance;
     s_PoseXPositionPerPass[1] = viewsHalfDistance;
     hasMultipleViews = *(m_ViewsDataArray + 54) > 1;
+    transparentBackground = *(m_ViewsDataArray + 55) > 0;
     return kUnitySubsystemErrorCodeSuccess;
 }
 
@@ -382,6 +385,12 @@ UnitySubsystemErrorCode WebXRDisplayProvider::QueryMirrorViewBlitDesc(const Unit
     return kUnitySubsystemErrorCodeSuccess;
 }
 
+UnitySubsystemErrorCode WebXRDisplayProvider::UpdateDisplayState(UnityXRDisplayState * state)
+{
+    state->displayIsTransparent = transparentBackground;
+    return kUnitySubsystemErrorCodeSuccess;
+}
+
 // Binding to C-API below here
 
 static UnitySubsystemErrorCode UNITY_INTERFACE_API Display_Initialize(UnitySubsystemHandle handle, void* userData)
@@ -426,6 +435,11 @@ static UnitySubsystemErrorCode UNITY_INTERFACE_API Display_Initialize(UnitySubsy
     //    auto& ctx = GetWebXRProviderContext(userData);
     //    return ctx.displayProvider->QueryMirrorViewBlitDesc(&mirrorBlitInfo, blitDescriptor, ctx);
     //};
+
+    provider.UpdateDisplayState = [](UnitySubsystemHandle handle, void* userData, UnityXRDisplayState* state) -> UnitySubsystemErrorCode {
+        auto& ctx = GetWebXRProviderContext(userData);
+        return ctx.displayProvider->UpdateDisplayState(state);
+    };
 
     ctx.display->RegisterProvider(handle, &provider);
 

@@ -353,8 +353,9 @@ namespace WebXR
     private Quaternion rightRotation = Quaternion.identity;
 
     // Shared array which we will load headset data in from webxr.jslib
-    // Array stores 2 matrices, each 16 values, 2 Quaternions and 2 Vector3, 2 XRViewports, views count, stored linearly.
-    float[] sharedArray = new float[(2 * 16) + (2 * 7) + (2 * 4) + 1];
+    // Array stores 2 matrices, each 16 values, 2 Quaternions and 2 Vector3,
+    // 2 XRViewports, views count, is transparent, stored linearly.
+    float[] sharedArray = new float[(2 * 16) + (2 * 7) + (2 * 4) + 1 + 1];
 
     // Shared array for controllers data
     float[] controllersArray = new float[2 * 34];
