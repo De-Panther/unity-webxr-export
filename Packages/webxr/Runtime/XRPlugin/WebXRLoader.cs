@@ -54,17 +54,29 @@ namespace WebXR
       }
       XRSettings.useOcclusionMesh = false;
       CreateSubsystem<WebXRSubsystemDescriptor, WebXRSubsystem>(sampleSubsystemDescriptors, typeof(WebXRSubsystem).FullName);
-      CreateSubsystem<XRDisplaySubsystemDescriptor, XRDisplaySubsystem>(displaySubsystemDescriptors, "WebXR Display");
-      CreateSubsystem<XRInputSubsystemDescriptor, XRInputSubsystem>(inputSubsystemDescriptors, "WebXR HMD");
       return WebXRSubsystem != null;
     }
 
+    public void StartEssentialSubsystems()
+    {
+      CreateSubsystem<XRDisplaySubsystemDescriptor, XRDisplaySubsystem>(displaySubsystemDescriptors, "WebXR Display");
+      CreateSubsystem<XRInputSubsystemDescriptor, XRInputSubsystem>(inputSubsystemDescriptors, "WebXR HMD");
+      XRDisplaySubsystem.Start();
+      XRInputSubsystem.Start();
+    }
+
+    public void EndEssentialSubsystems()
+    {
+      XRDisplaySubsystem.Stop();
+      XRInputSubsystem.Stop();
+      XRDisplaySubsystem.Destroy();
+      XRInputSubsystem.Destroy();
+    }
 
     public override bool Start()
     {
       WebXRSubsystem.Start();
-      WebXRSubsystem.displaySubsystem = XRDisplaySubsystem;
-      WebXRSubsystem.inputSubsystem = XRInputSubsystem;
+      WebXRSubsystem.webXRLoader = this;
       return true;
     }
 
@@ -77,8 +89,8 @@ namespace WebXR
     public override bool Deinitialize()
     {
       WebXRSubsystem.Destroy();
-      XRDisplaySubsystem.Destroy();
-      XRInputSubsystem.Destroy();
+      XRDisplaySubsystem?.Destroy();
+      XRInputSubsystem?.Destroy();
       return base.Deinitialize();
     }
   }

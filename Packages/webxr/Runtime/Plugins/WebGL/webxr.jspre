@@ -433,7 +433,7 @@ setTimeout(function () {
         }
         this.BrowserObject.mainLoop.pause();
         this.ctx.dontClearAlphaOnly = false;
-        this.ctx.bindFramebuffer(this.ctx.FRAMEBUFFER);
+        this.ctx.bindFramebuffer(this.ctx.FRAMEBUFFER, null);
         var thisXRMananger = this;
         window.setTimeout(function () {
           if (thisXRMananger.BrowserObject.resumeAsyncCallbacks) {
@@ -620,11 +620,11 @@ setTimeout(function () {
 
           Module.WebXR.startRenderSpectatorCamera = function () {
             Module.WebXR.isSpectatorCameraRendering = true;
-            thisXRMananger.ctx.bindFramebuffer(thisXRMananger.ctx.FRAMEBUFFER);
+            thisXRMananger.ctx.bindFramebuffer(thisXRMananger.ctx.FRAMEBUFFER, null);
           }
 
           // bindFramebuffer frameBufferObject null in XRSession should use XRWebGLLayer FBO instead
-          thisXRMananger.ctx.oldBindFramebuffer = thisXRMananger.ctx.bindFramebuffer;
+          /*thisXRMananger.ctx.oldBindFramebuffer = thisXRMananger.ctx.bindFramebuffer;
           thisXRMananger.ctx.bindFramebuffer = function (target, fbo) {
             if (!fbo && !Module.WebXR.isSpectatorCameraRendering) {
               if (thisXRMananger.xrSession && thisXRMananger.xrSession.isInSession) {
@@ -634,7 +634,7 @@ setTimeout(function () {
               }
             }
             return thisXRMananger.ctx.oldBindFramebuffer(target, fbo)
-          };
+          };*/
         }
       }
     

@@ -80,7 +80,7 @@ UnitySubsystemErrorCode WebXRDisplayProvider::Start()
 
 UnitySubsystemErrorCode WebXRDisplayProvider::GfxThread_Start(UnityXRRenderingCapabilities& renderingCaps)
 {
-    renderingCaps.noSinglePassRenderingSupport = false;
+    renderingCaps.noSinglePassRenderingSupport = true;
     renderingCaps.invalidateRenderStateAfterEachCallback = false;
     renderingCaps.skipPresentToMainScreen = true;
     return kUnitySubsystemErrorCodeSuccess;

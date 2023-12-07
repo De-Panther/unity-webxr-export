@@ -296,8 +296,7 @@ namespace WebXR
     private bool reportedXRStateSwitch = true;
     internal WebXRVisibilityState visibilityState = WebXRVisibilityState.VISIBLE;
     private bool visibilityStateChanged = false;
-    internal static XRDisplaySubsystem displaySubsystem;
-    internal static XRInputSubsystem inputSubsystem;
+    internal static WebXRLoader webXRLoader;
 
     public delegate void XRCapabilitiesUpdate(WebXRDisplayCapabilities capabilities);
 
@@ -429,8 +428,7 @@ namespace WebXR
         float left_x, float left_y, float left_w, float left_h,
         float right_x, float right_y, float right_w, float right_h)
     {
-      displaySubsystem?.Start();
-      inputSubsystem?.Start();
+      webXRLoader?.StartEssentialSubsystems();
       // TODO: Enable Single-Pass rendering
       Instance.setXrState(WebXRState.AR, viewsCount,
           new Rect(left_x, left_y, left_w, left_h),
@@ -443,8 +441,7 @@ namespace WebXR
         float left_x, float left_y, float left_w, float left_h,
         float right_x, float right_y, float right_w, float right_h)
     {
-      displaySubsystem?.Start();
-      inputSubsystem?.Start();
+      webXRLoader?.StartEssentialSubsystems();
       XRSettings.useOcclusionMesh = false;
       // TODO: Enable Single-Pass rendering
       //displaySubsystem.textureLayout = XRDisplaySubsystem.TextureLayout.Texture2DArray;
@@ -469,8 +466,7 @@ namespace WebXR
     [MonoPInvokeCallback(typeof(EndXREvent))]
     public static void OnEndXR()
     {
-      displaySubsystem?.Stop();
-      inputSubsystem?.Stop();
+      webXRLoader?.EndEssentialSubsystems();
       Instance.updatedControllersOnEnd = false;
       Instance.setXrState(WebXRState.NORMAL, 1, new Rect(), new Rect());
     }

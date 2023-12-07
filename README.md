@@ -40,9 +40,10 @@ Or just use this as a Unity Package (UPM), more info [here](Packages/webxr/READM
 
 ### 📝 Unity Editor version
 
-* `2019.4.33` and up.
-* `2020.1` and up.
-* `2021.1` and up.
+* `2020.3.6f1` and up.
+* `2021.1.4f1` and up.
+* `2022.1` and up.
+* `2023.1` and up.
 
 ### 🗺️ Browser Compatibility
 
