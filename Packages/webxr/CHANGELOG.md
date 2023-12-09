@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Native XRSubsystem for WebXR Display rendering.
 - Native XRSubsystem for WebXR Headset/Device tracking.
 - WebXRCameraSettings for updating Camera settings when switching XR modes.
+- WebXRModesNotifier with events when switching to or from XR modes.
 
 ### Removed
 - Support for Unity versions older than 2020.3.6f1.
