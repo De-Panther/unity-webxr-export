@@ -5,6 +5,7 @@
 #include <cmath>
 #include <vector>
 #include <stdio.h>
+#include <GLES3/gl3.h>
 
 #define SIDE_BY_SIDE 1
 #define NUM_RENDER_PASSES 2
@@ -56,9 +57,24 @@ private:
 private:
     //std::vector<void*> m_NativeTextures;
     std::vector<UnityXRRenderTextureId> m_UnityTextures;
+    std::vector<UnityXRVector2> m_UnityTexturesSizes;
     float *m_ViewsDataArray;
+    float frameBufferWidth;
+    float frameBufferHeight;
     bool hasMultipleViews = true;
     bool transparentBackground = false;
+    GLuint webxrVertexShader;
+    GLuint webxrFragmentShader;
+    GLuint webXRDisplayProgram;
+    GLint webXRPositionAttributeLocation;
+    GLint webXRTextureCoordsAttributeLocation;
+    GLint webXRTextureAttributeLocation;
+    GLuint webXRPositionBuffer;
+    GLfloat positionData[12] = {-1, -1, -1, 1, 1, -1, 1, -1, -1, 1, 1, 1};
+    GLuint webXRUVBuffer;
+    GLfloat uvData[12] = {0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1};
+    GLuint webXRFrameBuffer;
+    GLuint webXRRenderTexture;
 };
 
 UnitySubsystemErrorCode WebXRDisplayProvider::Initialize()
@@ -69,7 +85,9 @@ UnitySubsystemErrorCode WebXRDisplayProvider::Initialize()
 UnitySubsystemErrorCode WebXRDisplayProvider::Start()
 {
     m_ViewsDataArray = WebXRGetViewsDataArray();
-    printf("Start %f, %f\n", *(m_ViewsDataArray + 46), *(m_ViewsDataArray + 47));
+    frameBufferWidth = *(m_ViewsDataArray + 56);
+    frameBufferHeight = *(m_ViewsDataArray + 57);
+    printf("Start %f, %f\n", frameBufferWidth, frameBufferHeight);
     float viewsHalfDistance = 0.5f * sqrt(
       pow((*(m_ViewsDataArray + 40) - *(m_ViewsDataArray + 43)), 2)
       + pow((*(m_ViewsDataArray + 41) - *(m_ViewsDataArray + 44)), 2)
@@ -78,6 +96,55 @@ UnitySubsystemErrorCode WebXRDisplayProvider::Start()
     s_PoseXPositionPerPass[1] = viewsHalfDistance;
     hasMultipleViews = *(m_ViewsDataArray + 54) > 1;
     transparentBackground = *(m_ViewsDataArray + 55) > 0;
+    webXRFrameBuffer = WebXRInitDisplayRender();
+
+    webxrVertexShader = glCreateShader(GL_VERTEX_SHADER);
+    const GLchar* vertexSource = R"(#version 300 es
+        in vec2 a_Position;
+        in vec2 a_TextureCoords;
+        out vec2 v_TextureCoords;
+        void main() {
+          gl_Position = vec4(a_Position, -1, 1);
+          v_TextureCoords = a_TextureCoords;
+        })";
+    glShaderSource(webxrVertexShader, 1, &vertexSource, NULL);
+    glCompileShader(webxrVertexShader);
+
+    webxrFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    const GLchar* fragmentSource = R"(#version 300 es
+        precision highp float;
+        uniform sampler2D a_Texture;
+        in vec2 v_TextureCoords;
+        out vec4 o_FragColor;
+        void main() {
+          o_FragColor = texture(a_Texture, v_TextureCoords);
+        })";
+    glShaderSource(webxrFragmentShader, 1, &fragmentSource, NULL);
+    glCompileShader(webxrFragmentShader);
+
+    webXRDisplayProgram = glCreateProgram();
+    glAttachShader(webXRDisplayProgram, webxrVertexShader);
+    glAttachShader(webXRDisplayProgram, webxrFragmentShader);
+    glLinkProgram(webXRDisplayProgram);
+
+    webXRPositionAttributeLocation = glGetAttribLocation(webXRDisplayProgram, "a_Position");
+    webXRTextureCoordsAttributeLocation = glGetAttribLocation(webXRDisplayProgram, "a_TextureCoords");
+    webXRTextureAttributeLocation = glGetUniformLocation(webXRDisplayProgram, "a_Texture");
+
+    glGenBuffers(1, &webXRPositionBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, webXRPositionBuffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(positionData), positionData, GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(webXRPositionAttributeLocation);
+    glVertexAttribPointer(webXRPositionAttributeLocation, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+    glGenBuffers(1, &webXRUVBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, webXRUVBuffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(uvData), uvData, GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(webXRTextureCoordsAttributeLocation);
+    glVertexAttribPointer(webXRTextureCoordsAttributeLocation, 2, GL_FLOAT, GL_FALSE, 0, uvData);
+
     return kUnitySubsystemErrorCodeSuccess;
 }
 
@@ -92,6 +159,38 @@ UnitySubsystemErrorCode WebXRDisplayProvider::GfxThread_Start(UnityXRRenderingCa
 UnitySubsystemErrorCode WebXRDisplayProvider::GfxThread_SubmitCurrentFrame()
 {
     // SubmitFrame();
+    glBindFramebuffer(GL_FRAMEBUFFER, webXRFrameBuffer);
+    glViewport(0, 0, static_cast<int>(frameBufferWidth), static_cast<int>(frameBufferHeight));
+    glClearColor(0.7f, 0.8f, 0, 1);
+    glDepthMask(false);
+    glDisable(GL_SCISSOR_TEST);
+    glDisable(GL_CULL_FACE);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    glDepthMask(true);
+
+    glUseProgram(webXRDisplayProgram);
+
+    glBindBuffer(GL_ARRAY_BUFFER, webXRPositionBuffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(positionData), positionData, GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(webXRPositionAttributeLocation);
+    glVertexAttribPointer(webXRPositionAttributeLocation, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, webXRUVBuffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(uvData), uvData, GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(webXRTextureCoordsAttributeLocation);
+    glVertexAttribPointer(webXRTextureCoordsAttributeLocation, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+    UnityXRRenderTextureDesc uDesc;
+    m_Ctx.display->QueryTextureDesc(m_Handle, m_UnityTextures[0], &uDesc);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, uDesc.color.referenceTextureId);
+    glUniform1i(webXRTextureAttributeLocation, 0);
+
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     return kUnitySubsystemErrorCodeSuccess;
 }
@@ -252,6 +351,12 @@ UnitySubsystemErrorCode WebXRDisplayProvider::GfxThread_FinalBlitToGameViewBackB
 
 void WebXRDisplayProvider::Stop()
 {
+  WebXRDestructDisplayRender(webXRFrameBuffer);
+  glDeleteProgram(webXRDisplayProgram);
+  glDeleteShader(webxrVertexShader);
+  glDeleteShader(webxrFragmentShader);
+  glDeleteBuffers(1, &webXRPositionBuffer);
+  glDeleteBuffers(1, &webXRUVBuffer);
 }
 
 void WebXRDisplayProvider::Shutdown()
@@ -260,11 +365,12 @@ void WebXRDisplayProvider::Shutdown()
 
 void WebXRDisplayProvider::CreateTextures(int numTextures, int textureArrayLength, float requestedTextureScale)
 {
-    const int texWidth = (int)(*(m_ViewsDataArray + 46) * requestedTextureScale * (SIDE_BY_SIDE && hasMultipleViews ? 2.0f : 1.0f));
-    const int texHeight = (int)(*(m_ViewsDataArray + 47) * requestedTextureScale);
+    const int texWidth = (int)(frameBufferWidth);
+    const int texHeight = (int)(frameBufferHeight);
 
     //m_NativeTextures.resize(numTextures);
     m_UnityTextures.resize(numTextures);
+    m_UnityTexturesSizes.resize(numTextures);
 
     // Tell unity about the native textures, getting back UnityXRRenderTextureIds.
     for (int i = 0; i < numTextures; ++i)
@@ -279,8 +385,14 @@ void WebXRDisplayProvider::CreateTextures(int numTextures, int textureArrayLengt
 
         // Create an UnityXRRenderTextureId for the native texture so we can tell unity to render to it later.
         UnityXRRenderTextureId uTexId;
+        printf("CreateTexture\n");
         m_Ctx.display->CreateTexture(m_Handle, &uDesc, &uTexId);
+        UnityXRVector2 size;
+        size.x = texWidth;
+        size.x = texHeight;
         m_UnityTextures[i] = uTexId;
+        m_UnityTexturesSizes[i] = size;
+        printf("uTexId %d\n", uTexId);
     }
 }
 
@@ -295,6 +407,7 @@ void WebXRDisplayProvider::DestroyTextures()
     }
 
     m_UnityTextures.clear();
+    m_UnityTexturesSizes.clear();
     //m_NativeTextures.clear();
 }
 
@@ -344,7 +457,7 @@ UnitySubsystemErrorCode WebXRDisplayProvider::QueryMirrorViewBlitDesc(const Unit
         return UnitySubsystemErrorCode::kUnitySubsystemErrorCodeFailure;
     }
     int srcTexId = ctx.displayProvider->m_UnityTextures[0];
-    const UnityXRVector2 sourceTextureSize = {static_cast<float>(841), static_cast<float>(706)};
+    const UnityXRVector2 sourceTextureSize = {static_cast<float>(m_UnityTexturesSizes[0].x), static_cast<float>(m_UnityTexturesSizes[0].y)};
     const UnityXRRectf sourceUVRect = {0.0f, 0.0f, 1.0f, 1.0f};
     const UnityXRVector2 destTextureSize = {static_cast<float>(mirrorBlitInfo->mirrorRtDesc->rtScaledWidth), static_cast<float>(mirrorBlitInfo->mirrorRtDesc->rtScaledHeight)};
     const UnityXRRectf destUVRect = {0.0f, 0.0f, 1.0f, 1.0f};

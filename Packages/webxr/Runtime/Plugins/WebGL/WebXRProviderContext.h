@@ -8,6 +8,8 @@
 extern "C"
 {
   extern float *WebXRGetViewsDataArray();
+  extern int WebXRInitDisplayRender();
+  extern void WebXRDestructDisplayRender(int frameBuffer);
 }
 
 struct IUnityXRTrace;

@@ -345,6 +345,7 @@ setTimeout(function () {
           session.isImmersive = true;
           session.isInSession = true;
           session.isAR = true;
+          Module.WebXR.xrSession = session;
           thisXRMananger.xrSession = session;
           thisXRMananger.onSessionStarted(session);
         }).catch(function (error) {
@@ -374,6 +375,7 @@ setTimeout(function () {
           session.isImmersive = true;
           session.isInSession = true;
           session.isAR = false;
+          Module.WebXR.xrSession = session;
           thisXRMananger.xrSession = session;
           thisXRMananger.onSessionStarted(session);
         }).catch(function (error) {
@@ -963,7 +965,7 @@ setTimeout(function () {
         }
 
         Module.WebXR.isSpectatorCameraRendering = false;
-        this.ctx.bindFramebuffer(this.ctx.FRAMEBUFFER, glLayer.framebuffer);
+        /*this.ctx.bindFramebuffer(this.ctx.FRAMEBUFFER, glLayer.framebuffer);
         if (session.isAR) {
           // Workaround for Chromium depth bug https://bugs.chromium.org/p/chromium/issues/detail?id=1167450#c21
           this.ctx.depthMask(false);
@@ -971,7 +973,7 @@ setTimeout(function () {
           this.ctx.depthMask(true);
         } else {
           this.ctx.clear(this.ctx.COLOR_BUFFER_BIT | this.ctx.DEPTH_BUFFER_BIT);
-        }
+        }*/
         
         var pose = frame.getViewerPose(session.refSpace);
         if (!pose) {
@@ -1094,6 +1096,8 @@ setTimeout(function () {
           }
           Module.HEAPF32[Module.XRSharedArrayOffset + 54] = eyeCount;
           Module.HEAPF32[Module.XRSharedArrayOffset + 55] = session.isAR ? 1 : 0;
+          Module.HEAPF32[Module.XRSharedArrayOffset + 56] = glLayer.framebufferWidth;
+          Module.HEAPF32[Module.XRSharedArrayOffset + 57] = glLayer.framebufferHeight;
           if (session.isAR)
           {
             this.gameModule.WebXR.OnStartAR(eyeCount, leftRect, rightRect);
