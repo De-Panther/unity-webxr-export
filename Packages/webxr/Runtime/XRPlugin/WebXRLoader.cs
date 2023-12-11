@@ -63,6 +63,8 @@ namespace WebXR
       CreateSubsystem<XRInputSubsystemDescriptor, XRInputSubsystem>(inputSubsystemDescriptors, "WebXR HMD");
       XRDisplaySubsystem.Start();
       XRInputSubsystem.Start();
+      // TODO: Enable Single-Pass rendering
+      // Debug.LogError(XRDisplaySubsystem.supportedTextureLayouts);
     }
 
     public void EndEssentialSubsystems()

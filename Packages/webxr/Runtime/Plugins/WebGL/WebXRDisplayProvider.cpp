@@ -158,15 +158,14 @@ UnitySubsystemErrorCode WebXRDisplayProvider::GfxThread_Start(UnityXRRenderingCa
 
 UnitySubsystemErrorCode WebXRDisplayProvider::GfxThread_SubmitCurrentFrame()
 {
-    // SubmitFrame();
     glBindFramebuffer(GL_FRAMEBUFFER, webXRFrameBuffer);
     glViewport(0, 0, static_cast<int>(frameBufferWidth), static_cast<int>(frameBufferHeight));
-    glClearColor(0.7f, 0.8f, 0, 1);
-    glDepthMask(false);
-    glDisable(GL_SCISSOR_TEST);
-    glDisable(GL_CULL_FACE);
+    glClearColor(0, 0, 0, 0);
+    glDepthMask(false); // solves bug in some android phones
+    // glDisable(GL_SCISSOR_TEST);
+    // glDisable(GL_CULL_FACE);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    glDepthMask(true);
+    glDepthMask(true); // solves bug in some android phones
 
     glUseProgram(webXRDisplayProgram);
 

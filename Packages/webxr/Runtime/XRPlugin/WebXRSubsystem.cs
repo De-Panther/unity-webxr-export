@@ -430,7 +430,6 @@ namespace WebXR
         float right_x, float right_y, float right_w, float right_h)
     {
       webXRLoader?.StartEssentialSubsystems();
-      // TODO: Enable Single-Pass rendering
       Instance.setXrState(WebXRState.AR, viewsCount,
           new Rect(left_x, left_y, left_w, left_h),
           new Rect(right_x, right_y, right_w, right_h));
@@ -443,11 +442,6 @@ namespace WebXR
         float right_x, float right_y, float right_w, float right_h)
     {
       webXRLoader?.StartEssentialSubsystems();
-      XRSettings.useOcclusionMesh = false;
-      // TODO: Enable Single-Pass rendering
-      //displaySubsystem.textureLayout = XRDisplaySubsystem.TextureLayout.Texture2DArray;
-      //Debug.Log(displaySubsystem.supportedTextureLayouts);
-      //Debug.Log(displaySubsystem.textureLayout);
       Instance.setXrState(WebXRState.VR, viewsCount,
           new Rect(left_x, left_y, left_w, left_h),
           new Rect(right_x, right_y, right_w, right_h));

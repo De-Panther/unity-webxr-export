@@ -1990,6 +1990,7 @@ GameObject:
   m_Component:
   - component: {fileID: 257810523}
   - component: {fileID: 257810522}
+  - component: {fileID: 257810524}
   m_Layer: 0
   m_Name: Directional Light
   m_TagString: Untagged
@@ -2074,6 +2075,29 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 30.074001, y: -105.73701, z: -32.233}
+--- !u!114 &257810524
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 257810521}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Version: 3
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_LightLayerMask: 1
+  m_RenderingLayers: 1
+  m_CustomShadowLayers: 0
+  m_ShadowLayerMask: 1
+  m_ShadowRenderingLayers: 1
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
 --- !u!114 &260197484 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 195190420571543381, guid: 6a448845c7017044e8a9f3d711cfe825,
@@ -7005,7 +7029,11 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1241030032}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6335234714587842119, guid: 1644f8f6d950f87408375866a875e80d,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1107317944}
   m_SourcePrefab: {fileID: 100100000, guid: 1644f8f6d950f87408375866a875e80d, type: 3}
 --- !u!4 &1107317933 stripped
 Transform:
@@ -7016,6 +7044,12 @@ Transform:
 --- !u!4 &1107317934 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1631729516037905644, guid: 1644f8f6d950f87408375866a875e80d,
+    type: 3}
+  m_PrefabInstance: {fileID: 1107317932}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1107317935 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6335234714587842119, guid: 1644f8f6d950f87408375866a875e80d,
     type: 3}
   m_PrefabInstance: {fileID: 1107317932}
   m_PrefabAsset: {fileID: 0}
@@ -7037,6 +7071,50 @@ Camera:
     type: 3}
   m_PrefabInstance: {fileID: 1107317932}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1107317944
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1107317935}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
+  m_RenderPostProcessing: 0
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 1
+  m_AllowHDROutput: 1
+  m_UseScreenCoordOverride: 0
+  m_ScreenSizeOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_Version: 2
+  m_TaaSettings:
+    quality: 3
+    frameInfluence: 0.1
+    jitterScale: 1
+    mipBias: 0
+    varianceClampScale: 0.9
+    contrastAdaptiveSharpening: 0
 --- !u!1 &1109258394 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5715416335250216647, guid: 541ed11e270c6994ca5910042c7e04da,
@@ -14720,17 +14798,17 @@ PrefabInstance:
         type: 3}
       propertyPath: camerasBase
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 657176732}
     - target: {fileID: 3969398151418961971, guid: caa6800791b6a7345a7f0bce4ae01e59,
         type: 3}
       propertyPath: cameraFollower
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1107317933}
     - target: {fileID: 3969398151418961971, guid: caa6800791b6a7345a7f0bce4ae01e59,
         type: 3}
       propertyPath: xrCameras.Array.data[0]
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1107317943}
     - target: {fileID: 3969398151418961971, guid: caa6800791b6a7345a7f0bce4ae01e59,
         type: 3}
       propertyPath: xrCameras.Array.data[1]
