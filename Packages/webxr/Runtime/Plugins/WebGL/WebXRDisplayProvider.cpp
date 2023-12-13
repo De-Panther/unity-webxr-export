@@ -59,6 +59,8 @@ private:
     std::vector<UnityXRRenderTextureId> m_UnityTextures;
     std::vector<UnityXRVector2> m_UnityTexturesSizes;
     float *m_ViewsDataArray;
+    float viewWidth;
+    float viewHeight;
     float frameBufferWidth;
     float frameBufferHeight;
     bool hasMultipleViews = true;
@@ -85,16 +87,26 @@ UnitySubsystemErrorCode WebXRDisplayProvider::Initialize()
 UnitySubsystemErrorCode WebXRDisplayProvider::Start()
 {
     m_ViewsDataArray = WebXRGetViewsDataArray();
+    viewWidth = *(m_ViewsDataArray + 46);
+    viewHeight = *(m_ViewsDataArray + 47);
     frameBufferWidth = *(m_ViewsDataArray + 56);
     frameBufferHeight = *(m_ViewsDataArray + 57);
     printf("Start %f, %f\n", frameBufferWidth, frameBufferHeight);
-    float viewsHalfDistance = 0.5f * sqrt(
-      pow((*(m_ViewsDataArray + 40) - *(m_ViewsDataArray + 43)), 2)
-      + pow((*(m_ViewsDataArray + 41) - *(m_ViewsDataArray + 44)), 2)
-      + pow((*(m_ViewsDataArray + 42) - *(m_ViewsDataArray + 45)), 2));
-    s_PoseXPositionPerPass[0] = -viewsHalfDistance;
-    s_PoseXPositionPerPass[1] = viewsHalfDistance;
     hasMultipleViews = *(m_ViewsDataArray + 54) > 1;
+    if (hasMultipleViews)
+    {
+      float viewsHalfDistance = 0.5f * sqrt(
+        pow((*(m_ViewsDataArray + 40) - *(m_ViewsDataArray + 43)), 2)
+        + pow((*(m_ViewsDataArray + 41) - *(m_ViewsDataArray + 44)), 2)
+        + pow((*(m_ViewsDataArray + 42) - *(m_ViewsDataArray + 45)), 2));
+      s_PoseXPositionPerPass[0] = -viewsHalfDistance;
+      s_PoseXPositionPerPass[1] = viewsHalfDistance;
+    }
+    else
+    {
+      s_PoseXPositionPerPass[0] = 0;
+      s_PoseXPositionPerPass[1] = 0;
+    }
     transparentBackground = *(m_ViewsDataArray + 55) > 0;
     webXRFrameBuffer = WebXRInitDisplayRender();
 
@@ -364,8 +376,8 @@ void WebXRDisplayProvider::Shutdown()
 
 void WebXRDisplayProvider::CreateTextures(int numTextures, int textureArrayLength, float requestedTextureScale)
 {
-    const int texWidth = (int)(frameBufferWidth);
-    const int texHeight = (int)(frameBufferHeight);
+    const int texWidth = (int)(SIDE_BY_SIDE ? frameBufferWidth : viewWidth);
+    const int texHeight = (int)(SIDE_BY_SIDE ? frameBufferHeight : viewHeight);
 
     //m_NativeTextures.resize(numTextures);
     m_UnityTextures.resize(numTextures);
