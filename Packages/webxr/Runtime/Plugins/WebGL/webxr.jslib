@@ -56,22 +56,6 @@ var LibraryWebXR = {
   PreRenderSpectatorCamera: function() {
     Module.WebXR.startRenderSpectatorCamera();
   },
-
-  WebXRInitDisplayRender: function() {
-    console.log("WebXRInitDisplayRender");
-    var xrFramebuffer = Module.WebXR.xrSession.renderState.baseLayer.framebuffer;
-    var bufferId = GL.getNewId(GL.framebuffers);
-    if (xrFramebuffer != null) {
-      xrFramebuffer["name"] = bufferId;
-      GL.framebuffers[bufferId] = xrFramebuffer;
-    }
-    return bufferId;
-  },
-
-  WebXRDestructDisplayRender: function(bufferId) {
-    console.log("WebXRDestructDisplayRender");
-    GL.framebuffers[bufferId] = null;
-  },
 }
 
 mergeInto(LibraryManager.library, LibraryWebXR);

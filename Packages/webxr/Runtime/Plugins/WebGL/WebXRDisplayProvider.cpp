@@ -5,7 +5,6 @@
 #include <cmath>
 #include <vector>
 #include <stdio.h>
-#include <GLES3/gl3.h>
 
 #define SIDE_BY_SIDE 1
 #define NUM_RENDER_PASSES 2
@@ -65,18 +64,6 @@ private:
     float frameBufferHeight;
     bool hasMultipleViews = true;
     bool transparentBackground = false;
-    GLuint webxrVertexShader;
-    GLuint webxrFragmentShader;
-    GLuint webXRDisplayProgram;
-    GLint webXRPositionAttributeLocation;
-    GLint webXRTextureCoordsAttributeLocation;
-    GLint webXRTextureAttributeLocation;
-    GLuint webXRPositionBuffer;
-    GLfloat positionData[12] = {-1, -1, -1, 1, 1, -1, 1, -1, -1, 1, 1, 1};
-    GLuint webXRUVBuffer;
-    GLfloat uvData[12] = {0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1};
-    GLuint webXRFrameBuffer;
-    GLuint webXRRenderTexture;
 };
 
 UnitySubsystemErrorCode WebXRDisplayProvider::Initialize()
@@ -108,55 +95,6 @@ UnitySubsystemErrorCode WebXRDisplayProvider::Start()
       s_PoseXPositionPerPass[1] = 0;
     }
     transparentBackground = *(m_ViewsDataArray + 55) > 0;
-    /*webXRFrameBuffer = WebXRInitDisplayRender();
-
-    webxrVertexShader = glCreateShader(GL_VERTEX_SHADER);
-    const GLchar* vertexSource = R"(#version 300 es
-        in vec2 a_Position;
-        in vec2 a_TextureCoords;
-        out vec2 v_TextureCoords;
-        void main() {
-          gl_Position = vec4(a_Position, -1, 1);
-          v_TextureCoords = a_TextureCoords;
-        })";
-    glShaderSource(webxrVertexShader, 1, &vertexSource, NULL);
-    glCompileShader(webxrVertexShader);
-
-    webxrFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    const GLchar* fragmentSource = R"(#version 300 es
-        precision highp float;
-        uniform sampler2D a_Texture;
-        in vec2 v_TextureCoords;
-        out vec4 o_FragColor;
-        void main() {
-          o_FragColor = texture(a_Texture, v_TextureCoords);
-        })";
-    glShaderSource(webxrFragmentShader, 1, &fragmentSource, NULL);
-    glCompileShader(webxrFragmentShader);
-
-    webXRDisplayProgram = glCreateProgram();
-    glAttachShader(webXRDisplayProgram, webxrVertexShader);
-    glAttachShader(webXRDisplayProgram, webxrFragmentShader);
-    glLinkProgram(webXRDisplayProgram);
-
-    webXRPositionAttributeLocation = glGetAttribLocation(webXRDisplayProgram, "a_Position");
-    webXRTextureCoordsAttributeLocation = glGetAttribLocation(webXRDisplayProgram, "a_TextureCoords");
-    webXRTextureAttributeLocation = glGetUniformLocation(webXRDisplayProgram, "a_Texture");
-
-    glGenBuffers(1, &webXRPositionBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, webXRPositionBuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(positionData), positionData, GL_STATIC_DRAW);
-
-    glEnableVertexAttribArray(webXRPositionAttributeLocation);
-    glVertexAttribPointer(webXRPositionAttributeLocation, 2, GL_FLOAT, GL_FALSE, 0, 0);
-
-    glGenBuffers(1, &webXRUVBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, webXRUVBuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(uvData), uvData, GL_STATIC_DRAW);
-
-    glEnableVertexAttribArray(webXRTextureCoordsAttributeLocation);
-    glVertexAttribPointer(webXRTextureCoordsAttributeLocation, 2, GL_FLOAT, GL_FALSE, 0, uvData);*/
-
     return kUnitySubsystemErrorCodeSuccess;
 }
 
@@ -170,38 +108,6 @@ UnitySubsystemErrorCode WebXRDisplayProvider::GfxThread_Start(UnityXRRenderingCa
 
 UnitySubsystemErrorCode WebXRDisplayProvider::GfxThread_SubmitCurrentFrame()
 {
-    /*glBindFramebuffer(GL_FRAMEBUFFER, webXRFrameBuffer);
-    glViewport(0, 0, static_cast<int>(frameBufferWidth), static_cast<int>(frameBufferHeight));
-    glClearColor(0, 0, 0, 0);
-    glDepthMask(false); // solves bug in some android phones
-    // glDisable(GL_SCISSOR_TEST);
-    // glDisable(GL_CULL_FACE);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    glDepthMask(true); // solves bug in some android phones
-
-    glUseProgram(webXRDisplayProgram);
-
-    glBindBuffer(GL_ARRAY_BUFFER, webXRPositionBuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(positionData), positionData, GL_STATIC_DRAW);
-
-    glEnableVertexAttribArray(webXRPositionAttributeLocation);
-    glVertexAttribPointer(webXRPositionAttributeLocation, 2, GL_FLOAT, GL_FALSE, 0, 0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, webXRUVBuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(uvData), uvData, GL_STATIC_DRAW);
-
-    glEnableVertexAttribArray(webXRTextureCoordsAttributeLocation);
-    glVertexAttribPointer(webXRTextureCoordsAttributeLocation, 2, GL_FLOAT, GL_FALSE, 0, 0);
-
-    UnityXRRenderTextureDesc uDesc;
-    m_Ctx.display->QueryTextureDesc(m_Handle, m_UnityTextures[0], &uDesc);
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, uDesc.color.referenceTextureId);
-    glUniform1i(webXRTextureAttributeLocation, 0);
-
-    glDrawArrays(GL_TRIANGLES, 0, 6);*/
-
     return kUnitySubsystemErrorCodeSuccess;
 }
 
@@ -361,12 +267,6 @@ UnitySubsystemErrorCode WebXRDisplayProvider::GfxThread_FinalBlitToGameViewBackB
 
 void WebXRDisplayProvider::Stop()
 {
-  /*WebXRDestructDisplayRender(webXRFrameBuffer);
-  glDeleteProgram(webXRDisplayProgram);
-  glDeleteShader(webxrVertexShader);
-  glDeleteShader(webxrFragmentShader);
-  glDeleteBuffers(1, &webXRPositionBuffer);
-  glDeleteBuffers(1, &webXRUVBuffer);*/
 }
 
 void WebXRDisplayProvider::Shutdown()
