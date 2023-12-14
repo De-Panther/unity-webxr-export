@@ -108,7 +108,7 @@ UnitySubsystemErrorCode WebXRDisplayProvider::Start()
       s_PoseXPositionPerPass[1] = 0;
     }
     transparentBackground = *(m_ViewsDataArray + 55) > 0;
-    webXRFrameBuffer = WebXRInitDisplayRender();
+    /*webXRFrameBuffer = WebXRInitDisplayRender();
 
     webxrVertexShader = glCreateShader(GL_VERTEX_SHADER);
     const GLchar* vertexSource = R"(#version 300 es
@@ -155,7 +155,7 @@ UnitySubsystemErrorCode WebXRDisplayProvider::Start()
     glBufferData(GL_ARRAY_BUFFER, sizeof(uvData), uvData, GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(webXRTextureCoordsAttributeLocation);
-    glVertexAttribPointer(webXRTextureCoordsAttributeLocation, 2, GL_FLOAT, GL_FALSE, 0, uvData);
+    glVertexAttribPointer(webXRTextureCoordsAttributeLocation, 2, GL_FLOAT, GL_FALSE, 0, uvData);*/
 
     return kUnitySubsystemErrorCodeSuccess;
 }
@@ -164,13 +164,13 @@ UnitySubsystemErrorCode WebXRDisplayProvider::GfxThread_Start(UnityXRRenderingCa
 {
     renderingCaps.noSinglePassRenderingSupport = true;
     renderingCaps.invalidateRenderStateAfterEachCallback = false;
-    renderingCaps.skipPresentToMainScreen = true;
+    renderingCaps.skipPresentToMainScreen = false;
     return kUnitySubsystemErrorCodeSuccess;
 }
 
 UnitySubsystemErrorCode WebXRDisplayProvider::GfxThread_SubmitCurrentFrame()
 {
-    glBindFramebuffer(GL_FRAMEBUFFER, webXRFrameBuffer);
+    /*glBindFramebuffer(GL_FRAMEBUFFER, webXRFrameBuffer);
     glViewport(0, 0, static_cast<int>(frameBufferWidth), static_cast<int>(frameBufferHeight));
     glClearColor(0, 0, 0, 0);
     glDepthMask(false); // solves bug in some android phones
@@ -200,8 +200,7 @@ UnitySubsystemErrorCode WebXRDisplayProvider::GfxThread_SubmitCurrentFrame()
     glBindTexture(GL_TEXTURE_2D, uDesc.color.referenceTextureId);
     glUniform1i(webXRTextureAttributeLocation, 0);
 
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glDrawArrays(GL_TRIANGLES, 0, 6);*/
 
     return kUnitySubsystemErrorCodeSuccess;
 }
@@ -362,12 +361,12 @@ UnitySubsystemErrorCode WebXRDisplayProvider::GfxThread_FinalBlitToGameViewBackB
 
 void WebXRDisplayProvider::Stop()
 {
-  WebXRDestructDisplayRender(webXRFrameBuffer);
+  /*WebXRDestructDisplayRender(webXRFrameBuffer);
   glDeleteProgram(webXRDisplayProgram);
   glDeleteShader(webxrVertexShader);
   glDeleteShader(webxrFragmentShader);
   glDeleteBuffers(1, &webXRPositionBuffer);
-  glDeleteBuffers(1, &webXRUVBuffer);
+  glDeleteBuffers(1, &webXRUVBuffer);*/
 }
 
 void WebXRDisplayProvider::Shutdown()

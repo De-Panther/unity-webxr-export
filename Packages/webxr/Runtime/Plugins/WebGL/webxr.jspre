@@ -18,6 +18,58 @@ setTimeout(function () {
             
             return GL.createContextOld(canvas, contextAttributes);
         }
+
+        const shaderBug = `#version 300 es
+
+#define HLSLCC_ENABLE_UNIFORM_BUFFERS 1
+#if HLSLCC_ENABLE_UNIFORM_BUFFERS
+#define UNITY_UNIFORM
+#else
+#define UNITY_UNIFORM uniform
+#endif
+#define UNITY_SUPPORTS_UNIFORM_LOCATION 0
+#if UNITY_SUPPORTS_UNIFORM_LOCATION
+#define UNITY_LOCATION(x) layout(location = x)
+#define UNITY_BINDING(x) layout(binding = x, std140)
+#else
+#define UNITY_LOCATION(x)
+#define UNITY_BINDING(x) layout(std140)
+#endif
+uniform 	vec4 _ScaleBias;
+uniform 	vec4 _ScaleBiasRt;
+out highp vec2 vs_TEXCOORD0;
+vec4 u_xlat0;
+int u_xlati0;
+uvec2 u_xlatu0;
+vec4 u_xlat1;
+int u_xlati4;
+void main()
+{
+    u_xlati0 = int(uint(uint(gl_VertexID) & 1u));
+    u_xlatu0.y = uint(uint(gl_VertexID) >> 1u);
+    u_xlati4 = (-u_xlati0) + (-int(u_xlatu0.y));
+    u_xlati0 = u_xlati0 + int(u_xlatu0.y);
+    u_xlatu0.x = uint(uint(u_xlati0) & 1u);
+    u_xlat1.xw = vec2(u_xlatu0.yx);
+    vs_TEXCOORD0.xy = u_xlat1.xw * _ScaleBias.xy + _ScaleBias.zw;
+    u_xlati0 = u_xlati4 + 1;
+    u_xlatu0.x = uint(uint(u_xlati0) & 1u);
+    u_xlat1.y = float(u_xlatu0.x);
+    u_xlat0.xy = u_xlat1.xy * _ScaleBiasRt.xy + _ScaleBiasRt.zw;
+    u_xlat0.z = float(-1.0);
+    u_xlat0.w = float(1.0);
+    gl_Position = u_xlat0 * vec4(2.0, -2.0, 1.0, 1.0) + vec4(-1.0, 1.0, 0.0, 0.0);
+    return;
+}`
+        GL.getSourceOld = GL.getSource;
+        GL.getSource = function (shader, count, string, length) {
+          var source = GL.getSourceOld(shader, count, string, length);
+          if (shaderBug == source) {
+            source = source.replace("vs_TEXCOORD0.xy = u_xlat1.xw * _ScaleBias.xy + _ScaleBias.zw;",
+              "vs_TEXCOORD0.xy = u_xlat1.xw * vec2(1.0, 1.0);");
+          }
+          return source
+        }
     }
 
 
@@ -626,7 +678,7 @@ setTimeout(function () {
           }
 
           // bindFramebuffer frameBufferObject null in XRSession should use XRWebGLLayer FBO instead
-          /*thisXRMananger.ctx.oldBindFramebuffer = thisXRMananger.ctx.bindFramebuffer;
+          thisXRMananger.ctx.oldBindFramebuffer = thisXRMananger.ctx.bindFramebuffer;
           thisXRMananger.ctx.bindFramebuffer = function (target, fbo) {
             if (!fbo && !Module.WebXR.isSpectatorCameraRendering) {
               if (thisXRMananger.xrSession && thisXRMananger.xrSession.isInSession) {
@@ -636,7 +688,7 @@ setTimeout(function () {
               }
             }
             return thisXRMananger.ctx.oldBindFramebuffer(target, fbo)
-          };*/
+          };
         }
       }
     
@@ -965,7 +1017,7 @@ setTimeout(function () {
         }
 
         Module.WebXR.isSpectatorCameraRendering = false;
-        /*this.ctx.bindFramebuffer(this.ctx.FRAMEBUFFER, glLayer.framebuffer);
+        this.ctx.bindFramebuffer(this.ctx.FRAMEBUFFER, glLayer.framebuffer);
         if (session.isAR) {
           // Workaround for Chromium depth bug https://bugs.chromium.org/p/chromium/issues/detail?id=1167450#c21
           this.ctx.depthMask(false);
@@ -973,7 +1025,7 @@ setTimeout(function () {
           this.ctx.depthMask(true);
         } else {
           this.ctx.clear(this.ctx.COLOR_BUFFER_BIT | this.ctx.DEPTH_BUFFER_BIT);
-        }*/
+        }
         
         var pose = frame.getViewerPose(session.refSpace);
         if (!pose) {

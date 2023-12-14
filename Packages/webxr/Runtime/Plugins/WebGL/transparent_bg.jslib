@@ -2,7 +2,7 @@
 // More details at https://support.unity.com/hc/en-us/articles/208892946-How-can-I-make-the-canvas-transparent-on-WebGL-
 var LibraryGLClear = {
   $colorMaskValue: [true, true, true, true],
-  glClear1: function (mask) { // disable hack while WIP
+  glClear: function (mask) {
     if (mask == 0x00004000 && GLctx.dontClearAlphaOnly) {
       if (!colorMaskValue[0] && !colorMaskValue[1] && !colorMaskValue[2] && colorMaskValue[3])
         // We are trying to clear alpha only -- skip.
@@ -10,7 +10,7 @@ var LibraryGLClear = {
     }
     GLctx.clear(mask);
   },
-  glColorMask1: function (red, green, blue, alpha) { // disable hack while WIP
+  glColorMask: function (red, green, blue, alpha) {
     colorMaskValue[0] = !!red;
     colorMaskValue[1] = !!green;
     colorMaskValue[2] = !!blue;

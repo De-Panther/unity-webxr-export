@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace WebXR.Interactions
 {
@@ -24,11 +25,21 @@ namespace WebXR.Interactions
       WebXRManager.OnXRChange += HandleOnXRChange;
       currentXRState = WebXRManager.Instance.XRState;
       TryUpdateCameraState();
+      RenderPipelineManager.beginCameraRendering += OnBeginCameraRendering;
     }
 
     private void OnDisable()
     {
       WebXRManager.OnXRChange -= HandleOnXRChange;
+      RenderPipelineManager.beginCameraRendering -= OnBeginCameraRendering;
+    }
+
+    void OnBeginCameraRendering(ScriptableRenderContext context, Camera camera)
+    {
+      if (camera == _camera)
+      {
+        WebXRManager.Instance.PreRenderSpectatorCamera();
+      }
     }
 
     private void OnPreRender()
