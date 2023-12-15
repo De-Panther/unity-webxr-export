@@ -666,6 +666,9 @@ void main()
               return thisXRMananger.xrSession.requestAnimationFrame(function (time, xrFrame) {
                 thisXRMananger.animate(xrFrame);
                 func(time);
+                if (thisXRMananger.BrowserObject.mainLoop.timingMode == 0) {
+                  _emscripten_set_main_loop_timing(1, 1);
+                }
               });
             } else {
               window.requestAnimationFrame(func);
