@@ -20,14 +20,13 @@ namespace WebXR.InputSystem
 #endif
   public class WebXRInputSystem : MonoBehaviour
   {
+#pragma warning disable CS0067
     public static event Action OnLeftControllerProfiles;
-    
     public static event Action OnRightControllerProfiles;
+#pragma warning restore CS0067
 
     private static string[] leftProfiles = null;
     private static string[] rightProfiles = null;
-    private static bool hasLeftProfiles = false;
-    private static bool hasRightProfiles = false;
 
     public static string[] GetLeftProfiles()
     {
@@ -42,6 +41,8 @@ namespace WebXR.InputSystem
     private static bool initialized = false;
     private static WebXRController left = null;
     private static WebXRController right = null;
+    private static bool hasLeftProfiles = false;
+    private static bool hasRightProfiles = false;
 
 #if XR_HANDS_1_1_OR_NEWER
     private static WebXRHandsSubsystem webXRHandsSubsystem = null;

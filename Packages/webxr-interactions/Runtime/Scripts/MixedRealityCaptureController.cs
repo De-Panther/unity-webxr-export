@@ -113,7 +113,9 @@ namespace WebXR.Interactions
 #if UNITY_INPUT_SYSTEM_1_4_4_OR_NEWER
     [SerializeField]
 #endif
+#pragma warning disable CS0414
     private bool useInputSystem = false;
+#pragma warning restore CS0414
 #if UNITY_INPUT_SYSTEM_1_4_4_OR_NEWER
     [SerializeField]
     private InputActionProperty rightPosition;
