@@ -20,6 +20,9 @@ namespace WebXR
 #if UNITY_WEBGL && !UNITY_EDITOR
     [DllImport("__Internal")]
     public static extern void SetWebXRSettings(string settingsJson);
+
+    [DllImport("__Internal")]
+    private static extern void RegisterWebXRPlugin();
 #endif
 
     WebXRSettings GetSettings()
@@ -37,6 +40,9 @@ namespace WebXR
 
     public override bool Initialize()
     {
+#if UNITY_WEBGL && !UNITY_EDITOR
+      RegisterWebXRPlugin();
+#endif
       WebXRSettings settings = GetSettings();
       if (settings != null)
       {
@@ -46,15 +52,33 @@ namespace WebXR
 #endif
         Debug.Log($"Sent WebXRSettings");
       }
-
+      XRSettings.useOcclusionMesh = false;
       CreateSubsystem<WebXRSubsystemDescriptor, WebXRSubsystem>(sampleSubsystemDescriptors, typeof(WebXRSubsystem).FullName);
       return WebXRSubsystem != null;
     }
 
+    public void StartEssentialSubsystems()
+    {
+      CreateSubsystem<XRDisplaySubsystemDescriptor, XRDisplaySubsystem>(displaySubsystemDescriptors, "WebXR Display");
+      CreateSubsystem<XRInputSubsystemDescriptor, XRInputSubsystem>(inputSubsystemDescriptors, "WebXR HMD");
+      XRDisplaySubsystem.Start();
+      XRInputSubsystem.Start();
+      // TODO: Enable Single-Pass rendering
+      // Debug.LogError(XRDisplaySubsystem.supportedTextureLayouts);
+    }
+
+    public void EndEssentialSubsystems()
+    {
+      XRDisplaySubsystem.Stop();
+      XRInputSubsystem.Stop();
+      XRDisplaySubsystem.Destroy();
+      XRInputSubsystem.Destroy();
+    }
 
     public override bool Start()
     {
       WebXRSubsystem.Start();
+      WebXRSubsystem.webXRLoader = this;
       return true;
     }
 
@@ -67,6 +91,8 @@ namespace WebXR
     public override bool Deinitialize()
     {
       WebXRSubsystem.Destroy();
+      XRDisplaySubsystem?.Destroy();
+      XRInputSubsystem?.Destroy();
       return base.Deinitialize();
     }
   }

@@ -65,7 +65,11 @@ namespace WebXR.Interactions
       originPosition = originTransform.localPosition;
       originRotation = originTransform.localRotation;
       WebXRManager.OnXRChange += HandleOnXRChange;
-      arCameraTransform = FindObjectOfType<WebXRCamera>().GetCamera(WebXRCamera.CameraID.LeftAR).transform;
+      arCameraTransform = FindObjectOfType<WebXRCamera>()?.GetCamera(WebXRCamera.CameraID.LeftAR).transform;
+      if (arCameraTransform == null)
+      {
+        arCameraTransform = Camera.main.transform;
+      }
     }
 
     void OnDisable()
@@ -108,6 +112,7 @@ namespace WebXR.Interactions
       WebXRManager.Instance.transform.localRotation = originRotation;
 #endif
       isFollowing = false;
+      visual.SetActive(false);
       if (state == WebXRState.AR)
       {
         WebXRManager.OnViewerHitTestUpdate += HandleOnViewerHitTestUpdate;

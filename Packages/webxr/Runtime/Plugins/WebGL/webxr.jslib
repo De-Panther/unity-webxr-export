@@ -1,5 +1,5 @@
 /* functions called from unity */
-mergeInto(LibraryManager.library, {
+var LibraryWebXR = {
   SetWebXRSettings: function(strJson) {
     Module.WebXR.Settings = JSON.parse(UTF8ToString(strJson));
     console.log(Module.WebXR.Settings);
@@ -33,6 +33,10 @@ mergeInto(LibraryManager.library, {
     Module.ViewerHitTestPoseArrayOffset = byteOffset / 4;
   },
 
+  WebXRGetViewsDataArray: function () {
+    return Module.XRSharedArrayOffset * 4;
+  },
+
   ToggleAR: function() {
     Module.WebXR.toggleAR();
   },
@@ -52,4 +56,6 @@ mergeInto(LibraryManager.library, {
   PreRenderSpectatorCamera: function() {
     Module.WebXR.startRenderSpectatorCamera();
   },
-});
+}
+
+mergeInto(LibraryManager.library, LibraryWebXR);

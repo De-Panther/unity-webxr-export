@@ -44,6 +44,18 @@ namespace WebXR
             // dirty later builds with assets that may not be needed or are out of date.
             CleanOldSettings();
 
+            if (report.summary.platform != BuildTarget.WebGL)
+            {
+              return;
+            }
+
+#if UNITY_2020_3 || UNITY_2021_1
+            if (!PlayerSettings.WebGL.emscriptenArgs.Contains("-std="))
+            {
+              PlayerSettings.WebGL.emscriptenArgs += " -std=c++11";
+            }
+#endif
+
             WebXRSettings settings = null;
             EditorBuildSettings.TryGetConfigObject<WebXRSettings>("WebXR.Settings", out settings);
             if (settings == null)

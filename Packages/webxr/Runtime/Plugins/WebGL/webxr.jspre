@@ -18,6 +18,59 @@ setTimeout(function () {
             
             return GL.createContextOld(canvas, contextAttributes);
         }
+
+        const shaderBug = `#version 300 es
+
+#define HLSLCC_ENABLE_UNIFORM_BUFFERS 1
+#if HLSLCC_ENABLE_UNIFORM_BUFFERS
+#define UNITY_UNIFORM
+#else
+#define UNITY_UNIFORM uniform
+#endif
+#define UNITY_SUPPORTS_UNIFORM_LOCATION 0
+#if UNITY_SUPPORTS_UNIFORM_LOCATION
+#define UNITY_LOCATION(x) layout(location = x)
+#define UNITY_BINDING(x) layout(binding = x, std140)
+#else
+#define UNITY_LOCATION(x)
+#define UNITY_BINDING(x) layout(std140)
+#endif
+uniform 	vec4 _ScaleBias;
+uniform 	vec4 _ScaleBiasRt;
+out highp vec2 vs_TEXCOORD0;
+vec4 u_xlat0;
+int u_xlati0;
+uvec2 u_xlatu0;
+vec4 u_xlat1;
+int u_xlati4;
+void main()
+{
+    u_xlati0 = int(uint(uint(gl_VertexID) & 1u));
+    u_xlatu0.y = uint(uint(gl_VertexID) >> 1u);
+    u_xlati4 = (-u_xlati0) + (-int(u_xlatu0.y));
+    u_xlati0 = u_xlati0 + int(u_xlatu0.y);
+    u_xlatu0.x = uint(uint(u_xlati0) & 1u);
+    u_xlat1.xw = vec2(u_xlatu0.yx);
+    vs_TEXCOORD0.xy = u_xlat1.xw * _ScaleBias.xy + _ScaleBias.zw;
+    u_xlati0 = u_xlati4 + 1;
+    u_xlatu0.x = uint(uint(u_xlati0) & 1u);
+    u_xlat1.y = float(u_xlatu0.x);
+    u_xlat0.xy = u_xlat1.xy * _ScaleBiasRt.xy + _ScaleBiasRt.zw;
+    u_xlat0.z = float(-1.0);
+    u_xlat0.w = float(1.0);
+    gl_Position = u_xlat0 * vec4(2.0, -2.0, 1.0, 1.0) + vec4(-1.0, 1.0, 0.0, 0.0);
+    return;
+}`
+        GL.getSourceOld = GL.getSource;
+        // Fix for an issue of wrong values in draw display shader
+        GL.getSource = function (shader, count, string, length) {
+          var source = GL.getSourceOld(shader, count, string, length);
+          if (shaderBug == source) {
+            source = source.replace("vs_TEXCOORD0.xy = u_xlat1.xw * _ScaleBias.xy + _ScaleBias.zw;",
+              "vs_TEXCOORD0.xy = u_xlat1.xw * vec2(1.0, 1.0);");
+          }
+          return source
+        }
     }
 
 
@@ -345,6 +398,7 @@ setTimeout(function () {
           session.isImmersive = true;
           session.isInSession = true;
           session.isAR = true;
+          Module.WebXR.xrSession = session;
           thisXRMananger.xrSession = session;
           thisXRMananger.onSessionStarted(session);
         }).catch(function (error) {
@@ -374,6 +428,7 @@ setTimeout(function () {
           session.isImmersive = true;
           session.isInSession = true;
           session.isAR = false;
+          Module.WebXR.xrSession = session;
           thisXRMananger.xrSession = session;
           thisXRMananger.onSessionStarted(session);
         }).catch(function (error) {
@@ -433,7 +488,7 @@ setTimeout(function () {
         }
         this.BrowserObject.mainLoop.pause();
         this.ctx.dontClearAlphaOnly = false;
-        this.ctx.bindFramebuffer(this.ctx.FRAMEBUFFER);
+        this.ctx.bindFramebuffer(this.ctx.FRAMEBUFFER, null);
         var thisXRMananger = this;
         window.setTimeout(function () {
           if (thisXRMananger.BrowserObject.resumeAsyncCallbacks) {
@@ -612,6 +667,10 @@ setTimeout(function () {
               return thisXRMananger.xrSession.requestAnimationFrame(function (time, xrFrame) {
                 thisXRMananger.animate(xrFrame);
                 func(time);
+                // Fix for an issue of switch to setTimeout instead of rAF
+                if (thisXRMananger.BrowserObject.mainLoop.timingMode == 0) {
+                  _emscripten_set_main_loop_timing(1, 1);
+                }
               });
             } else {
               window.requestAnimationFrame(func);
@@ -620,7 +679,7 @@ setTimeout(function () {
 
           Module.WebXR.startRenderSpectatorCamera = function () {
             Module.WebXR.isSpectatorCameraRendering = true;
-            thisXRMananger.ctx.bindFramebuffer(thisXRMananger.ctx.FRAMEBUFFER);
+            thisXRMananger.ctx.bindFramebuffer(thisXRMananger.ctx.FRAMEBUFFER, null);
           }
 
           // bindFramebuffer frameBufferObject null in XRSession should use XRWebGLLayer FBO instead
@@ -1073,6 +1132,10 @@ setTimeout(function () {
                 leftRect.y = (viewport.y / glLayer.framebufferHeight) * (glLayer.framebufferHeight / this.canvas.height);
                 leftRect.w = (viewport.width / glLayer.framebufferWidth) * (glLayer.framebufferWidth / this.canvas.width);
                 leftRect.h = (viewport.height / glLayer.framebufferHeight) * (glLayer.framebufferHeight / this.canvas.height);
+                Module.HEAPF32[Module.XRSharedArrayOffset + 46] = viewport.width;
+                Module.HEAPF32[Module.XRSharedArrayOffset + 47] = viewport.height;
+                Module.HEAPF32[Module.XRSharedArrayOffset + 48] = viewport.x;
+                Module.HEAPF32[Module.XRSharedArrayOffset + 49] = viewport.y;
               }
             } else if (view.eye === 'right' && viewport.width != 0 && viewport.height != 0 && viewport.x != 0) { // Ugly hack for iOS Mozilla WebXR Viewer
               eyeCount = 2;
@@ -1081,9 +1144,17 @@ setTimeout(function () {
                 rightRect.y = (viewport.y / glLayer.framebufferHeight) * (glLayer.framebufferHeight / this.canvas.height);
                 rightRect.w = (viewport.width / glLayer.framebufferWidth) * (glLayer.framebufferWidth / this.canvas.width);
                 rightRect.h = (viewport.height / glLayer.framebufferHeight) * (glLayer.framebufferHeight / this.canvas.height);
+                Module.HEAPF32[Module.XRSharedArrayOffset + 50] = viewport.width;
+                Module.HEAPF32[Module.XRSharedArrayOffset + 51] = viewport.height;
+                Module.HEAPF32[Module.XRSharedArrayOffset + 52] = viewport.x;
+                Module.HEAPF32[Module.XRSharedArrayOffset + 53] = viewport.y;
               }
             }
           }
+          Module.HEAPF32[Module.XRSharedArrayOffset + 54] = eyeCount;
+          Module.HEAPF32[Module.XRSharedArrayOffset + 55] = session.isAR ? 1 : 0;
+          Module.HEAPF32[Module.XRSharedArrayOffset + 56] = glLayer.framebufferWidth;
+          Module.HEAPF32[Module.XRSharedArrayOffset + 57] = glLayer.framebufferHeight;
           if (session.isAR)
           {
             this.gameModule.WebXR.OnStartAR(eyeCount, leftRect, rightRect);
