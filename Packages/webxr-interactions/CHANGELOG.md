@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- An option to set depthStencilFormat in MixedRealityCaptureController.
+
 ### Changed
 - XR Interaction Toolkit sample XR Rig now use 1 camera instead of cameras group.
 - SceneHitTest now looks for Main Camera if there's no WebXRCamera component in scene.

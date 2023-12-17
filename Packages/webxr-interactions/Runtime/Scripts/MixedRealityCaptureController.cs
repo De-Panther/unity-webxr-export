@@ -47,6 +47,13 @@ namespace WebXR.Interactions
       Ended
     }
 
+    public enum DepthStencilFormats
+    {
+      None = 0,
+      Depth = 16,
+      DepthAndStencil = 24
+    }
+
     private const float WEBCAM_DISTANCE_CALIBRATION = 0.5f;
     private const float WEBCAM_SIZE_CALIBRATION = 0.25f;
     private const float WEBCAM_MIN_SIZE = 0.001f;
@@ -126,6 +133,8 @@ namespace WebXR.Interactions
 #endif
     [SerializeField]
     private int webcamFramesDelaySize = 0;
+    [SerializeField, Tooltip("The depth buffer or depth and stencil format of the Background and Foreground RenderTextures")]
+    private DepthStencilFormats depthStencilFormat = DepthStencilFormats.DepthAndStencil;
 
     private ControllerState state = ControllerState.None;
     private float webcamBaseSize = 1f;
@@ -540,7 +549,7 @@ namespace WebXR.Interactions
       backgroundStack = new RenderTexture[webcamFramesDelaySize];
       foregroundStack = new RenderTexture[webcamFramesDelaySize];
       webcamStack = new RenderTexture[webcamFramesDelaySize];
-      RenderTextureDescriptor envDesc = new RenderTextureDescriptor(Screen.width, Screen.height, RenderTextureFormat.Default, 16);
+      RenderTextureDescriptor envDesc = new RenderTextureDescriptor(Screen.width, Screen.height, RenderTextureFormat.Default, (int)depthStencilFormat);
       RenderTextureDescriptor webcamDesc = new RenderTextureDescriptor(Mathf.RoundToInt(100 * webcam.transform.localScale.x), 100, RenderTextureFormat.Default);
       for (int i = 0; i < webcamFramesDelaySize; i++)
       {
