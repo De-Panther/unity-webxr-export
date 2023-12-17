@@ -79,7 +79,7 @@ Wolvic on PICO 4 and PICO 4E.
 
 Helio on Magic Leap One (Has a bug related to eye views).
 
-Safari on Apple Vision Pro (No `selected` event on hand pinch).
+Safari on Apple Vision Pro (Needs to enable flags in system settings. No `selected` event on hand pinch).
 
 ### 🛤️ Roadmap
 
