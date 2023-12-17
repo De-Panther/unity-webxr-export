@@ -79,6 +79,14 @@ Wolvic on PICO 4 and PICO 4E.
 
 Helio on Magic Leap One (Has a bug related to eye views).
 
+Safari on Apple Vision Pro (No `selected` event on hand pinch).
+
+### 🛤️ Roadmap
+
+WebXR Export version 0.20.0 and up includes Unity XR SDK support.
+Following that, AR Foundation support is next. Currently there's passthrough/seethrough and Hit-Test support not using AR Foundation.
+Version 0.20.0 also dropped the support for Built-in Render Pipeline, which needs more investigation if it's possible to add back.
+
 ### ⚙️ WebXR APIs support
 
 [WebXR Device API](https://immersive-web.github.io/webxr/)
