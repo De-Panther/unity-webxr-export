@@ -6958,6 +6958,21 @@ PrefabInstance:
       propertyPath: m_UseGravity
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5245436614995711421, guid: 1644f8f6d950f87408375866a875e80d,
+        type: 3}
+      propertyPath: m_arCullingMask.m_Bits
+      value: 98359
+      objectReference: {fileID: 0}
+    - target: {fileID: 5245436614995711421, guid: 1644f8f6d950f87408375866a875e80d,
+        type: 3}
+      propertyPath: m_vrCullingMask.m_Bits
+      value: 98359
+      objectReference: {fileID: 0}
+    - target: {fileID: 5245436614995711421, guid: 1644f8f6d950f87408375866a875e80d,
+        type: 3}
+      propertyPath: m_normalCullingMask.m_Bits
+      value: 98359
+      objectReference: {fileID: 0}
     - target: {fileID: 5732866412101818074, guid: 1644f8f6d950f87408375866a875e80d,
         type: 3}
       propertyPath: m_CullingMask.m_Bits
@@ -7012,6 +7027,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7427464093582542180, guid: 1644f8f6d950f87408375866a875e80d,
+        type: 3}
+      propertyPath: m_CullingMask.m_Bits
+      value: 98359
       objectReference: {fileID: 0}
     - target: {fileID: 8738852189821221540, guid: 1644f8f6d950f87408375866a875e80d,
         type: 3}

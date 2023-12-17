@@ -540,7 +540,7 @@ namespace WebXR.Interactions
       backgroundStack = new RenderTexture[webcamFramesDelaySize];
       foregroundStack = new RenderTexture[webcamFramesDelaySize];
       webcamStack = new RenderTexture[webcamFramesDelaySize];
-      RenderTextureDescriptor envDesc = new RenderTextureDescriptor(Screen.width, Screen.height, RenderTextureFormat.Default);
+      RenderTextureDescriptor envDesc = new RenderTextureDescriptor(Screen.width, Screen.height, RenderTextureFormat.Default, 16);
       RenderTextureDescriptor webcamDesc = new RenderTextureDescriptor(Mathf.RoundToInt(100 * webcam.transform.localScale.x), 100, RenderTextureFormat.Default);
       for (int i = 0; i < webcamFramesDelaySize; i++)
       {
