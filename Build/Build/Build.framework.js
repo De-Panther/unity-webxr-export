@@ -63,6 +63,7 @@ void main()
     return;
 }`
         GL.getSourceOld = GL.getSource;
+        // Fix for an issue of wrong values in draw display shader
         GL.getSource = function (shader, count, string, length) {
           var source = GL.getSourceOld(shader, count, string, length);
           if (shaderBug == source) {
@@ -667,6 +668,10 @@ void main()
               return thisXRMananger.xrSession.requestAnimationFrame(function (time, xrFrame) {
                 thisXRMananger.animate(xrFrame);
                 func(time);
+                // Fix for an issue of switch to setTimeout instead of rAF
+                if (thisXRMananger.BrowserObject.mainLoop.timingMode == 0) {
+                  _emscripten_set_main_loop_timing(1, 1);
+                }
               });
             } else {
               window.requestAnimationFrame(func);
