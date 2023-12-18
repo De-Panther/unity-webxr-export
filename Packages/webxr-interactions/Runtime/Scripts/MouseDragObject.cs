@@ -52,7 +52,11 @@ namespace WebXR.Interactions
 
     Camera FindCamera()
     {
+#if UNITY_2023_1_OR_NEWER
+      Camera[] cameras = FindObjectsByType<Camera>(FindObjectsSortMode.None);
+#else
       Camera[] cameras = FindObjectsOfType<Camera>();
+#endif
       Camera result = null;
       int camerasSum = 0;
       foreach (var camera in cameras)

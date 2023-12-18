@@ -41,7 +41,11 @@ namespace WebXR.Interactions
       }
       if (leftController == null || rightController == null)
       {
+#if UNITY_2023_1_OR_NEWER
+        var controllers = FindObjectsByType<WebXRController>(FindObjectsSortMode.None);
+#else
         var controllers = FindObjectsOfType<WebXRController>();
+#endif
         for (int i = 0; i < controllers.Length; i++)
         {
           if (controllers[i].hand == WebXRControllerHand.LEFT)
@@ -67,7 +71,11 @@ namespace WebXR.Interactions
       originPosition = originTransform.localPosition;
       originRotation = originTransform.localRotation;
       WebXRManager.OnXRChange += HandleOnXRChange;
+#if UNITY_2023_1_OR_NEWER
+      arCameraTransform = FindFirstObjectByType<WebXRCamera>()?.GetCamera(WebXRCamera.CameraID.LeftAR).transform;
+#else
       arCameraTransform = FindObjectOfType<WebXRCamera>()?.GetCamera(WebXRCamera.CameraID.LeftAR).transform;
+#endif
       if (arCameraTransform == null)
       {
         arCameraTransform = Camera.main.transform;
