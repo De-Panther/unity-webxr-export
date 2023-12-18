@@ -2,9 +2,12 @@
 
 In this page, we have a step by step guide on how to build a project from the Sample Scene.
 
+> [!IMPORTANT]
+> Since version 0.20.0 of WebXR Export, there's no support for Built-in Render Pipeline, use URP.
+
 ## Let's build some WebXR stuff
 
-Create a new Unity Project (2019.4.7f1 and up). Switch platform to WebGL.
+Create a new Unity Project (2020.3.6f1 and up). Switch platform to WebGL.
 
 Import WebXR Export and WebXR Interactions packages from OpenUPM.
 - [WebXR Export ![openupm](https://img.shields.io/npm/v/com.de-panther.webxr?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.de-panther.webxr/)
@@ -24,6 +27,9 @@ Now you can import the `Sample Scene` from `Window > Package Manager > WebXR Int
 
 In `Project Settings > Player > Resolution and Presentation`, select `WebXR` as the `WebGL Template`. (If you are using Unity 2020.x and up you should use the 2020 templates)
 
+> [!NOTE]  
+> In WebXR Export version 0.20.0 old templates removed, now there are only 2020 templates.
+
 ![Resolution and Presentation](unity-webxr-export-resolution-and-presentation.png)
 
 Now you can build the project.
@@ -31,6 +37,9 @@ Now you can build the project.
 ![Build](unity-webxr-export-build.png)
 
 WebXR requires a secure context (HTTPS server or localhost URL). Make sure to build the project from `Build Settings > Build`. Unity's `Build And Run` server use HTTP. Run the build on your own HTTPS server.
+
+> [!NOTE]  
+> Use HTTPS server.
 
 ![Result](unity-webxr-export-result.png)
 
