@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - An option to set depthStencilFormat in MixedRealityCaptureController.
+- InputActionProperty click to SceneHitTest. Now project is not forced to use old Input Manager.
 
 ### Changed
 - XR Interaction Toolkit sample XR Rig now use 1 camera instead of cameras group.

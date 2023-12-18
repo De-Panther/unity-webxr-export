@@ -22,6 +22,8 @@ namespace WebXR.Interactions
     private InputActionProperty leftTrigger;
     [SerializeField]
     private InputActionProperty rightTrigger;
+    [SerializeField]
+    private InputActionProperty click;
 #endif
 
     private bool isFollowing = false;
@@ -94,7 +96,14 @@ namespace WebXR.Interactions
 
     void Update()
     {
-      if (isFollowing && (Input.GetMouseButtonDown(0) || GetControllersButtonDown()))
+      if (isFollowing && (
+#if UNITY_INPUT_SYSTEM_1_4_4_OR_NEWER
+        (useInputSystem && click.action?.IsPressed() == true) ||
+#endif
+#if ENABLE_LEGACY_INPUT_MANAGER
+        Input.GetMouseButtonDown(0) ||
+#endif
+        GetControllersButtonDown()))
       {
         isFollowing = false;
         visual.SetActive(false);
