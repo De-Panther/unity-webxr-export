@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.20.0] - 2023-12-18
 ### Added
 - Native XRSubsystem for WebXR Display rendering.
 - Native XRSubsystem for WebXR Headset/Device tracking.
@@ -15,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - Support for Unity versions older than 2020.3.6f1.
 - Support for Built-in Render Pipeline.
+- Old 2019 WebGLTemplates.
 
 ## [0.19.0] - 2023-11-22
 ### Added

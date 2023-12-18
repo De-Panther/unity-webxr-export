@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.20.0] - 2023-12-18
 ### Added
 - An option to set depthStencilFormat in MixedRealityCaptureController.
 - InputActionProperty click to SceneHitTest. Now project is not forced to use old Input Manager.
@@ -14,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - XR Interaction Toolkit sample XR Rig now use 1 camera instead of cameras group.
 - SceneHitTest now looks for Main Camera if there's no WebXRCamera component in scene.
 - Samples now use URP instead of Built-in Render Pipeline.
+- Requires WebXR Export 0.20.0.
 
 ### Deprecated
 - HandMenu as the duplication no longer needed. Use XRI HandMenu instead.
