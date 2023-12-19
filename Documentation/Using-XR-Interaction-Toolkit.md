@@ -2,6 +2,9 @@
 
 A quick guide on using XR Interaction Toolkit with WebXR Export.
 
+> [!IMPORTANT]
+> Since version 0.20.0 of WebXR Export, there's no support for Built-in Render Pipeline, use URP.
+
 ## Sample Scene
 
 As part of the WebXR Interactions package, there's the "XR Interaction Toolkit Sample", import it using the Package Manager window.
@@ -87,6 +90,9 @@ Add the `GLTFShaderVariants` to the `Preloaded Shaders` list in the Graphics set
 
 In `Project Settings > Player > Resolution and Presentation`, select `WebXR2020` or `WebXRFullView2020` as the `WebGL Template`. (The WebXR templates with no year number are for older versions)
 
+> [!NOTE]  
+> In WebXR Export version 0.20.0 old templates removed, now there are only 2020 templates.
+
 ![Resolution and Presentation](unity-webxr-export-resolution-and-presentation.png)
 
 Now you can build the project.
@@ -94,6 +100,9 @@ Now you can build the project.
 ![Build](unity-webxr-export-build.png)
 
 WebXR requires a secure context (HTTPS server or localhost URL). Make sure to build the project from `Build Settings > Build`. Unity's `Build And Run` server uses HTTP. Run the build on your own HTTPS server.
+
+> [!NOTE]  
+> Use HTTPS server.
 
 ![Result](unity-webxr-export-xri-result.png)
 
