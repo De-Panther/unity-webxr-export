@@ -99,7 +99,7 @@ Version 0.20.0 also dropped the support for Built-in Render Pipeline, which need
 
 [WebXR Hand Input](https://github.com/immersive-web/webxr-hand-input) - Supports Unity XR Hands package
 
-[WebXR Input Profiles](https://github.com/immersive-web/webxr-input-profiles) using [WebXR Input Profiles Loader](https://github.com/De-Panther/webxr-input-profiles-loader) - Support XR Interaction Toolkit
+[WebXR Input Profiles](https://github.com/immersive-web/webxr-input-profiles) using [WebXR Input Profiles Loader](https://github.com/De-Panther/webxr-input-profiles-loader) - Supports XR Interaction Toolkit
 
 ![Hands](/Documentation/webxr-hands-api.gif)
 
