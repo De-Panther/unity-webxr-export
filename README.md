@@ -89,17 +89,17 @@ Version 0.20.0 also dropped the support for Built-in Render Pipeline, which need
 
 ### ⚙️ WebXR APIs support
 
-[WebXR Device API](https://immersive-web.github.io/webxr/)
+[WebXR Device API](https://immersive-web.github.io/webxr/) - Supports Unity Display and Input XR Subsystems
 
-[WebXR Gamepads Module](https://immersive-web.github.io/webxr-gamepads-module/) (Including [hapticActuators](https://w3c.github.io/gamepad/extensions.html) on supported devices)
+[WebXR Gamepads Module](https://immersive-web.github.io/webxr-gamepads-module/) (Including [hapticActuators](https://w3c.github.io/gamepad/extensions.html) on supported devices) - Supports Unity New Input System
 
 [WebXR Augmented Reality Module](https://immersive-web.github.io/webxr-ar-module/)
 
-[WebXR Hit Test Module](https://immersive-web.github.io/hit-test/) (Currently limited to viewer space Hit Test source)
+[WebXR Hit Test Module](https://immersive-web.github.io/hit-test/) (Currently limited to viewer space Hit Test source) - Not using AR Foundation hit test
 
-[WebXR Hand Input](https://github.com/immersive-web/webxr-hand-input)
+[WebXR Hand Input](https://github.com/immersive-web/webxr-hand-input) - Supports Unity XR Hands package
 
-[WebXR Input Profiles](https://github.com/immersive-web/webxr-input-profiles) using [WebXR Input Profiles Loader](https://github.com/De-Panther/webxr-input-profiles-loader)
+[WebXR Input Profiles](https://github.com/immersive-web/webxr-input-profiles) using [WebXR Input Profiles Loader](https://github.com/De-Panther/webxr-input-profiles-loader) - Support XR Interaction Toolkit
 
 ![Hands](/Documentation/webxr-hands-api.gif)
 
