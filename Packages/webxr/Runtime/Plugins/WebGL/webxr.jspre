@@ -709,13 +709,77 @@ void main()
         
         this.onInputEvent = this.onInputSourceEvent.bind(this);
         this.onSessionVisibilityEvent = this.onVisibilityChange.bind(this);
+
+        // Display offerSession
+        //Module.WebXR.Settings.OfferSession
+        var offerSessionType = Module.WebXR.Settings.OfferSession;
+        if (offerSessionType > 0
+          && (this.isARSupported || this.isVRSupported)
+          && navigator.xr.offerSession !== undefined) {
+          var requestType = 'immersive-vr';
+          if (this.isARSupported
+            && (offerSessionType == 1
+            || offerSessionType == 3
+            || (offerSessionType == 4 && !this.isVRSupported))
+            ) {
+          }
+        }
+        this.setupOfferSession(Module.WebXR.Settings.OfferSession,
+          this.isARSupported, this.isVRSupported,
+          navigator.xr.offerSession !== undefined);
       }
-    
+
+      XRManager.prototype.setupOfferSession = function (offerSessionType, arSupported, vrSupported, offerSessionSupported) {
+        if (offerSessionType == 0 || !offerSessionSupported) {
+          return;
+        }
+        if (!arSupported && !vrSupported) {
+          return;
+        }
+        var requestType = vrSupported ? 2 : 0; // 0 = none, 2 = vr, 1 = ar
+        if (arSupported
+          && (offerSessionType == 1 || offerSessionType == 3
+          || (offerSessionType == 4 && !this.isVRSupported))
+          ) {
+          requestType = 1;
+        }
+        if (requestType === 0) {
+          return;
+        }
+        var thisXRMananger = this;
+        var webXRSettings = thisXRMananger.gameModule.WebXR.Settings;
+        navigator.xr.offerSession(requestType == 1 ? 'immersive-ar' : 'immersive-vr', {
+          requiredFeatures: requestType == 1 ? webXRSettings.ARRequiredReferenceSpace : webXRSettings.VRRequiredReferenceSpace,
+          optionalFeatures: requestType == 1 ? webXRSettings.AROptionalFeatures : webXRSettings.VROptionalFeatures
+        }).then(function (session) {
+          if (this.BrowserObject.pauseAsyncCallbacks) {
+            this.BrowserObject.pauseAsyncCallbacks();
+          }
+          this.BrowserObject.mainLoop.pause();
+          var tempRender = function () {
+            thisXRMananger.ctx.clearColor(0, 0, 0, 0);
+            thisXRMananger.ctx.clear(thisXRMananger.ctx.COLOR_BUFFER_BIT | thisXRMananger.ctx.DEPTH_BUFFER_BIT);
+          }
+          window.requestAnimationFrame( tempRender );
+          session.isImmersive = true;
+          session.isInSession = true;
+          session.isAR = requestType == 1;
+          Module.WebXR.xrSession = session;
+          thisXRMananger.xrSession = session;
+          thisXRMananger.onSessionStarted(session);
+        }).catch(function (error) {
+          if (thisXRMananger.BrowserObject.resumeAsyncCallbacks) {
+            thisXRMananger.BrowserObject.resumeAsyncCallbacks();
+          }
+          thisXRMananger.BrowserObject.mainLoop.resume();
+        });
+      }
+
       XRManager.prototype.UpdateXRCapabilities = function() {
         // Send browser capabilities to Unity.
         this.gameModule.WebXR.OnXRCapabilities(this.isARSupported, this.isVRSupported);
       }
-      
+
       // http://answers.unity.com/answers/11372/view.html
       XRManager.prototype.quaternionFromMatrix = function(offset, matrix, quaternion) {
         quaternion[3] = Math.sqrt( Math.max( 0, 1 + matrix[offset+0] + matrix[offset+5] + matrix[offset+10] ) ) / 2; 

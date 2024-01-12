@@ -24,6 +24,15 @@ namespace WebXR
       hand_tracking = 2
     }
 
+    public enum OfferSessionTypes
+    {
+      None = 0,
+      AR = 1,
+      VR = 2,
+      BothPrioritizeAR = 3,
+      BothPrioritizeVR = 4
+    }
+
     [Header("VR Settings")]
     public ReferenceSpaceTypes VRRequiredReferenceSpace = ReferenceSpaceTypes.local_floor;
     public ExtraFeatureTypes VROptionalFeatures = ExtraFeatureTypes.hand_tracking;
@@ -43,6 +52,9 @@ Default is the recommended resolution. Can be different than native resolution."
 Default is 1.0, the recommended resolution.")]
     [Range(0.2f,2.0f)]
     public float FramebufferScaleFactor = 1.0f;
+
+    [Tooltip("Should the browser display OfferSession button? What session to prioritize?")]
+    public OfferSessionTypes OfferSession = OfferSessionTypes.None;
 
     string EnumToString<T>(T value) where T : Enum
     {
@@ -80,7 +92,8 @@ Default is 1.0, the recommended resolution.")]
         ""AROptionalFeatures"": {FlagsToString(AROptionalFeatures)},
         ""UseFramebufferScaleFactor"": {(UseFramebufferScaleFactor ? "true" : "false")},
         ""UseNativeResolution"": {(UseNativeResolution ? "true" : "false")},
-        ""FramebufferScaleFactor"": {FramebufferScaleFactor}
+        ""FramebufferScaleFactor"": {FramebufferScaleFactor},
+        ""OfferSession"": {(int)OfferSession}
 }}";
       return result;
     }
