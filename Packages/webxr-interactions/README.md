@@ -24,9 +24,7 @@ Scope(s): com.de-panther
 
 Then in `Window > Package Manager` selecting `Packages: My Registries` and the WebXR Interactions package would be available for install.
 
-The WebXR Interactions package supports the [WebXR Input Profiles Loader](https://github.com/De-Panther/webxr-input-profiles-loader) package and depends on [glTFast](https://github.com/atteneder/glTFast) for that.
-
-Add `com.atteneder` to the scopes list of the OpenUPM registry for Unity to locate the glTFast package.
+The WebXR Interactions package supports the [WebXR Input Profiles Loader](https://github.com/De-Panther/webxr-input-profiles-loader) package and depends on [glTFast](https://docs.unity3d.com/Packages/com.unity.cloud.gltfast@latest) for that.
 
 ### Using Git (DON'T! OpenUPM is better)
 
