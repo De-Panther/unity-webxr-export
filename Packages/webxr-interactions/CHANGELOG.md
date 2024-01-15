@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Minimum WebXR Input Profiles Loader version 0.6.0.
+
 ## [0.20.0] - 2023-12-18
 ### Added
 - An option to set depthStencilFormat in MixedRealityCaptureController.

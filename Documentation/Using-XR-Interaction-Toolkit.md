@@ -41,10 +41,7 @@ Simplest way to do it is to set a `Scoped Registry` in `Project Settings > Packa
 Name: OpenUPM
 URL: https://package.openupm.com
 Scope(s): com.de-panther
-          com.atteneder
 ```
-
-The `com.atteneder` is needed when using the WebXR Input Profiles Loader package.
 
 ![Package Manager Settings](unity-webxr-export-package-manager-settings.png)
 
