@@ -43,6 +43,12 @@ Default is the recommended resolution. Can be different than native resolution."
 Default is 1.0, the recommended resolution.")]
     [Range(0.2f,2.0f)]
     public float FramebufferScaleFactor = 1.0f;
+    [Tooltip(@"Should WebXRManager be created on start or manually by the developer.")]
+    public bool AutoLoadWebXRManager = true;
+    [Tooltip(@"Should WebXRInputSystem be created on start or manually by the developer.
+WebXRInputSystem is needed when using Unity Input System and XR Interaction Toolkit.
+WebXRInputSystem is part of WebXR Interactions package.")]
+    public bool AutoLoadWebXRInputSystem = true;
 
     string EnumToString<T>(T value) where T : Enum
     {
@@ -83,6 +89,19 @@ Default is 1.0, the recommended resolution.")]
         ""FramebufferScaleFactor"": {FramebufferScaleFactor}
 }}";
       return result;
+    }
+
+    public static WebXRSettings GetSettings()
+    {
+      WebXRSettings settings = null;
+      // When running in the Unity Editor, we have to load user's customization of configuration data directly from
+      // EditorBuildSettings. At runtime, we need to grab it from the static instance field instead.
+#if UNITY_EDITOR
+      UnityEditor.EditorBuildSettings.TryGetConfigObject<WebXRSettings>("WebXR.Settings", out settings);
+#elif UNITY_WEBGL
+      settings = WebXRSettings.Instance;
+#endif
+      return settings;
     }
 
 #if !UNITY_EDITOR

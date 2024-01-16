@@ -25,25 +25,12 @@ namespace WebXR
     private static extern void RegisterWebXRPlugin();
 #endif
 
-    WebXRSettings GetSettings()
-    {
-      WebXRSettings settings = null;
-      // When running in the Unity Editor, we have to load user's customization of configuration data directly from
-      // EditorBuildSettings. At runtime, we need to grab it from the static instance field instead.
-#if UNITY_EDITOR
-      UnityEditor.EditorBuildSettings.TryGetConfigObject<WebXRSettings>("WebXR.Settings", out settings);
-#elif UNITY_WEBGL
-      settings = WebXRSettings.Instance;
-#endif
-      return settings;
-    }
-
     public override bool Initialize()
     {
 #if UNITY_WEBGL && !UNITY_EDITOR
       RegisterWebXRPlugin();
 #endif
-      WebXRSettings settings = GetSettings();
+      WebXRSettings settings = WebXRSettings.GetSettings();
       if (settings != null)
       {
         Debug.Log($"Got WebXRSettings");

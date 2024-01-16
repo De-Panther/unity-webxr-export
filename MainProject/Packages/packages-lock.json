@@ -23,7 +23,7 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "com.de-panther.webxr": "0.20.0"
+        "com.de-panther.webxr": "0.20.1-preview"
       }
     },
     "com.unity.burst": {

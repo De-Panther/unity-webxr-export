@@ -127,6 +127,18 @@ namespace WebXR
       subsystem?.StopViewerHitTest();
     }
 
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    private static void TryAutoLoad()
+    {
+      WebXRSettings settings = WebXRSettings.GetSettings();
+      if (settings?.AutoLoadWebXRManager == true)
+      {
+        var webXRManager = new GameObject("WebXRManager");
+        webXRManager.AddComponent<WebXRManager>();
+        DontDestroyOnLoad(webXRManager);
+      }
+    }
+
     protected override void Awake()
     {
       base.Awake();

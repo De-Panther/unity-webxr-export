@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- An option to auto-load WebXRManager on start in WebXRSettings.
+- An option to auto-load WebXRInputSystem on start in WebXRSettings.
+
 ## [0.20.0] - 2023-12-18
 ### Added
 - Native XRSubsystem for WebXR Display rendering.
