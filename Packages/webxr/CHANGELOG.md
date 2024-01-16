@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - An option to auto-load WebXRManager on start in WebXRSettings.
 - An option to auto-load WebXRInputSystem on start in WebXRSettings.
+- Error message when there's no Universal Render Pipeline package in project.
 
 ## [0.20.0] - 2023-12-18
 ### Added
