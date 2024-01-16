@@ -79,7 +79,11 @@ namespace WebXR
       CleanOldSettings();
     }
 
+#if UNITY_2023_2_OR_NEWER || UNITY_2022_3 || UNITY_2021_3
     static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths, bool didDomainReload)
+#else
+    static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
+#endif
     {
 #if !HAS_URP
       Debug.LogError(@"WebXR Export requires Universal Render Pipeline,
