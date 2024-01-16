@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- An option to auto-load WebXRInputSystem on start in WebXRSettings.
+
 ### Changed
 - Minimum WebXR Input Profiles Loader version 0.6.0.
 

@@ -19,3 +19,5 @@ MonoBehaviour:
   UseFramebufferScaleFactor: 0
   UseNativeResolution: 0
   FramebufferScaleFactor: 1
+  AutoLoadWebXRManager: 1
+  AutoLoadWebXRInputSystem: 1

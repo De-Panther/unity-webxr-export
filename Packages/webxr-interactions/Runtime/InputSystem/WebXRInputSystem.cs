@@ -39,6 +39,7 @@ namespace WebXR.InputSystem
     }
 #if UNITY_INPUT_SYSTEM_1_4_4_OR_NEWER
     private static bool initialized = false;
+    private static int instances = 0;
     private static WebXRController left = null;
     private static WebXRController right = null;
     private static bool hasLeftProfiles = false;
@@ -48,6 +49,18 @@ namespace WebXR.InputSystem
     private static WebXRHandsSubsystem webXRHandsSubsystem = null;
     private static XRHandProviderUtility.SubsystemUpdater subsystemUpdater;
 #endif
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+    private static void TryAutoLoad()
+    {
+      WebXRSettings settings = WebXRSettings.GetSettings();
+      if (settings?.AutoLoadWebXRInputSystem == true)
+      {
+        var webxrInputSystem = new GameObject("WebXRInputSystem");
+        webxrInputSystem.AddComponent<WebXRInputSystem>();
+        DontDestroyOnLoad(webxrInputSystem);
+      }
+    }
 
     private void Awake()
     {
@@ -77,6 +90,11 @@ namespace WebXR.InputSystem
 
     private void OnEnable()
     {
+      instances++;
+      if (instances > 1)
+      {
+        return;
+      }
       unsafe
       {
         InputSystem.onDeviceCommand += HandleOnDeviceCommand;
@@ -92,6 +110,11 @@ namespace WebXR.InputSystem
 
     private void OnDisable()
     {
+      instances--;
+      if (instances > 0)
+      {
+        return;
+      }
       unsafe
       {
         InputSystem.onDeviceCommand -= HandleOnDeviceCommand;
@@ -109,6 +132,10 @@ namespace WebXR.InputSystem
 #if XR_HANDS_1_1_OR_NEWER
     private void OnDestroy()
     {
+      if (instances > 0)
+      {
+        return;
+      }
       if (MetaAimHand.left != null && MetaAimHand.left.added)
       {
         InputSystem.RemoveDevice(MetaAimHand.left);
