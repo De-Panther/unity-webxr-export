@@ -1,12 +1,12 @@
 ﻿using System.Linq;
-
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
+using UnityEngine;
 
 namespace WebXR
 {
-  public class WebXRBuildProcessor : IPreprocessBuildWithReport, IPostprocessBuildWithReport
+  public class WebXRBuildProcessor : AssetPostprocessor, IPreprocessBuildWithReport, IPostprocessBuildWithReport
   {
     /// <summary>Override of <see cref="IPreprocessBuildWithReport"/> and <see cref="IPostprocessBuildWithReport"/></summary>
     public int callbackOrder
@@ -79,13 +79,17 @@ namespace WebXR
       CleanOldSettings();
     }
 
-#if !HAS_URP
-    [InitializeOnLoadMethod]
-    private static void OnPostprocessAssets()
+    static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths, bool didDomainReload)
     {
-      UnityEngine.Debug.LogError(@"WebXR Export requires Universal Render Pipeline,
+#if !HAS_URP
+      Debug.LogError(@"WebXR Export requires Universal Render Pipeline,
 using Built-in Render Pipeline might cause issues.");
-    }
 #endif
+      if (PlayerSettings.colorSpace != ColorSpace.Gamma)
+      {
+        Debug.LogError(@"WebXR Export requires Gamma Color Space,
+using Linear Color Space might cause issues.");
+      }
+    }
   }
 }
