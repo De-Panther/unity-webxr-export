@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Error message when there's no Universal Render Pipeline package in project.
 - Error message when Player Settings Color Space not set to Gamma.
 
+### Changed
+- Updated WebGLTemplates assets based on newer Unity versions.
+
 ## [0.20.0] - 2023-12-18
 ### Added
 - Native XRSubsystem for WebXR Display rendering.
