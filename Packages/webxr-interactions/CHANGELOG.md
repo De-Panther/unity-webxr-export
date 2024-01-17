@@ -6,11 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.21.0] - 2024-01-17
 ### Added
 - An option to auto-load WebXRInputSystem on start in WebXRSettings.
 
 ### Changed
 - Minimum WebXR Input Profiles Loader version 0.6.2.
+- Requires WebXR Export 0.21.0.
 
 ### Fixed
 - SceneHitTest now updates the pose of the originTransform instead of WebXRManager transform.

@@ -1,7 +1,7 @@
 {
   "name": "com.de-panther.webxr",
   "displayName": "WebXR Export",
-  "version": "0.20.1-preview",
+  "version": "0.21.0",
   "unity": "2020.3",
   "unityRelease": "11f1",
   "description": "Export Unity projects to WebXR",
