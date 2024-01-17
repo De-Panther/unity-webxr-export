@@ -9,7 +9,7 @@
       }
     },
     "com.de-panther.webxr-input-profiles-loader": {
-      "version": "0.6.0",
+      "version": "0.6.2",
       "depth": 0,
       "source": "registry",
       "dependencies": {
