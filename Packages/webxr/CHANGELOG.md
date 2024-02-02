@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Errors of Module._malloc and Module._free are not functions.
+
 ## [0.21.0] - 2024-01-17
 ### Added
 - An option to auto-load WebXRManager on start in WebXRSettings.

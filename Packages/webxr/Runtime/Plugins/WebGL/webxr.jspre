@@ -1240,8 +1240,8 @@ Module['WebXR'].OnXRCapabilities = function (isARSupported, isVRSupported) {
 
 Module['WebXR'].OnInputProfiles = function (input_profiles) {
   var strBufferSize = lengthBytesUTF8(input_profiles) + 1;
-  var strBuffer = Module._malloc(strBufferSize);
+  var strBuffer = _malloc(strBufferSize);
   stringToUTF8(input_profiles, strBuffer, strBufferSize);
   Module.dynCall_vi(Module.WebXR.onInputProfilesPtr, strBuffer);
-  Module._free(strBuffer);
+  _free(strBuffer);
 }
