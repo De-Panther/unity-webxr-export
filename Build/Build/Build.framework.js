@@ -211,6 +211,8 @@ void main()
         this.bufferJointIndex = 0;
         this.handValuesType = 0;
         this.hasRadii = false;
+        this.pinchSelectDistanceStart = 0.009;
+        this.pinchSelectDistanceEnd = 0.0099;
 
         this.setIndices = function(index) {
           this.frameIndex = index++;
@@ -727,6 +729,13 @@ void main()
         quaternion[1] *= Math.sign( quaternion[1] * ( matrix[offset+8] - matrix[offset+2] ) );
         quaternion[2] *= Math.sign( quaternion[2] * ( matrix[offset+1] - matrix[offset+4] ) );
       }
+
+      XRManager.prototype.vector3Distance = function(ax, ay, az, bx, by, bz) {
+        return Math.sqrt(
+          Math.pow(ax - bx, 2) +
+          Math.pow(ay - by, 2) +
+          Math.pow(az - bz, 2));
+      }
       
       XRManager.prototype.getXRControllersData = function(frame, inputSources, refSpace, xrData) {
         Module.HEAPF32[xrData.handLeft.frameIndex] = xrData.frameNumber; // XRHandData.frame
@@ -804,6 +813,26 @@ void main()
               Module.HEAPF32[xrHand.pointerRotationYIndex] = -orientation.y; // XRHandData.pointerRotationY
               Module.HEAPF32[xrHand.pointerRotationZIndex] = orientation.z; // XRHandData.pointerRotationZ
               Module.HEAPF32[xrHand.pointerRotationWIndex] = orientation.w; // XRHandData.pointerRotationW
+            }
+            if (!inputSource.profiles || inputSource.profiles.length === 0) {
+              var distance = 1;
+              var thumbTip = 4 * 16;
+              var indexTip = 9 * 16;
+              if (!isNaN(xrHand.poses[thumbTip])
+                  && !isNaN(xrHand.poses[indexTip])) {
+                distance =this.vector3Distance(xrHand.poses[thumbTip + 12],
+                  xrHand.poses[thumbTip + 13],
+                  xrHand.poses[thumbTip + 14],
+                  xrHand.poses[indexTip + 12],
+                  xrHand.poses[indexTip + 13],
+                  xrHand.poses[indexTip + 14]);
+              }
+              if (Module.HEAPF32[xrHand.triggerIndex] === 0) {
+                Module.HEAPF32[xrHand.triggerIndex] = distance <= xrHand.pinchSelectDistanceStart ? 1 : 0;
+                xrHand.pinchSelectDistanceEnd = distance + (distance * 0.1);
+              } else {
+                Module.HEAPF32[xrHand.triggerIndex] = distance > xrHand.pinchSelectDistanceEnd ? 0 : 1;
+              }
             }
           } else if (inputSource.gripSpace) {
             var inputRayPose = frame.getPose(inputSource.targetRaySpace, refSpace);
