@@ -211,8 +211,11 @@ void main()
         this.bufferJointIndex = 0;
         this.handValuesType = 0;
         this.hasRadii = false;
-        this.pinchSelectDistanceStart = 0.009;
-        this.pinchSelectDistanceEnd = 0.0099;
+        this.pinchSelectDistanceStart = 0.014;
+        this.pinchSelectDistanceEnd = 0.015;
+        this.pinchDistance = 1;
+        this.thumbTip = 4 * 16;
+        this.indexTip = 9 * 16;
 
         this.setIndices = function(index) {
           this.frameIndex = index++;
@@ -549,10 +552,8 @@ void main()
           }
           
           if (hand == 0 || hand == 2) {
-            Module.HEAPF32[xrData.handRight.triggerIndex] = Module.HEAPF32[controller.triggerIndex]; // XRHandData.trigger
             Module.HEAPF32[xrData.handRight.squeezeIndex] = Module.HEAPF32[controller.squeezeIndex]; // XRHandData.squeeze
           } else {
-            Module.HEAPF32[xrData.handLeft.triggerIndex] = Module.HEAPF32[controller.triggerIndex]; // XRHandData.trigger
             Module.HEAPF32[xrData.handLeft.squeezeIndex] = Module.HEAPF32[controller.squeezeIndex]; // XRHandData.squeeze
           }
         } else {
@@ -814,25 +815,20 @@ void main()
               Module.HEAPF32[xrHand.pointerRotationZIndex] = orientation.z; // XRHandData.pointerRotationZ
               Module.HEAPF32[xrHand.pointerRotationWIndex] = orientation.w; // XRHandData.pointerRotationW
             }
-            if (!inputSource.profiles || inputSource.profiles.length === 0) {
-              var distance = 1;
-              var thumbTip = 4 * 16;
-              var indexTip = 9 * 16;
-              if (!isNaN(xrHand.poses[thumbTip])
-                  && !isNaN(xrHand.poses[indexTip])) {
-                distance =this.vector3Distance(xrHand.poses[thumbTip + 12],
-                  xrHand.poses[thumbTip + 13],
-                  xrHand.poses[thumbTip + 14],
-                  xrHand.poses[indexTip + 12],
-                  xrHand.poses[indexTip + 13],
-                  xrHand.poses[indexTip + 14]);
-              }
-              if (Module.HEAPF32[xrHand.triggerIndex] === 0) {
-                Module.HEAPF32[xrHand.triggerIndex] = distance <= xrHand.pinchSelectDistanceStart ? 1 : 0;
-                xrHand.pinchSelectDistanceEnd = distance + (distance * 0.1);
-              } else {
-                Module.HEAPF32[xrHand.triggerIndex] = distance > xrHand.pinchSelectDistanceEnd ? 0 : 1;
-              }
+            xrHand.pinchDistance = 1;
+            if (!isNaN(xrHand.poses[xrHand.thumbTip])
+                && !isNaN(xrHand.poses[xrHand.indexTip])) {
+              xrHand.pinchDistance = this.vector3Distance(xrHand.poses[xrHand.thumbTip + 12],
+                xrHand.poses[xrHand.thumbTip + 13],
+                xrHand.poses[xrHand.thumbTip + 14],
+                xrHand.poses[xrHand.indexTip + 12],
+                xrHand.poses[xrHand.indexTip + 13],
+                xrHand.poses[xrHand.indexTip + 14]);
+            }
+            if (Module.HEAPF32[xrHand.triggerIndex] === 0) {
+              Module.HEAPF32[xrHand.triggerIndex] = xrHand.pinchDistance <= xrHand.pinchSelectDistanceStart ? 1 : 0;
+            } else {
+              Module.HEAPF32[xrHand.triggerIndex] = xrHand.pinchDistance > xrHand.pinchSelectDistanceEnd ? 0 : 1;
             }
           } else if (inputSource.gripSpace) {
             var inputRayPose = frame.getPose(inputSource.targetRaySpace, refSpace);
