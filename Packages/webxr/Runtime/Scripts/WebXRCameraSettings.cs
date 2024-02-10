@@ -207,6 +207,7 @@ namespace WebXR
           if (m_updateNormalFieldOfView)
           {
             m_camera.fieldOfView = m_normalFieldOfView;
+            m_camera.ResetProjectionMatrix();
           }
           if (m_updateNormalLocalPose)
           {
