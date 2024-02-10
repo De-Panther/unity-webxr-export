@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- XR Hand pinch is now detected manually instead of relying on system select event, to support Apple Vision Pro.
+
 ### Fixed
 - Errors of Module._malloc and Module._free are not functions.
 
