@@ -8,6 +8,9 @@ namespace WebXR
     private Camera m_camera;
 
     [SerializeField]
+    private Transform m_transform;
+
+    [SerializeField]
     private CameraClearFlags m_normalClearFlags;
 
     [SerializeField]
@@ -33,6 +36,27 @@ namespace WebXR
 
     [SerializeField]
     private LayerMask m_arCullingMask;
+
+    [SerializeField]
+    private bool m_updateNormalFieldOfView = true;
+
+    [SerializeField]
+    private bool m_useNormalFieldOfViewFromAwake = true;
+
+    [SerializeField]
+    private float m_normalFieldOfView = 60f;
+
+    [SerializeField]
+    private bool m_updateNormalLocalPose = true;
+
+    [SerializeField]
+    private bool m_useNormalPoseFromAwake = true;
+
+    [SerializeField]
+    private Vector3 m_normalLocalPosition = Vector3.zero;
+
+    [SerializeField]
+    private Quaternion m_normalLocalRotation = Quaternion.identity;
 
     public Camera Camera
     {
@@ -94,6 +118,66 @@ namespace WebXR
       set { m_arCullingMask = value; }
     }
 
+    public bool UpdateNormalFieldOfView
+    {
+      get { return m_updateNormalFieldOfView; }
+      set { m_updateNormalFieldOfView = value; }
+    }
+
+    public bool UseNormalFieldOfViewFromAwake
+    {
+      get { return m_useNormalFieldOfViewFromAwake; }
+      set { m_useNormalFieldOfViewFromAwake = value; }
+    }
+
+    public float NormalFieldOfView
+    {
+      get { return m_normalFieldOfView; }
+      set { m_normalFieldOfView = value; }
+    }
+
+    public bool UpdateNormalLocalPose
+    {
+      get { return m_updateNormalLocalPose; }
+      set { m_updateNormalLocalPose = value; }
+    }
+
+    public bool UseNormalPoseFromAwake
+    {
+      get { return m_useNormalPoseFromAwake; }
+      set { m_useNormalPoseFromAwake = value; }
+    }
+
+    public Vector3 NormalLocalPosition
+    {
+      get { return m_normalLocalPosition; }
+      set { m_normalLocalPosition = value; }
+    }
+
+    public Quaternion NormalLocalRotation
+    {
+      get { return m_normalLocalRotation; }
+      set { m_normalLocalRotation = value; }
+    }
+
+    private void Awake()
+    {
+      if (m_camera == null)
+      {
+        return;
+      }
+      m_transform = m_camera.transform;
+      if (m_useNormalFieldOfViewFromAwake)
+      {
+        m_normalFieldOfView = m_camera.fieldOfView;
+      }
+      if (m_useNormalPoseFromAwake)
+      {
+        m_normalLocalPosition = m_transform.localPosition;
+        m_normalLocalRotation = m_transform.localRotation;
+      }
+    }
+
     private void OnEnable()
     {
       WebXRManager.OnXRChange += OnXRChange;
@@ -120,6 +204,19 @@ namespace WebXR
           m_camera.clearFlags = m_normalClearFlags;
           m_camera.backgroundColor = m_normalBackgroundColor;
           m_camera.cullingMask = m_normalCullingMask;
+          if (m_updateNormalFieldOfView)
+          {
+            m_camera.fieldOfView = m_normalFieldOfView;
+          }
+          if (m_updateNormalLocalPose)
+          {
+#if HAS_POSITION_AND_ROTATION
+            m_transform.SetLocalPositionAndRotation(m_normalLocalPosition, m_normalLocalRotation);
+#else
+            m_transform.localPosition = m_normalLocalPosition;
+            m_transform.localRotation = m_normalLocalRotation;
+#endif
+          }
           break;
         case WebXRState.VR:
           m_camera.clearFlags = m_vrClearFlags;
