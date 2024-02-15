@@ -729,7 +729,14 @@ void main()
         quaternion[1] *= Math.sign( quaternion[1] * ( matrix[offset+8] - matrix[offset+2] ) );
         quaternion[2] *= Math.sign( quaternion[2] * ( matrix[offset+1] - matrix[offset+4] ) );
       }
-      
+
+      XRManager.prototype.vector3Distance = function(ax, ay, az, bx, by, bz) {
+        return Math.sqrt(
+          Math.pow(ax - bx, 2) +
+          Math.pow(ay - by, 2) +
+          Math.pow(az - bz, 2));
+      }
+
       XRManager.prototype.getXRControllersData = function(frame, inputSources, refSpace, xrData) {
         Module.HEAPF32[xrData.handLeft.frameIndex] = xrData.frameNumber; // XRHandData.frame
         Module.HEAPF32[xrData.handRight.frameIndex] = xrData.frameNumber; // XRHandData.frame
