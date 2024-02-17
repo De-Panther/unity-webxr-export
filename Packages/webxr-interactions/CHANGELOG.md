@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Mapping of WebXR Tracked Display device.
+
 ## [0.21.0] - 2024-01-17
 ### Added
 - An option to auto-load WebXRInputSystem on start in WebXRSettings.
@@ -16,7 +19,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - SceneHitTest now updates the pose of the originTransform instead of WebXRManager transform.
-- Mapping of WebXR Tracked Display device.
 
 ## [0.20.0] - 2023-12-18
 ### Added
