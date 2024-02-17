@@ -47,7 +47,7 @@ namespace WebXR
     public void StartEssentialSubsystems()
     {
       CreateSubsystem<XRDisplaySubsystemDescriptor, XRDisplaySubsystem>(displaySubsystemDescriptors, "WebXR Display");
-      CreateSubsystem<XRInputSubsystemDescriptor, XRInputSubsystem>(inputSubsystemDescriptors, "WebXR HMD");
+      CreateSubsystem<XRInputSubsystemDescriptor, XRInputSubsystem>(inputSubsystemDescriptors, "WebXR Tracked Display");
       XRDisplaySubsystem.Start();
       XRInputSubsystem.Start();
       // TODO: Enable Single-Pass rendering

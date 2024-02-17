@@ -11,9 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - XR Hand pinch is now detected manually instead of relying on system select event, to support Apple Vision Pro.
+- Renamed WebXR HMD to WebXR Tracked Display.
 
 ### Fixed
 - Errors of Module._malloc and Module._free are not functions.
+- Mapping of WebXR Tracked Display device.
 
 ## [0.21.0] - 2024-01-17
 ### Added

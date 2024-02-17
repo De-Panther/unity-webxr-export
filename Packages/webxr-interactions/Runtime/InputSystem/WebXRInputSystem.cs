@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Layouts;
 using UnityEngine.InputSystem.LowLevel;
+
 #if XR_HANDS_1_1_OR_NEWER
 using System.Collections;
 using System.Collections.Generic;
@@ -69,9 +70,7 @@ namespace WebXR.InputSystem
         return;
       }
       initialized = true;
-      InputSystem.RegisterLayout<WebXRController>(
-        matches: new InputDeviceMatcher()
-        .WithInterface("WebXRController"));
+
 #if XR_HANDS_1_1_OR_NEWER
       var descriptors = new List<XRHandSubsystemDescriptor>();
       SubsystemManager.GetSubsystemDescriptors(descriptors);
@@ -346,18 +345,12 @@ namespace WebXR.InputSystem
 
     private static WebXRController GetWebXRController(int hand)
     {
-      string product = "WebXRController Left";
-      string usage = "LeftHand";
-      if (hand == 2)
-      {
-        product = "WebXRController Right";
-        usage = "RightHand";
-      }
+      string usage = hand == 2 ? "RightHand" : "LeftHand";
       var device = InputSystem.AddDevice(
         new InputDeviceDescription
         {
-          interfaceName = "WebXRController",
-          product = product
+          interfaceName = "XRInput",
+          product = "WebXR Controller"
         });
       InputSystem.AddDeviceUsage(device, usage);
       return (WebXRController)device;
