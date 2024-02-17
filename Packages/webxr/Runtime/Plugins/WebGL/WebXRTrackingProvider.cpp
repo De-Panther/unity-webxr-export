@@ -55,12 +55,17 @@ UnitySubsystemErrorCode WebXRTrackingProvider::FillDeviceDefinition(UnityXRInter
 {
   // Fill in your connected device information here when requested.  Used to create customized device states.
   auto &input = *m_Ctx.input;
-  input.DeviceDefinition_SetName(definition, "WebXRHMD");
+  input.DeviceDefinition_SetName(definition, "WebXR Tracked Display");
   input.DeviceDefinition_SetCharacteristics(definition, (UnityXRInputDeviceCharacteristics)(kUnityXRInputDeviceCharacteristicsHeadMounted | kUnityXRInputDeviceCharacteristicsTrackedDevice));
   input.DeviceDefinition_SetManufacturer(definition, "WebXR");
 
-  input.DeviceDefinition_AddFeatureWithUsage(definition, "head position", kUnityXRInputFeatureTypeAxis3D, kUnityXRInputFeatureUsageCenterEyePosition);
-  input.DeviceDefinition_AddFeatureWithUsage(definition, "head rotation", kUnityXRInputFeatureTypeRotation, kUnityXRInputFeatureUsageCenterEyeRotation);
+  input.DeviceDefinition_AddFeatureWithUsage(definition, "is tracked", kUnityXRInputFeatureTypeBinary, kUnityXRInputFeatureUsageIsTracked);
+  input.DeviceDefinition_AddFeatureWithUsage(definition, "tracking state", kUnityXRInputFeatureTypeDiscreteStates, kUnityXRInputFeatureUsageTrackingState);
+
+  input.DeviceDefinition_AddFeatureWithUsage(definition, "device position", kUnityXRInputFeatureTypeAxis3D, kUnityXRInputFeatureUsageDevicePosition);
+  input.DeviceDefinition_AddFeatureWithUsage(definition, "device rotation", kUnityXRInputFeatureTypeRotation, kUnityXRInputFeatureUsageDeviceRotation);
+  input.DeviceDefinition_AddFeatureWithUsage(definition, "center eye position", kUnityXRInputFeatureTypeAxis3D, kUnityXRInputFeatureUsageCenterEyePosition);
+  input.DeviceDefinition_AddFeatureWithUsage(definition, "center eye rotation", kUnityXRInputFeatureTypeRotation, kUnityXRInputFeatureUsageCenterEyeRotation);
   if (hasMultipleViews)
   {
     input.DeviceDefinition_AddFeatureWithUsage(definition, "left eye position", kUnityXRInputFeatureTypeAxis3D, kUnityXRInputFeatureUsageLeftEyePosition);
@@ -96,16 +101,16 @@ UnitySubsystemErrorCode WebXRTrackingProvider::UpdateDeviceState(UnityXRInternal
   if (hasMultipleViews)
   {
     // Left pose
-    input.DeviceState_SetAxis3DValue(state, 2, position);
-    input.DeviceState_SetRotationValue(state, 3, rotation);
+    input.DeviceState_SetAxis3DValue(state, 6, position);
+    input.DeviceState_SetRotationValue(state, 7, rotation);
 
     UnityXRVector3 rightPosition;
     rightPosition.x = *(m_ViewsDataArray + start + 3);
     rightPosition.y = *(m_ViewsDataArray + start + 4);
     rightPosition.z = *(m_ViewsDataArray + start + 5);
     // Right pose
-    input.DeviceState_SetAxis3DValue(state, 4, position);
-    input.DeviceState_SetRotationValue(state, 5, rotation);
+    input.DeviceState_SetAxis3DValue(state, 8, position);
+    input.DeviceState_SetRotationValue(state, 9, rotation);
 
     // Update center pose
     position.x = 0.5f * (position.x + rightPosition.x);
@@ -113,8 +118,15 @@ UnitySubsystemErrorCode WebXRTrackingProvider::UpdateDeviceState(UnityXRInternal
     position.z = 0.5f * (position.z + rightPosition.z);
   }
   // Center pose
-  input.DeviceState_SetAxis3DValue(state, 0, position);
-  input.DeviceState_SetRotationValue(state, 1, rotation);
+  input.DeviceState_SetAxis3DValue(state, 2, position);
+  input.DeviceState_SetRotationValue(state, 3, rotation);
+  // Device pose
+  input.DeviceState_SetAxis3DValue(state, 4, position);
+  input.DeviceState_SetRotationValue(state, 5, rotation);
+
+  // Tracking
+  input.DeviceState_SetBinaryValue(state, 0, true);
+  input.DeviceState_SetDiscreteStateValue(state, 1, 3);
 
   return kUnitySubsystemErrorCodeSuccess;
 }
@@ -217,5 +229,5 @@ UnitySubsystemErrorCode Load_Input(WebXRProviderContext &ctx)
     delete ctx.trackingProvider;
   };
 
-  return ctx.input->RegisterLifecycleProvider("WebXR Export", "WebXR HMD", &inputLifecycleHandler);
+  return ctx.input->RegisterLifecycleProvider("WebXR Export", "WebXR Tracked Display", &inputLifecycleHandler);
 }

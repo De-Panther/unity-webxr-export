@@ -11,6 +11,25 @@ using UnityEngine.Scripting;
 namespace WebXR.InputSystem
 {
   using InputSystem = UnityEngine.InputSystem.InputSystem;
+
+#if UNITY_EDITOR
+  [UnityEditor.InitializeOnLoad]
+#endif
+  [Preserve, InputControlLayout(displayName = "WebXR Tracked Display")]
+  internal class WebXRTrackedDisplay : XRHMD
+  {
+    static WebXRTrackedDisplay()
+    {
+      InputSystem.RegisterLayout<WebXRTrackedDisplay>(
+        matches: new InputDeviceMatcher()
+        .WithInterface(XRUtilities.InterfaceMatchAnyVersion)
+        .WithProduct("WebXR Tracked Display"));
+    }
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    private static void InitializeInPlayer() { }
+  }
+
   [Preserve]
   public struct WebXRControllerState : IInputStateTypeInfo
   {
@@ -158,7 +177,10 @@ namespace WebXR.InputSystem
 
     static WebXRController()
     {
-      InputSystem.RegisterLayout<WebXRController>();
+      InputSystem.RegisterLayout<WebXRController>(
+        matches: new InputDeviceMatcher()
+        .WithInterface(XRUtilities.InterfaceMatchAnyVersion)
+        .WithProduct("WebXR Controller"));
     }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
