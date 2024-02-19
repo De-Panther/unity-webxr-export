@@ -86,8 +86,17 @@ namespace WebXR
 #endif
     {
 #if !HAS_URP
-      Debug.LogError(@"WebXR Export requires Universal Render Pipeline,
+      bool needsURP = true;
+      WebXRSettings settings = WebXRSettings.GetSettings();
+      if (settings != null && settings.DisableXRDisplaySubsystem)
+      {
+        needsURP = false;
+      }
+      if (needsURP)
+      {
+        Debug.LogError(@"WebXR Export requires Universal Render Pipeline,
 using Built-in Render Pipeline might cause issues.");
+      }
 #endif
       if (PlayerSettings.colorSpace != ColorSpace.Gamma)
       {
