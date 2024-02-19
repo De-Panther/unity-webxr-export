@@ -21,3 +21,4 @@ MonoBehaviour:
   FramebufferScaleFactor: 1
   AutoLoadWebXRManager: 1
   AutoLoadWebXRInputSystem: 1
+  DisableXRDisplaySubsystem: 1

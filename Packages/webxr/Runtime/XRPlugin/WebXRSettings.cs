@@ -49,6 +49,12 @@ Default is 1.0, the recommended resolution.")]
 WebXRInputSystem is needed when using Unity Input System and XR Interaction Toolkit.
 WebXRInputSystem is part of WebXR Interactions package.")]
     public bool AutoLoadWebXRInputSystem = true;
+    [Tooltip(@"Should XRDisplaySubsystem be used?
+By default it is in use and require URP.
+Disabling it can allow the use of BiRP,
+but it's less convenient as it means using a list of Cameras instead of 1.
+If XRDisplaySubsystem is disabled use the WebXRCamera component.")]
+    public bool DisableXRDisplaySubsystem = false;
 
     string EnumToString<T>(T value) where T : Enum
     {

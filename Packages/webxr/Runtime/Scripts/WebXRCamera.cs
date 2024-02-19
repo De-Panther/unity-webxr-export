@@ -19,29 +19,103 @@ namespace WebXR
 
     [SerializeField]
     private Camera cameraMain = null, cameraL = null, cameraR = null, cameraARL = null, cameraARR = null;
-    [SerializeField]
-    private Transform cameraFollower = null;
 
     [SerializeField]
-    private Camera eventsCamera = null;
+    private bool m_updateNormalFieldOfView = true;
+
+    [SerializeField]
+    private bool m_useNormalFieldOfViewFromAwake = true;
+
+    [SerializeField]
+    private float m_normalFieldOfView = 60f;
+
+    [SerializeField]
+    private bool m_updateNormalLocalPose = true;
+
+    [SerializeField]
+    private bool m_useNormalPoseFromAwake = true;
+
+    [SerializeField]
+    private Vector3 m_normalLocalPosition = Vector3.zero;
+
+    [SerializeField]
+    private Quaternion m_normalLocalRotation = Quaternion.identity;
+
+    public bool UpdateNormalFieldOfView
+    {
+      get { return m_updateNormalFieldOfView; }
+      set { m_updateNormalFieldOfView = value; }
+    }
+
+    public bool UseNormalFieldOfViewFromAwake
+    {
+      get { return m_useNormalFieldOfViewFromAwake; }
+      set { m_useNormalFieldOfViewFromAwake = value; }
+    }
+
+    public float NormalFieldOfView
+    {
+      get { return m_normalFieldOfView; }
+      set { m_normalFieldOfView = value; }
+    }
+
+    public bool UpdateNormalLocalPose
+    {
+      get { return m_updateNormalLocalPose; }
+      set { m_updateNormalLocalPose = value; }
+    }
+
+    public bool UseNormalPoseFromAwake
+    {
+      get { return m_useNormalPoseFromAwake; }
+      set { m_useNormalPoseFromAwake = value; }
+    }
+
+    public Vector3 NormalLocalPosition
+    {
+      get { return m_normalLocalPosition; }
+      set { m_normalLocalPosition = value; }
+    }
+
+    public Quaternion NormalLocalRotation
+    {
+      get { return m_normalLocalRotation; }
+      set { m_normalLocalRotation = value; }
+    }
 
     private WebXRState xrState = WebXRState.NORMAL;
     private Rect leftRect, rightRect;
 
     private int viewsCount = 1;
 
-    private bool hasFollower = false;
-    private bool hasEventsCamera = false;
+    private Transform m_transform;
 
     [SerializeField]
     private bool updateCameraTag = false;
+
+    private void Awake()
+    {
+      if (cameraMain == null)
+      {
+        return;
+      }
+      m_transform = cameraMain.transform;
+      if (m_useNormalFieldOfViewFromAwake)
+      {
+        m_normalFieldOfView = cameraMain.fieldOfView;
+      }
+      if (m_useNormalPoseFromAwake)
+      {
+        m_normalLocalPosition = m_transform.localPosition;
+        m_normalLocalRotation = m_transform.localRotation;
+      }
+    }
 
     private void OnEnable()
     {
       WebXRManager.OnXRChange += OnXRChange;
       WebXRManager.OnHeadsetUpdate += OnHeadsetUpdate;
-      hasFollower = cameraFollower != null;
-      hasEventsCamera = eventsCamera != null;
+      WebXRManager.OnViewsDistanceChange += OnViewsDistanceChange;
       OnXRChange(WebXRManager.Instance.XRState,
                   WebXRManager.Instance.ViewsCount,
                   WebXRManager.Instance.ViewsLeftRect,
@@ -52,11 +126,7 @@ namespace WebXR
     {
       WebXRManager.OnXRChange -= OnXRChange;
       WebXRManager.OnHeadsetUpdate -= OnHeadsetUpdate;
-    }
-
-    private void Update()
-    {
-      UpdateFollower();
+      WebXRManager.OnViewsDistanceChange -= OnViewsDistanceChange;
     }
 
     private void SwitchXRState()
@@ -105,48 +175,22 @@ namespace WebXR
             cameraL.tag = untaggedTag;
             cameraARL.tag = untaggedTag;
           }
+          if (m_updateNormalFieldOfView)
+          {
+            cameraMain.fieldOfView = m_normalFieldOfView;
+            cameraMain.ResetProjectionMatrix();
+          }
+          if (m_updateNormalLocalPose)
+          {
+#if HAS_POSITION_AND_ROTATION
+            m_transform.SetLocalPositionAndRotation(m_normalLocalPosition, m_normalLocalRotation);
+#else
+            m_transform.localPosition = m_normalLocalPosition;
+            m_transform.localRotation = m_normalLocalRotation;
+#endif
+          }
           break;
       }
-      if (hasEventsCamera)
-      {
-        eventsCamera.projectionMatrix = cameraMain.projectionMatrix;
-      }
-    }
-
-    private void UpdateFollower()
-    {
-      if (!hasFollower)
-      {
-        return;
-      }
-      switch (xrState)
-      {
-        case WebXRState.AR:
-#if HAS_POSITION_AND_ROTATION
-          cameraFollower.SetLocalPositionAndRotation(viewsCount > 1 ? (cameraARL.transform.localPosition + cameraARR.transform.localPosition) * 0.5f : cameraARL.transform.localPosition,
-            cameraARL.transform.localRotation);
-#else
-          cameraFollower.localPosition = viewsCount > 1 ? (cameraARL.transform.localPosition + cameraARR.transform.localPosition) * 0.5f : cameraARL.transform.localPosition;
-          cameraFollower.localRotation = cameraARL.transform.localRotation;
-#endif
-          return;
-        case WebXRState.VR:
-#if HAS_POSITION_AND_ROTATION
-          cameraFollower.SetLocalPositionAndRotation((cameraL.transform.localPosition + cameraR.transform.localPosition) * 0.5f, 
-            cameraL.transform.localRotation);
-#else
-          cameraFollower.localPosition = (cameraL.transform.localPosition + cameraR.transform.localPosition) * 0.5f;
-          cameraFollower.localRotation = cameraL.transform.localRotation;
-#endif
-          return;
-      }
-#if HAS_POSITION_AND_ROTATION
-      cameraFollower.SetLocalPositionAndRotation(cameraMain.transform.localPosition, 
-        cameraMain.transform.localRotation);
-#else
-      cameraFollower.localRotation = cameraMain.transform.localRotation;
-      cameraFollower.localPosition = cameraMain.transform.localPosition;
-#endif
     }
 
     public Quaternion GetLocalRotation()
@@ -204,51 +248,33 @@ namespace WebXR
 
     private void OnHeadsetUpdate(
         Matrix4x4 leftProjectionMatrix,
-        Matrix4x4 rightProjectionMatrix,
-        Quaternion leftRotation,
-        Quaternion rightRotation,
-        Vector3 leftPosition,
-        Vector3 rightPosition)
+        Matrix4x4 rightProjectionMatrix)
     {
       if (xrState == WebXRState.VR)
       {
-#if HAS_POSITION_AND_ROTATION
-        cameraL.transform.SetLocalPositionAndRotation(leftPosition, leftRotation);
-#else
-        cameraL.transform.localPosition = leftPosition;
-        cameraL.transform.localRotation = leftRotation;
-#endif
         cameraL.projectionMatrix = leftProjectionMatrix;
-
-#if HAS_POSITION_AND_ROTATION
-        cameraR.transform.SetLocalPositionAndRotation(rightPosition, rightRotation);
-#else
-        cameraR.transform.localPosition = rightPosition;
-        cameraR.transform.localRotation = rightRotation;
-#endif
         cameraR.projectionMatrix = rightProjectionMatrix;
       }
       else if (xrState == WebXRState.AR)
       {
-#if HAS_POSITION_AND_ROTATION
-        cameraARL.transform.SetLocalPositionAndRotation(leftPosition, leftRotation);
-#else
-        cameraARL.transform.localPosition = leftPosition;
-        cameraARL.transform.localRotation = leftRotation;
-#endif
         cameraARL.projectionMatrix = leftProjectionMatrix;
-#if HAS_POSITION_AND_ROTATION
-        cameraARR.transform.SetLocalPositionAndRotation(rightPosition, rightRotation);
-#else
-        cameraARR.transform.localPosition = rightPosition;
-        cameraARR.transform.localRotation = rightRotation;
-#endif
         cameraARR.projectionMatrix = rightProjectionMatrix;
-        if (hasEventsCamera && viewsCount == 1)
-        {
-          eventsCamera.projectionMatrix = leftProjectionMatrix;
-        }
       }
+      if (viewsCount == 1)
+      {
+        cameraMain.projectionMatrix = leftProjectionMatrix;
+      }
+    }
+
+    private void OnViewsDistanceChange(float distance)
+    {
+      float halfDistance = distance * 0.5f;
+      var left = new Vector3(-halfDistance, 0f, 0f);
+      var right = new Vector3(halfDistance, 0f, 0f);
+      cameraL.transform.localPosition = left;
+      cameraR.transform.localPosition = right;
+      cameraARL.transform.localPosition = left;
+      cameraARR.transform.localPosition = right;
     }
   }
 }

@@ -62,6 +62,12 @@ namespace WebXR
       remove => WebXRSubsystem.OnHeadsetUpdate -= value;
     }
 
+    public static event WebXRSubsystem.ViewsDistanceEvent OnViewsDistanceChange
+    {
+      add => WebXRSubsystem.OnViewsDistanceChange += value;
+      remove => WebXRSubsystem.OnViewsDistanceChange -= value;
+    }
+
     public static event WebXRSubsystem.HitTestUpdate OnViewerHitTestUpdate
     {
       add => WebXRSubsystem.OnViewerHitTestUpdate += value;

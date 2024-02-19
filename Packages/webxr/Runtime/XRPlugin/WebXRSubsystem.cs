@@ -150,6 +150,11 @@ namespace WebXR
       {
         reportedXRStateSwitch = true;
         OnXRChange?.Invoke(xrState, viewsCount, leftRect, rightRect);
+        if (OnViewsDistanceChange != null)
+        {
+          float distance = CheckViewsDistance();
+          OnViewsDistanceChange.Invoke(distance);
+        }
       }
       if (!updatedControllersOnEnd)
       {
@@ -216,19 +221,22 @@ namespace WebXR
       {
         GetMatrixFromSharedArray(0, ref leftProjectionMatrix);
         GetMatrixFromSharedArray(16, ref rightProjectionMatrix);
-        GetQuaternionFromSharedArray(32, ref leftRotation);
-        GetQuaternionFromSharedArray(36, ref rightRotation);
-        GetVector3FromSharedArray(40, ref leftPosition);
-        GetVector3FromSharedArray(43, ref rightPosition);
 
         OnHeadsetUpdate?.Invoke(
             leftProjectionMatrix,
-            rightProjectionMatrix,
-            leftRotation,
-            rightRotation,
-            leftPosition,
-            rightPosition);
+            rightProjectionMatrix);
       }
+    }
+
+    private float CheckViewsDistance()
+    {
+      if (viewsCount == 1)
+      {
+        return 0;
+      }
+      GetVector3FromSharedArray(40, ref leftPosition);
+      GetVector3FromSharedArray(43, ref rightPosition);
+      return Vector3.Distance(leftPosition, rightPosition);
     }
 
 #if !UNITY_XR_MANAGEMENT_4_3_1_OR_NEWER
@@ -312,13 +320,13 @@ namespace WebXR
 
     public delegate void HeadsetUpdate(
         Matrix4x4 leftProjectionMatrix,
-        Matrix4x4 rightProjectionMatrix,
-        Quaternion leftRotation,
-        Quaternion rightRotation,
-        Vector3 leftPosition,
-        Vector3 rightPosition);
+        Matrix4x4 rightProjectionMatrix);
 
     internal static event HeadsetUpdate OnHeadsetUpdate;
+
+    public delegate void ViewsDistanceEvent(float distance);
+
+    internal static event ViewsDistanceEvent OnViewsDistanceChange;
 
     public delegate void ControllerUpdate(WebXRControllerData controllerData);
 
@@ -349,8 +357,6 @@ namespace WebXR
     private Matrix4x4 rightProjectionMatrix = new Matrix4x4();
     private Vector3 leftPosition = new Vector3();
     private Vector3 rightPosition = new Vector3();
-    private Quaternion leftRotation = Quaternion.identity;
-    private Quaternion rightRotation = Quaternion.identity;
 
     // Shared array which we will load headset data in from webxr.jslib
     // Array stores 2 matrices, each 16 values, 2 Quaternions and 2 Vector3,
