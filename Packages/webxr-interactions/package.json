@@ -32,6 +32,11 @@
       "displayName": "Sample Scene - Built-in Render Pipeline",
       "description": "Sample Scene (using Built-in Render Pipeline) with full WebXR Camera rig, including Controllers and Hands components",
       "path": "Samples~/Desert-BiRP"
+    },
+    {
+      "displayName": "XR Interaction Toolkit Sample - Built-in Render Pipeline",
+      "description": "Sample Scene (using Built-in Render Pipeline) with support for Unity Input System and XR Interaction Toolkit. Including XR Rig and Components to load WebXR Input Profiles.",
+      "path": "Samples~/XRInteractionToolkit-BiRP"
     }
   ],
   "dependencies": {
