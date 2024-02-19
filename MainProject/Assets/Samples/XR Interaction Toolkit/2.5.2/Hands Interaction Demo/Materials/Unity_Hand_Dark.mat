@@ -34,23 +34,19 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Unity_Hand_Dark
-  m_Shader: {fileID: -6465566751694194690, guid: 89a6790c28795dd4987bb267c3d05338,
-    type: 3}
-  m_Parent: {fileID: 0}
-  m_ModifiedSerializedProperties: 0
+  m_Shader: {fileID: -6465566751694194690, guid: 89a6790c28795dd4987bb267c3d05338, type: 3}
   m_ValidKeywords:
   - _BUILTIN_SURFACE_TYPE_TRANSPARENT
+  m_InvalidKeywords:
   - _SURFACE_TYPE_TRANSPARENT
-  m_InvalidKeywords: []
   m_LightmapFlags: 4
-  m_EnableInstancingVariants: 1
+  m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: 3002
   stringTagMap:
     RenderType: Transparent
   disabledShaderPasses:
   - DepthOnly
-  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -92,7 +88,6 @@ Material:
     - Vector1_69b40c1ee2e1422cbfcae389f53b36a9: 1
     - Vector1_8671db567d5d4784b29e8ff511bd8f1e: 1
     - _AlphaClip: 0
-    - _AlphaToMask: 0
     - _BUILTIN_AlphaClip: 0
     - _BUILTIN_Blend: 0
     - _BUILTIN_CullMode: 2
@@ -129,16 +124,11 @@ Material:
     - _ZWrite: 0
     - _ZWriteControl: 0
     m_Colors:
-    - Color_d710c7c4aa1a4153a2a64167ef0bec76: {r: 0.2623709, g: 0.6187253, b: 0.8301887,
-        a: 1}
-    - Color_d710c7c4aa1a4153a2a64167ef0bec76_1: {r: 0.09807763, g: 0.48720872, b: 0.7169812,
-        a: 0.7529412}
-    - Color_d710c7c4aa1a4153a2a64167ef0bec76_2: {r: 0.26237094, g: 0.61872536, b: 0.8301887,
-        a: 1}
-    - Color_d710c7c4aa1a4153a2a64167ef0bec76_3: {r: 0.2623709, g: 0.6187253, b: 0.8301887,
-        a: 1}
-    - Color_d710c7c4aa1a4153a2a64167ef0bec76_4: {r: 0.2623709, g: 0.6187253, b: 0.8301887,
-        a: 1}
+    - Color_d710c7c4aa1a4153a2a64167ef0bec76: {r: 0.2623709, g: 0.6187253, b: 0.8301887, a: 1}
+    - Color_d710c7c4aa1a4153a2a64167ef0bec76_1: {r: 0.09807763, g: 0.48720872, b: 0.7169812, a: 0.7529412}
+    - Color_d710c7c4aa1a4153a2a64167ef0bec76_2: {r: 0.26237094, g: 0.61872536, b: 0.8301887, a: 1}
+    - Color_d710c7c4aa1a4153a2a64167ef0bec76_3: {r: 0.2623709, g: 0.6187253, b: 0.8301887, a: 1}
+    - Color_d710c7c4aa1a4153a2a64167ef0bec76_4: {r: 0.2623709, g: 0.6187253, b: 0.8301887, a: 1}
     - Vector2_35ca599ce1fc4a0e9beb6851331d34d0: {r: 1, g: 1, b: 1, a: 1}
     - Vector4_a181cf55d95248cd8de84bc8794fab43: {r: 0, g: 0, b: 0, a: 0}
     - Vector4_b4ecd630827d4a4eb3f21c6ac3664540: {r: 1, g: 1, b: 1, a: 1}
