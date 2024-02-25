@@ -94,13 +94,13 @@ namespace WebXR
       }
       if (needsURP)
       {
-        Debug.LogError(@"WebXR Export requires Universal Render Pipeline,
+        Debug.LogWarning(@"WebXR Export requires Universal Render Pipeline,
 using Built-in Render Pipeline might cause issues.");
       }
 #endif
       if (PlayerSettings.colorSpace != ColorSpace.Gamma)
       {
-        Debug.LogError(@"WebXR Export requires Gamma Color Space,
+        Debug.LogWarning(@"WebXR Export requires Gamma Color Space,
 using Linear Color Space might cause issues.");
       }
     }
