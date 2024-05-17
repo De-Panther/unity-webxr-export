@@ -3,7 +3,8 @@
 In this page, we have a step by step guide on how to build a project from the Sample Scene.
 
 > [!IMPORTANT]
-> Since version 0.20.0 of WebXR Export, there's no support for Built-in Render Pipeline, use URP.
+> ~~Since version 0.20.0 of WebXR Export, there's no support for Built-in Render Pipeline, use URP.~~
+> Since version 0.22.0 of WebXR Export, Built-in Render Pipeline can be used by disabling the Display Submodule in the WebXR Settings and using the BiRP Samples.
 
 ## Let's build some WebXR stuff
 
