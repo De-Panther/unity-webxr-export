@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Added support for WebAssembly Table, to support newer Unity versions features.
+
 ## [0.22.0] - 2024-02-25
 ### Added
 - An option in WebXRCameraSettings to set flat/normal mode camera pose when returning from XR mode.
