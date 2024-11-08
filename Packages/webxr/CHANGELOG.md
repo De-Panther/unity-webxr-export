@@ -6,8 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
-- Added support for WebAssembly Table, to support newer Unity versions features.
+### Added
+- Support for WebAssembly Table, to support newer Unity versions features.
+
+### Fixed
+- Adapt Color Space warning to Unity 6 and up.
 
 ## [0.22.0] - 2024-02-25
 ### Added
