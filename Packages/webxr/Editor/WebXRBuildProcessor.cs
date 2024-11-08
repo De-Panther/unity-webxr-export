@@ -98,11 +98,19 @@ namespace WebXR
 using Built-in Render Pipeline might cause issues.");
       }
 #endif
+#if UNITY_6000_0_OR_NEWER
+      if (PlayerSettings.colorSpace != ColorSpace.Linear)
+      {
+        Debug.LogWarning(@"WebXR Export requires Linear Color Space,
+using Gamma Color Space might cause issues.");
+      }
+#else
       if (PlayerSettings.colorSpace != ColorSpace.Gamma)
       {
         Debug.LogWarning(@"WebXR Export requires Gamma Color Space,
 using Linear Color Space might cause issues.");
       }
+#endif
     }
   }
 }
