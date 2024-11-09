@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.22.1] - 2024-11-09
 ### Added
 - Support for WebAssembly Table, to support newer Unity versions features.
 
