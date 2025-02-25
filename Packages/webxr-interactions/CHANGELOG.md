@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- WebXRInputSystem unsubscribe OnHandUpdate OnDisable. (Issue #422)
+
 ## [0.22.0] - 2024-02-25
 ### Added
 - Sample Scene - Built-in Render Pipeline.
