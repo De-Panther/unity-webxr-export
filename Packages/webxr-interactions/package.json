@@ -40,6 +40,6 @@
     }
   ],
   "dependencies": {
-    "com.de-panther.webxr": "0.22.0"
+    "com.de-panther.webxr": "0.22.1"
   }
 }
