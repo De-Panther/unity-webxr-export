@@ -122,7 +122,7 @@ namespace WebXR.InputSystem
       WebXRManager.OnXRChange -= OnXRChange;
       WebXRManager.OnControllerUpdate -= OnControllerUpdate;
 #if XR_HANDS_1_1_OR_NEWER
-      WebXRManager.OnHandUpdate += OnHandUpdate;
+      WebXRManager.OnHandUpdate -= OnHandUpdate;
       webXRHandsSubsystem?.Stop();
       subsystemUpdater?.Stop();
 #endif
