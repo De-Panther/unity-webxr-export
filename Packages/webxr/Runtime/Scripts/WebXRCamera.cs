@@ -90,8 +90,13 @@ namespace WebXR
 
     private Transform m_transform;
 
+    /// <summary>
+    /// Updates the tag of the current enabled camera to MainCamera tag.
+    /// Some tools like Unity XR Interaction Toolkit are calling Camera.main and this tag is needed.
+    /// </summary>
     [SerializeField]
-    private bool updateCameraTag = false;
+    [Tooltip("Updates the tag of the current enabled camera to MainCamera tag. Some tools like Unity XRI looks for it.")]
+    private bool updateCameraTag = true;
 
     private void Awake()
     {

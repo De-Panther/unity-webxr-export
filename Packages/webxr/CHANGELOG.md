@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Set WebXRCamera.updateCameraTag default value to true.
+
 ### Fixed
 - Hands tracking update.
 
