@@ -1366,7 +1366,7 @@ MonoBehaviour:
   m_useNormalPoseFromAwake: 1
   m_normalLocalPosition: {x: 0, y: 0, z: 0}
   m_normalLocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  updateCameraTag: 0
+  updateCameraTag: 1
 --- !u!81 &3352285157966312399
 AudioListener:
   m_ObjectHideFlags: 0

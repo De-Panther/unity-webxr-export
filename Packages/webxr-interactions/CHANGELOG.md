@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Updated WebXRCamera.updateCameraTag in samples to true.
+
 ### Fixed
 - WebXRInputSystem unsubscribe OnHandUpdate OnDisable. (Issue #422)
 - Hands tracking update.

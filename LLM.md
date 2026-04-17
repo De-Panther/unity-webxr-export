@@ -96,6 +96,7 @@ In Unity:
 * WebXR requires secure contexts (HTTPS).
 * Projects may require manual configuration to enable specific features like hand tracking or hit tests.
 * Unity XR SDK support is limited on web. Prefer Disable XR Display Subsystem in the WebXR Settings window, and use WebXRCamera component instead of the WebXRCameraSettings component.
+* Some tools like Unity XR Interaction Toolkit (XRI) are looking for `Camera.main`. Using them with `WebXRCamera` requires `WebXRCamera.updateCameraTag` to be `true` to work properly.
 
 ## 🤝 Contribution Guidelines
 
