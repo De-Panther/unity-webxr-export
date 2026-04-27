@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Hands tracking update.
+- Flickering on touch input in immersive WebXR sessions by queueing synthesized touch events and dispatching them during the XR animation frame.
 
 ## [0.22.1] - 2024-11-09
 ### Added
