@@ -351,11 +351,12 @@ void main()
       }
 
       XRManager.prototype.queueTouchEvent = function (eventName, target, changedTouches) {
+        var touchesSnapshot = this.xrData.touches.slice();
         var touchEvent = new XRTouchEvent(
           eventName,
           target,
-          this.xrData.touches.slice(),
-          this.xrData.touches.slice(),
+          touchesSnapshot,
+          touchesSnapshot,
           changedTouches.slice()
         );
       
