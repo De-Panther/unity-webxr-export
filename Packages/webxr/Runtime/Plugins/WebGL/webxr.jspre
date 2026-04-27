@@ -506,6 +506,7 @@ void main()
         }
         
         this.removeRemainingTouches();
+        this.touchEventQueue.length = 0;
 
         Module.HEAPF32[this.xrData.controllerA.frameIndex] = -1; // XRControllerData.frame
         Module.HEAPF32[this.xrData.controllerB.frameIndex] = -1; // XRControllerData.frame
