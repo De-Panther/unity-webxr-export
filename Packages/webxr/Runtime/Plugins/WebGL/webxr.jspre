@@ -346,9 +346,31 @@ void main()
         this.onSessionVisibilityEvent = null;
         this.BrowserObject = null;
         this.JSEventsObject = null;
+        this.touchEventQueue = [];
         this.init();
       }
-    
+
+      XRManager.prototype.queueTouchEvent = function (eventName, target, changedTouches) {
+        var touchEvent = new XRTouchEvent(
+          eventName,
+          target,
+          this.xrData.touches.slice(),
+          this.xrData.touches.slice(),
+          changedTouches.slice()
+        );
+      
+        this.touchEventQueue.push(touchEvent);
+      }
+
+      XRManager.prototype.dispatchQueuedTouchEvents = function () {
+        while (this.touchEventQueue.length > 0) {
+          var touchEvent = this.touchEventQueue.shift();
+          this.JSEventsObject.eventHandlers[
+            this.xrData.eventsNamesToIDs[touchEvent.type]
+          ].eventListenerFunc(touchEvent);
+        }
+      }
+
       XRManager.prototype.init = function () {
         if (window.WebXRPolyfill) {
           if (window.WebXRPolyfillConfig) {
@@ -584,12 +606,14 @@ void main()
                 break;
               case "selectstart": // 7 touchstart
                 inputSource.xrTouchObject = this.xrData.CreateTouch(this.canvas, xPercentage, yPercentage);
-                this.xrData.SendTouchEvent(this.JSEventsObject, "touchstart", this.canvas, [inputSource.xrTouchObject])
+                this.queueTouchEvent("touchstart", this.canvas, [inputSource.xrTouchObject]);
                 break;
               case "selectend": // 8 touchend
-                this.xrData.RemoveTouch(inputSource.xrTouchObject);
-                this.xrData.SendTouchEvent(this.JSEventsObject, "touchend", this.canvas, [inputSource.xrTouchObject]);
-                inputSource.xrTouchObject = null;
+                if (inputSource.xrTouchObject) {
+                  this.xrData.RemoveTouch(inputSource.xrTouchObject);
+                  this.queueTouchEvent("touchend", this.canvas, [inputSource.xrTouchObject]);
+                  inputSource.xrTouchObject = null;
+                }
                 break;
             }
           }
@@ -682,6 +706,8 @@ void main()
             if (thisXRMananger.xrSession && thisXRMananger.xrSession.isInSession) {
               return thisXRMananger.xrSession.requestAnimationFrame(function (time, xrFrame) {
                 thisXRMananger.animate(xrFrame);
+                // Patch: dispatch Unity touch events inside XR rAF
+                thisXRMananger.dispatchQueuedTouchEvents();
                 func(time);
                 // Fix for an issue of switch to setTimeout instead of rAF
                 if (thisXRMananger.BrowserObject.mainLoop.timingMode == 0) {
