@@ -213,6 +213,10 @@ namespace WebXR
           OnViewerHitTestUpdate?.Invoke(viewerHitTestPose);
         }
       }
+      if (OnAnchorUpdate != null && this.xrState == WebXRState.AR)
+      {
+        UpdateAnchors();
+      }
     }
 
     private void UpdateXRCameras()
@@ -226,6 +230,63 @@ namespace WebXR
             leftProjectionMatrix,
             rightProjectionMatrix);
       }
+    }
+
+    private void UpdateAnchors()
+    {
+      for (int i = 0; i < MaxWebXRAnchors; i++)
+      {
+        if (anchors[i] == null)
+        {
+          anchors[i] = new WebXRAnchorData { frame = -1, id = -1 };
+        }
+
+        if (GetAnchorFromAnchorsArray(i, anchors[i]))
+        {
+          OnAnchorUpdate?.Invoke(anchors[i]);
+        }
+      }
+    }
+
+    private bool GetAnchorFromAnchorsArray(int anchorIndex, WebXRAnchorData anchorData)
+    {
+      int arrayAnchorDataStartPosition = anchorIndex * WebXRAnchorArrayStride;
+
+      int frameNumber = (int)anchorsDataArray[arrayAnchorDataStartPosition++];
+      if (anchorData.frame == frameNumber)
+      {
+        return false;
+      }
+
+      int anchorId = (int)anchorsDataArray[arrayAnchorDataStartPosition++];
+      bool tracked = anchorsDataArray[arrayAnchorDataStartPosition++] != 0;
+
+      anchorData.frame = frameNumber;
+      anchorData.id = anchorId;
+      anchorData.tracked = tracked;
+
+      if (anchorId < 0)
+      {
+        return false;
+      }
+
+      if (!tracked)
+      {
+        return true;
+      }
+
+      anchorData.position = new Vector3(
+        anchorsDataArray[arrayAnchorDataStartPosition++],
+        anchorsDataArray[arrayAnchorDataStartPosition++],
+        anchorsDataArray[arrayAnchorDataStartPosition++]);
+
+      anchorData.rotation = new Quaternion(
+        anchorsDataArray[arrayAnchorDataStartPosition++],
+        anchorsDataArray[arrayAnchorDataStartPosition++],
+        anchorsDataArray[arrayAnchorDataStartPosition++],
+        anchorsDataArray[arrayAnchorDataStartPosition++]);
+
+      return true;
     }
 
     private float CheckViewsDistance()
@@ -253,6 +314,8 @@ namespace WebXR
       Native.InitControllersArray(controllersArray);
       Native.InitHandsArray(handsArray);
       Native.InitViewerHitTestPoseArray(viewerHitTestPoseArray);
+      Native.SetWebXRAnchorEvents(OnAnchorCreatedInternal, OnAnchorDeletedInternal);
+      Native.InitAnchorsArray(anchorsDataArray);
       Native.InitXRSharedArray(sharedArray);
 #endif
     }
@@ -294,6 +357,28 @@ namespace WebXR
           EndXREvent on_end_xr,
           XRCapabilitiesEvent on_xr_capabilities,
           InputProfilesEvent on_input_profiles);
+
+      [DllImport("__Internal")]
+      public static extern void InitAnchorsArray(float[] array);
+
+      [DllImport("__Internal")]
+      public static extern void SetWebXRAnchorEvents(
+          AnchorCreatedEvent on_anchor_created,
+          AnchorDeletedEvent on_anchor_deleted);
+
+      [DllImport("__Internal")]
+      public static extern void CreateAnchorFromViewerHitTest();
+
+      [DllImport("__Internal")]
+      public static extern void CreateAnchorFromPose(
+          float px, float py, float pz,
+          float qx, float qy, float qz, float qw);
+
+      [DllImport("__Internal")]
+      public static extern void DeleteAnchor(int anchorId);
+
+      [DllImport("__Internal")]
+      public static extern void DeleteAllAnchors();
     }
 #endif
 
@@ -340,6 +425,18 @@ namespace WebXR
 
     internal static event HitTestUpdate OnViewerHitTestUpdate;
 
+    public delegate void AnchorCreated(int anchorId);
+    internal static event AnchorCreated OnAnchorCreated;
+    
+    public delegate void AnchorDeleted(int anchorId);
+    internal static event AnchorDeleted OnAnchorDeleted;
+    
+    public delegate void AnchorUpdate(WebXRAnchorData anchorData);
+    internal static event AnchorUpdate OnAnchorUpdate;
+    
+    internal delegate void AnchorCreatedEvent(int anchorId);
+    internal delegate void AnchorDeletedEvent(int anchorId);
+
     internal delegate void StartXREvent(int viewsCount,
         float left_x, float left_y, float left_w, float left_h,
         float right_x, float right_y, float right_w, float right_h);
@@ -362,6 +459,14 @@ namespace WebXR
     // Array stores 2 matrices, each 16 values, 2 Quaternions and 2 Vector3,
     // 2 XRViewports, views count, is transparent, framebuffer width height, stored linearly.
     float[] sharedArray = new float[(2 * 16) + (2 * 7) + (2 * 4) + 1 + 1 + 2];
+
+    private const int MaxWebXRAnchors = 32;
+
+    private const int WebXRAnchorArrayStride = 10;
+
+    float[] anchorsDataArray = new float[MaxWebXRAnchors * WebXRAnchorArrayStride];
+
+    private readonly WebXRAnchorData[] anchors = new WebXRAnchorData[MaxWebXRAnchors];
 
     // Shared array for controllers data
     float[] controllersArray = new float[2 * 34];
@@ -470,6 +575,18 @@ namespace WebXR
       webXRLoader?.EndEssentialSubsystems();
       Instance.updatedControllersOnEnd = false;
       Instance.setXrState(WebXRState.NORMAL, 1, new Rect(), new Rect());
+    }
+
+    [MonoPInvokeCallback(typeof(AnchorCreatedEvent))]
+    public static void OnAnchorCreatedInternal(int anchorId)
+    {
+      OnAnchorCreated?.Invoke(anchorId);
+    }
+    
+    [MonoPInvokeCallback(typeof(AnchorDeletedEvent))]
+    public static void OnAnchorDeletedInternal(int anchorId)
+    {
+      OnAnchorDeleted?.Invoke(anchorId);
     }
 
     public void ToggleAR()
@@ -651,6 +768,42 @@ namespace WebXR
       hitPoseData.rotation = new Quaternion(viewerHitTestPoseArray[arrayPosition++], viewerHitTestPoseArray[arrayPosition++],
           viewerHitTestPoseArray[arrayPosition++], viewerHitTestPoseArray[arrayPosition++]);
       return true;
+    }
+
+    public void CreateAnchorFromViewerHitTest()
+    {
+    #if UNITY_WEBGL
+      if (xrState == WebXRState.AR)
+      {
+        Native.CreateAnchorFromViewerHitTest();
+      }
+    #endif
+    }
+
+    public void CreateAnchorFromPose(Vector3 position, Quaternion rotation)
+    {
+    #if UNITY_WEBGL
+      if (xrState == WebXRState.AR)
+      {
+        Native.CreateAnchorFromPose(
+          position.x, position.y, position.z,
+          rotation.x, rotation.y, rotation.z, rotation.w);
+      }
+    #endif
+    }
+
+    public void DeleteAnchor(int anchorId)
+    {
+    #if UNITY_WEBGL
+      Native.DeleteAnchor(anchorId);
+    #endif
+    }
+
+    public void DeleteAllAnchors()
+    {
+    #if UNITY_WEBGL
+      Native.DeleteAllAnchors();
+    #endif
     }
   }
 }

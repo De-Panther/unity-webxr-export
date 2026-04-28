@@ -29,6 +29,31 @@ var LibraryWebXR = {
     Module.HandsArrayOffset = byteOffset / 4;
   },
 
+  InitAnchorsArray: function(byteOffset) {
+    Module.AnchorsArrayOffset = byteOffset / 4;
+  },
+  
+  SetWebXRAnchorEvents: function(onAnchorCreatedPtr, onAnchorDeletedPtr) {
+    Module.WebXR.onAnchorCreatedPtr = onAnchorCreatedPtr;
+    Module.WebXR.onAnchorDeletedPtr = onAnchorDeletedPtr;
+  },
+  
+  CreateAnchorFromViewerHitTest: function() {
+    Module.WebXR.createAnchorFromViewerHitTest();
+  },
+  
+  CreateAnchorFromPose: function(px, py, pz, qx, qy, qz, qw) {
+    Module.WebXR.createAnchorFromPose(px, py, pz, qx, qy, qz, qw);
+  },
+  
+  DeleteAnchor: function(anchorId) {
+    Module.WebXR.deleteAnchor(anchorId);
+  },
+  
+  DeleteAllAnchors: function() {
+    Module.WebXR.deleteAllAnchors();
+  },
+
   InitViewerHitTestPoseArray: function(byteOffset) {
     Module.ViewerHitTestPoseArrayOffset = byteOffset / 4;
   },
