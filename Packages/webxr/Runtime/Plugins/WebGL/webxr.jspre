@@ -426,6 +426,7 @@ void main()
         Module.WebXR.toggleHitTest = onToggleHitTest;
         Module.WebXR.callHapticPulse = onCallHapticPulse;
         Module.WebXR.createAnchorFromViewerHitTest = this.createAnchorFromViewerHitTest.bind(this);
+        Module.WebXR.createAnchorFromWaitingForViewerHitTest = this.createAnchorFromWaitingForViewerHitTest.bind(this);
         Module.WebXR.createAnchorFromPose = this.createAnchorFromPose.bind(this);
         Module.WebXR.deleteAnchor = this.deleteAnchor.bind(this);
         Module.WebXR.deleteAllAnchors = this.deleteAllAnchors.bind(this);
@@ -1160,6 +1161,10 @@ void main()
         this.pendingAnchorRequests.push({ type: 'viewer-hit-test' });
       }
 
+      XRManager.prototype.createAnchorFromWaitingForViewerHitTest = function() {
+        this.pendingAnchorRequests.push({ type: 'wait-viewer-hit-test' });
+      }      
+
       XRManager.prototype.createAnchorFromPose = function(px, py, pz, qx, qy, qz, qw) {
         this.pendingAnchorRequests.push({
           type: 'pose',
@@ -1217,8 +1222,30 @@ void main()
           var thisXRMananger = this;
         
           if (request.type == 'viewer-hit-test') {
-            if (!this.lastViewerHitTestResult || !this.lastViewerHitTestResult.createAnchor) {
+            if (!this.lastViewerHitTestResult) {
               console.warn('Cannot create WebXR anchor: no viewer hit-test result available.');
+              continue;
+            }
+
+            if (!this.lastViewerHitTestResult.createAnchor) {
+              console.warn('Cannot create WebXR anchor: XRHitTestResult.createAnchor is unavailable.');
+              continue;
+            }
+          
+            this.lastViewerHitTestResult.createAnchor().then(function(anchor) {
+              thisXRMananger.registerAnchor(anchor);
+            }).catch(function(error) {
+              console.warn('Could not create WebXR anchor from hit-test result:', error);
+            });
+          } else if (request.type == 'wait-viewer-hit-test') {
+            if (!this.lastViewerHitTestResult) {
+              console.info('Cannot create WebXR anchor now will try again.');
+              this.pendingAnchorRequests.push(request);
+              continue;
+            }
+
+            if (!this.lastViewerHitTestResult.createAnchor) {
+              console.warn('Cannot create WebXR anchor: XRHitTestResult.createAnchor is unavailable.');
               continue;
             }
           

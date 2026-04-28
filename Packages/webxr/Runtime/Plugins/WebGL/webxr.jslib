@@ -42,6 +42,10 @@ var LibraryWebXR = {
     Module.WebXR.createAnchorFromViewerHitTest();
   },
   
+  CreateAnchorFromWaitingForViewerHitTest: function() {
+    Module.WebXR.createAnchorFromWaitingForViewerHitTest();
+  },
+  
   CreateAnchorFromPose: function(px, py, pz, qx, qy, qz, qw) {
     Module.WebXR.createAnchorFromPose(px, py, pz, qx, qy, qz, qw);
   },

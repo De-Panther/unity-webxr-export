@@ -370,6 +370,9 @@ namespace WebXR
       public static extern void CreateAnchorFromViewerHitTest();
 
       [DllImport("__Internal")]
+      public static extern void CreateAnchorFromWaitingForViewerHitTest();
+
+      [DllImport("__Internal")]
       public static extern void CreateAnchorFromPose(
           float px, float py, float pz,
           float qx, float qy, float qz, float qw);
@@ -776,6 +779,16 @@ namespace WebXR
       if (xrState == WebXRState.AR)
       {
         Native.CreateAnchorFromViewerHitTest();
+      }
+    #endif
+    }
+
+    public void CreateAnchorFromWaitingForViewerHitTest()
+    {
+    #if UNITY_WEBGL
+      if (xrState == WebXRState.AR)
+      {
+        Native.CreateAnchorFromWaitingForViewerHitTest();
       }
     #endif
     }

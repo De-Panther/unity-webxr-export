@@ -27,6 +27,11 @@ namespace WebXR
             subsystem?.CreateAnchorFromViewerHitTest();
         }
 
+        public void CreateAnchorFromWaitingForViewerHitTest()
+        {
+            subsystem?.CreateAnchorFromWaitingForViewerHitTest();
+        }
+
         public void CreateAnchorFromPose(Vector3 position, Quaternion rotation)
         {
             subsystem?.CreateAnchorFromPose(position, rotation);
