@@ -1175,7 +1175,11 @@ void main()
         }
       
         if (entry.anchor && entry.anchor.delete) {
-          entry.anchor.delete();
+          try {
+            entry.anchor.delete();
+          } catch (error) {
+            console.warn('Could not delete WebXR anchor:', error);
+          }
         }
       
         this.webXRAnchorIds.delete(entry.anchor);
@@ -1297,6 +1301,7 @@ void main()
       }
     
       XRManager.prototype.animate = function (frame) {
+        this.lastViewerHitTestResult = null;
         var session = frame.session;
         if (!session) {
           return this.didNotifyUnity;
@@ -1364,7 +1369,6 @@ void main()
         this.getXRControllersData(frame, session.inputSources, session.refSpace, xrData);
     
         if (session.isAR && this.viewerHitTestSource) {
-          this.lastViewerHitTestResult = null;
           Module.HEAPF32[xrData.viewerHitTestPose.frameIndex] = xrData.frameNumber; // XRHitPoseData.frame
           var viewerHitTestResults = frame.getHitTestResults(this.viewerHitTestSource);
           if (viewerHitTestResults.length > 0) {

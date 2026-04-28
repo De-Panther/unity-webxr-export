@@ -1,40 +1,45 @@
-public partial class WebXRManager
-{
-    public static event WebXRSubsystem.AnchorCreated OnAnchorCreated
-    {
-      add => WebXRSubsystem.OnAnchorCreated += value;
-      remove => WebXRSubsystem.OnAnchorCreated -= value;
-    }
-    
-    public static event WebXRSubsystem.AnchorDeleted OnAnchorDeleted
-    {
-      add => WebXRSubsystem.OnAnchorDeleted += value;
-      remove => WebXRSubsystem.OnAnchorDeleted -= value;
-    }
-    
-    public static event WebXRSubsystem.AnchorUpdate OnAnchorUpdate
-    {
-      add => WebXRSubsystem.OnAnchorUpdate += value;
-      remove => WebXRSubsystem.OnAnchorUpdate -= value;
-    }
+using UnityEngine;
 
-    public void CreateAnchorFromViewerHitTest()
+namespace WebXR
+{
+    public partial class WebXRManager
     {
-      subsystem?.CreateAnchorFromViewerHitTest();
-    }
-    
-    public void CreateAnchorFromPose(Vector3 position, Quaternion rotation)
-    {
-      subsystem?.CreateAnchorFromPose(position, rotation);
-    }
-    
-    public void DeleteAnchor(int anchorId)
-    {
-      subsystem?.DeleteAnchor(anchorId);
-    }
-    
-    public void DeleteAllAnchors()
-    {
-      subsystem?.DeleteAllAnchors();
+        public static event WebXRSubsystem.AnchorCreated OnAnchorCreated
+        {
+            add => WebXRSubsystem.OnAnchorCreated += value;
+            remove => WebXRSubsystem.OnAnchorCreated -= value;
+        }
+
+        public static event WebXRSubsystem.AnchorDeleted OnAnchorDeleted
+        {
+            add => WebXRSubsystem.OnAnchorDeleted += value;
+            remove => WebXRSubsystem.OnAnchorDeleted -= value;
+        }
+
+        public static event WebXRSubsystem.AnchorUpdate OnAnchorUpdate
+        {
+            add => WebXRSubsystem.OnAnchorUpdate += value;
+            remove => WebXRSubsystem.OnAnchorUpdate -= value;
+        }
+
+        public void CreateAnchorFromViewerHitTest()
+        {
+            subsystem?.CreateAnchorFromViewerHitTest();
+        }
+
+        public void CreateAnchorFromPose(Vector3 position, Quaternion rotation)
+        {
+            subsystem?.CreateAnchorFromPose(position, rotation);
+        }
+
+        public void DeleteAnchor(int anchorId)
+        {
+            subsystem?.DeleteAnchor(anchorId);
+        }
+
+        public void DeleteAllAnchors()
+        {
+            subsystem?.DeleteAllAnchors();
+        }
     }
 }
