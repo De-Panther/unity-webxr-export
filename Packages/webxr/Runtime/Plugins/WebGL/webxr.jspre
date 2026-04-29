@@ -990,7 +990,7 @@ void main()
               touchesToSend.push(inputSource.xrTouchObject);
             }
           }
-        }
+        }// github is weird
         if (touchesToSend.length > 0) {
           this.xrData.SendTouchEvent(this.JSEventsObject, "touchmove", this.canvas, touchesToSend);
           for (var i = 0; i < touchesToSend.length; i++) {
