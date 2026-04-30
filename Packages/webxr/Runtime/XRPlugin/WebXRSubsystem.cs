@@ -232,10 +232,16 @@ namespace WebXR
       }
     }
 
-    private void UpdateAnchors()
+    private static bool AnchorsFeatureEnabled()
     {
       WebXRSettings settings = WebXRSettings.GetSettings();
-      if (settings != null && !settings.AROptionalFeatures.HasFlag(WebXRSettings.ExtraFeatureTypes.anchors))
+      return settings != null
+          && settings.AROptionalFeatures.HasFlag(WebXRSettings.ExtraFeatureTypes.anchors);
+    }
+
+    private void UpdateAnchors()
+    {
+      if (!AnchorsFeatureEnabled())
       {
         return;
       }
@@ -784,8 +790,7 @@ namespace WebXR
       {
         return;
       }
-      WebXRSettings settings = WebXRSettings.GetSettings();
-      if (settings != null && !settings.AROptionalFeatures.HasFlag(WebXRSettings.ExtraFeatureTypes.anchors))
+      if (!AnchorsFeatureEnabled())
       {
         return;
       }
@@ -800,8 +805,7 @@ namespace WebXR
       {
         return;
       }
-      WebXRSettings settings = WebXRSettings.GetSettings();
-      if (settings != null && !settings.AROptionalFeatures.HasFlag(WebXRSettings.ExtraFeatureTypes.anchors))
+      if (!AnchorsFeatureEnabled())
       {
         return;
       }
@@ -816,8 +820,7 @@ namespace WebXR
       {
         return;
       }
-      WebXRSettings settings = WebXRSettings.GetSettings();
-      if (settings != null && !settings.AROptionalFeatures.HasFlag(WebXRSettings.ExtraFeatureTypes.anchors))
+      if (!AnchorsFeatureEnabled())
       {
         return;
       }
@@ -834,8 +837,7 @@ namespace WebXR
       {
         return;
       }
-      WebXRSettings settings = WebXRSettings.GetSettings();
-      if (settings != null && !settings.AROptionalFeatures.HasFlag(WebXRSettings.ExtraFeatureTypes.anchors))
+      if (!AnchorsFeatureEnabled())
       {
         return;
       }
@@ -850,8 +852,7 @@ namespace WebXR
       {
         return;
       }
-      WebXRSettings settings = WebXRSettings.GetSettings();
-      if (settings != null && !settings.AROptionalFeatures.HasFlag(WebXRSettings.ExtraFeatureTypes.anchors))
+      if (!AnchorsFeatureEnabled())
       {
         return;
       }
