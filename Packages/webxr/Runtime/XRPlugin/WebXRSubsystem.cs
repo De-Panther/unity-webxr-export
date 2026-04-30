@@ -234,13 +234,13 @@ namespace WebXR
 
     private void UpdateAnchors()
     {
+      WebXRSettings settings = WebXRSettings.GetSettings();
+      if (settings != null && !settings.AROptionalFeatures.HasFlag(WebXRSettings.ExtraFeatureTypes.anchors))
+      {
+        return;
+      }
       for (int i = 0; i < MaxWebXRAnchors; i++)
       {
-        if (anchors[i] == null)
-        {
-          anchors[i] = new WebXRAnchorData { frame = -1, id = -1 };
-        }
-
         if (GetAnchorFromAnchorsArray(i, anchors[i]))
         {
           OnAnchorUpdate?.Invoke(anchors[i]);
@@ -309,6 +309,10 @@ namespace WebXR
 
     private void InternalStart()
     {
+      for (int i = 0; i < MaxWebXRAnchors; i++)
+      {
+        anchors[i] = new WebXRAnchorData { frame = -1, id = -1 };
+      }
 #if UNITY_WEBGL
       Native.SetWebXREvents(OnStartAR, OnStartVR, UpdateVisibilityState, OnEndXR, OnXRCapabilities, OnInputProfiles);
       Native.InitControllersArray(controllersArray);
@@ -775,48 +779,84 @@ namespace WebXR
 
     public void CreateAnchorFromViewerHitTest()
     {
-    #if UNITY_WEBGL
-      if (xrState == WebXRState.AR)
+#if UNITY_WEBGL
+      if (xrState != WebXRState.AR)
       {
-        Native.CreateAnchorFromViewerHitTest();
+        return;
       }
-    #endif
+      WebXRSettings settings = WebXRSettings.GetSettings();
+      if (settings != null && !settings.AROptionalFeatures.HasFlag(WebXRSettings.ExtraFeatureTypes.anchors))
+      {
+        return;
+      }
+      Native.CreateAnchorFromViewerHitTest();
+#endif
     }
 
     public void CreateAnchorFromWaitingForViewerHitTest()
     {
-    #if UNITY_WEBGL
-      if (xrState == WebXRState.AR)
+#if UNITY_WEBGL
+      if (xrState != WebXRState.AR)
       {
-        Native.CreateAnchorFromWaitingForViewerHitTest();
+        return;
       }
-    #endif
+      WebXRSettings settings = WebXRSettings.GetSettings();
+      if (settings != null && !settings.AROptionalFeatures.HasFlag(WebXRSettings.ExtraFeatureTypes.anchors))
+      {
+        return;
+      }
+      Native.CreateAnchorFromWaitingForViewerHitTest();
+#endif
     }
 
     public void CreateAnchorFromPose(Vector3 position, Quaternion rotation)
     {
-    #if UNITY_WEBGL
-      if (xrState == WebXRState.AR)
+#if UNITY_WEBGL
+      if (xrState != WebXRState.AR)
       {
-        Native.CreateAnchorFromPose(
-          position.x, position.y, position.z,
-          rotation.x, rotation.y, rotation.z, rotation.w);
+        return;
       }
-    #endif
+      WebXRSettings settings = WebXRSettings.GetSettings();
+      if (settings != null && !settings.AROptionalFeatures.HasFlag(WebXRSettings.ExtraFeatureTypes.anchors))
+      {
+        return;
+      }
+      Native.CreateAnchorFromPose(
+        position.x, position.y, position.z,
+        rotation.x, rotation.y, rotation.z, rotation.w);
+#endif
     }
 
     public void DeleteAnchor(int anchorId)
     {
-    #if UNITY_WEBGL
+#if UNITY_WEBGL
+      if (xrState != WebXRState.AR)
+      {
+        return;
+      }
+      WebXRSettings settings = WebXRSettings.GetSettings();
+      if (settings != null && !settings.AROptionalFeatures.HasFlag(WebXRSettings.ExtraFeatureTypes.anchors))
+      {
+        return;
+      }
       Native.DeleteAnchor(anchorId);
-    #endif
+#endif
     }
 
     public void DeleteAllAnchors()
     {
-    #if UNITY_WEBGL
+#if UNITY_WEBGL
+      if (xrState != WebXRState.AR)
+      {
+        return;
+      }
+      WebXRSettings settings = WebXRSettings.GetSettings();
+      if (settings != null && !settings.AROptionalFeatures.HasFlag(WebXRSettings.ExtraFeatureTypes.anchors))
+      {
+        return;
+      }
       Native.DeleteAllAnchors();
-    #endif
+#endif
     }
   }
 }
