@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Hands tracking update.
 - Flickering on touch input in immersive WebXR sessions by queueing synthesized touch events and dispatching them during the XR animation frame.
 
+### Added
+- WebXR Anchors: Session anchor support for immersive AR sessions, including creating anchors from viewer hit-test results or Unity poses and receiving per-frame anchor pose updates.
+- WebXR Anchors: To use anchors, enable the `anchors` optional feature in WebXR AR settings and see samples for usage.
+
 ## [0.22.1] - 2024-11-09
 ### Added
 - Support for WebAssembly Table, to support newer Unity versions features.

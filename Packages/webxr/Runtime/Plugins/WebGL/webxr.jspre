@@ -105,6 +105,11 @@ void main()
         this.touchIDs = [];
         this.touches = [];
         this.eventsNamesToIDs = {};
+        this.maxAnchors = 32;
+        this.anchors = [];
+        for (var anchorIndex = 0; anchorIndex < this.maxAnchors; anchorIndex++) {
+          this.anchors.push(new XRAnchorData());
+        }
         this.CreateTouch = function (pageElement, xPercentage, yPercentage) {
           var touchID = 0;
           while (this.touchIDs.includes(touchID))
@@ -264,6 +269,27 @@ void main()
           this.rotationIndices[3] = index;
         }
       }
+
+      function XRAnchorData() {
+        this.frameIndex = 0;
+        this.idIndex = 0;
+        this.trackedIndex = 0;
+        this.positionIndices = [0, 0, 0];
+        this.rotationIndices = [0, 0, 0, 0];
+            
+        this.setIndices = function(index) {
+          this.frameIndex = index++;
+          this.idIndex = index++;
+          this.trackedIndex = index++;
+          this.positionIndices[0] = index++;
+          this.positionIndices[1] = index++;
+          this.positionIndices[2] = index++;
+          this.rotationIndices[0] = index++;
+          this.rotationIndices[1] = index++;
+          this.rotationIndices[2] = index++;
+          this.rotationIndices[3] = index;
+        }
+      }
     
       function lerp(start, end, percentage)
       {
@@ -346,6 +372,11 @@ void main()
         this.onSessionVisibilityEvent = null;
         this.BrowserObject = null;
         this.JSEventsObject = null;
+        this.webXRAnchors = {};
+        this.webXRAnchorIds = new Map();
+        this.nextAnchorId = 1;
+        this.pendingAnchorRequests = [];
+        this.lastViewerHitTestResult = null;
         this.touchEventQueue = [];
         this.init();
       }
@@ -405,7 +436,6 @@ void main()
         });
       }
     
-    
       XRManager.prototype.attachEventListeners = function () {
         var onToggleAr = this.toggleAr.bind(this);
         var onToggleVr = this.toggleVr.bind(this);
@@ -418,6 +448,11 @@ void main()
         Module.WebXR.toggleVR = onToggleVr;
         Module.WebXR.toggleHitTest = onToggleHitTest;
         Module.WebXR.callHapticPulse = onCallHapticPulse;
+        Module.WebXR.createAnchorFromViewerHitTest = this.createAnchorFromViewerHitTest.bind(this);
+        Module.WebXR.createAnchorFromWaitingForViewerHitTest = this.createAnchorFromWaitingForViewerHitTest.bind(this);
+        Module.WebXR.createAnchorFromPose = this.createAnchorFromPose.bind(this);
+        Module.WebXR.deleteAnchor = this.deleteAnchor.bind(this);
+        Module.WebXR.deleteAllAnchors = this.deleteAllAnchors.bind(this);
       }
     
       XRManager.prototype.onRequestARSession = function () {
@@ -505,6 +540,10 @@ void main()
           this.viewerHitTestSource.cancel();
           this.viewerHitTestSource = null;
         }
+
+        this.deleteAllAnchors();
+        this.pendingAnchorRequests = [];
+        this.lastViewerHitTestResult = null;
         
         this.removeRemainingTouches();
         this.touchEventQueue.length = 0;
@@ -1044,6 +1083,13 @@ void main()
           this.xrData.handLeft.setIndices(Module.HandsArrayOffset);
           this.xrData.handRight.setIndices(Module.HandsArrayOffset + 212);
           this.xrData.viewerHitTestPose.setIndices(Module.ViewerHitTestPoseArrayOffset);
+          if (Module.AnchorsArrayOffset !== undefined) {
+            for (var anchorIndex = 0; anchorIndex < this.xrData.maxAnchors; anchorIndex++) {
+              var anchorData = this.xrData.anchors[anchorIndex];
+              anchorData.setIndices(Module.AnchorsArrayOffset + anchorIndex * 10);
+              this.clearAnchorSlot(anchorIndex);
+            }
+          }
           this.xrData.controllerA.updatedProfiles = 0;
           this.xrData.controllerB.updatedProfiles = 0;
           this.xrData.controllerA.profiles = [];
@@ -1071,8 +1117,246 @@ void main()
           session.requestAnimationFrame(tempRaf);
         });
       }
+
+      XRManager.prototype.callAnchorCreated = function(anchorId) {
+        if (Module.WebXR.onAnchorCreatedPtr) {
+          Module.dynCall_vi(Module.WebXR.onAnchorCreatedPtr, anchorId);
+        }
+      }
+
+      XRManager.prototype.callAnchorDeleted = function(anchorId) {
+        if (Module.WebXR.onAnchorDeletedPtr) {
+          Module.dynCall_vi(Module.WebXR.onAnchorDeletedPtr, anchorId);
+        }
+      }
+
+      XRManager.prototype.clearAnchorSlot = function(slot) {
+        if (Module.AnchorsArrayOffset === undefined || !this.xrData.anchors[slot]) {
+          return;
+        }
+      
+        var anchorData = this.xrData.anchors[slot];
+        Module.HEAPF32[anchorData.frameIndex] = this.xrData.frameNumber;
+        Module.HEAPF32[anchorData.idIndex] = -1;
+        Module.HEAPF32[anchorData.trackedIndex] = 0;
+      }
+
+      XRManager.prototype.findFreeAnchorSlot = function() {
+        for (var i = 0; i < this.xrData.maxAnchors; i++) {
+          var used = false;
+          for (var anchorId in this.webXRAnchors) {
+            if (this.webXRAnchors[anchorId].slot == i) {
+              used = true;
+              break;
+            }
+          }
+          if (!used) {
+            return i;
+          }
+        }
+        return -1;
+      }
+
+      XRManager.prototype.registerAnchor = function(anchor) {
+        if (!anchor || !anchor.anchorSpace) {
+          console.warn('WebXR anchor has no anchorSpace.');
+          return;
+        }
+      
+        var slot = this.findFreeAnchorSlot();
+        if (slot < 0) {
+          console.warn('No free WebXR anchor slot available.');
+          if (anchor.delete) {
+            anchor.delete();
+          }
+          return;
+        }
+      
+        var anchorId = this.nextAnchorId++;
+        var entry = {
+          id: anchorId,
+          slot: slot,
+          anchor: anchor
+        };
+      
+        this.webXRAnchors[anchorId] = entry;
+        this.webXRAnchorIds.set(anchor, anchorId);
+        this.clearAnchorSlot(slot);
+        this.callAnchorCreated(anchorId);
+      }
+
+      XRManager.prototype.createAnchorFromViewerHitTest = function() {
+        this.pendingAnchorRequests.push({ type: 'viewer-hit-test' });
+      }
+
+      XRManager.prototype.createAnchorFromWaitingForViewerHitTest = function() {
+        this.pendingAnchorRequests.push({ type: 'wait-viewer-hit-test' });
+      }      
+
+      XRManager.prototype.createAnchorFromPose = function(px, py, pz, qx, qy, qz, qw) {
+        this.pendingAnchorRequests.push({
+          type: 'pose',
+          position: { x: px, y: py, z: pz },
+          rotation: { x: qx, y: qy, z: qz, w: qw }
+        });
+      }
+
+      XRManager.prototype.deleteAnchor = function(anchorId) {
+        var entry = this.webXRAnchors[anchorId];
+        if (!entry) {
+          return;
+        }
+      
+        if (entry.anchor && entry.anchor.delete) {
+          try {
+            entry.anchor.delete();
+          } catch (error) {
+            console.warn('Could not delete WebXR anchor:', error);
+          }
+        }
+      
+        this.webXRAnchorIds.delete(entry.anchor);
+        delete this.webXRAnchors[anchorId];
+        this.clearAnchorSlot(entry.slot);
+        this.callAnchorDeleted(anchorId);
+      }
+
+      XRManager.prototype.deleteAllAnchors = function() {
+        var ids = [];
+        for (var anchorId in this.webXRAnchors) {
+          ids.push(parseInt(anchorId));
+        }
+        for (var i = 0; i < ids.length; i++) {
+          this.deleteAnchor(ids[i]);
+        }
+      }
+
+      XRManager.prototype.processAnchorRequests = function(frame, session) {
+        if (!session || !session.isAR || this.pendingAnchorRequests.length == 0) {
+          return;
+        }
+      
+        if (!frame.trackedAnchors) {
+          console.warn('WebXR anchors are not available in this session. Add anchors to AR optional or required features.');
+          this.pendingAnchorRequests = [];
+          return;
+        }
+      
+        var requests = this.pendingAnchorRequests;
+        this.pendingAnchorRequests = [];
+      
+        for (var i = 0; i < requests.length; i++) {
+          var request = requests[i];
+          var thisXRMananger = this;
+        
+          if (request.type == 'viewer-hit-test') {
+            if (!this.lastViewerHitTestResult) {
+              console.warn('Cannot create WebXR anchor: no viewer hit-test result available.');
+              continue;
+            }
+
+            if (!this.lastViewerHitTestResult.createAnchor) {
+              console.warn('Cannot create WebXR anchor: XRHitTestResult.createAnchor is unavailable.');
+              continue;
+            }
+          
+            this.lastViewerHitTestResult.createAnchor().then(function(anchor) {
+              thisXRMananger.registerAnchor(anchor);
+            }).catch(function(error) {
+              console.warn('Could not create WebXR anchor from hit-test result:', error);
+            });
+          } else if (request.type == 'wait-viewer-hit-test') {
+            if (!this.lastViewerHitTestResult) {
+              console.info('Cannot create WebXR anchor now will try again.');
+              this.pendingAnchorRequests.push(request);
+              continue;
+            }
+
+            if (!this.lastViewerHitTestResult.createAnchor) {
+              console.warn('Cannot create WebXR anchor: XRHitTestResult.createAnchor is unavailable.');
+              continue;
+            }
+          
+            this.lastViewerHitTestResult.createAnchor().then(function(anchor) {
+              thisXRMananger.registerAnchor(anchor);
+            }).catch(function(error) {
+              console.warn('Could not create WebXR anchor from hit-test result:', error);
+            });
+          } else if (request.type == 'pose') {
+            if (!frame.createAnchor || !window.XRRigidTransform) {
+              console.warn('Cannot create WebXR anchor: XRFrame.createAnchor or XRRigidTransform is unavailable.');
+              continue;
+            }
+          
+            var transform = new XRRigidTransform(
+              {
+                x: request.position.x,
+                y: request.position.y,
+                z: -request.position.z
+              },
+              {
+                x: -request.rotation.x,
+                y: -request.rotation.y,
+                z: request.rotation.z,
+                w: request.rotation.w
+              }
+            );
+          
+            frame.createAnchor(transform, session.refSpace).then(function(anchor) {
+              thisXRMananger.registerAnchor(anchor);
+            }).catch(function(error) {
+              console.warn('Could not create WebXR anchor from pose:', error);
+            });
+          }
+        }
+      }
+
+      XRManager.prototype.updateAnchors = function(frame, session) {
+        if (!session || !session.isAR || !frame.trackedAnchors || Module.AnchorsArrayOffset === undefined) {
+          return;
+        }
+      
+        for (var anchorId in this.webXRAnchors) {
+          var inactiveEntry = this.webXRAnchors[anchorId];
+          var inactiveData = this.xrData.anchors[inactiveEntry.slot];
+          Module.HEAPF32[inactiveData.frameIndex] = this.xrData.frameNumber;
+          Module.HEAPF32[inactiveData.idIndex] = inactiveEntry.id;
+          Module.HEAPF32[inactiveData.trackedIndex] = 0;
+        }
+      
+        var baseSpace = session.localRefSpace || session.refSpace;
+        for (var anchor of frame.trackedAnchors) {
+          var id = this.webXRAnchorIds.get(anchor);
+          if (!id) {
+            continue;
+          }
+        
+          var entry = this.webXRAnchors[id];
+          if (!entry) {
+            continue;
+          }
+        
+          var pose = frame.getPose(anchor.anchorSpace, baseSpace);
+          if (!pose) {
+            continue;
+          }
+        
+          var data = this.xrData.anchors[entry.slot];
+          Module.HEAPF32[data.frameIndex] = this.xrData.frameNumber;
+          Module.HEAPF32[data.idIndex] = entry.id;
+          Module.HEAPF32[data.trackedIndex] = 1;
+          Module.HEAPF32[data.positionIndices[0]] = pose.transform.position.x;
+          Module.HEAPF32[data.positionIndices[1]] = pose.transform.position.y;
+          Module.HEAPF32[data.positionIndices[2]] = -pose.transform.position.z;
+          Module.HEAPF32[data.rotationIndices[0]] = -pose.transform.orientation.x;
+          Module.HEAPF32[data.rotationIndices[1]] = -pose.transform.orientation.y;
+          Module.HEAPF32[data.rotationIndices[2]] = pose.transform.orientation.z;
+          Module.HEAPF32[data.rotationIndices[3]] = pose.transform.orientation.w;
+        }
+      }
     
       XRManager.prototype.animate = function (frame) {
+        this.lastViewerHitTestResult = null;
         var session = frame.session;
         if (!session) {
           return this.didNotifyUnity;
@@ -1143,6 +1427,7 @@ void main()
           Module.HEAPF32[xrData.viewerHitTestPose.frameIndex] = xrData.frameNumber; // XRHitPoseData.frame
           var viewerHitTestResults = frame.getHitTestResults(this.viewerHitTestSource);
           if (viewerHitTestResults.length > 0) {
+            this.lastViewerHitTestResult = viewerHitTestResults[0];
             var hitTestPose = viewerHitTestResults[0].getPose(session.localRefSpace);
             Module.HEAPF32[xrData.viewerHitTestPose.availableIndex] = 1; // XRHitPoseData.available
             Module.HEAPF32[xrData.viewerHitTestPose.positionIndices[0]] = hitTestPose.transform.position.x; // XRHitPoseData.position[0]
@@ -1157,6 +1442,9 @@ void main()
             Module.HEAPF32[xrData.viewerHitTestPose.availableIndex] = 0; // XRHitPoseData.available
           }
         }
+
+        this.processAnchorRequests(frame, session);
+        this.updateAnchors(frame, session);
     
         if (xrData.controllerA.updatedProfiles == 1 || xrData.controllerB.updatedProfiles == 1)
         {
