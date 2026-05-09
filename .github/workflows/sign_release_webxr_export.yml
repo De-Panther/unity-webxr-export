@@ -1,0 +1,116 @@
+name: WebXR Export Sign and release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sign:
+    name: Sign UPM package
+    runs-on: ubuntu-latest
+    env:
+      UPM_SERVICE_ACCOUNT_KEY_ID: ${{ secrets.UPM_SERVICE_ACCOUNT_KEY_ID }}
+      UPM_SERVICE_ACCOUNT_KEY_SECRET: ${{ secrets.UPM_SERVICE_ACCOUNT_KEY_SECRET }}
+      UPM_ORG_ID: ${{ secrets.UPM_ORG_ID }}
+      DIST_DIR: /tmp/signed-upm-dist
+      PACKAGE_PATH: Packages/webxr
+      PACKAGE_TITLE: WebXR Export
+      RELEASE_NOTE: "You can import the package from OpenUPM at [WebXR Export](https://openupm.com/packages/com.de-panther.webxr/)."
+      TAG_PREFIX: webxr
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Read package metadata
+        run: |
+          package_name="$(jq -r '.name' $PACKAGE_PATH/package.json)"
+          package_version="$(jq -r '.version' $PACKAGE_PATH/package.json)"
+
+          echo "PACKAGE_NAME=$package_name" >> "$GITHUB_ENV"
+          echo "PACKAGE_VERSION=$package_version" >> "$GITHUB_ENV"
+
+          printf 'Package name: %s\n' "$package_name"
+          printf 'Package version: %s\n' "$package_version"
+
+      - name: Fail if tag exists
+        run: |
+          tag="${TAG_PREFIX}/${PACKAGE_VERSION}"
+
+          echo "Checking tag: $tag"
+
+          if git ls-remote --tags origin "refs/tags/$tag" | grep -q .; then
+            echo "::error ::Tag already exists: $tag"
+            exit 1
+          fi
+
+          echo "TAG=$tag" >> "$GITHUB_ENV"
+          echo "Tag is available"
+
+      - name: Install Unity UPM CLI
+        run: |
+          curl -fsSL https://cdn.packages.unity.com/upm-cli/install.sh -o install.sh
+          bash install.sh
+          echo "$HOME/.upm/bin" >> "$GITHUB_PATH"
+
+      - name: Verify Unity UPM CLI
+        run: upm --help
+
+      - name: Sign package
+        run: |
+          mkdir -p "$DIST_DIR"
+          upm pack ./$PACKAGE_PATH --organization-id "$UPM_ORG_ID" --destination "$DIST_DIR"
+
+      - name: Print signed package info
+        run: |
+          shopt -s nullglob
+          archives=("$DIST_DIR"/*.tgz "$DIST_DIR"/*.tar.gz)
+          if [ "${#archives[@]}" -ne 1 ]; then
+            printf 'Expected exactly one signed package archive, found %s\n' "${#archives[@]}" >&2
+            exit 1
+          fi
+
+          archive="${archives[0]}"
+          tar -tzf "$archive" | grep -qx 'package/package.json'
+          tar -tzf "$archive" | grep -qx 'package/.attestation.p7m'
+
+          echo "PACKAGE_ARCHIVE=$archive" >> "$GITHUB_ENV"
+          printf 'Archive: %s\n' "$(basename "$archive")"
+          tar -xOzf "$archive" package/package.json | jq '{name, version}'
+
+      - name: Generate release data
+        id: release_data
+        run: |
+          HEADLINE=$(sed -n '9s/^## //p' "$PACKAGE_PATH/CHANGELOG.md")
+          RELEASE_NAME="$PACKAGE_TITLE $HEADLINE"
+          
+          BODY=$(
+            awk '
+              NR >= 10 {
+                if ($0 ~ /^## \[/) exit
+                print
+              }
+            ' "$PACKAGE_PATH/CHANGELOG.md"
+          )
+          
+          {
+            echo "name=$RELEASE_NAME"
+            echo "body<<EOF"
+            echo "$RELEASE_NOTE"
+            echo ""
+            echo "$BODY"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          prerelease: true
+          tag_name: ${{ env.TAG }}
+          name: ${{ steps.release_data.outputs.name }}
+          body: ${{ steps.release_data.outputs.body }}
+          files: |
+            /tmp/signed-upm-dist/*.tgz
+            /tmp/signed-upm-dist/*.tar.gz
