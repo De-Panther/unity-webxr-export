@@ -1,7 +1,7 @@
 {
   "name": "com.de-panther.webxr-interactions",
   "displayName": "WebXR Interactions",
-  "version": "0.23.0",
+  "version": "0.24.0",
   "unity": "2020.3",
   "unityRelease": "11f1",
   "description": "WebXR interactions components and samples for WebXR Export",
@@ -40,6 +40,6 @@
     }
   ],
   "dependencies": {
-    "com.de-panther.webxr": "0.23.0"
+    "com.de-panther.webxr": "0.24.0"
   }
 }

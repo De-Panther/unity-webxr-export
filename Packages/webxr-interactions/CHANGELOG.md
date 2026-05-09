@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.24.0] - 2026-05-10
+### Changed
+- Signed package.
+- Requires WebXR Export 0.24.0.
+
 ## [0.23.0] - 2026-05-03
 ### Changed
 - Updated WebXRCamera.updateCameraTag in samples to true.
