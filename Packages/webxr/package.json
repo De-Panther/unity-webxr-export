@@ -17,6 +17,13 @@
     "name": "De-Panther",
     "url": "https://github.com/De-Panther/unity-webxr-export"
   },
+  "samples": [
+    {
+      "displayName": "XR Anchors Sample",
+      "description": "Sample Class to work with XR Anchors in WebXR",
+      "path": "Samples~/Anchors"
+    }
+  ],
   "dependencies": {
     "com.unity.xr.management": "3.2.13"
   }

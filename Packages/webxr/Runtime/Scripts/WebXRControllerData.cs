@@ -97,6 +97,16 @@ namespace WebXR
     public Quaternion rotation;
   }
 
+  [System.Serializable]
+  public class WebXRAnchorData
+  {
+    public int frame;
+    public int id;
+    public bool tracked;
+    public Vector3 position;
+    public Quaternion rotation;
+  }
+
   public enum WebXRControllerHand
   {
     NONE = 0,
